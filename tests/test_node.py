@@ -14,16 +14,17 @@ import rdflib
 from geomapi.nodes import *
 from rdflib import RDF, RDFS, Graph, Literal, URIRef
 
-
 class TestNode(unittest.TestCase):
 
 ################################## SETUP/TEARDOWN CLASS ######################
+
+
     @classmethod
     def setUpClass(cls):
         #execute once before all tests
         print('-----------------Setup Class----------------------')
         st = time.time()
-        cls.path= Path.cwd() / "test" / "testfiles"  
+        cls.path= Path.cwd() / "tests" / "testfiles"  
 
         #ONTOLOGIES
         cls.exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#')
@@ -38,45 +39,45 @@ class TestNode(unittest.TestCase):
         cls.ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')
 
         #GRAPH 1
-        cls.graphPath1=cls.path / 'bimGraph1.ttl'
+        cls.graphPath1=cls.path / 'graphs' / 'parking_ifc_graph.ttl'
         cls.graph1=Graph().parse(cls.graphPath1)
 
         #GRAPH 2
-        cls.graphPath2=cls.path / 'resourceGraph.ttl'
+        cls.graphPath2=cls.path /  'graphs' / 'resource_graph.ttl'
         cls.graph2=Graph().parse(cls.graphPath2)
 
         #GRAPH 3
-        cls.graphPath3=cls.path / 'pcdGraph.ttl'
+        cls.graphPath3=cls.path / 'graphs' /  'pcd_graph.ttl'
         cls.graph3=Graph().parse(cls.graphPath3)
 
         #GRAPH 4
-        cls.graphPath4=cls.path / 'meshGraph.ttl'
+        cls.graphPath4=cls.path / 'graphs' /  'mesh_graph.ttl'
         cls.graph4=Graph().parse(cls.graphPath4)
         
-        #GRAPH 5
-        cls.graphPath5=cls.path / 'imgGraph.ttl'
-        cls.graph5=Graph().parse(cls.graphPath5)
+        # #GRAPH 5
+        # cls.graphPath5=cls.path / 'imgGraph.ttl'
+        # cls.graph5=Graph().parse(cls.graphPath5)
                 
         #POINTCLOUD
-        cls.pcdPath=cls.path / 'PCD'/"academiestraat week 22 a 20.pcd"
-        cls.e57Path=cls.path / 'PCD'/"week22 photogrammetry - Cloud.e57"
+        cls.pcdPath=cls.path / 'pcd'/"parking.pcd"
+        cls.e57Path=cls.path / 'pcd'/"parking.e57"
         
         #MESH
-        cls.meshPath=cls.path / 'MESH'/"week22.obj"
+        cls.meshPath=cls.path / 'mesh'/"parking.obj"
     
         #IMG
-        cls.image1Path=cls.path / "IMG"/"IMG_2173.JPG"  
-        cls.image2Path=cls.path / "IMG"/"IMG_2174.JPG"  
-
-        #FILES
-        cls.files=ut.get_list_of_files(os.getcwd())
-        cls.files+=ut.get_list_of_files(cls.path)
+        cls.image1Path=cls.path / "img" / "IMG_8834.JPG"  
 
         #RESOURCES
-        cls.resourcePath=cls.path / "resources"
+        cls.resourcePath= cls.path / "resources"
         if not os.path.exists(cls.resourcePath):
             os.mkdir(cls.resourcePath)
-
+        
+        #FILES
+        # cls.files=ut.get_list_of_files(os.getcwd())
+        # cls.files+=ut.get_list_of_files(cls.path)
+        cls.files=ut.get_list_of_files(cls.path)
+        
         #TIME TRACKING           
         et = time.time()
         print("startup time: "+str(et - st))
@@ -85,9 +86,10 @@ class TestNode(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
+        if os.path.exists(cls.resourcePath):
+            shutil.rmtree(cls.resourcePath)  
         #execute once after all tests
         print('-----------------TearDown Class----------------------')
-        shutil.rmtree(cls.resourcePath)      
 ################################## SETUP/TEARDOWN ######################
 
     def setUp(self):
@@ -157,7 +159,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(node.subject.toPython(),subject.toPython())
 
     def test_node_creation_from_graphs_with_wrong_subject(self):   
-        self.assertRaises(ValueError,Node,subject='myNode',graph=self.graph5)
+        self.assertRaises(ValueError,Node,subject='myNode',graph=self.graph3)
 
     def test_node_creation_from_graphpath_with_wrong_subject(self): 
         self.assertRaises(ValueError,Node,subject='qsdsfqsdfq',graphPath=self.graphPath3)
@@ -256,6 +258,7 @@ class TestNode(unittest.TestCase):
 
         #graph
         node=Node(graph=self.graph3)
+        print(node.graph)
         self.assertLess(len(node.get_graph()),len(self.graph3))
 
         #real graphPath
@@ -343,7 +346,6 @@ class TestNode(unittest.TestCase):
         object=next(node.graph.objects(subject,v4d['attribute']))
         self.assertEqual(object.toPython(),attribute)
 
-
     def test_to_graph_with_paths(self):
         #graphPath should be None
         node=Node(graphPath=self.graphPath1)
@@ -352,12 +354,12 @@ class TestNode(unittest.TestCase):
         self.assertIsNone(testPath)
 
         #paths should be shortened
-        resourcePath=os.path.join(self.path,'resources','week22.obj')
+        resourcePath=os.path.join(self.path,'resources','parking.obj')
         node=Node(graphPath=self.graphPath3)
         node.path=resourcePath
         node.to_graph()
         testPath=node.graph.value(node.subject,self.v4d['path']).toPython()
-        self.assertEqual(testPath,os.path.join('resources','week22.obj'))
+        self.assertEqual(testPath,os.path.join('..','resources','parking.obj'))
 
     def test_to_graph_with_save(self):
         #test save
