@@ -1,4 +1,4 @@
-![geomapiLogo](https://gitlab.kuleuven.be/uploads/-/system/project/avatar/7619/GeoMapiLogo.png?width=64)
+![geomapiLogo](docs/source/_static/geomapi_logo.png?width=64)
 
 # GeomAPI
 
