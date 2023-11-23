@@ -1,4 +1,4 @@
-![geomapiLogo](./docs/source/_static/GeoMapiLogo.png?width=64)
+![geomapiLogo](docs/source/_static/geomapi_logo.png?width=64)
 
 # GeomAPI
 
