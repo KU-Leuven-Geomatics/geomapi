@@ -17,7 +17,7 @@ pip install geomapi
 ## Documentation
 
 You can read the full API reference here:
-[Documentation](https://geomatics.pages.gitlab.kuleuven.be/research-projects/geomapi/)
+[Documentation](https://ku-leuven-geomatics.github.io/geomapi/index.html)
 
 
 ## Quickstart
