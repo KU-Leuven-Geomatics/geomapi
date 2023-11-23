@@ -1,0 +1,298 @@
+@prefix ifc: <http://ifcowl.openbimstandards.org/IFC2X3_Final#> .
+@prefix loa: <https://docplayer.net/131921614-Usibd-level-of-accuracy-loa-specification-guide.html#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://A1010_STANDARD_FOUNDATIONS> a "LOA" ;
+    ifc:classes "['IfcFooting', 'IfcPile', 'IfcPlate']" ;
+    loa:CSI "A1010" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://A1020_SPECIAL_FOUNDATIONS> a "LOA" ;
+    ifc:classes "['IfcFooting', 'IfcPile', 'IfcPlate']" ;
+    loa:CSI "A1020" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://A10_FOUNDATIONS> a "LOA" ;
+    ifc:classes "['IfcFooting', 'IfcPile', 'IfcPlate']" ;
+    loa:CSI "A10" ;
+    loa:LOAm 20 ;
+    loa:LOAr 20 ;
+    loa:validation "B" .
+
+<https://A2010_WALLS_FOR_SUBGRADE_ENCLOSURES> a "LOA" ;
+    ifc:classes "['IfcFooting', 'IfcPile', 'IfcPlate', 'IfcWall', 'IfcCurtainWall']" ;
+    loa:CSI "A2010" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://A20_SUBGRADE_ENCLOSURES> a "LOA" ;
+    ifc:classes "['IfcFooting', 'IfcPile', 'IfcPlate', 'IfcWall', 'IfcCurtainWall']" ;
+    loa:CSI "A20" ;
+    loa:LOAm 20 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://A4010_STANDARD_SLABS_ON_GRADE> a "LOA" ;
+    ifc:classes "['IfcSlab']" ;
+    loa:CSI "A4010" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://A4020_STRUCTURAL_SLABS_ON_GRADE> a "LOA" ;
+    ifc:classes "['IfcSlab']" ;
+    loa:CSI "A4020" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://A40_SLABS_ON_GRADE> a "LOA" ;
+    ifc:classes "['IfcSlab']" ;
+    loa:CSI "A40" ;
+    loa:LOAm 20 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://A_SUBSTRUCTURE> a "LOA" ;
+    ifc:classes "['IfcFooting', 'IfcPile', 'IfcPlate']" ;
+    loa:CSI "A" ;
+    loa:LOAm 20 ;
+    loa:LOAr 20 ;
+    loa:validation "B" .
+
+<https://B1010_FLOOR_CONSTRUCTION> a "LOA" ;
+    ifc:classes "['IfcSlab']" ;
+    loa:CSI "B1010" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B1020_ROOF_CONSTRUCTION> a "LOA" ;
+    ifc:classes "['IfcRoof']" ;
+    loa:CSI "B1020" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B1080_STAIRS> a "LOA" ;
+    ifc:classes "['IfcRailing', 'IfcStair', 'IfcStairFlight']" ;
+    loa:CSI "B1080" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B10_SUPERSTRUCTURE> a "LOA" ;
+    ifc:classes "['IfcBuildingElement', 'IfcBuildingStorey', 'IfcSpace', 'IfcBuilding', 'IfcBuildingElementProxy', 'IfcSpatialZone']" ;
+    loa:CSI "B10" ;
+    loa:LOAm 20 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B2010_EXTERIOR_WALLS> a "LOA" ;
+    ifc:classes "['IfcWall', 'IfcCurtainWall', 'IfcWallStandardCase']" ;
+    loa:CSI "B2010" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B2020_EXTERIOR_WINDOWS> a "LOA" ;
+    ifc:classes "['IfcWindow']" ;
+    loa:CSI "B2020" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B2050_EXTERIOR_DOORS_AND_GRILLES> a "LOA" ;
+    ifc:classes "['IfcDoor']" ;
+    loa:CSI "B2050" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B2070_EXTERIOR_LOUVERS_AND_VENTS> a "LOA" ;
+    ifc:classes "['IfcBuildingElement']" ;
+    loa:CSI "B2070" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B2080_EXTERIOR_WALLS_AND_APPURTENANCES> a "LOA" ;
+    ifc:classes "['IfcWall', 'IfcCurtainWall', 'IfcWallStandardCase']" ;
+    loa:CSI "B2080" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B2090_EXTERIOR_WALLS_SPECIALTIES> a "LOA" ;
+    ifc:classes "['IfcWall', 'IfcCurtainWall', 'IfcWallStandardCase']" ;
+    loa:CSI "B2090" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B20_EXTERIOR_VERTICAL_ENCLOSURES> a "LOA" ;
+    ifc:classes "['IfcWall', 'IfcWindow', 'IfcDoor', 'IfcChimney', 'IfcCurtainWall', 'IfcWallStandardCase']" ;
+    loa:CSI "B20" ;
+    loa:LOAm 20 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B3010_ROOFING> a "LOA" ;
+    ifc:classes "['IfcRoof']" ;
+    loa:CSI "B3010" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B3020_ROOF_APPERURTENANCES> a "LOA" ;
+    ifc:classes "['IfcRoof']" ;
+    loa:CSI "B3020" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B3040_TRAFFIC_BEARING_HORIZONTAL_ENCLOSURES> a "LOA" ;
+    ifc:classes "['IfcSlab']" ;
+    loa:CSI "B3040" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B3060_HORIZONTAL_OPENINGS> a "LOA" ;
+    ifc:classes "['IfcOpening']" ;
+    loa:CSI "B3060" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B3080_OVERHEAD_EXTERIOR_ENCLOSURES> a "LOA" ;
+    ifc:classes "['IfcSlab', 'IfcCeiling', 'IfcCovering']" ;
+    loa:CSI "B3080" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B30_EXTERIOR_HORIZONTAL_ENCLOSURES> a "LOA" ;
+    ifc:classes "['IfcSlab', 'IfcRoof']" ;
+    loa:CSI "B30" ;
+    loa:LOAm 20 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://B_SHELL> a "LOA" ;
+    ifc:classes "['IfcBuildingElement', 'IfcSite', 'IfcRoof', 'IfcBuildingStorey', 'IfcSpace', 'IfcBuilding', 'IfcBuildingElementProxy', 'IfcSpatialZone', 'IfcExternalSpatialStructureElement']" ;
+    loa:CSI "B" ;
+    loa:LOAm 20 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C1010_INTERIOR_PARTITIONS> a "LOA" ;
+    ifc:classes "['IfcRoom', 'IfcSpace']" ;
+    loa:CSI "C1010" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C1020_INTERIOR_WINDOWS> a "LOA" ;
+    ifc:classes "['IfcWindow']" ;
+    loa:CSI "C1020" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C1030_INTERIOR_DOORS> a "LOA" ;
+    ifc:classes "['IfcDoor']" ;
+    loa:CSI "C1030" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C1040_INTERIOR_GRILLES_AND_GATES> a "LOA" ;
+    ifc:classes "['IfcFurniture']" ;
+    loa:CSI "C1040" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C1060_RAISED_FLOOR_CONSTRUCTION> a "LOA" ;
+    ifc:classes "['IfcSlab']" ;
+    loa:CSI "C1060" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C1070_SUSPENDED_CEILING_CONSTRUCTION> a "LOA" ;
+    ifc:classes "['IfcCeiling']" ;
+    loa:CSI "C1070" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C1090_INTERIOR_SPECIALTIES> a "LOA" ;
+    ifc:classes "['IfcFurniture']" ;
+    loa:CSI "C1090" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C10_INTERIOR_CONSTRUCTION> a "LOA" ;
+    ifc:classes "['IfcFurniture', 'IfcCeiling', 'IfcDoor', 'IfcWindow', 'IfcWall']" ;
+    loa:CSI "C10" ;
+    loa:LOAm 20 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C2010_WALL_FINISHES> a "LOA" ;
+    ifc:classes "['IfcWall', 'IfcCurtainWall']" ;
+    loa:CSI "C2010" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C2020_INTERIOR_FABRICATIONS> a "LOA" ;
+    ifc:classes "['IfcFurniture']" ;
+    loa:CSI "C2020" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C2030_FLOORING> a "LOA" ;
+    ifc:classes "['IfcSlab']" ;
+    loa:CSI "C2030" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C2040_STAIR_FINISHES> a "LOA" ;
+    ifc:classes "['IfcRailing']" ;
+    loa:CSI "C2040" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C2050_CEILING_FINISHES> a "LOA" ;
+    ifc:classes "['IfcCeiling']" ;
+    loa:CSI "C2050" ;
+    loa:LOAm 30 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C20_INTERIOR_FINISHES> a "LOA" ;
+    ifc:classes "['IfcFurniture']" ;
+    loa:CSI "C20" ;
+    loa:LOAm 20 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
+<https://C_INTERIORS> a "LOA" ;
+    ifc:classes "['IfcFurniture', 'IfcCeiling', 'IfcDoor', 'IfcWindow', 'IfcWall']" ;
+    loa:CSI "C" ;
+    loa:LOAm 20 ;
+    loa:LOAr 30 ;
+    loa:validation "B" .
+
