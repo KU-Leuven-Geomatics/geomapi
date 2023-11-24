@@ -16,9 +16,9 @@ Welcome to Geomapi's documentation!
    :maxdepth: 1
    :caption: Information:
 
-   information/getting started
+   information/Introduction
 
-   information/geomapi101
+   information/getting started
 
 .. toctree::
    :maxdepth: 1
