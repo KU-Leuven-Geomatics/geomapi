@@ -1,7 +1,7 @@
 ![geomapiLogo](docs/source/_static/geomapi_logo.png?width=64)
 
 # GEOMAPI
-In this work, an innovative toolbox is presented that bridges the gap between close-range sensing resources (point clouds, images) and BIM models for the AEC industry. 
+This innovative toolbox, developped by [KU Leuven Geomatics](https://iiw.kuleuven.be/onderzoek/geomatics), jointly processes close-range sensing resources (point clouds, images) and BIM models for the AEC industry. 
 More specifically, we combine [semantic web technologies](https://en.wikipedia.org/wiki/Semantic_Web) with state-of-the-art open source geomatics APIs
 to process and analyse big data in construction applications.
 
@@ -49,7 +49,7 @@ Meet the team behind this amazing API.
 - jelle.vermandere@kuleuven.be
 - sam.degeyter@kuleuven.be
 - heinder.dewinter@kuleuven.be
-![team](docs/source/_static/geomapi_team.png?width=64)
+![team](docs/source/_static/geomapi_team.PNG?width=64)
 
 ## Licensing
 The code in this project is licensed under MIT license.
