@@ -6,6 +6,12 @@
 Welcome to Geomapi's documentation!
 ===================================
 
+.. image:: \docs\pics\week23-uav4.PNG
+   :alt: Overview data
+   :width: 400px
+   :height: 300px
+   :align: center
+
 .. toctree::
    :maxdepth: 1
    :caption: Information:
