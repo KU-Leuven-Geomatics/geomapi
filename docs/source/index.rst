@@ -8,7 +8,7 @@ Welcome to Geomapi's documentation!
 
 .. image:: ../pics/week23-uav4.PNG
    :alt: Overview data
-   :width: 400px
+   :width: 800px
    :height: 300px
    :align: center
 
