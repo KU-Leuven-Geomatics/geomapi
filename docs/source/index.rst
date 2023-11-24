@@ -6,7 +6,7 @@
 Welcome to Geomapi's documentation!
 ===================================
 
-.. image:: \docs\pics\week23-uav4.PNG
+.. image:: ../pics/week23-uav4.PNG
    :alt: Overview data
    :width: 400px
    :height: 300px
@@ -16,7 +16,7 @@ Welcome to Geomapi's documentation!
    :maxdepth: 1
    :caption: Information:
 
-   information/Introduction
+   information/introduction
 
    information/getting started
 
