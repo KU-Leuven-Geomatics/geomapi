@@ -315,7 +315,7 @@ def remap_color_images_to_masks(images:List[np.array],colorList:np.array=None)->
 def project_meshes_to_rgbd_images (meshes:List[o3d.geometry.TriangleMesh], imgNodes:List[ImageNode], scale:float=1.0, fill_black:int=0)->Tuple[List[np.array],List[np.array]]:
     """Project a set of meshes given camera parameters.
 
-    .. image:: ../../../docs/pics/colosseum/Raycasting_6.PNG
+    .. image:: ../../../docs/pics/Raycasting_6.PNG
 
     Args:
         1.meshes (List[o3d.geometry.TriangleMesh]): set of TriangleMeshes.\n
@@ -386,7 +386,7 @@ def project_meshes_to_rgbd_images (meshes:List[o3d.geometry.TriangleMesh], imgNo
 def project_pcd_to_rgbd_images (pointClouds:List[o3d.geometry.Geometry], imgNodes:List[ImageNode], depth_max:float=15, fill_black:int=0)->Tuple[List[np.array],List[np.array]]:
     """Project a set of point cloud geometries given camera parameters. The given
 
-    .. image:: ../../../docs/pics/ractracing1.PNG
+    .. image:: ../../../docs/pics/rgbd.png
 
     Args:
         1.pointClouds (List[o3d.geometry.PointCloud]): set of o3d point clouds.\n
@@ -931,8 +931,9 @@ def determine_percentage_of_coverage(sources: List[o3d.geometry.TriangleMesh], r
     """Returns the Percentage-of-Coverage (PoC) of every source geometry when compared to a reference geometry. The PoC is defined as the ratio of points on the boundary surface of the source that lie within a Euclidean distance threshold hold of the reference geometry. sampled point cloud on the boundary surface of the sources with a resolution of e.g. 0.1m. \n
 
     .. math::
-        P_{i'}=\{ p|\forall p \in P_i : p_i \cap N\backslash  n_i \} 
-        c_i = \frac{|P_{i'}|}{|P_i|}
+        P_{i'} = \\{ p \mid \forall p \in P_i : p_i \cap N \backslash n_i \\}
+        c_i = \\frac{{|P_{i'}|}}{{|P_i|}}
+
     
     E.g. a mesh of a beam of which half the surface lies within 0.1m of a point cloud will have a PoC of 0.5.
     
