@@ -1,10 +1,9 @@
 ![geomapiLogo](docs/source/_static/geomapi_logo.png?width=64)
 
-# GeomAPI
-
-A joint API to standardize geomatic data storage and processing.
-Developed by the Geomatics research group at the KU Leuven 
-
+# GEOMAPI
+In this work, an innovative toolbox is presented that bridges the gap between close-range sensing resources (point clouds, images) and BIM models for the AEC industry. 
+More specifically, we combine [semantic web technologies](https://en.wikipedia.org/wiki/Semantic_Web) with state-of-the-art open source geomatics APIs
+to process and analyse big data in construction applications.
 
 ## Installation
 
@@ -34,6 +33,23 @@ newNode = Node()
 The master branch is protected and you can only make changes by submitting a merge request. 
 Please create a new branch if you would like to make changes and submit them for approval.
 
-## Licensing
+## Citation
+If you want to cite us, refer to the following publication (accepted). 
+```
+@article{geomapi,
+    title={Processing 3D data with semantic web technologies},
+    author={Bassier M., Vermandere J., De Geyter S. and De Winter H.},
+    booktitle={Automation in Construction},
+    year={2024}
+}
+```
+## TEAM
+Meet the team behind this amazing API.
+- maarten.bassier@kuleuven.be (PI)
+- jelle.vermandere@kuleuven.be
+- sam.degeyter@kuleuven.be
+- heinder.dewinter@kuleuven.be
+![team](docs/source/_static/geomapi_team.png?width=64)
 
+## Licensing
 The code in this project is licensed under MIT license.
