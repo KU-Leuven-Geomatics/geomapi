@@ -49,7 +49,7 @@ Meet the team behind this amazing API.
 - jelle.vermandere@kuleuven.be
 - sam.degeyter@kuleuven.be
 - heinder.dewinter@kuleuven.be
-![team](docs/source/_static/geomapi_team.png?width=64)
+![team](docs/source/_static/geomapi_team.PNG?width=64)
 
 ## Licensing
 The code in this project is licensed under MIT license.
