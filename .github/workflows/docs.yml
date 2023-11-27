@@ -11,7 +11,8 @@ jobs:
           pip install -r docs/docs_requirements.txt
       - name: Sphinx build
         run: |
-          sphinx-build docs/source _build
+          sphinx-apidoc -o ./docs/source/geomapi .\geomapi\ -e -t ./docs/source/_templates
+          sphinx-build -b html docs/source/ public/
       - name: Deploy
         uses: peaceiris/actions-gh-pages@v3
         if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
