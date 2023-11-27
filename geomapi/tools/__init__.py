@@ -553,10 +553,11 @@ def ifc_to_nodes(ifcPath:str, classes:str='.IfcBuildingElement',getResource : bo
 
     **WARNING**: IfcOpenShell strugles with some ifc serializations. In our experience, IFC4 serializations is more robust.
 
-    .. image:: ../docs/pics/ifc_inheritance.PNG
+    .. image:: ../../../docs/pics/ifc_inheritance.PNG
+
 
     Args:
-        1. ifcPath (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
+        1. ifcPath (string):  absolute ifc file path e.g. "D:/myifc.ifc"\n
         2. classes (string, optional): ifcClasses seperated by | e.g. '.IfcBeam | .IfcColumn '#'.IfcWall | .IfcSlab | .IfcBeam | .IfcColumn | .IfcStair | .IfcWindow | .IfcDoor'. Defaults to '.IfcBuildingElement'.   
     
     Raises:
@@ -581,7 +582,7 @@ def ifc_to_nodes_by_guids(ifcPath:str, guids:list,getResource : bool=True,**kwar
     """
     Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
 
-    .. image:: ../docs/pics/ifc_inheritance.PNG
+    .. image:: ../../../docs/pics/ifc_inheritance.PNG
 
     Args:
         1. ifcPath (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
@@ -610,7 +611,7 @@ def ifc_to_nodes_by_type(ifcPath:str, types:list=['IfcBuildingElement'],getResou
 
     **WARNING**: IfcOpenShell strugles with some ifc serializations. In our experience, IFC4 serializations is more robust.
 
-    .. image:: ../docs/pics/ifc_inheritance.PNG
+    .. image:: ../../../docs/pics/ifc_inheritance.PNG
 
     Args:
         1. ifcPath (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
@@ -717,7 +718,7 @@ def ifc_to_nodes_multiprocessing(ifcPath:str, **kwargs)-> List[BIMNode]:
 def select_nodes_k_nearest_neighbors(node:Node,nodelist:List[Node],k:int=10) -> Tuple[List [Node], o3d.utility.DoubleVector]:
     """ Select k nearest nodes based on Euclidean distance between centroids.\n
 
-    .. image:: ../docs/pics/selection_k_nearest.PNG
+    .. image:: ../../../docs/pics/selection_k_nearest.PNG
 
     Args:
         0. node (Node): node to search from\n
@@ -799,7 +800,7 @@ def create_selection_box_from_image_boundary_points(n:ImageNode,roi:Tuple[int,in
 def select_nodes_with_centers_in_radius(node:Node,nodelist:List[Node],r:float=0.5) -> Tuple[List [Node] ,List[float]]:
     """Select nodes within radius of the node centroid based on Euclidean distance between node centroids.\n
 
-    .. image:: ../docs/pics/selection_radius_nearest.PNG
+    .. image:: ../../../docs/pics/selection_radius_nearest.PNG
     
     Args:
         0. node (Node): node to search from\n
@@ -842,7 +843,7 @@ def select_nodes_with_centers_in_radius(node:Node,nodelist:List[Node],r:float=0.
 def select_nodes_with_centers_in_bounding_box(node:Node,nodelist:List[Node],u:float=0.5,v:float=0.5,w:float=0.5) -> List [Node]: 
     """Select the nodes of which the center lies within the oriented Bounding Box of the source node given an offset.\n
 
-    .. image:: ../docs/pics/selection_box_inliers.PNG
+    .. image:: ../../../docs/pics/selection_box_inliers.PNG
     
     Args:
         0. node (Node): source Node \n
@@ -881,7 +882,7 @@ def select_nodes_with_centers_in_bounding_box(node:Node,nodelist:List[Node],u:fl
 def select_nodes_with_bounding_points_in_bounding_box(node:Node,nodelist:List[Node],u:float=0.5,v:float=0.5,w:float=0.5) -> List [Node]: 
     """Select the nodes of which atleast one of the bounding points lies within the oriented Bounding Box of the source node given an offset.\n
 
-    .. image:: ../docs/pics/selection_BB_intersection.PNG
+    .. image:: ../../../docs/pics/selection_BB_intersection.PNG
     
     Args:
         0. node (Node): source Node \n
@@ -914,7 +915,7 @@ def select_nodes_with_bounding_points_in_bounding_box(node:Node,nodelist:List[No
 def select_nodes_with_intersecting_bounding_box(node:Node,nodelist:List[Node],u:float=0.5,v:float=0.5,w:float=0.5) -> List [Node]: 
     """Select the nodes of which the bounding boxes intersect.\n
 
-    .. image:: ../docs/pics/selection_BB_intersection2.PNG
+    .. image:: ../../../docs/pics/selection_BB_intersection2.PNG
 
     Args:
         0. node (Node): source Node \n
@@ -950,7 +951,7 @@ def select_nodes_with_intersecting_resources(node:Node,nodelist:List[Node]) -> L
     For PointCloudNodes, the convex hull is used.\n
     For ImageNodes, a virtual mesh cone is used with respect to the field of view.\n
 
-    .. image:: ../docs/pics/collision_5.PNG
+    .. image:: ../../../docs/pics/collision_5.PNG
 
     Args:
         0. node (Node): source Node \n

@@ -427,9 +427,8 @@ def get_indices_in_hull(points : np.ndarray, hull :np.ndarray) -> List[int]:
     """Get the indices of all the points that are inside the hull.\n
 
     Args:
-        1. points (numpy.array): should be a `NxK` coordinates of `N` points in `K` dimensions.\n
-        2. hull (np.array): is either a scipy.spatial.Delaunay object or the `MxK` array of the 
-        coordinates of `M` points in `K`dimensions for which Delaunay triangulation will be computed
+        1. points (numpy.array): should be a NxK coordinates of N points in K dimensions.\n
+        2. hull (np.array): is either a scipy.spatial.Delaunay object or the MxK array of the coordinates of M points in K dimensions for which Delaunay triangulation will be computed.
 
     Returns:
         List[int]: The indices of the points that are in the hull.
@@ -442,7 +441,7 @@ def get_indices_in_hull(points : np.ndarray, hull :np.ndarray) -> List[int]:
         if ind[i]:
             intList.append(i)
     return intList
-# NOTE tsis is just cropping
+
 def get_points_in_hull(geometry : o3d.geometry.PointCloud, hull: o3d.geometry.TriangleMesh) -> Tuple[o3d.geometry.PointCloud,o3d.geometry.PointCloud]:
     """Separates a geometry in points inside and outside a convex hull.\n
     
@@ -461,8 +460,7 @@ def get_points_in_hull(geometry : o3d.geometry.PointCloud, hull: o3d.geometry.Tr
     return pcdInHull, pcdOutHull
 
 def get_mesh_representation(geometry:o3d.geometry.Geometry)->o3d.geometry.TriangleMesh:
-    """Returns the mesh representation of an o3d.geometry.TriangleMesh or o3d.geometry.PointCloud.\n
-    Returns the convex hull if point cloud.
+    """Returns the mesh representation of an o3d.geometry.TriangleMesh or o3d.geometry.PointCloud. Returns the convex hull if point cloud.
 
     Args:
         geometry (o3d.geometry.TriangleMesh or o3d.geometry.PointCloud)\n.
@@ -527,7 +525,7 @@ def rays_to_points(rays:np.ndarray,distances:np.ndarray=np.array([1.0])) -> Tupl
 def project_meshes_to_rgbd_images (meshes:List[o3d.geometry.TriangleMesh], extrinsics: List[np.array],intrinsics:List[np.array], scale:float=1.0, fill_black:int=0)->Tuple[List[np.array],List[np.array]]:
     """Project a set of meshes given camera parameters.
 
-    .. image:: ../../../docs/pics/colosseum/Raycasting_6.PNG
+    .. image:: ../../../docs/pics/Raycasting_6.PNG
 
     Args:
         1.meshes (List[o3d.geometry.TriangleMesh]): set of TriangleMeshes.\n
@@ -1762,8 +1760,8 @@ def octree_to_voxelmesh(octree:o3d.geometry.Octree)-> o3d.geometry.TriangleMesh:
 def voxelgrid_to_mesh(voxel_grid:o3d.geometry.VoxelGrid,voxel_size:float=0.4,colorArray:np.array=None)-> o3d.geometry.TriangleMesh:
     """Create a TriangleMesh from a voxelGrid.
     
-    .. image:: ../../../docs/pics/colosseum/pcd2.PNG
-    .. image:: ../../../docs/pics/colosseum/voxelgrid_1.PNG
+    .. image:: ../../../docs/pics/pcd2.PNG
+    .. image:: ../../../docs/pics/voxelgrid_1.PNG
     
     Args:
         voxel_grid (o3d.geometry.VoxelGrid):
@@ -2247,8 +2245,8 @@ def las_get_data(las,indices:np.ndarray=None,excludedList:List[str]=None)->np.nd
         las (laspy.Laspy): point cloud to extract the data from
         indices (np.ndarray): array with indices to extract
         excludedList (List[str], optional): List with point fields to exlude. []'X', 'Y', 'Z','red', 'green', 'blue'] should be removed as they are automatically assigned if present. Other values that are excluded are ['X', 'Y', 'Z','red', 'green', 'blue','return_number', 'number_of_returns', 'synthetic', 'key_point', 
-                'withheld', 'overlap', 'scanner_channel', 'scan_direction_flag', 
-                'edge_of_flight_line', 'user_data', 'scan_angle', 'point_source_id', 'gps_time'].
+            'withheld', 'overlap', 'scanner_channel', 'scan_direction_flag', 
+            'edge_of_flight_line', 'user_data', 'scan_angle', 'point_source_id', 'gps_time'].
 
     Returns:
         np.array (points,colors, user_defined_values)

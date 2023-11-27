@@ -1,1 +1,70 @@
+@prefix e57: <http://libe57.org#> .
+@prefix openlabel: <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#> .
+@prefix v4d: <https://w3id.org/v4d/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<file:///9168ed06-8a0f-11ee-8f8c-c8f75043ce59> a v4d:PointCloudNode ;
+    e57:cartesianBounds "[17.3546047  79.30335237 25.06703757 71.94173431  0.8257088  13.71724795]" ;
+    e57:cartesianTransform """[[ 1.          0.          0.         47.46905146]
+ [ 0.          1.          0.         55.46209034]
+ [ 0.          0.          1.          4.59251225]
+ [ 0.          0.          0.          1.        ]]""" ;
+    e57:e57Index 0 ;
+    e57:pointCount 556485 ;
+    v4d:name "9168ed06-8a0f-11ee-8f8c-c8f75043ce59" ;
+    v4d:orientedBounds """[[21.52877259 20.01787334  0.4429781 ]
+ [81.19273019 26.58221716 -1.56053248]
+ [16.23679802 68.50463813  1.71257379]
+ [22.02132797 19.71365488 14.11438508]
+ [76.39331099 74.76476349 13.3804702 ]
+ [16.7293534  68.20041967 15.38398077]
+ [81.68528557 26.2779987  12.1108745 ]
+ [75.90075562 75.06898195 -0.29093678]]""" .
+
+<file:///academiestraat_week_22_19> a v4d:PointCloudNode ;
+    e57:cartesianBounds """[-2.83604126e+01  5.53711433e+01  5.41933060e+01  1.07839798e+02
+  6.43587112e-03  1.11153946e+01]""" ;
+    e57:cartesianTransform """[[ 9.41956643e-01  3.35629898e-01  8.38182635e-03  4.52469539e+00]
+ [-3.35667307e-01  9.41974081e-01  3.50574413e-03  8.06594036e+01]
+ [-6.71883063e-03 -6.11576404e-03  9.99958727e-01  4.73435675e+00]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]""" ;
+    e57:e57Index 0 ;
+    e57:pointCount 625414 ;
+    v4d:name "academiestraat week 22 19" ;
+    v4d:path "..\\pcd\\lidar.e57" ;
+    openlabel:timestamp "2023-11-23T15:10:19" .
+
+<file:///lidar> a v4d:PointCloudNode ;
+    e57:e57Index 0 ;
+    v4d:name "lidar" ;
+    v4d:path "..\\pcd\\lidar.xml" ;
+    openlabel:timestamp "2023-11-23T15:10:19" .
+
+<file:///parking> a v4d:PointCloudNode ;
+    e57:cartesianBounds "[17.38922501 79.04823303 38.1408577  71.8666153   0.8287577   9.90541553]" ;
+    e57:cartesianTransform """[[ 1.          0.          0.         47.46935912]
+ [ 0.          1.          0.         55.46003894]
+ [ 0.          0.          1.          4.59512571]
+ [ 0.          0.          0.          1.        ]]""" ;
+    e57:e57Index 0 ;
+    e57:pointCount 55648 ;
+    v4d:name "parking" ;
+    v4d:orientedBounds """[[19.031228   78.85752965 12.51335747]
+ [82.51981999 70.21753381 10.08902663]
+ [14.29439273 44.35339839 11.4328731 ]
+ [18.6900821  79.22515428  2.26923262]
+ [77.44183883 36.0810272  -1.23558259]
+ [13.95324684 44.72102303  1.18874825]
+ [82.1786741  70.58515845 -0.15509822]
+ [77.78298472 35.71340256  9.00854226]]""" ;
+    v4d:path "..\\pcd\\parking.pcd" ;
+    openlabel:timestamp "2023-11-23T15:10:19" .
+
+<file:///week23_uav_no_labels.las.subsampled.remaining.segmented.subsampled.segmented.subsampled> a v4d:PointCloudNode ;
+    e57:cartesianBounds "[17.35460472 79.30335236 25.06703758 71.94173431  0.82570881 13.71724796]" ;
+    e57:e57Index 0 ;
+    e57:pointCount 556485 ;
+    v4d:name "week23_uav_no_labels.las.subsampled.remaining.segmented.subsampled.segmented.subsampled" ;
+    v4d:path "..\\pcd\\parking.e57" ;
+    openlabel:timestamp "2023-11-23T15:10:19" .
 

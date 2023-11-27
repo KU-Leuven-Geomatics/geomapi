@@ -1,5 +1,5 @@
 geomapi.tools.combinationtools
-=============================
+==============================
 
 
 .. automodule:: geomapi.tools.combinationtools

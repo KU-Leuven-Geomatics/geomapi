@@ -65,7 +65,9 @@ autodoc_mock_imports = [
     "mpl_toolkits",
     "fcl",
     "osgeo",
-    "sklearn"
+    "sklearn",
+    "ezdxf",
+    "numpy-quaternion"
     ]
 autodoc_default_options = {
     'members': True,

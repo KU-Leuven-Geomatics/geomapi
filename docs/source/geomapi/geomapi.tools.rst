@@ -6,7 +6,9 @@ geomapi.tools
    :maxdepth: 4
 
    geomapi.tools.alignmenttools
-   geomapi.tools.completiontools
+   geomapi.tools.combinationtools
+   geomapi.tools.inspectiontools
+   geomapi.tools.machinelearningtools
    geomapi.tools.progresstools
    geomapi.tools.validationtools
 
