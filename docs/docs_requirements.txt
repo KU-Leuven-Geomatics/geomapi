@@ -1,4 +1,7 @@
 sphinx
+numpy 
+numpy-quaternion
 sphinx_rtd_theme
 myst_nb
+myst_parser
 jupyter
