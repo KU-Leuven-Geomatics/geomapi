@@ -67,7 +67,8 @@ autodoc_mock_imports = [
     "osgeo",
     "sklearn",
     "ezdxf",
-    "numpy-quaternion"
+    "numpy-quaternion",
+    "pandas"
     ]
 autodoc_default_options = {
     'members': True,
