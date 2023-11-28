@@ -6,3 +6,4 @@ myst_nb
 myst_parser
 jupyter
 laspy
+colour
