@@ -14,70 +14,29 @@ import rdflib
 from geomapi.nodes import *
 from rdflib import RDF, RDFS, Graph, Literal, URIRef
 
+from tests.data_loader import DataLoader
+
+
+
+
+
+
+
 class TestNode(unittest.TestCase):
+    
+    
+    
 
 ################################## SETUP/TEARDOWN CLASS ######################
-
-
     @classmethod
     def setUpClass(cls):
         #execute once before all tests
         print('-----------------Setup Class----------------------')
         st = time.time()
-        cls.path= Path.cwd() / "tests" / "testfiles"  
 
-        #ONTOLOGIES
-        cls.exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#')
-        cls.geo=rdflib.Namespace('http://www.opengis.net/ont/geosparql#') #coordinate system information
-        cls.gom=rdflib.Namespace('https://w3id.org/gom#') # geometry representations => this is from mathias
-        cls.omg=rdflib.Namespace('https://w3id.org/omg#') # geometry relations
-        cls.fog=rdflib.Namespace('https://w3id.org/fog#')
-        cls.v4d=rdflib.Namespace('https://w3id.org/v4d/core#')
-        cls.openlabel=rdflib.Namespace('https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#')
-        cls.e57=rdflib.Namespace('http://libe57.org#')
-        cls.xcr=rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-        cls.ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')
-
-        #GRAPH 1
-        cls.graphPath1=cls.path / 'graphs' / 'parking_ifc_graph.ttl'
-        cls.graph1=Graph().parse(cls.graphPath1)
-
-        #GRAPH 2
-        cls.graphPath2=cls.path /  'graphs' / 'resource_graph.ttl'
-        cls.graph2=Graph().parse(cls.graphPath2)
-
-        #GRAPH 3
-        cls.graphPath3=cls.path / 'graphs' /  'pcd_graph.ttl'
-        cls.graph3=Graph().parse(cls.graphPath3)
-
-        #GRAPH 4
-        cls.graphPath4=cls.path / 'graphs' /  'mesh_graph.ttl'
-        cls.graph4=Graph().parse(cls.graphPath4)
-        
-        # #GRAPH 5
-        # cls.graphPath5=cls.path / 'imgGraph.ttl'
-        # cls.graph5=Graph().parse(cls.graphPath5)
-                
-        #POINTCLOUD
-        cls.pcdPath=cls.path / 'pcd'/"parking.pcd"
-        cls.e57Path=cls.path / 'pcd'/"parking.e57"
-        
-        #MESH
-        cls.meshPath=cls.path / 'mesh'/"parking.obj"
-    
-        #IMG
-        cls.image1Path=cls.path / "img" / "IMG_8834.JPG"  
-
-        #RESOURCES
-        cls.resourcePath= cls.path / "resources"
-        if not os.path.exists(cls.resourcePath):
-            os.mkdir(cls.resourcePath)
-        
-        #FILES
-        # cls.files=ut.get_list_of_files(os.getcwd())
-        # cls.files+=ut.get_list_of_files(cls.path)
-        cls.files=ut.get_list_of_files(cls.path)
-        
+        cls.data_loader = DataLoader()
+        assert cls.data_loader.times_loaded == 1, 'some message'
+      
         #TIME TRACKING           
         et = time.time()
         print("startup time: "+str(et - st))
@@ -86,12 +45,16 @@ class TestNode(unittest.TestCase):
 
     @classmethod
     def tearDownClass(cls):
-        if os.path.exists(cls.resourcePath):
-            shutil.rmtree(cls.resourcePath)  
         #execute once after all tests
+        if os.path.exists(cls.data_loader.resourcePath):
+            shutil.rmtree(cls.data_loader.resourcePath)  
         print('-----------------TearDown Class----------------------')
+        
+        
+        
+        
+        
 ################################## SETUP/TEARDOWN ######################
-
     def setUp(self):
         #execute before every test
         self.startTime = time.time()   
@@ -100,8 +63,12 @@ class TestNode(unittest.TestCase):
         #execute after every test
         t = time.time() - self.startTime
         print('{:50s} {:5s} '.format(self._testMethodName,str(t)))
-################################## TEST FUNCTIONS ######################
+        
+        
+        
+        
 
+################################## TEST FUNCTIONS ######################
     def test_node_creation_with_subject(self):
         node=Node()
         node.subject=None
@@ -141,60 +108,60 @@ class TestNode(unittest.TestCase):
         attribute=URIRef('myAttribute1')
         node= Node('node',attribute=attribute)
         self.assertEqual(node.attribute,attribute)
+        
+        self.assertEqual(self.data_loader.times_loaded,1)
+
 
     def test_node_creation_from_different_graphs(self):  
         
         #graph3
-        graph=self.graph3
+        graph=self.data_loader.graph3
         subject=next(graph.subjects(RDF.type))
         graph=ut.get_subject_graph(graph,subject)
-        node= Node(graph=graph,graphPath=self.graphPath3)
+        node= Node(graph=graph,graphPath=self.data_loader.graphPath3)
         self.assertEqual(node.subject.toPython(),subject.toPython())
         
         #graph2
-        graph=self.graph2
+        graph=self.data_loader.graph2
         subject=next(graph.subjects(RDF.type))
         graph=ut.get_subject_graph(graph,subject)
-        node= Node(graph=graph,graphPath=self.graphPath2)
+        node= Node(graph=graph,graphPath=self.data_loader.graphPath2)
         self.assertEqual(node.subject.toPython(),subject.toPython())
 
     def test_node_creation_from_graphs_with_wrong_subject(self):   
-        self.assertRaises(ValueError,Node,subject='myNode',graph=self.graph3)
-
-    def test_node_creation_from_graphpath_with_wrong_subject(self): 
-        self.assertRaises(ValueError,Node,subject='qsdsfqsdfq',graphPath=self.graphPath3)
+        self.assertRaises(ValueError,Node,subject='myNode',graph=self.data_loader.graph3)
 
     def test_node_creation_from_graphPaths(self):    
         #normal graphPath
-        node= Node(graphPath=self.graphPath1)
-        self.assertTrue(node.graphPath in self.files)
+        node= Node(graphPath=self.data_loader.graphPath1)
+        self.assertTrue(node.graphPath in self.data_loader.files)
 
         #path nonexisting
-        node= Node(graphPath=os.path.join(self.path,'qsdf.ttl'))
+        node= Node(graphPath=os.path.join(self.data_loader.path,'qsdf.ttl'))
         self.assertIsNotNone(node.graphPath)
 
         #invalid path
-        self.assertRaises(ValueError,Node,graphPath=os.path.join(self.path,'qsdf.qdf'))
+        self.assertRaises(ValueError,Node,graphPath=os.path.join(self.data_loader.path,'qsdf.qdf'))
 
         #graph4
-        graph=self.graph4
-        graphPath=self.graphPath4
+        graph=self.data_loader.graph4
+        graphPath=self.data_loader.graphPath4
         subject=next(graph.subjects(RDF.type))        
         node= Node(graphPath=graphPath)
         self.assertEqual(node.subject.toPython(),subject.toPython())
         
         #graph2
-        graph=self.graph2
-        graphPath=self.graphPath2
+        graph=self.data_loader.graph2
+        graphPath=self.data_loader.graphPath2
         subject=next(graph.subjects(RDF.type))
         node= Node(graphPath=graphPath,subject=subject)
         self.assertEqual(node.subject.toPython(),subject.toPython())
 
     def test_get_metadata_from_graph(self):  
         #single graph
-        subject=next(self.graph2.subjects(RDF.type))
-        graph=ut.get_subject_graph(self.graph2,subject)    
-        node= Node(graph=graph,graphPath=self.graphPath2)
+        subject=next(self.data_loader.graph2.subjects(RDF.type))
+        graph=ut.get_subject_graph(self.data_loader.graph2,subject)    
+        node= Node(graph=graph,graphPath=self.data_loader.graphPath2)
         node.get_metadata_from_graph(node.graph,node.subject)
         if getattr(node,'cartesianBounds',None) is not None:
             self.assertEqual(node.subject.toPython(),subject.toPython())
@@ -209,8 +176,8 @@ class TestNode(unittest.TestCase):
             self.assertIsInstance(node.orientedBoundingBox,o3d.geometry.OrientedBoundingBox)
 
         #big graph
-        subject=next(self.graph3.subjects(RDF.type))
-        node= Node(graph=self.graph3, subject=subject,graphPath=self.graphPath3)
+        subject=next(self.data_loader.graph3.subjects(RDF.type))
+        node= Node(graph=self.data_loader.graph3, subject=subject,graphPath=self.data_loader.graphPath3)
         node.get_metadata_from_graph(node.graph,node.subject)
         self.assertEqual(node.subject.toPython(),subject.toPython())
         if getattr(node,'cartesianBounds',None) is not None:
@@ -232,8 +199,8 @@ class TestNode(unittest.TestCase):
         self.assertEqual(node.get_name(),'myN<<<ame')
 
         #path
-        node= Node(path=self.pcdPath)
-        self.assertEqual(node.get_name(),ut.get_filename(self.pcdPath))
+        node= Node(path=self.data_loader.pcdPath)
+        self.assertEqual(node.get_name(),ut.get_filename(self.data_loader.pcdPath))
 
         #subject
         node= Node('node')
@@ -257,13 +224,13 @@ class TestNode(unittest.TestCase):
         self.assertIsNone(node.graph)
 
         #graph
-        node=Node(graph=self.graph3)
+        node=Node(graph=self.data_loader.graph3)
         print(node.graph)
-        self.assertLess(len(node.get_graph()),len(self.graph3))
+        self.assertLess(len(node.get_graph()),len(self.data_loader.graph3))
 
         #real graphPath
-        node=Node(graphPath=self.graphPath3)
-        self.assertLess(len(node.get_graph()),len(self.graph3))
+        node=Node(graphPath=self.data_loader.graphPath3)
+        self.assertLess(len(node.get_graph()),len(self.data_loader.graph3))
 
         #graphPath non existent
         node=Node(graphPath='myNewGraphPath.ttl')
@@ -280,12 +247,12 @@ class TestNode(unittest.TestCase):
         self.assertEqual(node.get_timestamp(),time)
 
         #path
-        node=Node(path=self.pcdPath)
-        self.assertEqual(node.get_timestamp(),ut.get_timestamp(self.pcdPath))
+        node=Node(path=self.data_loader.pcdPath)
+        self.assertEqual(node.get_timestamp(),ut.get_timestamp(self.data_loader.pcdPath))
 
         #graphPath
-        node=Node(graphPath=self.graphPath2)
-        object=self.graph2.value(next(s for s in self.graph2.subjects(RDF.type)),self.openlabel['timestamp'])
+        node=Node(graphPath=self.data_loader.graphPath2)
+        object=self.data_loader.graph2.value(next(s for s in self.data_loader.graph2.subjects(RDF.type)),self.data_loader.openlabel['timestamp'])
         self.assertEqual(node.get_timestamp(),object.toPython())
 
     def test_get_subject(self):
@@ -303,13 +270,13 @@ class TestNode(unittest.TestCase):
         self.assertEqual(node.subject,URIRef('file:///my_Nod_e'))
 
         #graph
-        s=next(self.graph2.subjects(RDF.type))
-        node=Node(graph=self.graph2)
+        s=next(self.data_loader.graph2.subjects(RDF.type))
+        node=Node(graph=self.data_loader.graph2)
         self.assertEqual(node.get_subject(),s)
 
         #path
-        node=Node(path=self.pcdPath)
-        self.assertEqual(node.get_subject(),URIRef('file:///'+ut.validate_string(ut.get_filename(self.pcdPath))))
+        node=Node(path=self.data_loader.pcdPath)
+        self.assertEqual(node.get_subject(),URIRef('file:///'+ut.validate_string(ut.get_filename(self.data_loader.pcdPath))))
 
     def test_get_path(self): 
         #empty
@@ -317,16 +284,16 @@ class TestNode(unittest.TestCase):
         self.assertIsNone(node.path)
 
         #path  
-        node=Node(path=self.pcdPath)
-        self.assertEqual(node.path,self.pcdPath.as_posix())
+        node=Node(path=self.data_loader.pcdPath)
+        self.assertEqual(node.path,self.data_loader.pcdPath.as_posix())
 
         #no path  -> cwd()
         node=Node()
         self.assertIsNone(node.get_path())
 
         #graphPath 
-        node=Node(graphPath=self.graphPath2)
-        testPath=node.graph.value(node.subject,self.v4d['path'].toPython())
+        node=Node(graphPath=self.data_loader.graphPath2)
+        testPath=node.graph.value(node.subject,self.data_loader.v4d['path'].toPython())
         self.assertIsNotNone(node.get_path(), testPath)
 
     def test_to_graph(self):
@@ -338,45 +305,45 @@ class TestNode(unittest.TestCase):
 
         #subject and kwargs
         attribute='myAttribute'
-        v4d=rdflib.Namespace('https://w3id.org/v4d/core#')
+        # v4d=rdflib.Namespace('https://w3id.org/v4d/core#')
         node=Node(subject=URIRef('node'),attribute=attribute)
         graph=node.to_graph()
         subject=next(graph.subjects(RDF.type))
         self.assertEqual(subject,node.subject)
-        object=next(node.graph.objects(subject,v4d['attribute']))
+        object=next(node.graph.objects(subject,self.data_loader.v4d['attribute']))
         self.assertEqual(object.toPython(),attribute)
 
     def test_to_graph_with_paths(self):
         #graphPath should be None
-        node=Node(graphPath=self.graphPath1)
+        node=Node(graphPath=self.data_loader.graphPath1)
         node.to_graph()
-        testPath=node.graph.value(node.subject,self.v4d['graphPath'])
+        testPath=node.graph.value(node.subject,self.data_loader.v4d['graphPath'])
         self.assertIsNone(testPath)
 
         #paths should be shortened
-        resourcePath=os.path.join(self.path,'resources','parking.obj')
-        node=Node(graphPath=self.graphPath3)
+        resourcePath=os.path.join(self.data_loader.path,'resources','parking.obj')
+        node=Node(graphPath=self.data_loader.graphPath3)
         node.path=resourcePath
         node.to_graph()
-        testPath=node.graph.value(node.subject,self.v4d['path']).toPython()
+        testPath=node.graph.value(node.subject,self.data_loader.v4d['path']).toPython()
         self.assertEqual(testPath,os.path.join('..','resources','parking.obj'))
 
     def test_to_graph_with_save(self):
         #test save
-        testPath=os.path.join(self.resourcePath,'graph3.ttl')
-        node=Node(graph=self.graph3)
+        testPath=os.path.join(self.data_loader.resourcePath,'graph3.ttl')
+        node=Node(graph=self.data_loader.graph3)
         node.to_graph(graphPath=testPath,save=True)        
         self.assertTrue(os.path.exists(testPath))
         newGraph=Graph().parse(testPath)
         self.assertEqual(len(newGraph),len(node.graph))
 
         #test invalid save
-        testPath=os.path.join(self.path,'resources','graph3.sdfqlkbjdqsf')
-        node=Node(graph=self.graph3)
+        testPath=os.path.join(self.data_loader.path,'resources','graph3.sdfqlkbjdqsf')
+        node=Node(graph=self.data_loader.graph3)
         self.assertRaises(ValueError,node.to_graph,testPath,save=True)
 
     def test_save_graph(self):
-        tempGraphPath=os.path.join(self.resourcePath,'node.ttl')
+        tempGraphPath=os.path.join(self.data_loader.resourcePath,'node.ttl')
 
         #node with only subject
         subject='node'
@@ -386,14 +353,14 @@ class TestNode(unittest.TestCase):
         self.assertEqual(node.subject.toPython(),testnode.subject.toPython())
 
         #node with a graph and some kwargs
-        node= Node(graph=self.graph3,myNewRemark='myNewRemark')        
+        node= Node(graph=self.data_loader.graph3,myNewRemark='myNewRemark')        
         node.to_graph(tempGraphPath,save=True)
         testnode=Node(graphPath=tempGraphPath)
         self.assertEqual(node.subject.toPython(),testnode.subject.toPython())
 
         #node with a graph and a subject and some change    
-        subject=next(self.graph2.subjects(RDF.type))
-        node= Node(graph=self.graph2,graphPath=self.graphPath2,subject=subject)  
+        subject=next(self.data_loader.graph2.subjects(RDF.type))
+        node= Node(graph=self.data_loader.graph2,graphPath=self.data_loader.graphPath2,subject=subject)  
         node.pointCount=1000
         node.to_graph(tempGraphPath,save=True)
         testnode=Node(graphPath=tempGraphPath)
@@ -401,8 +368,8 @@ class TestNode(unittest.TestCase):
         self.assertEqual(node.pointCount,testnode.pointCount)
 
         #node with a graph, a graphPath and a subject and another change
-        subject=next(self.graph2.subjects(RDF.type))
-        node= Node(graph=self.graph2,graphPath=self.graphPath2,subject=subject)  
+        subject=next(self.data_loader.graph2.subjects(RDF.type))
+        node= Node(graph=self.data_loader.graph2,graphPath=self.data_loader.graphPath2,subject=subject)  
         node.cartesianTransform=np.array([[1,2,3,4],
                                         [1,2,3,4],
                                         [1,2,3,4],
