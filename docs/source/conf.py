@@ -68,7 +68,8 @@ autodoc_mock_imports = [
     "sklearn",
     "ezdxf",
     "numpy-quaternion",
-    "pandas"
+    "pandas",
+    "laspy"
     ]
 autodoc_default_options = {
     'members': True,
