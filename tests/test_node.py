@@ -157,7 +157,7 @@ class TestNode(unittest.TestCase):
         
         #graph2
         graph=self.dataLoader.pcdGraph
-        graphPath=self.dataLoader.pcdGraphpath
+        graphPath=self.dataLoader.pcdGraphPath
         subject=next(graph.subjects(RDF.type))
         node= Node(graphPath=graphPath,subject=subject)
         self.assertEqual(node.subject.toPython(),subject.toPython())
@@ -219,7 +219,7 @@ class TestNode(unittest.TestCase):
         self.assertLess(len(node.get_graph()),len(self.dataLoader.pcdGraph))
 
         #real graphPath
-        node=Node(graphPath=self.dataLoader.pcdGraphpath)
+        node=Node(graphPath=self.dataLoader.pcdGraphPath)
         self.assertLess(len(node.get_graph()),len(self.dataLoader.pcdGraph))
 
         #graphPath non existent
@@ -305,7 +305,7 @@ class TestNode(unittest.TestCase):
 
     def test_to_graph_with_paths(self):
         #graphPath should be None
-        node=Node(graphPath=self.dataLoader.pcdGraphpath)
+        node=Node(graphPath=self.dataLoader.pcdGraphPath)
         node.to_graph()
         testPath=node.graph.value(node.subject,self.dataLoader.v4d['graphPath'])
         self.assertIsNone(testPath)
@@ -350,7 +350,7 @@ class TestNode(unittest.TestCase):
 
         #node with a graph and a subject and some change    
         subject=next(self.dataLoader.pcdGraph.subjects(RDF.type))
-        node= Node(graph=self.dataLoader.pcdGraph,graphPath=self.dataLoader.pcdGraphpath,subject=subject)  
+        node= Node(graph=self.dataLoader.pcdGraph,graphPath=self.dataLoader.pcdGraphPath,subject=subject)  
         node.pointCount=1000
         node.to_graph(tempGraphPath,save=True)
         testnode=Node(graphPath=tempGraphPath)

@@ -89,7 +89,6 @@ class TestUtils(unittest.TestCase):
 
     def test_cartesianTransform_to_literal(self):
         literal=ut.cartesianTransform_to_literal(self.dataLoaderParking.imageCartesianTransform1)
-        print(literal)
         self.assertTrue('-8.13902571e-02' in literal)
        
     def test_check_if_uri_exists(self):
