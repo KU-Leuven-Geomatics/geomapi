@@ -24,6 +24,7 @@ import geomapi.tools as tl
 from geomapi.nodes import *
 
 #DATA
+sys.path.append(current_dir)
 from data_loader_parking import DataLoaderParking
 from data_loader_road import DataLoaderRoad
 
