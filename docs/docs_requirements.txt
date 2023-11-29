@@ -7,3 +7,4 @@ myst_parser
 jupyter
 laspy
 colour
+ezdxf
