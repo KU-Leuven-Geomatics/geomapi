@@ -2,4 +2,7 @@
 # python -m pytest
 # This will autodiscover all test files and run them
 
-from .data_loader import DataLoader
+from .data_loader_parking import DataLoaderParking
+from .data_loader_road import DataLoaderRoad
+
+import geomapi
