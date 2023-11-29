@@ -1,3 +1,4 @@
+#LIBRARIES
 import datetime
 import sys
 import os
@@ -6,19 +7,15 @@ import shutil
 import time
 import unittest
 from multiprocessing.sharedctypes import Value
-
 import cv2
 import numpy as np
 import open3d as o3d
 import rdflib
 from rdflib import RDF, RDFS, Graph, Literal, URIRef
 
-from data_loader_parking import DataLoaderParking
-from data_loader_road import DataLoaderRoad
 
 
-
-# import geomapi
+#GEOMAPI
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
@@ -26,7 +23,9 @@ import geomapi.utils as ut
 import geomapi.tools as tl 
 from geomapi.nodes import *
 
-
+#DATA
+from data_loader_parking import DataLoaderParking
+from data_loader_road import DataLoaderRoad
 
 
 class TestNode(unittest.TestCase):
@@ -216,7 +215,6 @@ class TestNode(unittest.TestCase):
 
         #graph
         node=Node(graph=self.dataLoader.pcdGraph)
-        print(node.graph)
         self.assertLess(len(node.get_graph()),len(self.dataLoader.pcdGraph))
 
         #real graphPath
