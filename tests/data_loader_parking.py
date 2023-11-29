@@ -45,7 +45,7 @@ class DataLoaderParking:
             self.path= Path.cwd() / "tests" / "testfiles"  
       
             #RESOURCES
-            self.resourceGraphPath=self.path /  'graphs' / 'resource_graph.ttl'
+            self.resourceGraphPath=self.path /  'graphs' / 'parking_resource_graph.ttl'
             self.resourceGraph=Graph().parse(str(self.resourceGraphPath))
             print(f'loaded {self.resourceGraphPath}')
             
@@ -69,9 +69,9 @@ class DataLoaderParking:
             self.las=laspy.read(str(self.lasPath))
             print(f'loaded {self.lasPath}')
             
-            self.pcdGraphpath=self.path / 'graphs' /  'pcd_graph.ttl'
-            self.pcdGraph=Graph().parse(self.pcdGraphpath)
-            print(f'loaded {self.pcdGraphpath}')           
+            self.pcdGraphPath=self.path / 'graphs' /  'pcd_graph.ttl'
+            self.pcdGraph=Graph().parse(self.pcdGraphPath)
+            print(f'loaded {self.pcdGraphPath}')           
 
             
             #MESH
@@ -94,13 +94,13 @@ class DataLoaderParking:
             # print(f'loaded {self.ifcGraphPath}')           
   
             #IMG
-            self.csvPath=self.path / 'IMG' / 'parking.csv' #! we don't do anything with the csv
+            self.csvPath=self.path / 'img' / 'parking.csv' #! we don't do anything with the csv
             self.imgGraphPath=self.path /  'graphs' / 'road_img_graph.ttl'
             self.imgGraph=Graph().parse(str(self.imgGraphPath))
             print(f'loaded {self.imgGraphPath}')    
 
-            self.imageXmpPath1 = self.path / 'IMG' / 'DJI_0085.xmp'
-            self.imagePath1=self.path / 'IMG' / "DJI_0085.JPG" 
+            self.imageXmpPath1 = self.path / 'img' / 'DJI_0085.xmp'
+            self.imagePath1=self.path / 'img' / "DJI_0085.JPG" 
             self.image1=cv2.imread(str(self.imagePath1))
             self.imageCartesianTransform1= np.array([[-8.13902571e-02,  6.83059476e-01 ,-7.25813597e-01,  5.18276221e+01],
                                                     [ 9.96648497e-01,  4.97790854e-02, -6.49139139e-02 , 6.10007435e+01],
@@ -108,8 +108,8 @@ class DataLoaderParking:
                                                     [ 0.00000000e+00 , 0.00000000e+00, 0.00000000e+00 , 1.00000000e+00]])
             print(f'loaded {self.imagePath1}')           
 
-            self.imageXmpPath2 = self.path / 'IMG' / 'IMG_8834.xmp'
-            self.imagePath2=self.path / 'IMG' / "IMG_8834.JPG" 
+            self.imageXmpPath2 = self.path / 'img' / 'IMG_8834.xmp'
+            self.imagePath2=self.path / 'img' / "IMG_8834.JPG" 
             self.image2=cv2.imread(str(self.imagePath2))
             self.imageCartesianTransform2= np.array([[ 4.12555151e-01,  4.12058430e-02 ,-9.10000179e-01, 6.68850552e+01],
                                                     [ 9.10841440e-01, -4.52553581e-03,  4.12731621e-01 , 4.52551195e+01],

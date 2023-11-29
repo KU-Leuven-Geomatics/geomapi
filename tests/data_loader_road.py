@@ -45,6 +45,11 @@ class DataLoaderRoad:
             #PATH
             self.path= Path.cwd() / "tests" / "testfiles"  
             
+            #SESSION
+            self.sessionGraphPath=self.path /  'graphs' / 'road_session_graph.ttl'
+            self.sessionGraph=Graph().parse(str(self.sessionGraphPath))
+            print(f'loaded {self.sessionGraphPath}')
+            
             #CAD
             # self.cadPath= self.path / 'cad' / "road.dxf"
             # self.cad=cad.readfile(self.cadPath)
@@ -90,8 +95,8 @@ class DataLoaderRoad:
             print(f'loaded {self.imgGraphPath}')    
             
 
-            self.imageXmlPath = self.path / 'IMG' / 'road.xml'            
-            self.imagePath1=self.path / 'IMG' / "101_0367_0007.JPG" 
+            self.imageXmlPath = self.path / 'img' / 'road.xml'            
+            self.imagePath1=self.path / 'img' / "101_0367_0007.JPG" 
             self.image1=cv2.imread(str(self.imagePath1))
             self.imageCartesianTransform1= np.array([[-7.99965974e-01, -5.98493762e-01 ,-4.31237396e-02,  1.00592066e+05],
                                                     [-5.99164887e-01,  8.00618459e-01,  3.39417250e-03 , 1.96282855e+05],
@@ -103,7 +108,7 @@ class DataLoaderRoad:
             print(f'loaded {self.imagePath1}')           
             
             
-            self.imagePath2=self.path / 'IMG' / "101_0367_0055.JPG" 
+            self.imagePath2=self.path / 'img' / "101_0367_0055.JPG" 
             self.image2=cv2.imread(str(self.imagePath2))
             self.imageCartesianTransform2= np.array([[ 8.16701918e-01,  5.76783553e-01,  1.78524640e-02,  1.00585779e+05],
                                                     [ 5.76947600e-01, -8.16762274e-01, -5.55470424e-03,  1.96265377e+05],
