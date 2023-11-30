@@ -22,9 +22,12 @@ sys.path.append(parent_dir)
 import geomapi.utils as ut
 
 #DATA
-sys.path.append(current_dir)
-from data_loader_parking import DataLoaderParking
-from data_loader_road import DataLoaderRoad
+# sys.path.append(current_dir)
+# from data_loader_parking import DataLoaderParking
+# from data_loader_road import DataLoaderRoad
+
+from data_loader_parking import DATALOADERPARKINGINSTANCE 
+from data_loader_road import DATALOADERROADINSTANCE 
 
 
 class TestUtils(unittest.TestCase):
@@ -38,12 +41,15 @@ class TestUtils(unittest.TestCase):
         #execute once before all tests
         print('-----------------Setup Class----------------------')
         st = time.time()
-     
-        cls.dataLoaderParking = DataLoaderParking()        
-        assert cls.dataLoaderParking.timesLoaded == 1, 'why are you loading data multiple times?'
         
-        cls.dataLoaderRoad = DataLoaderRoad()        
-        assert cls.dataLoaderRoad.timesLoaded == 1, 'why are you loading data multiple times?'
+        cls.dataLoaderParking = DATALOADERPARKINGINSTANCE
+     
+        # cls.dataLoaderParking = DataLoaderParking()        
+        # assert cls.dataLoaderParking.timesLoaded == 1, 'why are you loading data multiple times?'
+        
+        cls.dataLoaderRoad = DATALOADERROADINSTANCE
+        # cls.dataLoaderRoad = DataLoaderRoad()        
+        # assert cls.dataLoaderRoad.timesLoaded == 1, 'why are you loading data multiple times?'
     
         #TIME TRACKING 
         et = time.time()
@@ -54,8 +60,8 @@ class TestUtils(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         #execute once after all tests
-        if os.path.exists(cls.dataLoaderParking.resourcePath):
-            shutil.rmtree(cls.dataLoaderParking.resourcePath)  
+        # if os.path.exists(cls.dataLoaderParking.resourcePath):
+        #     shutil.rmtree(cls.dataLoaderParking.resourcePath)  
         print('-----------------TearDown Class----------------------')   
         
         

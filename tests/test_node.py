@@ -24,9 +24,12 @@ import geomapi.tools as tl
 from geomapi.nodes import *
 
 #DATA
-sys.path.append(current_dir)
-from data_loader_parking import DataLoaderParking
-from data_loader_road import DataLoaderRoad
+# sys.path.append(current_dir)
+from data_loader_parking import DATALOADERPARKINGINSTANCE 
+
+# from data_loader_parking import DataLoaderParking
+# from data_loader_road import DataLoaderRoad
+
 
 
 class TestNode(unittest.TestCase):
@@ -40,9 +43,11 @@ class TestNode(unittest.TestCase):
         #execute once before all tests
         print('-----------------Setup Class----------------------')
         st = time.time()
+        
+        cls.dataLoader = DATALOADERPARKINGINSTANCE
 
-        cls.dataLoader = DataLoaderParking()        
-        assert cls.dataLoader.timesLoaded == 1, 'why are you loading data multiple times?'
+        # cls.dataLoader = DataLoaderParking()        
+        # assert cls.dataLoader.timesLoaded == 1, 'why are you loading data multiple times?'
       
         #TIME TRACKING           
         et = time.time()

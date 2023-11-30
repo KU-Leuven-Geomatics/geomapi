@@ -127,10 +127,14 @@ class DataLoaderRoad:
             #FILES
             self.files=ut.get_list_of_files(self.path)
             
-            DataLoaderRoad._dataLoaded = True
+            self._dataLoaded = True
             et = time.time()
             print(f'DataLoader succesfully loaded in {et-st} seconds!')
 
+
+
+DATALOADERROADINSTANCE = DataLoaderRoad()
+
 if __name__ == '__main__':
 
-    DataLoaderRoad()
+    pass
