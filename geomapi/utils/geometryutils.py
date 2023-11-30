@@ -1302,7 +1302,7 @@ def mesh_to_arrays(path:str,tasknr:int=0)->Tuple[np.array,np.array,np.array,np.a
         2. tasknr(int,optional): tasknr used to keep the order in multiprocessing.\n
 
     Returns:
-        Tuple[np.array,np.array,np.array,int]
+        Tuple[np.array,np.array,np.array,int]: vertexArray,triangleArray,colorArray,normalArray,tasknr
     """
     mesh=o3d.io.read_triangle_mesh(str(path))   
     vertexArray=np.asarray(mesh.vertices)
@@ -1326,7 +1326,7 @@ def pcd_to_arrays(path:str,percentage:float=1.0,tasknr:int=0)->Tuple[np.array,np
         3. tasknr (int): int to retrieve order in multiprocessing.\n
 
     Returns:
-        Tuple[np.array,np.array,np.array]
+        Tuple[np.array,np.array,np.array,np.array]: pointArray,colorArray,normalArray,tasknr
     """
     pcd=o3d.io.read_point_cloud(str(path))   
     pointArray=np.asarray(pcd.points)

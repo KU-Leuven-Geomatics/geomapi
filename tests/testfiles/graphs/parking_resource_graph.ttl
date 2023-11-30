@@ -7,90 +7,121 @@
 @prefix xcr: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339> a v4d:MeshNode ;
-    e57:cartesianBounds """[ 27.83530045  28.70730019 100.48300171 100.65599823  10.72999954
-  13.97000027]""" ;
-    e57:cartesianTransform """[[  1.           0.           0.          28.21468048]
- [  0.           1.           0.         100.58600006]
- [  0.           0.           1.          12.3499999 ]
- [  0.           0.           0.           1.        ]]""" ;
-    e57:pointCount 10 ;
-    v4d:faceCount 16 ;
-    v4d:name "Basic Wall_211_WA_Ff1_Glued brickwork sandlime 150mm_1095339" ;
-    v4d:orientedBounds """[[ 27.83482123 100.50600942  10.72999954]
- [ 27.83482123 100.50600942  13.97000027]
- [ 28.70331975 100.48296815  10.72999954]
- [ 27.83880166 100.65604451  10.72999954]
- [ 28.70730019 100.63300323  13.97000027]
- [ 28.70730019 100.63300323  10.72999954]
- [ 27.83880166 100.65604451  13.97000027]
- [ 28.70331975 100.48296815  13.97000027]]""" ;
-    v4d:path "Mesh\\Basic Wall_211_WA_Ff1_Glued brickwork sandlime 150mm_1095339.obj" ;
-    openlabel:timestamp "2022-08-02T08:25:01" .
+<file:///parking> a v4d:MeshNode ;
+    e57:cartesianBounds "[10.45079231 79.55210876 27.31818581 74.1269989  -2.62377906 20.99546814]" ;
+    e57:cartesianTransform """[[ 1.          0.          0.         46.62896589]
+ [ 0.          1.          0.         54.52713206]
+ [ 0.          0.          1.          5.31642376]
+ [ 0.          0.          0.          1.        ]]""" ;
+    e57:pointCount 62143 ;
+    v4d:faceCount 49999 ;
+    v4d:name "parking" ;
+    v4d:orientedBounds """[[  1.91106719  40.84350475   1.85887215]
+ [ 67.90585268  23.57467616  -7.72339247]
+ [ 13.87308273  88.49223338  -1.62747261]
+ [  5.24411682  41.58815304  23.47220674]
+ [ 83.20091784  71.96805308  10.40359737]
+ [ 17.20613235  89.23688167  19.98586199]
+ [ 71.2389023   24.31932445  13.88994213]
+ [ 79.86786822  71.22340479 -11.20973722]]""" ;
+    v4d:path "..\\mesh\\parking.obj" ;
+    openlabel:timestamp "2023-11-23T11:21:49" .
 
-<file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d> a v4d:BIMNode ;
-    ifc:className "IfcWall" ;
-    ifc:globalId "0KysUSO6T3_gOJKtAiUE7d" ;
-    ifc:ifcPath "IFC\\Academiestraat_building_1.ifc" ;
-    ifc:phase "BIM-UF" ;
-    e57:cartesianBounds """[ 31.3840053   37.25142541 100.31983802 100.57972895   7.49
-  10.48      ]""" ;
-    e57:cartesianTransform """[[  1.           0.           0.          34.91152793]
- [  0.           1.           0.         100.43864519]
- [  0.           0.           1.           9.31833333]
- [  0.           0.           0.           1.        ]]""" ;
-    e57:pointCount 24 ;
-    v4d:accuracy "0.05"^^xsd:float ;
-    v4d:faceCount 44 ;
-    v4d:lod 300 ;
-    v4d:name "Basic Wall:211_WA_Ff1_Glued brickwork sandlime 150mm:1118860" ;
-    v4d:orientedBounds """[[ 31.38400511 100.42974533  10.48      ]
- [ 37.24861442 100.31982342  10.48      ]
- [ 31.38400511 100.42974533   7.49      ]
- [ 31.38681629 100.57972895  10.48      ]
- [ 37.2514256  100.46980704   7.49      ]
- [ 31.38681629 100.57972895   7.49      ]
- [ 37.2514256  100.46980704  10.48      ]
- [ 37.24861442 100.31982342   7.49      ]]""" ;
-    v4d:path "BIM\\Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d.ply" .
-
-<file:///IMG_2174> a v4d:ImageNode ;
-    e57:cartesianTransform """[[-4.65090312e-02  4.85391010e-02  9.97737874e-01 -8.63657982e+00]
- [-7.14937319e-01 -6.99188212e-01  6.88482642e-04  9.21354145e+00]
- [ 6.97639979e-01 -7.13288020e-01  6.72209811e-02  6.57082855e+00]
+<file:///DJI_0085> a v4d:ImageNode ;
+    e57:cartesianTransform """[[-8.13902571e-02  6.83059476e-01 -7.25813597e-01  5.18276221e+01]
+ [ 9.96648497e-01  4.97790854e-02 -6.49139139e-02  6.10007435e+01]
+ [-8.20972697e-03 -7.28664391e-01 -6.84821733e-01  1.50408221e+01]
  [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]""" ;
-    e57:geospatialTransform "[None, None, None]" ;
-    xcr:distortionCoeficients "[-0.125606372986636, 0.0998756126647396, 0.00548444801456872, 0.0, 0.0, 0.0]" ;
-    xcr:focalLength35mm "24.3821000446549"^^xsd:float ;
-    xcr:principalPointU "-0.00293532463590241"^^xsd:float ;
-    xcr:principalPointV "-0.00429599349774092"^^xsd:float ;
+    xcr:distortionCoeficients "[0.00123387104398438, -0.0154902079106269, 0.0173681449872249, 0.0, 0.0, 0.0]" ;
+    xcr:focalLength35mm "3693.1078961549015"^^xsd:float ;
+    xcr:principalPointU "-0.00219347744418651"^^xsd:float ;
+    xcr:principalPointV "-0.00481084380622187"^^xsd:float ;
+    exif:imageHeight 3078 ;
+    exif:imageWidth 5472 ;
+    gom:coordinateSystem "absolute" ;
+    v4d:name "DJI_0085" ;
+    v4d:path "DJI_0085.JPG" ;
+    v4d:xmpPath "DJI_0085.xmp" ;
+    openlabel:timestamp "2023-11-23T15:10:19" .
+
+<file:///IMG_8834> a v4d:ImageNode ;
+    e57:cartesianTransform """[[ 4.12555151e-01  4.12058430e-02 -9.10000179e-01  6.68850552e+01]
+ [ 9.10841440e-01 -4.52553581e-03  4.12731621e-01  4.52551195e+01]
+ [ 1.28887160e-02 -9.99140430e-01 -3.93990225e-02  5.45377093e+00]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]""" ;
+    xcr:distortionCoeficients "[-0.124217384759894, 0.107339706650415, -0.0104748224573926, 0.0, 0.0, 0.0]" ;
+    xcr:focalLength35mm "3802.739603918611"^^xsd:float ;
+    xcr:principalPointU "-0.000464752782510192"^^xsd:float ;
+    xcr:principalPointV "-0.000823593392050301"^^xsd:float ;
     exif:imageHeight 3744 ;
     exif:imageWidth 5616 ;
-    exif:resolutionUnit 2 ;
-    gom:coordinateSystem "geospatial-wgs84" ;
-    v4d:name "IMG_2174" ;
-    v4d:path "IMG\\IMG_2174.JPG" ;
-    v4d:xmpPath "IMG\\IMG_2174.xmp" ;
-    openlabel:timestamp "2022-03-13T13:55:30" .
-
-<file:///week22_photogrammetry_-_Cloud> a v4d:PointCloudNode ;
-    e57:cartesianBounds """[-37.36532974 106.94235229  16.87863541 130.69406128   0.71651864
-  23.73304749]""" ;
-    e57:cartesianTransform """[[ 1.          0.          0.         28.03427131]
- [ 0.          1.          0.         72.25597195]
- [ 0.          0.          1.          4.47910446]
+    gom:coordinateSystem "absolute" ;
+    v4d:name "IMG_8834" ;
+    v4d:path "IMG_8834.JPG" ;
+    v4d:xmpPath "IMG_8834.xmp" ;
+    openlabel:timestamp "2023-11-23T15:10:19" .
+	
+<file:///parking> a v4d:PointCloudNode ;
+    e57:cartesianBounds "[17.38922501 79.04823303 38.1408577  71.8666153   0.8287577   9.90541553]" ;
+    e57:cartesianTransform """[[ 1.          0.          0.         47.46935912]
+ [ 0.          1.          0.         55.46003894]
+ [ 0.          0.          1.          4.59512571]
  [ 0.          0.          0.          1.        ]]""" ;
     e57:e57Index 0 ;
-    e57:pointCount 242750 ;
-    v4d:name "week22 photogrammetry - Cloud" ;
-    v4d:orientedBounds """[[-1.96025758e+01  1.65884155e+02  2.22874746e+01]
- [ 1.22465470e+02  1.23859440e+02  2.29468276e+01]
- [-5.26111779e+01  5.43129133e+01  2.33762930e+01]
- [-1.95654774e+01  1.65648750e+02 -7.09825603e-01]
- [ 8.94939663e+01  1.20527928e+01  1.03834566e+00]
- [-5.25740795e+01  5.40775081e+01  3.78992731e-01]
- [ 1.22502568e+02  1.23624035e+02 -5.04726756e-02]
- [ 8.94568679e+01  1.22881979e+01  2.40356459e+01]]""" ;
-    v4d:path "PCD\\week22 photogrammetry - Cloud.pcd" ;
-    openlabel:timestamp "2022-08-02T08:25:27" .
+    e57:pointCount 55648 ;
+    v4d:name "parking" ;
+    v4d:orientedBounds """[[19.031228   78.85752965 12.51335747]
+ [82.51981999 70.21753381 10.08902663]
+ [14.29439273 44.35339839 11.4328731 ]
+ [18.6900821  79.22515428  2.26923262]
+ [77.44183883 36.0810272  -1.23558259]
+ [13.95324684 44.72102303  1.18874825]
+ [82.1786741  70.58515845 -0.15509822]
+ [77.78298472 35.71340256  9.00854226]]""" ;
+    v4d:path "..\\pcd\\parking.pcd" ;
+    openlabel:timestamp "2023-11-23T15:10:19" .
 
+<file:///Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0> a v4d:BIMNode ;
+    ifc:className "IfcWall" ;
+    ifc:globalId "0$Z_Q8COz94wZzVDqlx6N0" ;
+    ifc:ifcPath "..\\ifc\\parking.ifc" ;
+    e57:cartesianBounds "[19.76203899 21.40168648 45.18697778 61.20120036  3.75        8.24      ]" ;
+    e57:cartesianTransform """[[ 1.          0.          0.         20.70099441]
+ [ 0.          1.          0.         52.14007717]
+ [ 0.          0.          1.          5.25045455]
+ [ 0.          0.          0.          1.        ]]""" ;
+    e57:pointCount 22 ;
+    v4d:faceCount 40 ;
+    v4d:name "Basic Wall:162_WA_f2_Retaining concrete 160mm:915429" ;
+    v4d:objectType "Basic Wall:162_WA_f2_Retaining concrete 160mm" ;
+    v4d:orientedBounds """[[19.92133317 61.20120036  3.75      ]
+ [21.40170711 45.19729553  3.75      ]
+ [19.92133317 61.20120036  8.24      ]
+ [19.7619927  61.18646124  3.75      ]
+ [21.24236663 45.18255641  8.24      ]
+ [19.7619927  61.18646124  8.24      ]
+ [21.24236663 45.18255641  3.75      ]
+ [21.40170711 45.19729553  8.24      ]]""" ;
+    openlabel:timestamp "2023-11-23T10:08:36" .
+
+<file:///Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_2f6I3M3B10PABG_fOUjFSb> a v4d:BIMNode ;
+    ifc:className "IfcOpeningElement" ;
+    ifc:globalId "2f6I3M3B10PABG$fOUjFSb" ;
+    ifc:ifcPath "..\\ifc\\parking.ifc" ;
+    e57:cartesianBounds "[21.16979259 22.35669492 47.4883575  47.86313942  3.75        5.9       ]" ;
+    e57:cartesianTransform """[[ 1.          0.          0.         21.76324376]
+ [ 0.          1.          0.         47.67574846]
+ [ 0.          0.          1.          4.825     ]
+ [ 0.          0.          0.          1.        ]]""" ;
+    e57:pointCount 8 ;
+    v4d:faceCount 12 ;
+    v4d:name "Basic Wall:162_WA_f2_Retaining concrete 160mm:915429" ;
+    v4d:orientedBounds """[[22.35669492 47.56376313  5.9       ]
+ [22.35669492 47.56376313  3.75      ]
+ [21.18912737 47.4883575   5.9       ]
+ [22.33736015 47.86313942  5.9       ]
+ [21.16979259 47.7877338   3.75      ]
+ [21.16979259 47.7877338   5.9       ]
+ [22.33736015 47.86313942  3.75      ]
+ [21.18912737 47.4883575   3.75      ]]""" ;
+    openlabel:timestamp "2023-11-23T10:08:36" .

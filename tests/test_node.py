@@ -46,9 +46,6 @@ class TestNode(unittest.TestCase):
         
         cls.dataLoader = DATALOADERPARKINGINSTANCE
 
-        # cls.dataLoader = DataLoaderParking()        
-        # assert cls.dataLoader.timesLoaded == 1, 'why are you loading data multiple times?'
-      
         #TIME TRACKING           
         et = time.time()
         print("startup time: "+str(et - st))

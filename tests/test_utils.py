@@ -3,14 +3,12 @@ from datetime import datetime
 import sys
 import os
 from pathlib import Path
-import shutil
 import time
+import shutil
 import unittest
 from multiprocessing.sharedctypes import Value
-import cv2
 import numpy as np
 import open3d as o3d
-import rdflib
 from rdflib import RDF, RDFS, Graph, Literal, URIRef,XSD
 import PIL
 
@@ -22,10 +20,6 @@ sys.path.append(parent_dir)
 import geomapi.utils as ut
 
 #DATA
-# sys.path.append(current_dir)
-# from data_loader_parking import DataLoaderParking
-# from data_loader_road import DataLoaderRoad
-
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
 from data_loader_road import DATALOADERROADINSTANCE 
 
@@ -43,14 +37,8 @@ class TestUtils(unittest.TestCase):
         st = time.time()
         
         cls.dataLoaderParking = DATALOADERPARKINGINSTANCE
-     
-        # cls.dataLoaderParking = DataLoaderParking()        
-        # assert cls.dataLoaderParking.timesLoaded == 1, 'why are you loading data multiple times?'
-        
         cls.dataLoaderRoad = DATALOADERROADINSTANCE
-        # cls.dataLoaderRoad = DataLoaderRoad()        
-        # assert cls.dataLoaderRoad.timesLoaded == 1, 'why are you loading data multiple times?'
-    
+
         #TIME TRACKING 
         et = time.time()
         print("startup time: "+str(et - st))
@@ -60,8 +48,6 @@ class TestUtils(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         #execute once after all tests
-        # if os.path.exists(cls.dataLoaderParking.resourcePath):
-        #     shutil.rmtree(cls.dataLoaderParking.resourcePath)  
         print('-----------------TearDown Class----------------------')   
         
         

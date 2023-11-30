@@ -9,19 +9,20 @@ import cv2
 import ezdxf as cad
 import pye57 
 import time
+import ifcopenshell
 
 # import geomapi
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
-
+import geomapi.utils.geometryutils as gmu
 import geomapi.utils as ut
 import geomapi.tools as tl 
 
 class DataLoaderRoad:
-    def __init__(self):
+    def __init__(self,path=None):
         st = time.time()
-        print(f'    Creating Road DataLoader:')
+        print(f'Creating Road DataLoader:')
         
         #ONTOLOGIES
         self.exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#')
@@ -37,10 +38,11 @@ class DataLoaderRoad:
         
             
         #PATH
-        self.path= Path.cwd() / "tests" / "testfiles"  
+        self.path= Path.cwd() / "tests" / "testfiles"  if not path else path
+        PATH=self.path
         
         #SESSION
-        self.sessionGraphPath=self.path /  'graphs' / 'road_session_graph.ttl'
+        self.sessionGraphPath=self.path /  'graphs' / 'parking_resource_graph.ttl'
         self.sessionGraph=Graph().parse(str(self.sessionGraphPath))
         print(f'    loaded {self.sessionGraphPath}')
         
@@ -55,7 +57,28 @@ class DataLoaderRoad:
         self.ifcPath=self.path / 'ifc' / "road.ifc"
         self.bimNodes=tl.ifc_to_nodes_multiprocessing(str(self.ifcPath)) #! Note: this uses geomapi functionality
         print(f'    loaded {len(self.bimNodes)} bimNodes from ifc file')
+        
+        self.ifc = ifcopenshell.open(str(self.ifcPath))   
+        self.ifcRoad=self.ifc.by_guid('2PpmXyFnz1_QUVtw0_xe4L')
+        self.ifcPipe=self.ifc.by_guid('2sFWN4Spr5fegnupyER9kl')
+        self.ifcCollector=self.ifc.by_guid('3H7DyiHwT7hwR69f2l72fp' )
+        self.ifcFoundation=self.ifc.by_guid('0jLihvjbj3jO6QBgJ8M5et')
 
+        self.roadMesh=gmu.ifc_to_mesh(self.ifcRoad)
+        self.pipeMesh=gmu.ifc_to_mesh(self.ifcPipe)
+        self.collectorMesh=gmu.ifc_to_mesh(self.ifcCollector)
+        self.foundationMesh=gmu.ifc_to_mesh(self.ifcFoundation)  
+        self.bimMeshes= [self.roadMesh,
+                        self.pipeMesh,
+                        self.collectorMesh,
+                        self.foundationMesh]
+        self.bimBoxes=[mesh.get_oriented_bounding_box() for mesh in [self.roadMesh,
+                                                                     self.pipeMesh,
+                                                                     self.collectorMesh,
+                                                                     self.foundationMesh] if mesh]
+        for box in self.bimBoxes:
+            box.color = [1, 0, 0]
+   
         self.ifcGraphPath=self.path /  'graphs' / 'road_ifc_graph.ttl'
         self.ifcGraph=Graph().parse(self.ifcGraphPath)
         print(f'    loaded {self.ifcGraphPath}')    
@@ -126,7 +149,12 @@ class DataLoaderRoad:
 
 
 #LOAD DATA -> reference this instance to load data only once
-DATALOADERROADINSTANCE = DataLoaderRoad()
+try:
+    DATALOADERROADINSTANCE = DataLoaderRoad()
+except:
+    print(f'    DATALOADER failed due to path inconsistency. Create your own DATALOADER(path)')
+    pass
+    
 
 if __name__ == '__main__':
     pass

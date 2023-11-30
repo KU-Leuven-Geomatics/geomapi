@@ -9,6 +9,8 @@ import cv2
 import laspy
 import pye57 
 import time
+import ifcopenshell
+
 
 # import geomapi
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -16,12 +18,13 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 import geomapi.utils as ut
 import geomapi.tools as tl 
-        
+import geomapi.utils.geometryutils as gmu
+
         
 class DataLoaderParking:
-    def __init__(self):
+    def __init__(self,path=None):
         st = time.time()
-        print(f'    Creating Parking DataLoader:')     
+        print(f'Creating Parking DataLoader:')     
           
         #ONTOLOGIES
         self.exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#')
@@ -36,7 +39,7 @@ class DataLoaderParking:
         self.ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')
         
         #PATH
-        self.path= Path.cwd() / "tests" / "testfiles"  
+        self.path= Path.cwd() / "tests" / "testfiles"  if not path else path
     
         #RESOURCES
         self.resourceGraphPath=self.path /  'graphs' / 'parking_resource_graph.ttl'
@@ -77,13 +80,35 @@ class DataLoaderParking:
         print(f'    loaded {self.meshGraphPath}')           
 
         # #IFC
-        # self.ifcPath=self.path / 'ifc' / "parking.ifc"
+        self.ifcPath=self.path / 'ifc' / "parking.ifc"
         # self.bimNodes=tl.ifc_to_nodes_multiprocessing(str(self.ifcPath)) #! Note: this uses geomapi functionality
         # print(f'loaded {len(self.bimNodes)} bimNodes from ifc file')
         
         # self.ifcGraphPath=self.path /  'graphs' / 'parking_ifc_graph.ttl'
         # self.ifcGraph=Graph().parse(str(self.ifcGraphPath))
-        # print(f'loaded {self.ifcGraphPath}')           
+        # print(f'loaded {self.ifcGraphPath}')      
+        
+        self.ifc = ifcopenshell.open(str(self.ifcPath))   
+        self.ifcSlab=self.ifc.by_guid('2qZtnImXH6Tgdb58DjNlmF')
+        self.ifcWall=self.ifc.by_guid('06v1k9ENv8DhGMCvKUuLQV')
+        self.ifcBeam=self.ifc.by_guid('05Is7PfoXBjhBcbRTnzewz' )
+        self.ifcColumn=self.ifc.by_guid('23JN72MijBOfF91SkLzf3a')
+
+        self.slabMesh=gmu.ifc_to_mesh(self.ifcSlab)
+        self.wallMesh=gmu.ifc_to_mesh(self.ifcWall)
+        self.beamMesh=gmu.ifc_to_mesh(self.ifcBeam)
+        self.columnMesh=gmu.ifc_to_mesh(self.ifcColumn) 
+        self.bimMeshes= [self.slabMesh,
+                        self.wallMesh,
+                        self.beamMesh,
+                        self.columnMesh]
+        self.bimBoxes=[mesh.get_oriented_bounding_box() for mesh in [self.slabMesh,
+                                                                     self.wallMesh,
+                                                                     self.beamMesh,
+                                                                     self.columnMesh] if mesh]
+        for box in self.bimBoxes:
+            box.color = [1, 0, 0]
+
 
         #IMG
         self.csvPath=self.path / 'img' / 'parking.csv' #! we don't do anything with the csv
@@ -121,7 +146,11 @@ class DataLoaderParking:
         print(f'DataLoader succesfully loaded in {et-st} seconds!')
 
 #LOAD DATA -> reference this instance to load data only once
-DATALOADERPARKINGINSTANCE = DataLoaderParking()
+try:
+    DATALOADERPARKINGINSTANCE = DataLoaderParking()
+except:
+    print(f'    DATALOADER failed due to path inconsistency. Create your own DATALOADER(path)')
+    pass
     
 if __name__ == '__main__':
     pass
