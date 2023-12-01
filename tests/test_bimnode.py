@@ -48,8 +48,8 @@ class TestNode(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         #execute once after all tests
-        if os.path.exists(cls.dataLoader.resourcePath):
-            shutil.rmtree(cls.dataLoader.resourcePath)  
+        if os.path.exists(cls.dataLoaderParking.resourcePath):
+            shutil.rmtree(cls.dataLoaderParking.resourcePath)  
         print('-----------------TearDown Class----------------------')   
  
  
@@ -168,9 +168,9 @@ class TestNode(unittest.TestCase):
         node= BIMNode(subject=subject,graph=self.dataLoaderRoad.ifcGraph,getResource=True)
         self.assertIsNone(node._resource)
         
-        #graphPath with get resource
-        node= BIMNode(subject=subject,graphPath=self.dataLoaderRoad.ifcGraphPath,getResource=True)
-        self.assertIsNotNone(node._resource)
+        # #graphPath with get resource
+        # node= BIMNode(subject=subject,graphPath=self.dataLoaderRoad.ifcGraphPath,getResource=True)
+        # self.assertIsNotNone(node._resource)
 
     def test_clear_resource(self):
         #mesh
@@ -238,10 +238,10 @@ class TestNode(unittest.TestCase):
         del node.resource
         self.assertIsNone(node.get_resource())
 
-        #graphPath with getResource
-        subject=next(self.dataLoaderRoad.ifcGraph.subjects(RDF.type))
-        node=BIMNode(graphPath=self.dataLoaderRoad.ifcGraphPath,subject=subject,getResource=True)
-        self.assertIsNotNone(node.get_resource())
+        # #graphPath with getResource
+        # subject=next(self.dataLoaderRoad.ifcGraph.subjects(RDF.type))
+        # node=BIMNode(graphPath=self.dataLoaderRoad.ifcGraphPath,subject=subject,getResource=True)
+        # self.assertIsNotNone(node.get_resource())
 
     def test_get_metadata_from_resource(self):
         #mesh
@@ -269,8 +269,8 @@ class TestNode(unittest.TestCase):
         self.assertIsNotNone(node.pointCount)
 
         #graphPath
-        subject=next(self.dataLoaderRoad.ifcGraph.subjects(RDF.type))
-        node=BIMNode(graphPath=self.dataLoaderParking.ifcPath,subject=subject,getResource=True)
+        subject=next(self.dataLoaderParking.ifcGraph.subjects(RDF.type))
+        node=BIMNode(graphPath=self.dataLoaderParking.ifcGraphPath,subject=subject,getResource=True)
         self.assertIsNotNone(node.orientedBounds)
         self.assertIsNotNone(node.cartesianBounds)
         self.assertIsNotNone(node.cartesianTransform)

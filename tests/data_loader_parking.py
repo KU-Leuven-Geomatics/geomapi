@@ -85,9 +85,9 @@ class DataLoaderParking:
         # self.bimNodes=tl.ifc_to_nodes_multiprocessing(str(self.ifcPath)) #! Note: this uses geomapi functionality
         # print(f'loaded {len(self.bimNodes)} bimNodes from ifc file')
         
-        # self.ifcGraphPath=self.path /  'graphs' / 'parking_ifc_graph.ttl'
-        # self.ifcGraph=Graph().parse(str(self.ifcGraphPath))
-        # print(f'loaded {self.ifcGraphPath}')      
+        self.ifcGraphPath=self.path /  'graphs' / 'parking_ifc_graph.ttl'
+        self.ifcGraph=Graph().parse(str(self.ifcGraphPath))
+        print(f'loaded {self.ifcGraphPath}')      
         
         self.ifc = ifcopenshell.open(str(self.ifcPath))   
         self.ifcSlab=self.ifc.by_guid('2qZtnImXH6Tgdb58DjNlmF')
@@ -124,6 +124,7 @@ class DataLoaderParking:
                                                 [ 9.96648497e-01,  4.97790854e-02, -6.49139139e-02 , 6.10007435e+01],
                                                 [-8.20972697e-03, -7.28664391e-01, -6.84821733e-01,  1.50408221e+01],
                                                 [ 0.00000000e+00 , 0.00000000e+00, 0.00000000e+00 , 1.00000000e+00]])
+        self.imageSubject1=next(s for s in self.imgGraph.subjects() if 'DJI_0085' in s.toPython() )
         print(f'    loaded {self.imagePath1}')           
 
         self.imageXmpPath2 = self.path / 'img' / 'IMG_8834.xmp'
@@ -133,6 +134,7 @@ class DataLoaderParking:
                                                 [ 9.10841440e-01, -4.52553581e-03,  4.12731621e-01 , 4.52551195e+01],
                                                 [ 1.28887160e-02 ,-9.99140430e-01 ,-3.93990225e-02 , 5.45377093e+00],
                                                 [ 0.00000000e+00 , 0.00000000e+00  ,0.00000000e+00 , 1.00000000e+00]])
+        self.imageSubject2=next(s for s in self.imgGraph.subjects() if 'IMG_8834' in s.toPython() )
         print(f'    loaded {self.imagePath2}')    
 
         #RESOURCES temporary folder

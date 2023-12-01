@@ -120,6 +120,7 @@ class DataLoaderRoad:
                                                 [-5.99164887e-01,  8.00618459e-01,  3.39417250e-03 , 1.96282855e+05],
                                                 [ 3.24942709e-02 , 2.85534531e-02, -9.99063973e-01,  3.19272496e+01],
                                                 [ 0.00000000e+00 , 0.00000000e+00,  0.00000000e+00 , 1.00000000e+00]])
+        self.imageSubject1=next(s for s in self.imgGraph.subjects() if '101_0367_0007' in s.toPython() )
         self.focalLength1=3693.1569475809993
         self.imageWidth1=5472
         self.imageHeight1=3648
@@ -132,6 +133,7 @@ class DataLoaderRoad:
                                                 [ 5.76947600e-01, -8.16762274e-01, -5.55470424e-03,  1.96265377e+05],
                                                 [ 1.13773570e-02 , 1.48364739e-02, -9.99825202e-01,  3.19327009e+01],
                                                 [ 0.00000000e+00, 0.00000000e+00 , 0.00000000e+00 , 1.00000000e+00]])
+        self.imageSubject2=next(s for s in self.imgGraph.subjects() if '101_0367_0055' in s.toPython() )
         self.focalLength2=3693.1569475809993
         self.imageWidth2=5472
         self.imageHeight2=3648
