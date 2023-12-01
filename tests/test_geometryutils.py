@@ -70,7 +70,6 @@ class TestGeometryutils(unittest.TestCase):
 
         
 ################################## SETUP/TEARDOWN ######################
-
     def setUp(self):
         #execute before every test
         self.startTime = time.time()   
