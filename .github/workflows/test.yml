@@ -15,7 +15,7 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest pytest-cov
-        pytest -v --junitxml=rspec.xml --cov-report=html --cov=geomapi .
+        pytest -v --junitxml=rspec.xml --cov-report=html --cov=geomapi coverage/
     - name: Upload Coverage Results
       uses: actions/upload-artifact@v2
       with:
