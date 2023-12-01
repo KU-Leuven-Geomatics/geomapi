@@ -15,11 +15,11 @@ jobs:
     - name: Test with pytest
       run: |
         pip install pytest pytest-cov
-        pytest -v --junitxml=rspec.xml --cov-report term html --cov=geomapi tests/
+        pytest -v --junitxml=rspec.xml --cov-report term --cov-report html:cov_html --cov=geomapi tests/
     - name: Upload Coverage Results
       uses: actions/upload-artifact@v2
       with:
         name: coverage
         path: |
-          tests/  # Adjust the path based on your coverage file location
+          cov_html/  # Adjust the path based on your coverage file location
       if: always()  # Upload coverage results even if tests fail
