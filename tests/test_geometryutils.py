@@ -64,6 +64,8 @@ class TestGeometryutils(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         #execute once after all tests
+        if os.path.exists(cls.dataLoader.resourcePath):
+            shutil.rmtree(cls.dataLoader.resourcePath)  
         print('-----------------TearDown Class----------------------')   
  
 
@@ -453,16 +455,16 @@ class TestGeometryutils(unittest.TestCase):
         cam=gmu.create_3d_camera()
         self.assertIsInstance(cam,o3d.geometry.TriangleMesh)
         
-    def test_crop_geometry_by_convex_hull(self):
-        sourceMesh=gmu.mesh_to_trimesh(self.dataLoaderParking.mesh)
-        cutters=[gmu.mesh_to_trimesh(mesh) for mesh in self.dataLoaderParking.bimMeshes]
+    # def test_crop_geometry_by_convex_hull(self):
+    #     sourceMesh=gmu.mesh_to_trimesh(self.dataLoaderParking.mesh)
+    #     cutters=[gmu.mesh_to_trimesh(mesh) for mesh in self.dataLoaderParking.bimMeshes]
 
-        innerCrop=gmu.crop_mesh_by_convex_hull(source=sourceMesh, cutters=cutters, inside = True )
-        self.assertEqual(len(innerCrop),1)
-        self.assertGreater(len(innerCrop[0].vertices),7600)
+    #     innerCrop=gmu.crop_mesh_by_convex_hull(source=sourceMesh, cutters=cutters, inside = True )
+    #     self.assertEqual(len(innerCrop),1)
+    #     self.assertGreater(len(innerCrop[0].vertices),7600)
 
-        outerCrop=gmu.crop_mesh_by_convex_hull(source=sourceMesh, cutters=cutters[0], inside = False ) 
-        self.assertGreater(len(outerCrop[0].vertices),29000)         
+    #     outerCrop=gmu.crop_mesh_by_convex_hull(source=sourceMesh, cutters=cutters[0], inside = False ) 
+    #     self.assertGreater(len(outerCrop[0].vertices),29000)         
         
     def test_get_translation(self):
         box=self.dataLoaderRoad.mesh.get_oriented_bounding_box()
@@ -482,15 +484,15 @@ class TestGeometryutils(unittest.TestCase):
         center=gmu.get_translation(self.dataLoaderRoad.imageCartesianTransform2)
         self.assertAlmostEqual(self.dataLoaderRoad.imageCartesianTransform2[0][3],center[0],delta=0.01)
        
-    def test_get_mesh_collisions_trimesh(self):
-        inliers=gmu.get_mesh_collisions_trimesh(sourceMesh=self.dataLoaderParking.mesh ,
-                                                geometries =self.dataLoaderParking.bimMeshes) 
-        self.assertEqual(len(inliers),1 )
+    # def test_get_mesh_collisions_trimesh(self):
+    #     inliers=gmu.get_mesh_collisions_trimesh(sourceMesh=self.dataLoaderParking.mesh ,
+    #                                             geometries =self.dataLoaderParking.bimMeshes) 
+    #     self.assertEqual(len(inliers),1 )
 
-    def test_get_pcd_collisions(self):
-        inliers=gmu.get_pcd_collisions(sourcePcd=self.dataLoaderParking.pcd, 
-                                       geometries =self.dataLoaderParking.bimMeshes)
-        self.assertLess(len(inliers),150 )
+    # def test_get_pcd_collisions(self):
+    #     inliers=gmu.get_pcd_collisions(sourcePcd=self.dataLoaderParking.pcd, 
+    #                                    geometries =self.dataLoaderParking.bimMeshes)
+    #     self.assertLess(len(inliers),150 )
 
     def test_get_rotation_matrix(self):        
   

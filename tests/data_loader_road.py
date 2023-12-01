@@ -104,6 +104,7 @@ class DataLoaderRoad:
             
         self.meshGraphPath=self.path / 'graphs' /  'mesh_graph.ttl'
         self.meshGraph=Graph().parse(self.meshGraphPath)
+        self.meshSubject= next(s for s in self.meshGraph.subjects() if 'road' in s.toPython() )
         print(f'    loaded {self.meshGraphPath}')    
         
         #IMG

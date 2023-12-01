@@ -77,6 +77,7 @@ class DataLoaderParking:
             
         self.meshGraphPath=self.path / 'graphs' /  'mesh_graph.ttl'
         self.meshGraph=Graph().parse(str(self.meshGraphPath))
+        self.meshSubject= next(s for s in self.meshGraph.subjects() if 'parking' in s.toPython() )
         print(f'    loaded {self.meshGraphPath}')           
 
         # #IFC
