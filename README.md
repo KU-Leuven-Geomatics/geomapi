@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/KU-Leuven-Geomatics/geomapi/badge.svg?branch=main)](https://coveralls.io/github/KU-Leuven-Geomatics/geomapi?branch=main)
+
 ![geomapiLogo](docs/source/_static/geomapi_logo.png?width=64)
 
 # GEOMAPI
