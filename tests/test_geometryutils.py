@@ -45,7 +45,7 @@ class TestGeometryutils(unittest.TestCase):
 
 
 
- ################################## SETUP/TEARDOWN CLASS ######################
+################################## SETUP/TEARDOWN CLASS ######################
     @classmethod
     def setUpClass(cls):
         #execute once before all tests
