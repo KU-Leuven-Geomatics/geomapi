@@ -14,6 +14,7 @@ XlsxWriter
 trimesh
 shapely
 python-fcl
+trimesh
 ifcopenshell
 laspy
 scikit-learn
