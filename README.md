@@ -1,8 +1,10 @@
-[![Coverage Status](https://coveralls.io/repos/github/KU-Leuven-Geomatics/geomapi/badge.svg?branch=main)](https://coveralls.io/github/KU-Leuven-Geomatics/geomapi?branch=main)
+
 
 ![geomapiLogo](docs/source/_static/geomapi_logo.png?width=64)
 
 # GEOMAPI
+[![Coverage Status](https://coveralls.io/repos/github/KU-Leuven-Geomatics/geomapi/badge.svg?branch=main)](https://coveralls.io/github/KU-Leuven-Geomatics/geomapi?branch=main)
+
 This innovative toolbox, developped by [KU Leuven Geomatics](https://iiw.kuleuven.be/onderzoek/geomatics), jointly processes close-range sensing resources (point clouds, images) and BIM models for the AEC industry. 
 More specifically, we combine [semantic web technologies](https://en.wikipedia.org/wiki/Semantic_Web) with state-of-the-art open source geomatics APIs
 to process and analyse big data in construction applications.
@@ -46,11 +48,11 @@ If you want to cite us, refer to the following publication (accepted).
 }
 ```
 ## TEAM
-Meet the team behind this amazing API.
 - maarten.bassier@kuleuven.be (PI)
 - jelle.vermandere@kuleuven.be
 - sam.degeyter@kuleuven.be
 - heinder.dewinter@kuleuven.be
+---
 ![team](docs/source/_static/geomapi_team.PNG?width=64)
 
 ## Licensing
