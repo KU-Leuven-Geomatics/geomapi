@@ -1084,6 +1084,7 @@ def check_if_path_is_valid(path:str)-> bool:
     Returns:
         bool: True if exsists.
     """
+    path = str(path)
     folder=get_folder(path)
     if os.path.isdir(path):
         return True
