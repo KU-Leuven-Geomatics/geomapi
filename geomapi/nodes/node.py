@@ -561,7 +561,7 @@ class Node:
         elif ut.check_if_path_is_valid(self._graphPath):
             pass
         else: 
-            raise ValueError('No valid graphPath.')
+            raise ValueError(graphPath +  ' is no valid graphPath.')
         #check extension
         if (ut.get_extension(graphPath) not in ut.RDF_EXTENSIONS):
             raise ValueError(''.join(ut.RDF_EXTENSIONS) + ' currently are only supported extensions.')
