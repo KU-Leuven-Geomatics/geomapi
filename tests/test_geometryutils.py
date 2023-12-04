@@ -64,8 +64,8 @@ class TestGeometryutils(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         #execute once after all tests
-        if os.path.exists(cls.dataLoaderParking.resourcePath):
-            shutil.rmtree(cls.dataLoaderParking.resourcePath)  
+        # if os.path.exists(cls.dataLoaderParking.resourcePath):
+        #     shutil.rmtree(cls.dataLoaderParking.resourcePath)  
         print('-----------------TearDown Class----------------------')   
  
 
