@@ -3,6 +3,8 @@
 ![geomapiLogo](docs/source/_static/geomapi_logo.png?width=64)
 
 # GEOMAPI
+![Python](https://img.shields.io/pypi/pyversions/geomapi.svg?logo=python&logoColor=FBE072)
+![License](https://img.shields.io/pypi/l/geomapi)
 [![PyPI version](https://badge.fury.io/py/geomapi.svg)](https://badge.fury.io/py/geomapi)
 [![Coverage Status](https://coveralls.io/repos/github/KU-Leuven-Geomatics/geomapi/badge.svg?branch=main)](https://coveralls.io/github/KU-Leuven-Geomatics/geomapi?branch=main)
 
@@ -21,6 +23,7 @@ pip install geomapi
 ## Documentation
 
 You can read the full API reference here:
+
 [Documentation](https://ku-leuven-geomatics.github.io/geomapi/index.html)
 
 
