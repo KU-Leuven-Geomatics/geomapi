@@ -335,7 +335,8 @@ class TestNode(unittest.TestCase):
         self.assertRaises(ValueError,node.to_graph,testPath,save=True)
 
     def test_save_graph(self):
-        tempGraphPath=os.path.join(self.dataLoader.resourcePath,'node.ttl')
+        tempGraphPath= str(self.dataLoader.resourcePath / 'node.ttl')
+        # os.path.join(self.dataLoader.resourcePath,'node.ttl')
 
         #node with only subject
         subject='node'
