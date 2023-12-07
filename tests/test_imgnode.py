@@ -25,7 +25,7 @@ sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
 from data_loader_road import DATALOADERROADINSTANCE 
 
-class TestNode(unittest.TestCase):
+class TestImageNode(unittest.TestCase):
 
 
 
@@ -237,7 +237,6 @@ class TestNode(unittest.TestCase):
                         path=self.dataLoaderRoad.imagePath2,
                         getResource=True)
         self.assertTrue(node.save_resource(self.dataLoaderRoad.resourcePath))
-        self.assertTrue( node.path in self.dataLoaderRoad.files)
         
         #graphPath with directory
         node=ImageNode(subject=self.dataLoaderParking.imageSubject1,

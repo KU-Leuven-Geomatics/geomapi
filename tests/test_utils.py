@@ -363,10 +363,7 @@ class TestUtils(unittest.TestCase):
 
     def test_check_if_subject_is_in_graph(self):
         #http
-        self.assertTrue(ut.check_if_subject_is_in_graph(self.dataLoaderRoad.sessionGraph,next(s for s in self.dataLoaderRoad.sessionGraph.subjects(RDF.type))))
-
-        #file
-        self.assertTrue(ut.check_if_subject_is_in_graph(self.dataLoaderRoad.sessionGraph,next(s for s in self.dataLoaderRoad.sessionGraph.subjects(RDF.type))))
+        self.assertTrue(ut.check_if_subject_is_in_graph(self.dataLoaderRoad.imgGraph,next(s for s in self.dataLoaderRoad.imgGraph.subjects(RDF.type))))
 
         #random
         graph=Graph()
