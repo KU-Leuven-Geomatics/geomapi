@@ -541,7 +541,7 @@ class SessionNode(GeometryNode):
                         points.extend(box.get_box_points()) 
             pcd= o3d.geometry.PointCloud()
             pcd.points=points
-            self._resource=pcd.compute_convex_hull()   
+            self._resource,_=pcd.compute_convex_hull()   
         return self._resource  
 
     

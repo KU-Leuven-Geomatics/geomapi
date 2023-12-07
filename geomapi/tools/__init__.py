@@ -12,6 +12,7 @@ import pye57
 import pandas as pd
 import xml.etree.ElementTree as ET 
 from typing import List,Tuple
+from pathlib import Path
 
 # import APIs
 import rdflib
@@ -40,7 +41,7 @@ loa=rdflib.Namespace('https://docplayer.net/131921614-Usibd-level-of-accuracy-lo
 ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')
 
 #### NODE CREATION ####
-def e57xml_to_nodes(e57XmlPath :str, **kwargs) -> List[PointCloudNode]:
+def e57xml_to_nodes(path :str, **kwargs) -> List[PointCloudNode]:
     """Parse XML file that is created with E57lib e57xmldump.exe.
 
     Args:
@@ -49,31 +50,33 @@ def e57xml_to_nodes(e57XmlPath :str, **kwargs) -> List[PointCloudNode]:
     Returns:
         A list of pointcloudnodes with the xml metadata 
     """
-    if os.path.exists(e57XmlPath) and e57XmlPath.endswith('.xml'):    
-        #E57 XML file structure
-        #e57Root
-        #   >data3D
-        #       >vectorChild
-        #           >pose
-        #               >rotation
-        #               >translation
-        #           >cartesianBounds
-        #           >guid
-        #           >name
-        #           >points recordCount
-        #   >images2D
-        mytree = ET.parse(e57XmlPath)
-        root = mytree.getroot()  
-        nodelist=[]   
-        e57Path=e57XmlPath.replace('.xml','.e57')       
+    path=Path(path)
+    assert path.exists(), f'File does not exist.'
+    assert path.suffix.lower() == '.xml', f'File does not end with xml.' 
+    
+    #E57 XML file structure
+    #e57Root
+    #   >data3D
+    #       >vectorChild
+    #           >pose
+    #               >rotation
+    #               >translation
+    #           >cartesianBounds
+    #           >guid
+    #           >name
+    #           >points recordCount
+    #   >images2D
+    mytree = ET.parse(path)
+    root = mytree.getroot()  
+    nodelist=[]   
+    e57Path=path.with_suffix('.e57')       
 
-        for idx,child in enumerate(root.iter('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}vectorChild')):
-            nodelist.append(PointCloudNode(e57XmlPath=e57XmlPath,e57Index=idx,path=e57Path,**kwargs))
-        return nodelist
-    else:
-        raise ValueError('No valid e57XmlPath.')
+    for idx,_ in enumerate(root.iter('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}vectorChild')):
+        nodelist.append(PointCloudNode(e57XmlPath=path,e57Index=idx,path=e57Path,**kwargs))
+    return nodelist
 
-def img_xml_to_nodes(xmlPath :str,skip:int=None, filterByFolder:bool=False,**kwargs) -> List[ImageNode]:
+
+def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs) -> List[ImageNode]:
     """Parse XML file that is created with https://www.agisoft.com/.
 
     Args:
@@ -85,11 +88,11 @@ def img_xml_to_nodes(xmlPath :str,skip:int=None, filterByFolder:bool=False,**kwa
         A list of ImageNodes with the xml metadata 
     """
     assert skip == None or skip >0, f'skip == None or skip '
-    assert os.path.exists(xmlPath), f'File does not exist.'
-    assert xmlPath.endswith('.xml'), f'File does not end with xml.' 
+    assert Path(path).exists(), f'File does not exist.'
+    assert Path(path).suffix.lower() == '.xml', f'File does not end with xml.' 
     
     #open xml
-    mytree = ET.parse(xmlPath)
+    mytree = ET.parse(path)
     root = mytree.getroot()  
 
     #get reference
@@ -137,7 +140,7 @@ def img_xml_to_nodes(xmlPath :str,skip:int=None, filterByFolder:bool=False,**kwa
             continue
     
     #get image names in folder
-    files=ut.get_list_of_files(ut.get_folder(xmlPath))
+    files=ut.get_list_of_files(ut.get_folder(path))
     files=[f for f in files if (f.endswith('.JPG') or 
                                 f.endswith('.PNG') or 
                                 f.endswith('.jpg') or
@@ -264,7 +267,7 @@ def e57path_to_nodes_mutiprocessing(e57Path:str,percentage:float=1.0) ->List[Poi
             nodes.append(node)
     return nodes
 
-def e57header_to_nodes(e57Path:str, **kwargs) -> List[PointCloudNode]:
+def e57header_to_nodes(path:str, **kwargs) -> List[PointCloudNode]:
     """
     Parse e57 file header that is created with E57lib e57xmldump.exe.
 
@@ -274,17 +277,18 @@ def e57header_to_nodes(e57Path:str, **kwargs) -> List[PointCloudNode]:
     Returns:
         A list of pointcloudnodes with the xml metadata 
     """
-    if os.path.exists(e57Path) and e57Path.endswith('.e57'):    
+    path=Path(path)
+    assert path.exists(), f'File does not exist.'
+    assert path.suffix.lower() == '.e57', f'File does not end with .57.' 
+    
+    nodelist=[]   
+    e57 = pye57.E57(str(path))   
+    gmu.e57_update_point_field(e57)
 
-        nodelist=[]   
-        e57 = pye57.E57(e57Path)   
-        gmu.e57_update_point_field(e57)
+    for idx in range(e57.scan_count):
+        nodelist.append(PointCloudNode(path=path,e57Index=idx, **kwargs))
+    return nodelist
 
-        for idx in range(e57.scan_count):
-            nodelist.append(PointCloudNode(path=e57Path,e57Index=idx, **kwargs))
-        return nodelist
-    else:
-        raise ValueError('No valid e57Path.')
 
 def get_loaclasses_from_ifcclass(ifcClass:str)->URIRef:
     """ Return the matching LOA class given a ifcClass e.g. IfcWall -> URIRef('https://B2010_EXTERIOR_WALLS').
@@ -543,7 +547,7 @@ def get_loa_class_per_bimnode(BIMNodes:List[BIMNode] , ExcelPath:str=None):
             if attr not in ['classes','type']:
                 setattr(n,attr,o.toPython()) 
 
-def ifc_to_nodes(ifcPath:str, classes:str='.IfcBuildingElement',getResource : bool=True,**kwargs)-> List[BIMNode]:
+def ifc_to_nodes(path:str, classes:str='.IfcBuildingElement',getResource : bool=True,**kwargs)-> List[BIMNode]:
     """
     Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
 
@@ -566,19 +570,21 @@ def ifc_to_nodes(ifcPath:str, classes:str='.IfcBuildingElement',getResource : bo
     Returns:
         List[BIMNode]
     """   
-    if os.path.exists(ifcPath) and ifcPath.endswith('.ifc'):    
-        nodelist=[]   
-        ifc = ifcopenshell.open(ifcPath)   
-        selector = Selector()
-        for ifcElement in selector.parse(ifc, classes):
-            node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
-            node.ifcPath=ifcPath
-            nodelist.append(node)
-        return nodelist
-    else:
-        raise ValueError('No valid ifcPath.')
+    path=Path(path)
+    assert path.exists(), f'File does not exist.'
+    assert path.suffix.lower() == '.ifc', f'File does not end with .ifc.' 
+    
+    nodelist=[]   
+    ifc = ifcopenshell.open(str(path))   
+    selector = Selector()
+    for ifcElement in selector.parse(ifc, classes):
+        node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
+        node.ifcPath=path
+        nodelist.append(node)
+    return nodelist
 
-def ifc_to_nodes_by_guids(ifcPath:str, guids:list,getResource : bool=True,**kwargs)-> List[BIMNode]:
+
+def ifc_to_nodes_by_guids(path:str, guids:list,getResource : bool=True,**kwargs)-> List[BIMNode]:
     """
     Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
 
@@ -591,19 +597,22 @@ def ifc_to_nodes_by_guids(ifcPath:str, guids:list,getResource : bool=True,**kwar
     Returns:
         List[BIMNode]
     """ 
-    assert os.path.exists(ifcPath) and ifcPath.endswith('.ifc')
-    ifc_file = ifcopenshell.open(ifcPath)
+    path=Path(path)
+    assert path.exists(), f'File does not exist.'
+    assert path.suffix.lower() == '.ifc', f'File does not end with .ifc.' 
+    
+    ifc_file = ifcopenshell.open(str(path))
     nodelist=[]   
     for guid in guids:
         ifcElements = ifc_file.by_id(guid)
         ifcElements=ut.item_to_list(ifcElements)
         for ifcElement in ifcElements:
             node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
-            node.ifcPath=ifcPath
+            node.ifcPath=path
             nodelist.append(node)
     return nodelist
 
-def ifc_to_nodes_by_type(ifcPath:str, types:list=['IfcBuildingElement'],getResource : bool=True,**kwargs)-> List[BIMNode]:
+def ifc_to_nodes_by_type(path:str, types:list=['IfcBuildingElement'],getResource : bool=True,**kwargs)-> List[BIMNode]:
     """
     Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
 
@@ -623,27 +632,27 @@ def ifc_to_nodes_by_type(ifcPath:str, types:list=['IfcBuildingElement'],getResou
     Returns:
         List[BIMNode]
     """   
-    #validate types
-
-    if os.path.exists(ifcPath) and ifcPath.endswith('.ifc'):    
-        try:
-            ifc_file = ifcopenshell.open(ifcPath)
-        except:
-            print(ifcopenshell.get_log())
-        else:
-            nodelist=[]   
-            for type in types:
-                ifcElements = ifc_file.by_type(type)
-                ifcElements=ut.item_to_list(ifcElements)
-                for ifcElement in ifcElements:
-                    node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
-                    node.ifcPath=ifcPath
-                    nodelist.append(node)
-            return nodelist
+    path=Path(path)
+    assert path.exists(), f'File does not exist.'
+    assert path.suffix.lower() == '.ifc', f'File does not end with .ifc.' 
+    
+    try:
+        ifc_file = ifcopenshell.open(path)
+    except:
+        print(ifcopenshell.get_log())
     else:
-        raise ValueError('No valid ifcPath.')
+        nodelist=[]   
+        for type in types:
+            ifcElements = ifc_file.by_type(type)
+            ifcElements=ut.item_to_list(ifcElements)
+            for ifcElement in ifcElements:
+                node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
+                node.ifcPath=path
+                nodelist.append(node)
+        return nodelist
 
-def ifc_to_nodes_multiprocessing(ifcPath:str, **kwargs)-> List[BIMNode]:
+
+def ifc_to_nodes_multiprocessing(path:str, **kwargs)-> List[BIMNode]:
     """Returns the contents of geometry elements in an ifc file as BIMNodes.\n
     This method is 3x faster than other parsing methods due to its multi-threading.\n
     However, only the entire ifc can be parsed.\n
@@ -660,57 +669,59 @@ def ifc_to_nodes_multiprocessing(ifcPath:str, **kwargs)-> List[BIMNode]:
     Returns:
         List[BIMNode]
     """
-    if os.path.exists(ifcPath) and ifcPath.endswith('.ifc'):  
-        try:
-            ifc_file = ifcopenshell.open(ifcPath)
-        except:
-            print(ifcopenshell.get_log())
-        else: 
-            nodelist=[]   
-            timestamp=ut.get_timestamp(ifcPath)
-            settings = ifcopenshell.geom.settings()
-            settings.set(settings.USE_WORLD_COORDS, True) 
-            iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
-            if iterator.initialize():
-                while True:
-                    shape = iterator.get()
-                    ifcElement = ifc_file.by_guid(shape.guid) 
-                    faces = shape.geometry.faces # Indices of vertices per triangle face e.g. [f1v1, f1v2, f1v3, f2v1, f2v2, f2v3, ...]
-                    verts = shape.geometry.verts # X Y Z of vertices in flattened list e.g. [v1x, v1y, v1z, v2x, v2y, v2z, ...]
-                    # materials = shape.geometry.materials # Material names and colour style information that are relevant to this shape
-                    # material_ids = shape.geometry.material_ids # Indices of material applied per triangle face e.g. [f1m, f2m, ...]
+    path=Path(path)
+    assert path.exists(), f'File does not exist.'
+    assert path.suffix.lower() == '.ifc', f'File does not end with .ifc.' 
+    
+    try:
+        ifc_file = ifcopenshell.open(path)
+    except:
+        print(ifcopenshell.get_log())
+    else: 
+        nodelist=[]   
+        timestamp=ut.get_timestamp(path)
+        settings = ifcopenshell.geom.settings()
+        settings.set(settings.USE_WORLD_COORDS, True) 
+        iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
+        if iterator.initialize():
+            while True:
+                shape = iterator.get()
+                ifcElement = ifc_file.by_guid(shape.guid) 
+                faces = shape.geometry.faces # Indices of vertices per triangle face e.g. [f1v1, f1v2, f1v3, f2v1, f2v2, f2v3, ...]
+                verts = shape.geometry.verts # X Y Z of vertices in flattened list e.g. [v1x, v1y, v1z, v2x, v2y, v2z, ...]
+                # materials = shape.geometry.materials # Material names and colour style information that are relevant to this shape
+                # material_ids = shape.geometry.material_ids # Indices of material applied per triangle face e.g. [f1m, f2m, ...]
 
-                    # Since the lists are flattened, you may prefer to group them per face like so depending on your geometry kernel
-                    grouped_verts = [[verts[i], verts[i + 1], verts[i + 2]] for i in range(0, len(verts), 3)]
-                    grouped_faces = [[faces[i], faces[i + 1], faces[i + 2]] for i in range(0, len(faces), 3)]
+                # Since the lists are flattened, you may prefer to group them per face like so depending on your geometry kernel
+                grouped_verts = [[verts[i], verts[i + 1], verts[i + 2]] for i in range(0, len(verts), 3)]
+                grouped_faces = [[faces[i], faces[i + 1], faces[i + 2]] for i in range(0, len(faces), 3)]
 
-                    #Convert grouped vertices/faces to Open3D objects 
-                    o3dVertices = o3d.utility.Vector3dVector(np.asarray(grouped_verts))
-                    o3dTriangles = o3d.utility.Vector3iVector(np.asarray(grouped_faces))
+                #Convert grouped vertices/faces to Open3D objects 
+                o3dVertices = o3d.utility.Vector3dVector(np.asarray(grouped_verts))
+                o3dTriangles = o3d.utility.Vector3iVector(np.asarray(grouped_faces))
 
-                    # Create the Open3D mesh object
-                    mesh=o3d.geometry.TriangleMesh(o3dVertices,o3dTriangles)
+                # Create the Open3D mesh object
+                mesh=o3d.geometry.TriangleMesh(o3dVertices,o3dTriangles)
 
-                    #if mesh, create node
-                    if len(mesh.triangles)>1:
-                        node=BIMNode(**kwargs)
-                        node.name=ifcElement.Name
-                        node.className=ifcElement.is_a()
-                        node.globalId=ifcElement.GlobalId
-                        if node.name and node.globalId:
-                            node.subject= node.name +'_'+node.globalId 
-                        node.resource=mesh
-                        node.get_metadata_from_resource()
-                        node.timestamp=timestamp
-                        node.ifcPath=ifcPath
-                        node.objectType =ifcElement.ObjectType
-                        nodelist.append(node)
-                        
-                    if not iterator.next():
-                        break
-            return nodelist
-    else:
-        raise ValueError('No valid ifcPath.') 
+                #if mesh, create node
+                if len(mesh.triangles)>1:
+                    node=BIMNode(**kwargs)
+                    node.name=ifcElement.Name
+                    node.className=ifcElement.is_a()
+                    node.globalId=ifcElement.GlobalId
+                    if node.name and node.globalId:
+                        node.subject= node.name +'_'+node.globalId 
+                    node.resource=mesh
+                    node.get_metadata_from_resource()
+                    node.timestamp=timestamp
+                    node.ifcPath=path
+                    node.objectType =ifcElement.ObjectType
+                    nodelist.append(node)
+                    
+                if not iterator.next():
+                    break
+        return nodelist
+
 
 
 ##### NODE SELECTION #####
@@ -1029,7 +1040,7 @@ def nodes_to_graph(nodelist : List[Node], graphPath:str =None, overwrite: bool =
 
 #### OBSOLETE #####
 
-def graph_path_to_nodes(graphPath : str,**kwargs) -> List[Node]:
+def graph_path_to_nodes(path : str,**kwargs) -> List[Node]:
     """Convert a graphPath to a set of Nodes.
 
     Args:
@@ -1039,15 +1050,16 @@ def graph_path_to_nodes(graphPath : str,**kwargs) -> List[Node]:
     Returns:
         A list of pointcloudnodes, imagenodes, meshnodes, bimnodes, orthonodes with metadata 
     """    
-    if os.path.exists(graphPath) and graphPath.endswith('.ttl'):
-        nodelist=[]
-        graph=Graph().parse(graphPath)
-        for subject in graph.subjects(RDF.type):
-            myGraph=ut.get_subject_graph(graph,subject)
-            nodelist.append(create_node(graph=myGraph,graphPath=graphPath,subject=subject,**kwargs) )
-        return nodelist
-    else:
-        raise ValueError('No valid graphPath (only .ttl).')
+    path=Path(path)
+    assert path.exists(), f'File does not exist.'
+    assert path.suffix.lower() == '.ttl', f'File does not end with .ttl.'
+     
+    nodelist=[]
+    graph=Graph().parse(path)
+    for subject in graph.subjects(RDF.type):
+        myGraph=ut.get_subject_graph(graph,subject)
+        nodelist.append(create_node(graph=myGraph,graphPath=path,subject=subject,**kwargs) )
+    return nodelist
 
 def graph_to_nodes(graph : Graph,**kwargs) -> List[Node]:
     """Convert a graph to a set of Nodes.

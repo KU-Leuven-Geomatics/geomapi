@@ -128,7 +128,7 @@ class PointCloudNode (GeometryNode):
         else:
             raise ValueError('Resource must be an o3d.geometry.PointCloud with len(resource.points) >=3 or an pye57.e57.E57 instance.')
 
-    def get_resource(self, percentage:float=0.1) -> o3d.geometry.PointCloud:
+    def get_resource(self, percentage:float=1.0) -> o3d.geometry.PointCloud:
         """Returns the pointcloud data in the node. \n
         If none is present, it will search for the data on drive from path, graphPath, name or subject. 
 

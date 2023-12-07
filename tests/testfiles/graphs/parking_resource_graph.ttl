@@ -61,7 +61,7 @@
     v4d:xmpPath "IMG_8834.xmp" ;
     openlabel:timestamp "2023-11-23T15:10:19" .
 	
-<file:///parking> a v4d:PointCloudNode ;
+<file:///parking2> a v4d:PointCloudNode ;
     e57:cartesianBounds "[17.38922501 79.04823303 38.1408577  71.8666153   0.8287577   9.90541553]" ;
     e57:cartesianTransform """[[ 1.          0.          0.         47.46935912]
  [ 0.          1.          0.         55.46003894]

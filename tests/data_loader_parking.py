@@ -45,6 +45,10 @@ class DataLoaderParking:
         self.resourceGraphPath=self.path /  'graphs' / 'parking_resource_graph.ttl'
         self.resourceGraph=Graph().parse(str(self.resourceGraphPath))
         print(f'    loaded {self.resourceGraphPath}')
+        #SESSION
+        self.sessionGraphPath=self.path /  'graphs' / 'parking_session_graph.ttl'
+        self.sessionGraph=Graph().parse(str(self.sessionGraphPath))
+        print(f'    loaded {self.sessionGraphPath}')
         
         #POINTCLOUD
         self.pcdPath=self.path / 'pcd'/"parking.pcd"
@@ -52,14 +56,14 @@ class DataLoaderParking:
         print(f'    loaded {self.pcd}')
 
         self.e57Path1=self.path / 'pcd'/"lidar.e57"
-        self.xmlPath=self.path / 'pcd'/"lidar.xml"
-        e57_1 = pye57.E57( str(self.e57Path1))
-        self.e571=e57_1.read_scan_raw(1) 
+        self.e57XmlPath=self.path / 'pcd'/"lidar.xml"
+        self.e571 = pye57.E57( str(self.e57Path1))
+        self.e571Data=self.e571.read_scan_raw(1) 
         print(f'    loaded {self.e57Path1}')
 
         self.e57Path2=self.path / 'pcd'/"parking.e57"
-        e57_2 = pye57.E57( str(self.e57Path2))
-        self.e572=e57_2.read_scan_raw(0) 
+        self.e572 = pye57.E57( str(self.e57Path2))
+        self.e572Data=self.e572.read_scan_raw(0) 
         print(f'    loaded {self.e57Path2}')
         
         self.lasPath=self.path / 'pcd'/"parking.las"
@@ -68,6 +72,7 @@ class DataLoaderParking:
         
         self.pcdGraphPath=self.path / 'graphs' /  'pcd_graph.ttl'
         self.pcdGraph=Graph().parse(self.pcdGraphPath)
+        self.pcdSubject=next(s for s in self.pcdGraph.subjects() if 'parking' in s.toPython() )
         print(f'    loaded {self.pcdGraphPath}')           
 
         #MESH
@@ -87,7 +92,7 @@ class DataLoaderParking:
         
         self.ifcGraphPath=self.path /  'graphs' / 'parking_ifc_graph.ttl'
         self.ifcGraph=Graph().parse(str(self.ifcGraphPath))
-        print(f'loaded {self.ifcGraphPath}')      
+        print(f'    loaded {self.ifcGraphPath}')      
         
         self.ifc = ifcopenshell.open(str(self.ifcPath))   
         self.ifcSlab=self.ifc.by_guid('2qZtnImXH6Tgdb58DjNlmF')

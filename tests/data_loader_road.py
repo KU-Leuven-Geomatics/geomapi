@@ -41,10 +41,10 @@ class DataLoaderRoad:
         self.path= Path.cwd() / "tests" / "testfiles"  if not path else path
         PATH=self.path
         
-        #SESSION
-        self.sessionGraphPath=self.path /  'graphs' / 'parking_resource_graph.ttl'
-        self.sessionGraph=Graph().parse(str(self.sessionGraphPath))
-        print(f'    loaded {self.sessionGraphPath}')
+        # #SESSION
+        # self.sessionGraphPath=self.path /  'graphs' / 'road_session_graph.ttl'
+        # self.sessionGraph=Graph().parse(str(self.sessionGraphPath))
+        # print(f'    loaded {self.sessionGraphPath}')
         
         #CAD
         # self.cadPath= self.path / 'cad' / "road.dxf"
@@ -86,15 +86,17 @@ class DataLoaderRoad:
         #POINTCLOUD
         self.pcdPath=self.path / 'pcd'/"road.pcd"
         self.pcd=o3d.io.read_point_cloud(str(self.pcdPath))
+
         print(f'    loaded {self.pcd}')
 
         self.e57Path=self.path / 'pcd'/"lidar.e57"
-        e57 = pye57.E57( str(self.e57Path))
-        self.e57=e57.read_scan_raw(0) 
+        self.e57 = pye57.E57( str(self.e57Path))
+        self.e57Data=self.e57.read_scan_raw(0) 
         print(f'    loaded {self.e57Path}')
         
         self.pcdGraphpath=self.path / 'graphs' /  'pcd_graph.ttl'
         self.pcdGraph=Graph().parse(str(self.pcdGraphpath))
+        self.pcdSubject=next(s for s in self.pcdGraph.subjects() if 'road' in s.toPython() )
         print(f'    loaded {self.pcdGraphpath}')
         
         #MESH
