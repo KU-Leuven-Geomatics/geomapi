@@ -9,5 +9,6 @@ from .imagenode import ImageNode
 from .orthonode import OrthoNode
 from .linesetnode import LinesetNode
 from .sessionnode import SessionNode
+from .panonode import PanoNode
 
 

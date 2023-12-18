@@ -593,7 +593,8 @@ class ImageNode(Node):
                 if 'Coordinates' in attribute:
                     self.coordinateSystem=child.attrib[attribute]
                 if 'FocalLength35mm' in attribute:
-                    self.focalLength35mm=ut.xml_to_float(child.attrib[attribute])
+                    f=ut.xml_to_float(child.attrib[attribute])
+                    self.focalLength35mm=f/36*self.imageWidth if getattr(self,'imageWdith',None) else f#! multiple definitions possible  
                 if 'PrincipalPointU' in attribute:
                     self.principalPointU=ut.xml_to_float(child.attrib[attribute])
                 if 'PrincipalPointV' in attribute:
@@ -603,13 +604,13 @@ class ImageNode(Node):
             rotationnode=child.find('{http://www.capturingreality.com/ns/xcr/1.1#}Rotation')
             rotation=None
             if rotationnode is not None:
-                rotation=ut.string_to_rotation_matrix(rotationnode.text)
+                rotation=ut.string_to_rotation_matrix(rotationnode.text).T #! RC uses column-based rotaton matrix
 
             positionnode=child.find('{http://www.capturingreality.com/ns/xcr/1.1#}Position')
             translation=None
             if positionnode is not None:
                 translation=np.asarray(ut.string_to_list(positionnode.text))
-             
+              
             self.cartesianTransform=gmu.get_cartesian_transform(translation=translation,rotation=rotation)
             
             coeficientnode=child.find('{http://www.capturingreality.com/ns/xcr/1.1#}DistortionCoeficients')

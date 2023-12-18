@@ -4,7 +4,6 @@ import math
 import cv2
 from scipy import signal
 
-
 def compute_balance_classes(nodes, number_of_classes:int)->np.array:
     """Compute the balance based on the mask of an image and the number of classes.
     
@@ -27,18 +26,19 @@ def compute_balance_classes(nodes, number_of_classes:int)->np.array:
     balance=np.round(sums/total, decimals=2)
     return balance
 
-def depth_map_to_hha(C, D, RD):
-    """
-    https://github.com/charlesCXK/Depth2HHA-python
+def depth_map_to_hha(C:np.array, D:np.array, RD:np.array) -> np.array:
+    """Compute an image depth map to a more comprehensible HHA image according to https://github.com/charlesCXK/Depth2HHA-python
+    This HHA normalizes depth and embeds normal information, making the image significantly more informative.
     
+    **NOTE**: this take about 9min to compute for a 24Mp image.
 
     Args:
-        C: Camera matrix
-        D: Depth image, the unit of each element in it is "meter"
-        RD: Raw depth image, the unit of each element in it is "meter"
+        C (np.array): Camera matrix
+        D (np.array): Depth image, the unit of each element in it is "meter"
+        RD (np.array): Raw depth image, the unit of each element in it is "meter"
 
     Returns:
-        _type_: _description_
+        np.array(): depth and normal colored image
     """
     missingMask = (RD == 0)
     pc, N, yDir, h, pcRot, NRot = processDepthImage(D * 100, missingMask, C)
@@ -77,12 +77,15 @@ def depth_map_to_hha(C, D, RD):
     HHA = I.astype(np.uint8)
     return HHA
 
-'''
-z: depth image in 'centimetres'
-missingMask: a mask
-C: camera matrix
-'''
+
 def processDepthImage(z, missingMask, C):
+    """Helper function of HHA
+
+    Args:
+        z (np.array): depth image in 'centimetres'
+        missingMask (np.array): a mask
+        C (np.array): camera matrix
+    """
     yDirParam_angleThresh = np.array([45, 15]) # threshold to estimate the direction of the gravity
     yDirParam_iter = np.array([5, 5])
     yDirParam_y0 = np.array([0, 1, 0])
@@ -126,13 +129,20 @@ def processDepthImage(z, missingMask, C):
 
     return pc, N, yDir, h,  pcRot, NRot
 
-'''
-getPointCloudFromZ: use depth image and camera matrix to get pointcloud
-Z is in 'centimetres'
-C: camera matrix
-s: is the factor by which Z has been upsampled
-'''
 def getPointCloudFromZ(Z, C, s=1):
+    """Clip out a 2R+1 x 2R+1 window at each point and estimate 
+        the normal from points within this window. In case the window 
+        straddles more than a single superpixel, only take points in the 
+        same superpixel as the centre pixel. 
+
+    Args:
+        Z (_type_): use depth image and camera matrix to get pointcloud Z is in 'centimetres'
+        C (_type_): camera matrix
+        s (int, optional): is the factor by which Z has been upsampled. Defaults to 1.
+
+    Returns:
+        _type_: _description_
+    """
     h, w= Z.shape
     xx, yy = np.meshgrid(np.array(range(w))+1, np.array(range(h))+1)
     # color camera parameters
@@ -143,21 +153,20 @@ def getPointCloudFromZ(Z, C, s=1):
     z3 = Z
     return x3, y3, z3
 
-'''
-  Clip out a 2R+1 x 2R+1 window at each point and estimate 
-  the normal from points within this window. In case the window 
-  straddles more than a single superpixel, only take points in the 
-  same superpixel as the centre pixel. 
-  
-Input:
-    depthImage: in meters
-    missingMask:  boolean mask of what data was missing
-    R: radius of clipping
-    sc: to upsample or not
-    superpixels:  superpixel map to define bounadaries that should
-                    not be straddled
-'''
 def computeNormalsSquareSupport(depthImage, missingMask, R, sc, cameraMatrix, superpixels):
+    """Helper function for HHA
+
+    Args:
+        depthImage (np.array): in meters
+        missingMask (np.array): boolean mask of what data was missing
+        R (np.array): radius of clipping
+        sc (np.array):  to upsample or not
+        cameraMatrix (np.array): intrinsic camera matrix
+        superpixels (np.array):  superpixel map to define bounadaries that should not be straddled
+
+    Returns:
+        _type_: _description_
+    """
     depthImage = depthImage*100     # convert to centi metres
     X, Y, Z = getPointCloudFromZ(depthImage, cameraMatrix, sc)
     Xf = X
@@ -223,8 +232,17 @@ def computeNormalsSquareSupport(depthImage, missingMask, R, sc, cameraMatrix, su
     b = np.multiply(b, sn)
     return N, b
 
-
 def filterItChopOff(f, r, sp):
+    """Helper function for HHA
+
+    Args:
+        f (_type_): _description_
+        r (_type_): _description_
+        sp (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     f[np.isnan(f)] = 0
     H, W, d = f.shape
     B = np.ones([2 * r + 1, 2 * r + 1])     # 2r+1 * 2r+1 neighbourhood
@@ -261,10 +279,16 @@ def filterItChopOff(f, r, sp):
     fFilt = fFilt - delta
     return fFilt
 
-'''
-helper function
-'''
 def mutiplyIt(AtA_1, Atb):
+    """Helper function for HHA
+
+    Args:
+        AtA_1 (np.array): 
+        Atb (np.array): 
+
+    Returns:
+        (np.array):  result
+    """
     result = np.zeros([Atb.shape[0], Atb.shape[1], 3])
     result[:, :, 0] = np.multiply(AtA_1[:, :, 0], Atb[:, :, 0]) + np.multiply(AtA_1[:, :, 1],
                                                                               Atb[:, :, 1]) + np.multiply(
@@ -277,10 +301,15 @@ def mutiplyIt(AtA_1, Atb):
         AtA_1[:, :, 5], Atb[:, :, 2])
     return result
 
-'''
-helper function
-'''
 def invertIt(AtA):
+    """Helper function for HHA
+
+    Args:
+        AtA (np.array): 
+
+    Returns:
+        (np.array,np.array):  AtA_1, detAta
+    """
     AtA_1 = np.zeros([AtA.shape[0], AtA.shape[1], 6])
     AtA_1[:, :, 0] = np.multiply(AtA[:, :, 3], AtA[:, :, 5]) - np.multiply(AtA[:, :, 4], AtA[:, :, 4])
     AtA_1[:, :, 1] = -np.multiply(AtA[:, :, 1], AtA[:, :, 5]) + np.multiply(AtA[:, :, 2], AtA[:, :, 4])
@@ -296,25 +325,36 @@ def invertIt(AtA):
     detAta = x1 + x2 + x3
     return AtA_1, detAta
 
-'''
-Compute the direction of gravity
-N: normal field
-iter: number of 'big' iterations
-'''
 def getYDir(N, angleThresh, iter, y0):
+    """Helper function for HHA.
+
+    Args:
+        N (_type_): HxWx3 matrix with normal at each pixel.
+        angleThresh (_type_): in degrees the threshold for mapping to parallel to gravity and perpendicular to gravity
+        iter (_type_): number of iterations to perform
+        y0 (_type_): the initial gravity direction
+
+    Returns:
+        _type_: _description_
+    """
     y = y0
     for i in range(len(angleThresh)):
         thresh = np.pi * angleThresh[i] / 180   # convert it to radian measure
         y = getYDirHelper(N, y, thresh, iter[i])
     return y
 
-'''
-N: HxWx3 matrix with normal at each pixel.
-y0: the initial gravity direction
-thresh: in degrees the threshold for mapping to parallel to gravity and perpendicular to gravity
-iter: number of iterations to perform
-'''
 def getYDirHelper(N, y0, thresh, num_iter):
+    """Helper function for HHA.
+
+    Args:
+        N (_type_): HxWx3 matrix with normal at each pixel.
+        angleThresh (_type_): in degrees the threshold for mapping to parallel to gravity and perpendicular to gravity
+        iter (_type_): number of iterations to perform
+        y0 (_type_): the initial gravity direction
+
+    Returns:
+        _type_: _description_
+    """
     dim = N.shape[0] * N.shape[1]
 
     # change the third dimension to the first-order. (480, 680, 3) => (3, 480, 680)
@@ -326,7 +366,7 @@ def getYDirHelper(N, y0, thresh, num_iter):
     nn = nn[:,idx]
 
     # Set it up as a optimization problem
-    yDir = y0;
+    yDir = y0
     for i in range(num_iter):
         sim0 = np.dot(yDir.T, nn)
         indF = abs(sim0) > np.cos(thresh)       # calculate 'floor' set.    |sin(theta)| < sin(thresh) ==> |cos(theta)| > cos(thresh)
@@ -346,15 +386,18 @@ def getYDirHelper(N, y0, thresh, num_iter):
         yDir = newYDir * np.sign(np.dot(yDir.T, newYDir))
     return yDir
 
-'''
-getRMatrix: Generate a rotation matrix that
+def getRMatrix(yi, yf):
+    """getRMatrix: Generate a rotation matrix that
             if yf is a scalar, rotates about axis yi by yf degrees
             if yf is an axis, rotates yi to yf in the direction given by yi x yf
-Input: yi is an axis 3x1 vector
-       yf could be a scalar of axis
 
-'''
-def getRMatrix(yi, yf):
+    Args:
+        yi (np.array): yi is an axis 3x1 vector
+        yf (np.array): yf could be a scalar of axis
+
+    Returns:
+        _type_: _description_
+    """
     if (np.isscalar(yf)):
         ax = yi / np.linalg.norm(yi)        # norm(A) = max(svd(A))
         phi = yf
@@ -377,10 +420,16 @@ def getRMatrix(yi, yf):
         R = np.eye(3)
     return R
 
-'''
-Calibration of gravity direction 
-'''
 def rotatePC(pc, R):
+    """Calibration of gravity direction 
+
+    Args:
+        pc (_type_): _description_
+        R (_type_): _description_
+
+    Returns:
+        _type_: _description_
+    """
     if(np.array_equal(R, np.eye(3))):
         return pc
     else:

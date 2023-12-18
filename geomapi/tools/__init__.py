@@ -50,9 +50,7 @@ def e57xml_to_nodes(path :str, **kwargs) -> List[PointCloudNode]:
     Returns:
         A list of pointcloudnodes with the xml metadata 
     """
-    path=Path(path)
-    assert path.exists(), f'File does not exist.'
-    assert path.suffix.lower() == '.xml', f'File does not end with xml.' 
+    path=Path(path) if path else None
     
     #E57 XML file structure
     #e57Root
@@ -80,16 +78,15 @@ def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs
     """Parse XML file that is created with https://www.agisoft.com/.
 
     Args:
-        1.xmlPath (string): xml file path e.g. "D:/Data/cameras.xml"
+        1.xmlPath (string or Path): xml file path e.g. "D:/Data/cameras.xml"
         2.skip (int, Optional): select every nth image from the xml. Defaults to None.
         3.filterByFolder (bool, Optional): Filter imgNodes based on the images in the folder or not. Defaults to False.
             
     Returns:
         A list of ImageNodes with the xml metadata 
     """
+    path=Path(path) if path else None
     assert skip == None or skip >0, f'skip == None or skip '
-    assert Path(path).exists(), f'File does not exist.'
-    assert Path(path).suffix.lower() == '.xml', f'File does not end with xml.' 
     
     #open xml
     mytree = ET.parse(path)
@@ -205,7 +202,7 @@ def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs
             continue
     return nodelist[0::skip] if skip else nodelist
 
-def e57path_to_nodes(e57Path:str,percentage:float=1.0) ->List[PointCloudNode]:
+def e57path_to_nodes(path:str,percentage:float=1.0) ->List[PointCloudNode]:
     """Load an e57 file and convert all data to a list of PointCloudNodes.\n
 
     **NOTE**: lowering the percentage barely affects assignment performance (numpy array assignments are extremely efficient). \n 
@@ -218,20 +215,22 @@ def e57path_to_nodes(e57Path:str,percentage:float=1.0) ->List[PointCloudNode]:
     Returns:
         o3d.geometry.PointCloud
     """    
-    e57 = pye57.E57(e57Path)
+    path=Path(path) if path else None
+    
+    e57 = pye57.E57(path)
     gmu.e57_update_point_field(e57)
     nodes=[]
     for s in range(e57.scan_count):
         resource=gmu.e57_to_pcd(e57,e57Index=s,percentage=percentage)
         node=PointCloudNode(resource=resource,
-                            path=e57Path,
+                            path=path,
                             e57Index=s,
                             percentage=percentage)
         node.pointCount=len(resource.points)
         nodes.append(node)
     return nodes
     
-def e57path_to_nodes_mutiprocessing(e57Path:str,percentage:float=1.0) ->List[PointCloudNode]:
+def e57path_to_nodes_mutiprocessing(path:str,percentage:float=1.0) ->List[PointCloudNode]:
     """Load an e57 file and convert all data to a list of PointCloudNodes.\n
 
     **NOTE**: Complex types cannot be pickled (serialized) by Windows. Therefore, a two step parsing is used where e57 data is first loaded as np.arrays with multi-processing.
@@ -248,19 +247,21 @@ def e57path_to_nodes_mutiprocessing(e57Path:str,percentage:float=1.0) ->List[Poi
 
     Returns:
         o3d.geometry.PointCloud
-    """    
-    e57 = pye57.E57(e57Path)
+    """   
+    path=Path(path) if path else None
+ 
+    e57 = pye57.E57(path)
     gmu.e57_update_point_field(e57)
 
     nodes=[]
     with concurrent.futures.ProcessPoolExecutor() as executor:
         # first load all e57 data and output it as np.arrays
-        results=[executor.submit(gmu.e57_to_arrays,e57Path=e57Path,e57Index=s,percentage=percentage) for s in range(e57.scan_count)]
+        results=[executor.submit(gmu.e57_to_arrays,e57Path=path,e57Index=s,percentage=percentage) for s in range(e57.scan_count)]
         # next, the arrays are assigned to point clouds outside the loop.
         for s,r in enumerate(concurrent.futures.as_completed(results)):
             resource=gmu.arrays_to_pcd(r.result())
             node=PointCloudNode(resource=resource,
-                                path=e57Path,
+                                path=path,
                                 e57Index=s,
                                 percentage=percentage)
             node.pointCount=len(resource.points)
@@ -268,8 +269,7 @@ def e57path_to_nodes_mutiprocessing(e57Path:str,percentage:float=1.0) ->List[Poi
     return nodes
 
 def e57header_to_nodes(path:str, **kwargs) -> List[PointCloudNode]:
-    """
-    Parse e57 file header that is created with E57lib e57xmldump.exe.
+    """Parse e57 file header that is created with E57lib e57xmldump.exe.
 
     Args:
         path (string):  e57 xml file path e.g. "D:\\Data\\2018-06 Werfopvolging Academiestraat Gent\\week 22\\PCD\\week 22 lidar_CC.xml"
@@ -277,9 +277,7 @@ def e57header_to_nodes(path:str, **kwargs) -> List[PointCloudNode]:
     Returns:
         A list of pointcloudnodes with the xml metadata 
     """
-    path=Path(path)
-    assert path.exists(), f'File does not exist.'
-    assert path.suffix.lower() == '.e57', f'File does not end with .57.' 
+    path=Path(path) if path else None
     
     nodelist=[]   
     e57 = pye57.E57(str(path))   
@@ -426,7 +424,7 @@ def get_ifcclasses_from_loaclass(loaClass:str)->Literal:
     
     return Literal(['IfcBuildingElement'])
 
-def create_default_loa_graph(LOAPath:str=None)->Graph:
+def create_default_loa_graph(path:str=None)->Graph:
     """Generates a Graph from the default USIBD_SPC-LOA_C220_2016_ver0_1 specification. This specification contains information on the accuraycy
     of building documentation and representation. \n
 
@@ -442,15 +440,16 @@ def create_default_loa_graph(LOAPath:str=None)->Graph:
     More documentation can be found on https://docplayer.net/131921614-Usibd-level-of-accuracy-loa-specification-guide.html# on how to use this specification.
 
     Args:
-        LOAPath (str, optional): path to CSV with USIBD values
+        path (str, optional): path to CSV with USIBD values
 
     Returns:
         Graph: graph with serialized accuracies, to be used in validation procedures
     """
+    path=Path(path)
     #load default dataframe
-    if not LOAPath:
-        LOAPath=os.path.join(os.path.abspath(os.path.join(os.getcwd(), os.pardir)),"geomapi",'tools','validationtools','LOA.csv')
-    LOAdataFrame = pd.read_csv(LOAPath,
+    if not path:
+        path=os.path.join(os.path.abspath(os.path.join(os.getcwd(), os.pardir)),"geomapi",'tools','validationtools','LOA.csv')
+    LOAdataFrame = pd.read_csv(path,
                         sep=';')
     graph=Graph()
     graph=ut.bind_ontologies(graph)        
@@ -465,7 +464,7 @@ def create_default_loa_graph(LOAPath:str=None)->Graph:
         graph.add((subject, ifc['classes'], get_ifcclasses_from_loaclass(row[0]))) 
     return graph
 
-def parse_loa_excel(excelPath:str) -> Graph:
+def parse_loa_excel(path:str) -> Graph:
     """Parse an USIBD_SPC-LOA_C220_2016_ver0_1.xlsx spreadsheet that contains meaured/represented accuracy parameters for building documentation procedures.
     The returned graph can be used by GEOMAPI or other linked data processes to validate remote sensing/BIM models. \n
 
@@ -480,12 +479,13 @@ def parse_loa_excel(excelPath:str) -> Graph:
     Returns:
         Graph: graph 
     """
+    path=Path(path)
     #read standard LOA graph
     graph=Graph().parse(os.path.join(os.path.abspath(os.path.join(os.getcwd(), os.pardir)),"geomapi",'tools','validationtools','loaGraph.ttl')) 
     subjects=[s for s in graph.subjects(RDF.type)]
 
     #read excel
-    dataFrame = pd.read_excel(excelPath,
+    dataFrame = pd.read_excel(path,
                     header=None,
                     na_filter=False)
 
@@ -523,7 +523,7 @@ def parse_loa_excel(excelPath:str) -> Graph:
             graph.set((subject,loa['validation'], Literal(list[0]) ))
     return graph
 
-def get_loa_class_per_bimnode(BIMNodes:List[BIMNode] , ExcelPath:str=None):
+def get_loa_class_per_bimnode(BIMNodes:List[BIMNode] , path:str=None):
     """Assigns the accuracy properties of an LOA Excel spreadsheet to the list of BIMNodes. 
     The assignment is based on the ifc classNames which are mapped to LOA classes. 
 
@@ -534,10 +534,11 @@ def get_loa_class_per_bimnode(BIMNodes:List[BIMNode] , ExcelPath:str=None):
 
     Args:
         BIMNodes (List[BIMNode]): List of nodes to assign the propteries to. 
-        ExcelPath (str, optional): Path to Excel spreadsheet. If None, the default LOA properties are assigned.
+        path (str, optional): Path to Excel spreadsheet. If None, the default LOA properties are assigned.
     """
+    path=Path(path)
     #parse Excel if present
-    loaGraph=parse_loa_excel(ExcelPath)
+    loaGraph=parse_loa_excel(path)
 
     #assign LOA properties
     for n in BIMNodes:
@@ -571,11 +572,9 @@ def ifc_to_nodes(path:str, classes:str='.IfcBuildingElement',getResource : bool=
         List[BIMNode]
     """   
     path=Path(path)
-    assert path.exists(), f'File does not exist.'
-    assert path.suffix.lower() == '.ifc', f'File does not end with .ifc.' 
     
     nodelist=[]   
-    ifc = ifcopenshell.open(str(path))   
+    ifc = ifcopenshell.open(path)   
     selector = Selector()
     for ifcElement in selector.parse(ifc, classes):
         node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
@@ -598,10 +597,8 @@ def ifc_to_nodes_by_guids(path:str, guids:list,getResource : bool=True,**kwargs)
         List[BIMNode]
     """ 
     path=Path(path)
-    assert path.exists(), f'File does not exist.'
-    assert path.suffix.lower() == '.ifc', f'File does not end with .ifc.' 
     
-    ifc_file = ifcopenshell.open(str(path))
+    ifc_file = ifcopenshell.open(path)
     nodelist=[]   
     for guid in guids:
         ifcElements = ifc_file.by_id(guid)
@@ -632,9 +629,7 @@ def ifc_to_nodes_by_type(path:str, types:list=['IfcBuildingElement'],getResource
     Returns:
         List[BIMNode]
     """   
-    path=Path(path)
-    assert path.exists(), f'File does not exist.'
-    assert path.suffix.lower() == '.ifc', f'File does not end with .ifc.' 
+    path=Path(path) 
     
     try:
         ifc_file = ifcopenshell.open(path)
@@ -670,8 +665,6 @@ def ifc_to_nodes_multiprocessing(path:str, **kwargs)-> List[BIMNode]:
         List[BIMNode]
     """
     path=Path(path)
-    assert path.exists(), f'File does not exist.'
-    assert path.suffix.lower() == '.ifc', f'File does not end with .ifc.' 
     
     try:
         ifc_file = ifcopenshell.open(path)
@@ -998,7 +991,7 @@ def get_mesh_representation(node: Node)->o3d.geometry.TriangleMesh:
     For ImageNodes, a virtual mesh cone is used with respect to the field of view.
 
     Args:
-        Node
+        Node (Node): geomapi node such as a PointCloudNode
 
     Returns:
         o3d.geometry.TriangleMesh 
@@ -1017,7 +1010,7 @@ def get_mesh_representation(node: Node)->o3d.geometry.TriangleMesh:
     else:
         return resource
 
-def nodes_to_graph(nodelist : List[Node], graphPath:str =None, overwrite: bool =False,save: bool =False) -> Graph:
+def nodes_to_graph(nodelist : List[Node], path:str =None, overwrite: bool =False,save: bool =False) -> Graph:
     """Convert list of nodes to an RDF graph.\n
 
     Args:
@@ -1029,13 +1022,14 @@ def nodes_to_graph(nodelist : List[Node], graphPath:str =None, overwrite: bool =
     Returns:
         Graph 
     """
+    path=Path(path) if path else None
     g=Graph()
     g=ut.bind_ontologies(g)
     for node in nodelist:
-            node.to_graph(graphPath,overwrite=overwrite)
+            node.to_graph(path,overwrite=overwrite)
             g+= node.graph
-    if(graphPath and save):
-        g.serialize(graphPath)     
+    if(path and save):
+        g.serialize(path)     
     return g  
 
 #### OBSOLETE #####
@@ -1050,9 +1044,7 @@ def graph_path_to_nodes(path : str,**kwargs) -> List[Node]:
     Returns:
         A list of pointcloudnodes, imagenodes, meshnodes, bimnodes, orthonodes with metadata 
     """    
-    path=Path(path)
-    assert path.exists(), f'File does not exist.'
-    assert path.suffix.lower() == '.ttl', f'File does not end with .ttl.'
+    path=Path(path) if path else None
      
     nodelist=[]
     graph=Graph().parse(path)
@@ -1096,17 +1088,20 @@ def graph_to_nodes(graph : Graph,**kwargs) -> List[Node]:
 #     else:
 #         node=Node(graph=g,**kwargs) 
 #     return node
+
 def create_node(graph: Graph = None, graphPath: str =None, subject: URIRef = None, resource = None, **kwargs)-> Node:
-    """_summary_
+    """Create Node from various optional inputs i.e. graphs, graphPaths, etc.
 
     Args:
-        graph (Graph, optional): _description_. Defaults to None.
-        graphPath (str, optional): _description_. Defaults to None.
-        subject (URIRef, optional): _description_. Defaults to None.
+        graph (Graph, optional): RDF Graph. 
+        path (str, optional): path to RDF graph.
+        subject (URIRef, optional): URI subject in the graph 
+        **kwargs are forwarded to created Nodes
 
     Returns:
         Node (PointCloudNode,MeshNode,GeometryNode,ImageNode)
     """
+    graphPath=Path(graphPath) if graphPath else None
     #input validation
     if(graphPath and not graph):
             graph = Graph().parse(graphPath)
