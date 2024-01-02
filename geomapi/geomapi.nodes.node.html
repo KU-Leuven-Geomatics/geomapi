@@ -1,0 +1,488 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.nodes.node &mdash; Geomapi 0.3.3 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=d5a15cff"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.nodes.orthonode" href="geomapi.nodes.orthonode.html" />
+    <link rel="prev" title="geomapi.nodes.meshnode" href="geomapi.nodes.meshnode.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.bimnode.html">geomapi.nodes.bimnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.geometrynode.html">geomapi.nodes.geometrynode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.imagenode.html">geomapi.nodes.imagenode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.linesetnode.html">geomapi.nodes.linesetnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.meshnode.html">geomapi.nodes.meshnode</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.nodes.node</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.nodes.node.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.__init__"><code class="docutils literal notranslate"><span class="pre">Node.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.path"><code class="docutils literal notranslate"><span class="pre">Node.path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.name"><code class="docutils literal notranslate"><span class="pre">Node.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.timestamp"><code class="docutils literal notranslate"><span class="pre">Node.timestamp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.graphPath"><code class="docutils literal notranslate"><span class="pre">Node.graphPath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.graph"><code class="docutils literal notranslate"><span class="pre">Node.graph</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.subject"><code class="docutils literal notranslate"><span class="pre">Node.subject</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.resource"><code class="docutils literal notranslate"><span class="pre">Node.resource</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.cartesianTransform"><code class="docutils literal notranslate"><span class="pre">Node.cartesianTransform</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.get_metadata_from_graph"><code class="docutils literal notranslate"><span class="pre">Node.get_metadata_from_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.get_subject"><code class="docutils literal notranslate"><span class="pre">Node.get_subject()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.get_timestamp"><code class="docutils literal notranslate"><span class="pre">Node.get_timestamp()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.get_name"><code class="docutils literal notranslate"><span class="pre">Node.get_name()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.get_subjectname"><code class="docutils literal notranslate"><span class="pre">Node.get_subjectname()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.set_cartesianTransform"><code class="docutils literal notranslate"><span class="pre">Node.set_cartesianTransform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.get_cartesianTransform"><code class="docutils literal notranslate"><span class="pre">Node.get_cartesianTransform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.get_resource"><code class="docutils literal notranslate"><span class="pre">Node.get_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.set_resource"><code class="docutils literal notranslate"><span class="pre">Node.set_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.clear_resource"><code class="docutils literal notranslate"><span class="pre">Node.clear_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.get_path"><code class="docutils literal notranslate"><span class="pre">Node.get_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.get_graph"><code class="docutils literal notranslate"><span class="pre">Node.get_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.to_graph"><code class="docutils literal notranslate"><span class="pre">Node.to_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.save_graph"><code class="docutils literal notranslate"><span class="pre">Node.save_graph()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.orthonode.html">geomapi.nodes.orthonode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html">geomapi.nodes.pointcloudnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.sessionnode.html">geomapi.nodes.sessionnode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_geometrynodes.html">GeometryNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_sessionnodes.html">SessionNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.nodes.html">geomapi.nodes</a></li>
+      <li class="breadcrumb-item active">geomapi.nodes.node</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.nodes.node.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.nodes.node">
+<span id="geomapi-nodes-node"></span><h1>geomapi.nodes.node<a class="headerlink" href="#module-geomapi.nodes.node" title="Link to this heading"></a></h1>
+<p><strong>Node</strong> is an abstract Python Class to govern the data and metadata of remote sensing data (pcd, images, meshes, orthomozaik).
+It is the base class for all other node classes. It contains the base RDF graph functionality and i/o from and to RDF files.</p>
+<p><strong>IMPORTANT</strong>: the Node class is an archytype class from which specific data classes (e.g. PointCloudNode) inherit.
+Do not use this class directly if you can use a child class with more functionality.</p>
+<p>Goals:</p>
+<ul class="simple">
+<li><p>Govern the metadata and geospatial information of big data files in an accesible and lightweight format.</p></li>
+<li><p>Serialize the metadata of remote sensing and geospatial files (BIM, Point clouds, meshes, etc.) as RDF Graphs</p></li>
+<li><p>Attach spatial en temporal analyses through RDF Graph navigation</p></li>
+</ul>
+<dl class="py class">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geomapi.nodes.node.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesianTransform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesianTransform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.__init__" title="Link to this definition"></a></dt>
+<dd><p>Creates a Node from one or more of the following inputs.</p>
+<dl>
+<dt>Args:</dt><dd><p>1.graph (Graph, optional): An RDF Graph to parse.</p>
+<p>2.graphPath (str, optional): The path of an RDF Graph to parse. If no subject is provided, the first subject of the graph is retained.</p>
+<p>3.path(str,optional): A filepath to a resource.</p>
+<p>4.subject (URIRef, optional): A subject to use as identifier for the Node. If a graph is also present, the subject should be part of the graph.</p>
+<p>5.name (str, optional): A name of the Node. This is not a unique identifier but serves as non-functional description.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Node</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.path">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#geomapi.nodes.node.Node.path" title="Link to this definition"></a></dt>
+<dd><p>Get the resource path (str) of the node. If no path is present, you can use get_path() to reconstruct the path from either
+the graphPath or working directory</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>folder</p></li>
+<li><p>self.name</p></li>
+<li><p>self.graphPath</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.name">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#geomapi.nodes.node.Node.name" title="Link to this definition"></a></dt>
+<dd><p>Get the name (str) of the node. This can include characters that the operating
+system does not allow. If no name is present, you can use get_name() to construct a name from the subject or path.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>self.path</p></li>
+<li><p>self.subject</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.timestamp">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">timestamp</span></span><a class="headerlink" href="#geomapi.nodes.node.Node.timestamp" title="Link to this definition"></a></dt>
+<dd><p>mm:ss)) of the node. If no timestamp is present, use get_timestamp() to gather the timestamp from the path or graphPath.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>self.path</p></li>
+<li><p>self.graphPath</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Get the timestamp (str(yyyy-MM-ddTHH</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.graphPath">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graphPath</span></span><a class="headerlink" href="#geomapi.nodes.node.Node.graphPath" title="Link to this definition"></a></dt>
+<dd><p>Get the path (str) of graph of the node, or the graphPath in which the subject is contained.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.graph">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph</span></span><a class="headerlink" href="#geomapi.nodes.node.Node.graph" title="Link to this definition"></a></dt>
+<dd><p>Get the graph (RDFLib.Graph) of the node. If no graph is present, you can use get_graph() to parse the graph from a graphPath. Alternatively,
+you can use to_graph() to serialize the Nodes attributes to RDF.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>self.graphPath</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.subject">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subject</span></span><a class="headerlink" href="#geomapi.nodes.node.Node.subject" title="Link to this definition"></a></dt>
+<dd><p>Get the subject (RDFLib.URIRef) of the node. If no subject is present, you can use get_subject() to construct it from a graph, name or path.
+Otherwise, a random guid is generated.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>self.name</p></li>
+<li><p>self.graph</p></li>
+<li><p>self.path</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.resource">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><a class="headerlink" href="#geomapi.nodes.node.Node.resource" title="Link to this definition"></a></dt>
+<dd><p>Get the resource (mesh, pcd, etc.) of the node. If no resource is present, you can use get_resource() to load the resource from a path or search it through the name and graphpath.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>self.path</p></li>
+<li><p>self.name</p></li>
+<li><p>self.graphPath</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.cartesianTransform">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cartesianTransform</span></span><a class="headerlink" href="#geomapi.nodes.node.Node.cartesianTransform" title="Link to this definition"></a></dt>
+<dd><p>Get the Cartesian Transform (translation &amp; rotation matrix) (np.ndarray(4x4)) of the node.
+Note that the initialisation from different inputs may result in different cartesianTransform values.</p>
+<dl class="simple">
+<dt>E.g. the pose of a mesh is retrieved from the mean of the vertices,</dt><dd><p>while the same pose initiated from the cartesianBounds equals the mean of that cartesianBounds array.</p>
+</dd>
+</dl>
+<p>If no cartesianTransform is present, you can use get_cartesianTransform() to construct the cartesiantransform from the resource, cartesianBounds, orientedBounds or orientedBoundingBox.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>self.cartesianBounds</p></li>
+<li><p>self.resource</p></li>
+<li><p>self.orientedBounds</p></li>
+<li><p>self.orientedBoundingBox</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.get_metadata_from_graph">
+<span class="sig-name descname"><span class="pre">get_metadata_from_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.get_metadata_from_graph" title="Link to this definition"></a></dt>
+<dd><p>Convert the data contained in a graph to a set of node attributes.
+If the graph contains multiple subjects, it is reduced to the subject’s triples.</p>
+<p><strong>NOTE</strong>: The use of a SessionNode is advised when dealing with multi-subject graphs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>self.graph (RDFlib.Graph):  Graph to parse</p></li>
+<li><p>self.subject (RDFlib.URIRef): The subject to parse the graph for</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.get_subject">
+<span class="sig-name descname"><span class="pre">get_subject</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.nodes.node.Node.get_subject" title="Link to this definition"></a></dt>
+<dd><p>Returns and validates the current subject. If empty, a new subject is created based on an unique GUID.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>subject (URIREF)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.get_timestamp">
+<span class="sig-name descname"><span class="pre">get_timestamp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.get_timestamp" title="Link to this definition"></a></dt>
+<dd><p>Get the timestamp (str) of the Node.
+This can be retrieved from user input, the path, the graphPath or the current time.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>timestamp (str): ‘%Y-%m-%dT%H:%M:%S’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.get_name">
+<span class="sig-name descname"><span class="pre">get_name</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.nodes.node.Node.get_name" title="Link to this definition"></a></dt>
+<dd><p>Returns the name (str) of the Node.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>name (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.get_subjectname">
+<span class="sig-name descname"><span class="pre">get_subjectname</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.nodes.node.Node.get_subjectname" title="Link to this definition"></a></dt>
+<dd><p>Returns the subjectname (str) of the Node.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>name (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.set_cartesianTransform">
+<span class="sig-name descname"><span class="pre">set_cartesianTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.set_cartesianTransform" title="Link to this definition"></a></dt>
+<dd><p>sets the cartesianTransform for the Node type. Overwrite this function for each node type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.get_cartesianTransform">
+<span class="sig-name descname"><span class="pre">get_cartesianTransform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.get_cartesianTransform" title="Link to this definition"></a></dt>
+<dd><p>Returns the cartesianTransform from the Node type. Overwrite this function for each node type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.get_resource">
+<span class="sig-name descname"><span class="pre">get_resource</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.get_resource" title="Link to this definition"></a></dt>
+<dd><p>Returns the resource from the Node type. Overwrite this function for each node type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.set_resource">
+<span class="sig-name descname"><span class="pre">set_resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.set_resource" title="Link to this definition"></a></dt>
+<dd><p>sets the resource for the Node type. Overwrite this function for each node type.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.clear_resource">
+<span class="sig-name descname"><span class="pre">clear_resource</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.clear_resource" title="Link to this definition"></a></dt>
+<dd><p>Clear all resources (images, pcd, meshes, ortho’s, etc.) in the Node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.get_path">
+<span class="sig-name descname"><span class="pre">get_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.nodes.node.Node.get_path" title="Link to this definition"></a></dt>
+<dd><p>Returns the full path of the resource from this Node.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>self.graphPath</p></li>
+<li><p>self._name or self._subject</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>path (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.get_graph">
+<span class="sig-name descname"><span class="pre">get_graph</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.get_graph" title="Link to this definition"></a></dt>
+<dd><p>Returns the graph of the Node.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>self.graphPath</p></li>
+<li><p>self._subject</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>graph (RDFlib.GRAPH)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.to_graph">
+<span class="sig-name descname"><span class="pre">to_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">rdflib.Graph</span></span></span><a class="headerlink" href="#geomapi.nodes.node.Node.to_graph" title="Link to this definition"></a></dt>
+<dd><p>Converts the current Node variables to a graph and optionally save.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>graphPath (str, optional): The full path to write the graph to. Defaults to None.</p></li>
+<li><p>overwrite (bool, optional=True): Overwrite current graph values or not</p></li>
+<li><p>save (bool, optional=False): Save the graph to the self.graphPath or graphPath.</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.save_graph">
+<span class="sig-name descname"><span class="pre">save_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.node.Node.save_graph" title="Link to this definition"></a></dt>
+<dd><p>Serialize the graph in an RDF file on drive.
+The RDF graph will be stored in self.graphPath or provided graphPath (str).</p>
+<dl>
+<dt>Args:</dt><dd><p>graphPath (str, optional)</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: No valid graphPath if file/folder location is not found</p>
+<p>ValueError: No valid extension if not in ut.RDF_EXTENSIONS</p>
+<p>ValueError: Save failed despite valid graphPath and extension (serialization error).</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if file is succesfully saved.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.nodes.meshnode.html" class="btn btn-neutral float-left" title="geomapi.nodes.meshnode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.nodes.orthonode.html" class="btn btn-neutral float-right" title="geomapi.nodes.orthonode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
