@@ -1,6 +1,6 @@
 
 
-![geomapiLogo](docs/source/_static/geomapi_logo.png?width=64)
+![geomapiLogo](docs/source/_static/geomapi_logo_B.png?width=64)
 
 # GEOMAPI
 ![Python](https://img.shields.io/pypi/pyversions/geomapi.svg?logo=python&logoColor=FBE072)
