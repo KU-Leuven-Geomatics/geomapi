@@ -8,3 +8,4 @@ jupyter
 laspy
 colour
 ezdxf
+pyvista
