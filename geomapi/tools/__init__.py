@@ -13,15 +13,15 @@ import pandas as pd
 import xml.etree.ElementTree as ET 
 from typing import List,Tuple
 from pathlib import Path
+import uuid  
 
 # import APIs
 import rdflib
 from rdflib import Graph
-from rdflib import Graph
 from rdflib import URIRef, Literal
-from rdflib.namespace import CSVW, DC, DCAT, DCTERMS, DOAP, FOAF, ODRL2, ORG, OWL, \
-                           PROF, PROV, RDF, RDFS, SDO, SH, SKOS, SOSA, SSN, TIME, \
-                           VOID, XMLNS, XSD
+# from rdflib.namespace import CSVW, DC, DCAT, DCTERMS, DOAP, FOAF, ODRL2, ORG, OWL, \
+#                            PROF, PROV, RDF, RDFS, SDO, SH, SKOS, SOSA, SSN, TIME, \
+#                            VOID, XMLNS, XSD
 import ifcopenshell
 import ifcopenshell.util
 import ifcopenshell.geom as geom
@@ -138,10 +138,12 @@ def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs
     
     #get image names in folder
     files=ut.get_list_of_files(ut.get_folder(path))
-    files=[f for f in files if (f.endswith('.JPG') or 
-                                f.endswith('.PNG') or 
-                                f.endswith('.jpg') or
-                                f.endswith('.png'))]
+    # files=[f for f in files if (f.endswith('.JPG') or 
+    #                             f.endswith('.PNG') or 
+    #                             f.endswith('.jpg') or
+    #                             f.endswith('.png'))] #! deprecated
+    files = [f for f in files if any(f.endswith(ext) for ext in ut.IMG_EXTENSIONS)]
+
     names=[ut.get_filename(file) for file in files]
 
     #get cameras
@@ -178,7 +180,8 @@ def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs
             sensorInformation= next(s for s in sensors if s is not None and s.get('sensorid')==sensorid)
 
             #create image node 
-            import uuid          
+            test=int(sensorInformation['imageWidth'])
+            test2=    int(sensorInformation['imageHeight'] )
             node=ImageNode(subject='file:///'+str(uuid.uuid1()),
                         name=name, 
                          cartesianTransform=transform,
