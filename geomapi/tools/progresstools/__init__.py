@@ -14,6 +14,10 @@ import os
 import laspy
 import pandas as pd
 
+import pyvista as pv
+from vtk.util.numpy_support import numpy_to_vtk, vtk_to_numpy
+from vtk import vtkCellArray, vtkPoints, vtkPolyData, vtkTriangle
+
 def create_voxel_block_grid_and_raytrace(pcd,imageNode):
     """THIS CURRENTLY DOESNT WORK BUT IS A PLACEHOLDER.
 
@@ -21,7 +25,6 @@ def create_voxel_block_grid_and_raytrace(pcd,imageNode):
         pcd (_type_): _description_
         imageNode (_type_): _description_
     """
-    import open3d.core as o3c
     intrinsic=imageNode.get_intrinsic_camera_parameters().intrinsic_matrix
     extrinsic=imageNode.cartesianTransform
     w=imageNode.imageWidth
@@ -31,7 +34,7 @@ def create_voxel_block_grid_and_raytrace(pcd,imageNode):
     depth_max=30
     vbg = o3d.t.geometry.VoxelBlockGrid(
                     attr_names=('tsdf', 'weight', 'color'),
-                    attr_dtypes=(o3c.float32, o3c.float32, o3c.float32),
+                    attr_dtypes=(o3d.core.float32, o3d.core.float32, o3d.core.float32),
                     attr_channels=((1), (1), (3)),
                     voxel_size=3.0 / 512,
                     block_resolution=16,
@@ -926,6 +929,138 @@ def get_rays_raycast (geometries, direction:str='Down'):
             ray=np.float32(np.column_stack((points,zero,zero,plusOne)))
             rays.append(ray)
     return rays 
+
+
+
+def get_mesh_intersection_with_grid(geometry: o3d.geometry.Geometry, grid: np.array) -> np.array:
+    """ Finds the intersection of a mesh and a grid of rays.
+
+    Args:
+        1. geometry (o3d.geometry.Geometry): The mesh to intersect with the rays.
+        2. grid (np.array): A 2D numpy array representing the rays to cast. Each row should contain the origin and direction of a ray.
+
+    .. image:: ../../../docs/pics/2dGrid.PNG
+
+
+    Returns:
+        np.array: A 1D numpy array containing the intersection point along the ray for each ray in the grid.
+
+    Example:
+        mesh = o3d.io.read_triangle_mesh("mesh.ply")
+        grid = np.array([[0,0,0, 0,0,1], [1,0,0, 0,0,1], [2,0,0, 0,0,1]])
+        intersections = get_mesh_intersection(mesh, grid)
+        print(intersections)
+    """
+    rays = grid
+    scene = o3d.t.geometry.RaycastingScene()
+    gl = o3d.t.geometry.TriangleMesh.from_legacy(geometry)
+    scene = o3d.t.geometry.RaycastingScene()
+    id = scene.add_triangles(gl)
+    ans = scene.cast_rays(rays)
+    hit_primitives = ans['primitive_ids'].numpy()
+    array = []
+    for pri in hit_primitives:
+        if pri != 4294967295:
+            array.append(pri)
+    unique_arr = list(set(array))
+    
+    return unique_arr, ans['t_hit'].numpy()
+
+
+def get_top_lineset_from_meshes(bimNodes):
+    """Computes the visible boundary edges from the top of a set of BIMNodes.
+
+    This function creates grids above the meshes and computes the intersections with the 3D meshes. The computed edges are returned as Open3D.LineSet objects.
+
+    .. image:: ../../../docs/pics/get_top_lineset.PNG
+
+    
+    Args:
+        bimNodes (list): A list of BIMNodes.
+
+    Returns:
+        list [Open3D.Lineset]: A list of LineSet objects representing the computed visible edges.
+    """
+    resolution=0.1
+    target_meshes=[]
+    target_triangles=[]
+    for i,BIMNode in enumerate(bimNodes):
+        BIMNode.topgrid=create_xy_grid(BIMNode.resource,resolution=resolution,direction='Down',offset=10) #offset in m
+        BIMNode.bottomgrid=create_xy_grid(BIMNode.resource,resolution=resolution,direction='Up',offset=10) #offset in m
+        
+        xyzFlightMax=BIMNode.topgrid[:,0:3]  
+        BIMNode.pcdFlightMax = o3d.geometry.PointCloud()
+        BIMNode.pcdFlightMax.points = o3d.utility.Vector3dVector(xyzFlightMax.numpy())
+        xyzFlightMin=BIMNode.bottomgrid[:,0:3]  
+        pcdFlightMin = o3d.geometry.PointCloud()
+        pcdFlightMin.points = o3d.utility.Vector3dVector(xyzFlightMin.numpy())
+        BIMNode.toppcdgrid=BIMNode.pcdFlightMax
+        BIMNode.intersectionMesh,BIMNode.depthmapplus=get_mesh_intersection_with_grid(BIMNode.resource,BIMNode.topgrid)
+        BIMNode.bottompcdgrid=pcdFlightMin
+        mesh=BIMNode.resource
+        target_ids=BIMNode.intersectionMesh
+        triangles = np.array(mesh.triangles)
+        primitive_ids = np.arange(len(triangles))
+        target_triangle = np.array(mesh.triangles)[np.in1d(primitive_ids, target_ids)]
+        target_triangles.append(target_triangle)
+        target_mesh = o3d.geometry.TriangleMesh()
+        target_mesh.vertices = mesh.vertices
+        target_mesh.triangles = o3d.utility.Vector3iVector(target_triangles[i])
+        color = np.random.rand(3)  # red
+        target_mesh.paint_uniform_color(color)
+        target_meshes.append(target_mesh)
+
+    meshes=[]
+    edgestotal=[]
+    multi_mesh = pv.MultiBlock()
+    multi_edge = pv.MultiBlock()
+
+    for mesh_o3d in target_meshes:
+        points = vtkPoints()
+        vertices = vtkCellArray()
+        triangles = vtkCellArray()
+
+        for i in range(len(mesh_o3d.vertices)):
+            points.InsertNextPoint(mesh_o3d.vertices[i])
+        for i in range(len(mesh_o3d.triangles)):
+            triangle = vtkTriangle()
+            triangle.GetPointIds().SetId(0, mesh_o3d.triangles[i][0])
+            triangle.GetPointIds().SetId(1, mesh_o3d.triangles[i][1])
+            triangle.GetPointIds().SetId(2, mesh_o3d.triangles[i][2])
+            triangles.InsertNextCell(triangle)
+
+        vtk_mesh = vtkPolyData()
+        vtk_mesh.SetPoints(points)
+        vtk_mesh.SetPolys(triangles)
+        mesh_pv = pv.wrap(vtk_mesh)
+        edges = mesh_pv.extract_feature_edges(45)
+        multi_mesh.append(mesh_pv)
+        multi_edge.append(edges)
+        meshes.append(mesh_pv)
+        edgestotal.append(edges)
+    for i in range(len(meshes), len(multi_edge)):
+        multi_edge[i].color = [1,0,0]
+
+    points=[]
+    lines=[]
+    for edge in edgestotal:
+        point=edge.points
+        line=edge.lines
+        lines.append(line)
+        points.append(point)
+
+    linesets=[]
+    for count, point in enumerate(points):
+        pointsi=point
+        linesi=lines[count]
+        lineset = o3d.geometry.LineSet()
+        lineset.points = o3d.utility.Vector3dVector(pointsi)
+        line_indices = linesi.reshape(-1, 3)
+        lineset.lines = o3d.utility.Vector2iVector(line_indices[:, 1:3])
+        linesets.append(lineset)
+
+    return linesets
+
 
 def determine_percentage_of_coverage(sources: List[o3d.geometry.TriangleMesh], reference:o3d.geometry.PointCloud,threshold:float=0.1)-> np.array:
     """Returns the Percentage-of-Coverage (PoC) of every source geometry when compared to a reference geometry. The PoC is defined as the ratio of points on the boundary surface of the source that lie within a Euclidean distance threshold hold of the reference geometry. sampled point cloud on the boundary surface of the sources with a resolution of e.g. 0.1m. \n
