@@ -59,6 +59,188 @@ def gray2rgb(gray:np.array)->np.array:
     return rgb
 #NOTE endNote
 
+
+def initiate_hed_line_detection():
+        
+    """Saves images with annotated additional lines (abLines).
+
+    This function takes a list of images (`imgNodes`) and detects additional lines using the LSD algorithm. It annotates the detected additional lines on each image and saves the annotated images to an output directory.
+
+    Args:
+        imgNodes (list): A list of image nodes containing information about images.
+        output_dir (str): The path to the directory containing masked images.
+        output (str): The path to the output directory where images with detected lines will be saved.
+        score_thr (float): The score threshold for line detection.
+        dist_thr (float): The distance threshold for line detection.
+        interpreter: The TensorFlow Lite interpreter for line detection.
+        input_details: Input details for the interpreter.
+        output_details: Output details for the interpreter.
+
+    Returns:
+        list: A list of image nodes with additional line information.
+
+    Example:
+        imgNodes = [ImageNode1, ImageNode2, ...]  # List of image nodes
+        output_dir = "path/to/masked_images_directory"
+        output = "path/to/output_directory"
+        score_thr = 0.5
+        dist_thr = 2.0
+        interpreter = tf.lite.Interpreter(model_path="line_detection_model.tflite")
+        input_details = interpreter.get_input_details()
+        output_details = interpreter.get_output_details()
+        updated_imgNodes = saveImageAbLine(imgNodes, output_dir, output, score_thr, dist_thr, interpreter, input_details, output_details)
+
+    Note:
+        - The function detects additional lines in each image using the LSD algorithm.
+        - It annotates the detected lines on each image and saves the annotated images to the output directory.
+    """
+
+    protoPath = r"O:\Code\hed\examples\hed\deploy.prototxt"
+    modelPath = r"O:\Code\hed\examples\hed\hed_pretrained_bsds.caffemodel"
+    net = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
+    class CropLayer(object):
+        def __init__(self, params, blobs):
+            self.startX = 0
+            self.startY = 0
+            self.endX = 0
+            self.endY = 0
+
+        def getMemoryShapes(self, inputs):
+            (inputShape, targetShape) = (inputs[0], inputs[1])
+            (batchSize, numChannels) = (inputShape[0], inputShape[1])
+            (H, W) = (targetShape[2], targetShape[3])
+
+            self.startX = int((inputShape[3] - targetShape[3]) / 2)
+            self.startY = int((inputShape[2] - targetShape[2]) / 2)
+            self.endX = self.startX + W
+            self.endY = self.startY + H
+
+            return [[batchSize, numChannels, H, W]]
+
+        def forward(self, inputs):
+            return [inputs[0][:, :, self.startY:self.endY,
+                    self.startX:self.endX]]
+
+    cv2.dnn_registerLayer("Crop", CropLayer)
+
+    return(protoPath,modelPath,net)
+
+
+def calculateGSD(imageNode,bimNodes,f=24,Sw=4000):
+    """
+    Calculates the Ground Sampling Distance (GSD) in millimeters.
+
+    Args:
+        imageNode: An object representing the image node.
+        bimNodes (list): A list of BIM nodes.
+        f (float): The focal length of the camera in millimeters. Default is 24mm.
+        Sw (float): The sensor width of the camera in millimeters. Default is 4000mm.
+
+    Returns:
+        float: The Ground Sampling Distance (GSD) in millimeters.
+
+    Note:
+        - The imageNode should have the attribute 'imageWidth' representing the width of the image in pixels.
+        - The imageNode and each bimNode in bimNodes should have the attribute 'cartesianTransform' representing the Cartesian transformation matrix.
+        - Each bimNode in bimNodes should have the attribute 'cartesianBounds' representing the Cartesian bounds of the BIM.
+
+    """
+    if isinstance(bimNodes, list):
+        total_height = sum(bim_node.cartesianBounds[5] for bim_node in bimNodes)
+        mean_height = total_height / len(bimNodes)
+    else:
+        mean_height=bimNodes.cartesianBounds[5]
+    
+    f = f  # in mm
+    imW = imageNode.imageWidth  # in pix
+    Sw = Sw  # in mm
+    H = imageNode.cartesianTransform[2, 3] - mean_height  # in m, the height between the ground and the BIM
+
+    GSD = (Sw * H * 10) / (f * imW)  # GSD in mm
+    GSD = GSD / 1000
+
+    return GSD
+
+def detect_hed_lines(imgNodes,output,net,hom_begin_points_ad,hom_end_points_ad):
+    """Create Holistically-Nested Edge Detection (HED) images and masked HED images.
+
+    This function takes a list of images (`imgNodes`), an HED network (`net`), and information about additional lines (beginning and ending points) in homogeneous coordinates. It processes the images with the HED model to create edge maps and saves both the HED images and masked HED images to the output directory.
+
+    Args:
+        imgNodes (list): A list of image nodes containing information about images.
+        output (str): The path to the output directory where HED images will be saved.
+        net: The initialized HED network.
+        hom_begin_points_ad (list): A list of lists containing the homogeneous coordinates of beginning points of additional lines.
+        hom_end_points_ad (list): A list of lists containing the homogeneous coordinates of ending points of additional lines.
+
+    Returns:
+        None
+
+    Example:
+        imgNodes = [ImageNode1, ImageNode2, ...]  # List of image nodes
+        output = "path/to/output_directory"
+        net = initialized_HED_network
+        hom_begin_points_ad = [[point1, point2, ...], [point1, point2, ...], ...]  # List of homogeneous coordinates of beginning points
+        hom_end_points_ad = [[point1, point2, ...], [point1, point2, ...], ...]  # List of homogeneous coordinates of ending points
+        createHEDs(imgNodes, output, net, hom_begin_points_ad, hom_end_points_ad)
+
+    Note:
+        - The function processes each image with the HED model to create edge maps.
+        - It saves both the HED images and masked HED images to the output directory.
+    """
+        
+    blobs=[]
+    for img in imgNodes:
+        start_list=[]
+        end_list=[]
+        output_dir = os.path.join(output,"Images", "Masked_Image")
+        imgcv=os.path.join(output_dir,'masked_image_'+img.name+'.jpg')
+        if os.path.exists(imgcv):
+            im=cv2.imread(imgcv)
+            H,W=im.shape[0:2]
+            blob = cv2.dnn.blobFromImage(im, scalefactor=1, size=(W, H),
+                                        mean=(100, 180, 100),
+                                        swapRB= False, crop=False)
+            blobs.append(blob)
+    heds=[]
+    for blob in blobs:
+        net.setInput(blob)
+        hed = net.forward()
+        hed = hed[0,0,:,:]  
+        threshold = 0.85  
+        hed = (hed > threshold) * 255  
+        hed = hed.astype("uint8")
+        heds.append(hed)
+
+    output_dir1 = os.path.join(output,"Images","HED", "Image_HED")
+    if not os.path.exists(output_dir1):
+        os.makedirs(output_dir1)
+
+    for count,hed in enumerate(heds):
+        output_image_name = os.path.join(output_dir1, f"image_HED_{imgNodes[count].name}.jpg")
+        cv2.imwrite(output_image_name, hed)
+    
+    for tel,hed in enumerate(heds):
+        mask = np.zeros(hed.shape[:2], dtype="uint8")
+        for count, start_list in enumerate(hom_begin_points_ad):
+            for i,start in enumerate (start_list):
+                stop_list = hom_end_points_ad[count]
+                stop = stop_list[i]
+                imgNodes[tel].uvCoordinates_start = world_to_pixel(imgNodes[tel],start)
+                imgNodes[tel].uvCoordinates_stop = world_to_pixel(imgNodes[tel],stop)
+                u_start, v_start = int(imgNodes[tel].uvCoordinates_start[0]), int(imgNodes[tel].uvCoordinates_start[1])
+                u_stop, v_stop = int(imgNodes[tel].uvCoordinates_stop[0]), int(imgNodes[tel].uvCoordinates_stop[1])
+
+                cv2.line(mask, (u_start,v_start),(u_stop,v_stop), (255, 255, 255, 255), thickness=60)
+        output_dir2 = os.path.join(output,"Images","HED", "Masked_Image_HED")
+        if not os.path.exists(output_dir2):
+            os.makedirs(output_dir2)
+
+        masked_img = cv2.bitwise_and(hed, hed, mask=mask)
+        output_image_name = os.path.join(output_dir2, f"masked_image_HED_{imgNodes[tel].name}.jpg")
+        cv2.imwrite(output_image_name, masked_img)
+
+
 def fill_black_pixels(image:np.array,region:int=5)->np.array:
     """Fill in the black pixels in an RGB image given a search distance.\n
 

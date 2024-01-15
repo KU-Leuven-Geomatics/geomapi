@@ -22,6 +22,93 @@ import ezdxf
 from ezdxf.groupby import groupby
 
 
+def calculate_angle_between_lines(line1, line2):
+    """Calculate the angle between two lines.
+
+    This function takes two lines defined by their endpoints and calculates the angle between them.
+
+    Args:
+        line1 (tuple): A tuple containing the endpoints of the first line in the form ((x1, y1), (x2, y2)).
+        line2 (tuple): A tuple containing the endpoints of the second line in the form ((x3, y3), (x4, y4)).
+
+    Returns:
+        float: The angle in degrees between the two lines.
+
+    Example:
+        line1 = ((1, 1), (3, 3))
+        line2 = ((1, 1), (2, 0))
+        angle = calculate_angle_between_lines(line1, line2)
+        print(angle)  # Output: 45.0 degrees
+
+    Note:
+        - The function calculates the angle by finding the angles of the lines with respect to the x-axis and computing the absolute difference.
+        - The result is the acute angle between the two lines.
+    """
+    x1, y1 = line1[0]
+    x2, y2 = line1[1]
+    x3, y3 = line2[0]
+    x4, y4 = line2[1]
+    
+    angle1 = math.atan2(y2 - y1, x2 - x1)
+    angle2 = math.atan2(y4 - y3, x4 - x3)
+    
+    angle_diff = abs(math.degrees(angle1 - angle2)) % 180
+    
+    return angle_diff
+
+def calculate_perpendicular_distance(line1, line2):
+    """Calculate the perpendicular distance between two lines.
+
+    This function takes two lines defined by their endpoints and calculates the minimum perpendicular distance between them.
+
+    Args:
+        line1 (tuple): A tuple containing the endpoints of the first line in the form ((x1, y1), (x2, y2)).
+        line2 (tuple): A tuple containing the endpoints of the second line in the form ((x3, y3), (x4, y4)).
+
+    Returns:
+        float: The minimum perpendicular distance between the two lines.
+
+    Note:
+        - The function calculates the perpendicular distance by finding the shortest distance between the endpoints of the lines.
+    """
+    x1, y1 = line1[0]
+    x2, y2 = line1[1]
+    x3, y3 = line2[0]
+    x4, y4 = line2[1]
+
+    # Calculate the slope of the first line
+    if x2 - x1 != 0:
+        slope1 = (y2 - y1) / (x2 - x1)
+    else:
+        slope1 = float('inf')
+
+    # Calculate the slope of the second line
+    if x4 - x3 != 0:
+        slope2 = (y4 - y3) / (x4 - x3)
+    else:
+        slope2 = float('inf')
+
+    # Check if lines are parallel
+    if slope1 == slope2:
+        return math.dist(line1[0], line2[0])  # Return the distance between endpoints
+
+    # Calculate the intersection point of the two lines
+    if slope1 == float('inf'):
+        intersection_x = x1
+        intersection_y = slope2 * (x1 - x3) + y3
+    elif slope2 == float('inf'):
+        intersection_x = x3
+        intersection_y = slope1 * (x3 - x1) + y1
+    else:
+        intersection_x = (y1 - y3 + slope2 * x3 - slope1 * x1) / (slope2 - slope1)
+        intersection_y = slope1 * (intersection_x - x1) + y1
+
+    # Calculate the perpendicular distance between the intersection point and both lines
+    distance1 = math.dist((intersection_x, intersection_y), line1[0])
+    distance2 = math.dist((intersection_x, intersection_y), line2[0])
+
+    return min(distance1, distance2)
+
 def ezdxf_to_o3d(dxf,
                  dtypes:List[str]=['LINE','ARC','CIRCLE','POINT','SPLINE','POLYLINE','LWPOLYLINE','MESH','ELLIPSE','SOLID','3DFACE'],
                  layers:List[str]=None,
@@ -283,6 +370,67 @@ def circles_to_o3d(entities:List[ezdxf.entities.arc.Arc])-> Tuple[List[o3d.geome
         
     return geometries, layers
 
+def lines_to_o3d(entities:List[ezdxf.entities.line.Line])-> Tuple[List[o3d.geometry.LineSet],List[str]]:       
+    """Convert ezdxf entities to o3d.geometry.LineSet objects.
+
+    Args:
+        entities (List[ezdxf.entities.line.Line])
+
+    Returns:
+        Tuple[List[o3d.geometry.LineSet],List[str]]: line_sets, layers
+    """   
+    entities=ut.item_to_list(entities)
+    
+    geometries=[]
+    layers=[]
+    uris=[]
+    for entity in entities:
+        line_set = o3d.geometry.LineSet() 
+        line_set.points = o3d.utility.Vector3dVector([np.array( entity.dxf.start),np.array( entity.dxf.end)]) 
+        line_set.lines =o3d.utility.Vector2iVector(np.array([[0,1]]))  
+        line_set.colors= o3d.utility.Vector3dVector(np.array([np.repeat(entity.dxf.color/256,3)]))
+        uri=entity.dxf.handle
+        uris.append(uri)
+        # print(uri)
+        geometries.append(line_set)
+        layers.append(entity.dxf.layer)
+    return geometries, layers, uris
+
+
+def circles_to_o3d(entities:List[ezdxf.entities.arc.Arc])-> Tuple[List[o3d.geometry.LineSet],List[str]]:       
+    """Convert ezdxf entities to o3d.geometry.LineSet objects.
+
+    Args:
+        entities (List[ezdxf.entities.arc.Arc])
+
+    Returns:
+        Tuple[List[o3d.geometry.LineSet],List[str]]: line_sets, layers
+    """
+    entities=ut.item_to_list(entities)
+    
+    geometries=[]
+    layers=[]
+    uris=[]
+    for entity in entities:          
+        #get points
+        points=np.array(list(entity.vertices(angles=np.arange(0,360,10))))
+        #get lines
+        start=np.arange(start=0,stop=points.shape[0]-1 )[..., np.newaxis]    
+        end=np.arange(start=1,stop=points.shape[0] )[..., np.newaxis] 
+        lines = np.hstack((start, end))        
+        #create lineset
+        line_set = o3d.geometry.LineSet() 
+        line_set.points = o3d.utility.Vector3dVector(points)  
+        line_set.lines = o3d.utility.Vector2iVector(lines)        
+        line_set.paint_uniform_color(np.repeat(entity.dxf.color/256,3))
+        uri=entity.dxf.handle
+        uris.append(uri)
+        # print(uri)
+        geometries.append(line_set)
+        layers.append(entity.dxf.layer)
+        
+    return geometries, layers ,uris
+
 def arcs_to_o3d(entities:List[ezdxf.entities.arc.Arc])-> Tuple[List[o3d.geometry.LineSet],List[str]]:       
     """Convert ezdxf entities to o3d.geometry.LineSet objects.
 
@@ -296,6 +444,7 @@ def arcs_to_o3d(entities:List[ezdxf.entities.arc.Arc])-> Tuple[List[o3d.geometry
     
     geometries=[]
     layers=[]
+    uris=[]
     for entity in entities:          
         #get points
         points=np.array(list(entity.vertices(angles=entity.angles(10))))
@@ -308,10 +457,13 @@ def arcs_to_o3d(entities:List[ezdxf.entities.arc.Arc])-> Tuple[List[o3d.geometry
         line_set.points = o3d.utility.Vector3dVector(points)  
         line_set.lines = o3d.utility.Vector2iVector(lines)        
         line_set.paint_uniform_color(np.repeat(entity.dxf.color/256,3))
+        uri=entity.dxf.handle
+        # print(uri)
+        uris.append(uri)
         geometries.append(line_set)
         layers.append(entity.dxf.layer)
         
-    return geometries, layers
+    return geometries, layers, uris
 
 def ellipses_to_o3d(entities:List[ezdxf.entities.arc.Arc])-> Tuple[List[o3d.geometry.LineSet],List[str]]:       
     """Convert ezdxf entities to o3d.geometry.LineSet objects.
@@ -326,6 +478,7 @@ def ellipses_to_o3d(entities:List[ezdxf.entities.arc.Arc])-> Tuple[List[o3d.geom
     
     geometries=[]
     layers=[]
+    uris=[]
     for entity in entities:            
         #get points every 10°
         # params=list(entity.params(num=36))
@@ -343,10 +496,13 @@ def ellipses_to_o3d(entities:List[ezdxf.entities.arc.Arc])-> Tuple[List[o3d.geom
         line_set.points = o3d.utility.Vector3dVector(points)  
         line_set.lines = o3d.utility.Vector2iVector(lines)        
         line_set.paint_uniform_color(np.repeat(entity.dxf.color/256,3))
+        uri=entity.dxf.handle
+        # print(uri)
+        uris.append(uri)
         geometries.append(line_set)
         layers.append(entity.dxf.layer)
         
-    return geometries, layers
+    return geometries, layers, uris
 
 def points_to_o3d(entities:List[ezdxf.entities.point.Point])->  Tuple[np.ndarray,List[str]]:       
     """Convert ezdxf entities to o3d.geometry.LineSet objects.
@@ -361,10 +517,14 @@ def points_to_o3d(entities:List[ezdxf.entities.point.Point])->  Tuple[np.ndarray
     
     geometries=[]
     layers=[]
+    uris=[]
     for entity in entities:
         geometries.append(np.array(entity.dxf.location))    
         layers.append(entity.dxf.layer)
-    return np.array(geometries),layers
+        uri=entity.dxf.handle
+        # print(uri)
+        uris.append(uri)
+    return np.array(geometries),layers,uris
 
 
 def splines_to_o3d(entities:List[ezdxf.entities.spline.Spline])-> Tuple[List[o3d.geometry.LineSet],List[str]]:       
@@ -382,6 +542,7 @@ def splines_to_o3d(entities:List[ezdxf.entities.spline.Spline])-> Tuple[List[o3d
     
     geometries=[]
     layers=[]
+    uris=[]
     for entity in entities:
         #get points
         points=np.array(entity.control_points)
@@ -398,10 +559,316 @@ def splines_to_o3d(entities:List[ezdxf.entities.spline.Spline])-> Tuple[List[o3d
         line_set.points = o3d.utility.Vector3dVector(points)  
         line_set.lines = o3d.utility.Vector2iVector(lines)        
         line_set.paint_uniform_color(np.repeat(entity.dxf.color/256,3))
+        uri=entity.dxf.handle
+        uris.append(uri)
+        # print(uri)
         geometries.append(line_set)
         layers.append(entity.dxf.layer)
         
+    return geometries, layers,uris
+
+def solids_to_o3d(entities:List[ezdxf.entities.solid.Solid])-> Tuple[List[o3d.geometry.TriangleMesh],List[str]]:       
+    """Convert ezdxf entities to o3d.geometry.LineSet objects.
+    
+    **NOTE**: A spline is reconstructed as a lineset between the control points. It does NOT represent the actual curve.
+
+    Args:
+        entities (List[ezdxf.entities.spline.Spline])
+
+    Returns:
+        Tuple[List[o3d.geometry.LineSet],List[str]]: line_sets, layers
+    """   
+    entities=ut.item_to_list(entities)
+    
+    geometries=[]
+    layers=[]
+    uris=[]
+    for entity in entities:
+        #get points & faces 
+        p0=entity.dxf.vtx0
+        p1=entity.dxf.vtx1
+        p2=entity.dxf.vtx2
+        p3=entity.dxf.vtx3
+        if p2==p3:
+            points=np.array([p0,p1,p2])
+            faces=np.array([0,1,2])
+        else:
+            points=np.array([p0,p1,p2,p3])
+            faces=np.array([[0,1,2],[0,2,3]])
+            
+        #construct mesh            
+        mesh=o3d.geometry.TriangleMesh()
+        mesh.vertices=o3d.utility.Vector3dVector(points)  
+        mesh.triangles=o3d.utility.Vector3iVector(faces)
+        mesh.paint_uniform_color(np.repeat(entity.dxf.color/256,3))
+        uri=entity.dxf.handle
+        # print(uri)
+        uris.append(uri)
+        geometries.append(mesh)
+        layers.append(entity.dxf.layer)
+        
+    return geometries, layers,uris
+
+def lwpolylines_to_o3d(entities: List[ezdxf.entities.lwpolyline.LWPolyline]) -> Tuple[List[o3d.geometry.LineSet], List[str]]:
+    """Convert ezdxf entities to o3d.geometry.LineSet objects.
+
+    Args:
+        entities (List[ezdxf.entities.lwpolyline.LWPolyline])
+
+    Returns:
+        Tuple[List[o3d.geometry.LineSet], List[str]]: 03d geometries, layers
+    """
+    entities = ut.item_to_list(entities)
+
+    geometries = []
+    layers = []
+    uris=[]
+
+    for entity in entities:
+            points = []
+            # Get points
+            for p in entity.get_points():
+                points.append(np.array([p[0], p[1], entity.dxf.elevation]))
+            points = np.array(points)
+
+            # Create lines
+            start = np.arange(start=0, stop=points.shape[0] - 1)[..., np.newaxis]
+            end = np.arange(start=1, stop=points.shape[0])[..., np.newaxis]
+
+            # Check if the LWPolyline is closed and add a line segment to close it
+            if entity.is_closed:
+                start = np.append(start, [points.shape[0] - 1, 0])[..., np.newaxis]
+                end = np.append(end, [0, 1])[..., np.newaxis]
+
+            lines = np.hstack((start, end))
+
+            # Create lineset
+            line_set = o3d.geometry.LineSet()
+            line_set.points = o3d.utility.Vector3dVector(points)
+            line_set.lines = o3d.utility.Vector2iVector(lines)
+
+            # Create a color array
+            color = np.array([entity.dxf.color / 256.0, entity.dxf.color / 256.0, entity.dxf.color / 256.0])
+
+            # Set the uniform color
+            line_set.paint_uniform_color(color)
+
+            uri=entity.dxf.handle
+            # print(uri)
+            uris.append(uri)
+
+            geometries.append(line_set)
+            layers.append(entity.dxf.layer)
+
+
+    return geometries, layers,uris
+
+        
+def polylines_to_o3d(entities:List[ezdxf.entities.polyline.Polyline])-> Tuple[List[o3d.geometry.Geometry],List[str]]:       
+    """Convert ezdxf entities to o3d.geometry.LineSet and Trianglemesh objects.
+    AcDbPolyFaceMesh objects will be returned as o3d.Geometry.TriangleMesh objects.
+    
+    **NOTE**: Spline and ARC segments are abstracted as linesegments between the control points. It does NOT represent the actual curve.
+    
+    Args:
+        entities (List[ezdxf.entities.polyline.Polyline])
+
+    Returns:
+        Tuple[List[o3d.geometry.Geometry],List[str]]: 03d geometries, layers
+    """   
+    entities=ut.item_to_list(entities)
+
+    geometries=[]
+    layers=[]
+    uris=[]
+    
+    for entity in entities:
+        #get layer
+        layers.append(entity.dxf.layer)
+        
+        if entity.get_mode()== 'AcDbPolyFaceMesh': 
+            #get color
+            color=entity.dxf.color
+            #convert to mesh
+            entity=ezdxf.render.MeshBuilder.from_polyface (entity ) 
+            #get points
+            points=np.array(entity.vertices)
+            #get faces
+            faces=gmu.split_quad_faces(np.array(entity.faces))
+            #construct mesh            
+            mesh=o3d.geometry.TriangleMesh()
+            mesh.vertices=o3d.utility.Vector3dVector(points)  
+            mesh.triangles=o3d.utility.Vector3iVector(faces)
+            mesh.paint_uniform_color(np.repeat(color/256,3))
+            uri=entity.dxf.handle
+            # print(uri)
+            uris.append(uri)
+            geometries.append(mesh)
+            
+        elif entity.get_mode()=='AcDb2dPolyline' or entity.get_mode()=='AcDb3dPolyline':
+            #get points
+            points,layers=points_to_o3d(entity.vertices)
+
+            #get lines    
+            start=np.arange(start=0,stop=points.shape[0]-1 )[..., np.newaxis]    
+            end=np.arange(start=1,stop=points.shape[0] )[..., np.newaxis] 
+            # if entity.is_closed:
+            #     start=np.append(start,points.shape[0])[..., np.newaxis]         
+            #     end=np.append(end,0)[..., np.newaxis]         
+            lines = np.hstack((start, end))            
+            #create lineset
+            line_set = o3d.geometry.LineSet() 
+            line_set.points = o3d.utility.Vector3dVector(points)  
+            line_set.lines = o3d.utility.Vector2iVector(lines)        
+            line_set.paint_uniform_color(np.repeat(entity.dxf.color/256,3)) 
+            uri=entity.dxf.handle
+            # print(uri)
+            uris.append(uri)       
+            geometries.append(line_set)
+            
+        elif entity.get_mode()=='Polymesh':
+            print('Polymesh transformer not implemented')
+            
+        else:
+            continue
+        
+    return geometries, layers, uris
+    
+def meshes_to_o3d(entities:ezdxf.entities.mesh.Mesh)-> Tuple[List[o3d.geometry.Geometry],List[str]]:       
+    """NOT IMPLEMENTED
+    
+    Args:
+        entities (List[ezdxf.entities.mesh.Mesh])
+
+    Returns:
+        Tuple[List[o3d.geometry.Geometry],List[str]]: 03d geometries, layers
+    """   
+    geometries=[]
+    layers=[]
     return geometries, layers
+
+
+# In[51]:
+
+
+def ezdxf_entities_to_o3d(entities:List[ezdxf.entities.DXFEntity]) -> Tuple[List[o3d.geometry.Geometry],List[str]]:
+    """Convert ezdxf entities to a set of o3d.geometry.LineSet/TriangleMesh objects with their corresponding layers.
+
+    Args:
+        entities (List[ezdxf.entities.DXFEntity])
+
+    Returns:
+        Tuple[List[o3d.geometry.Geometry],List[str]]: geometries,layers
+    """
+    # match entity.dxftype():
+    #     case 'LINE':
+    #         o3d_geometries.append(line_to_o3d(entity))
+    entities=ut.item_to_list(entities)     
+    geometries=[]
+    layers=[]      
+    uris=[]  
+    for entity in entities:
+        if entity.dxftype() == 'LINE':
+            g,l,u=lines_to_o3d(entity)            
+        elif entity.dxftype() == 'ARC':
+            g,l,u=arcs_to_o3d(entity)
+        elif entity.dxftype() == 'CIRCLE':
+            g,l,u=circles_to_o3d(entity)
+        elif entity.dxftype() == 'POINT':
+            g,l,u=points_to_o3d(entity)
+        elif entity.dxftype() == 'SPLINE':
+            g,l,u=splines_to_o3d(entity)
+        elif entity.dxftype() == 'POLYLINE':
+            g,l,u=polylines_to_o3d(entity)
+        elif entity.dxftype() == 'LWPOLYLINE':
+            g,l,u=lwpolylines_to_o3d(entity)
+        elif entity.dxftype() == 'MESH':
+            g,l,u=meshes_to_o3d(entity)
+        elif entity.dxftype() == 'ELLIPSE':
+            g,l,u=ellipses_to_o3d(entity)
+        # elif entity.dxftype() == 'HATCH':
+        #     o3d_geometries.append(hatch_to_o3d(entity))
+        elif entity.dxftype() == 'SOLID' or entity.dxftype() =='3DFACE' or entity.dxftype() =='3DSOLID':
+            g,l,u=solids_to_o3d(entity)
+        else:
+            continue
+        geometries.append(g[0])
+        layers.append(l[0])
+        uris.append(u[0])
+    return geometries,uris,layers
+
+
+# In[52]:
+
+
+def ezdxf_to_o3d(dxf,
+                 dtypes:List[str]=['LINE','ARC','CIRCLE','POINT','SPLINE','POLYLINE','LWPOLYLINE','MESH','ELLIPSE','SOLID','3DFACE'],
+                 layers:List[str]=None,
+                 join_geometries:bool=True,
+                 explode_blocks:bool=True) -> Tuple[List[o3d.geometry.Geometry],List[str]]:
+    """Convert a set of entities in a dxf file to a set of o3d.geometry.LineSet/TriangleMesh/PointCloud objects with their corresponding layers.
+
+    Args:
+        dxf (str or ezdxf): directly provide the dxf path or preread the dxf using ezdxf.readfile().
+        dtypes (List[str], optional): list of entity names to query. Defaults to the main types in a dxf file i.e. ['LINE','ARC','CIRCLE','POINT','SPLINE','POLYLINE','LWPOLYLINE','MESH','ELLIPSE','SOLID','3DFACE'].
+        layers (List[str], optional): list of layer names to query. If None, all layers are considered
+        join_geometries (bool, optional): merge geometries of the same type. This optimizes their use. Defaults to True.
+        group_per_layer (bool, optional): If true, create list of lists of geometries per layer. Defaults to True.
+        explode_blocks (bool, optional): deconstruct blocks and add them to the geometries. Defaults to True.
+
+    Returns:
+        Tuple[List[o3d.geometry.Geometry],List[str]]: _description_
+    """
+    #open dxf file if not ezdxf entitiy
+    if type(dxf) is str:
+        # print(f'Reading dxf file...')
+        dxf = ezdxf.readfile(dxf)
+    
+    # check units
+    if dxf.header['$INSUNITS'] !=6:
+        units=ezdxf.units.decode(dxf.header['$INSUNITS'])
+        # print(f'Warning: dxf has {units} units while meters are expected!') 
+
+    #select layout: Modelspace,Paperspace,Blocklayout
+    msp = dxf.modelspace()    
+
+    #gather layers
+    layers=[key.casefold() for key in dxf.layers.entries.keys()]  if layers is None else [key.casefold() for key in ut.item_to_list(layers)]
+    assert all(key.casefold() in dxf.layers.entries.keys() for key in layers ), f' some layers are not found, please check spelling.'        
+    # print(f'{len(layers)} layers found.')  
+
+    #explode blocks into seperate geometries    
+    if explode_blocks:
+        # print(f'Exploding blocks...')        
+        [e.explode() for e in msp if e.dxftype()=='INSERT']
+
+    #gather entities        
+    entities=[]
+    [entities.extend(list(msp.query(t))) for t in ut.item_to_list(dtypes)]
+    # print(f'{len(entities)} entities found.')  
+    
+    #convert entities  
+    # print(f'Converting entities to open3d geometries...')  
+    #get groups
+    group = groupby(entities=entities, dxfattrib="layer")        
+    geometry_groups=[]    
+    layer_groups=[]
+    uri_groups=[]
+    #convert per group
+    for layer, groupentities in group.items():
+        if layer.casefold() in layers and layer != "0":
+            # print(layer)
+            # print(group)
+            geometries,uris,_=ezdxf_entities_to_o3d(groupentities)
+            # print(uris)
+            geometries=gmu.join_geometries(geometries)    if join_geometries else geometries
+            geometries=ut.item_to_list(geometries)
+            geometry_groups.append(geometries) if len(geometries)>0 else None
+            layer_groups.append(layer) if len(geometries)>0 else None
+            uri_groups.append(uris) if len(uris) > 0 else None
+
+    # print(f'Produced {len(list(itertools.chain(*geometry_groups)))} open3d geometries in {len(layer_groups)} layers.')  
+    return geometry_groups,layer_groups,uri_groups
 
 def solids_to_o3d(entities:List[ezdxf.entities.solid.Solid])-> Tuple[List[o3d.geometry.TriangleMesh],List[str]]:       
     """Convert ezdxf entities to o3d.geometry.LineSet objects.

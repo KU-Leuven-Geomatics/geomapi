@@ -20,9 +20,13 @@ from rdflib import RDF, XSD, Graph, Literal, URIRef, FOAF
 #### GLOBAL VARIABLES ####
 
 RDF_EXTENSIONS = [".ttl"]
-IMG_EXTENSION = [".jpg", ".png", ".JPG", ".PNG", ".JPEG"]
-MESH_EXTENSION = [".obj",".ply",".fbx" ]
-PCD_EXTENSION = [".pcd", ".e57",".pts", ".ply", '.xml','.csv']
+IMG_EXTENSIONS = [".jpg", ".png", ".JPG", ".PNG", ".JPEG"]
+MESH_EXTENSIONS = [".obj",".ply",".fbx" ]
+PCD_EXTENSIONS = [".pcd", ".e57",".pts", ".ply", '.xml','.csv']
+BIM_EXTENSIONS=[".ifc"]
+CAD_EXTENSIONS=[".dxf","dwg"]
+
+
 INT_ATTRIBUTES = ['pointCount','faceCount','e57Index'] #'label'
 FLOAT_ATTRIBUTES = ['xResolution','yResolution','imageWidth','imageHeight','focalLength35mm','principalPointU','principalPointV','accuracy']
 LIST_ATTRIBUTES =  ['distortionCoeficients']
@@ -1144,19 +1148,19 @@ def get_node_resource_extensions(objectType:str) -> list:
         list with possible extensions e.g. .obj, .ply for MeshNodes
     """    
     if 'MeshNode' in objectType:        
-        return MESH_EXTENSION
+        return MESH_EXTENSIONS
     if 'SessionNode' in objectType:        
-        return MESH_EXTENSION
+        return MESH_EXTENSIONS
     elif 'BIMNode' in objectType:        
-        return MESH_EXTENSION
+        return MESH_EXTENSIONS
     elif 'PointCloudNode' in objectType:        
-        return PCD_EXTENSION    
+        return PCD_EXTENSIONS    
     elif 'ImageNode' in objectType:        
-        return IMG_EXTENSION
+        return IMG_EXTENSIONS
     elif 'OrthoNode' in objectType:        
-        return IMG_EXTENSION
+        return IMG_EXTENSIONS
     else:
-        return ['.txt']+MESH_EXTENSION+PCD_EXTENSION+IMG_EXTENSION+RDF_EXTENSIONS
+        return ['.txt']+MESH_EXTENSIONS+PCD_EXTENSIONS+IMG_EXTENSIONS+RDF_EXTENSIONS
 
 # This whole function can be replaced with: "return v4d[type(node).__name__]" where node is the node object
 def get_node_type(objectType:str) -> URIRef:
