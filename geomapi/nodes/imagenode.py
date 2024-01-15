@@ -20,7 +20,9 @@ import open3d as o3d
 import math
 import uuid
 from scipy.spatial.transform import Rotation as R
-
+import copy
+import matplotlib as plt
+from typing import List
 
 #IMPORT MODULES
 from geomapi.nodes import Node
@@ -77,7 +79,6 @@ class ImageNode(Node):
 
         #instance variables
         self.xmlPath=xmlPath
-        self.xmpPath=xmpPath
 
         #initialisation functionality
         if getMetaData:
@@ -778,6 +779,152 @@ class ImageNode(Node):
         rays=np.hstack((np.full((n,3), t),direction))         
         return rays 
     
+    def world_to_pixel_coordinates(self,world_coordinates) -> np.ndarray:
+        """Converts 3D world coordinates to pixel coordinates in an image.
+
+        This function takes 3D world coordinates and converts them to pixel coordinates in an image. It uses camera parameters such as the transformation matrix, focal length, image width, and image height.
+
+        Args:
+            world_coordinates (np.ndarray): A 3D point in world coordinates to be converted.
+
+        Returns:
+            np.ndarray: A 2D array containing the pixel coordinates (row, column) in the image.
+
+        Example:
+            n = CameraParameters()  # Initialize camera parameters object
+            point_world = np.array([x, y, z])  # 3D point in world coordinates
+            pixel_coordinates = world_to_pixel(n, point_world)
+
+        Note:
+            - The function performs a series of transformations, including world to camera, camera to image, and image centering.
+            - It returns the pixel coordinates as a 2D array.
+        """
+        imageCoordinates= np.linalg.inv(self.cartesianTransform) @ world_coordinates.T
+
+        xy=copy.deepcopy(imageCoordinates)
+        xy[0]= imageCoordinates[0]/imageCoordinates[2]*self.focalLength35mm
+        xy[1]= imageCoordinates[1]/imageCoordinates[2]*self.focalLength35mm
+        xy[2]= imageCoordinates[2]/imageCoordinates[2]*self.focalLength35mm
+
+        uv=copy.deepcopy(xy)
+        uv[1]=xy[1]+self.imageHeight/2
+        uv[0]=xy[0]+self.imageWidth/2
+        uv=uv[0:2]
+        
+        return uv
+    
+    
+    def project_lineset_on_image(self,linesets:List[o3d.geometry.LineSet],colorList:List[np.array]) ->None:
+        """Project Opend3D linesets onto the resource of the ImageNode.
+
+        **NOTE**: this affects the original image
+
+        This function takes a list of images (`imgNodes`) and their associated additional lines represented by beginning and ending points in homogeneous coordinates. It annotates the additional lines on each image and saves the annotated images to an output directory.
+
+        Args:
+            linesets (List[o3d.LineSet]): List[m] of linesets
+            colorList (List[np.array]): mx3 array with colors [0;1]
+
+        Returns:
+            list: A list of image nodes with additional line information.
+
+        Example:
+            hom_begin_points_ad = [[point1, point2, ...], [point1, point2, ...], ...]  # List of homogeneous coordinates of beginning points
+            hom_end_points_ad = [[point1, point2, ...], [point1, point2, ...], ...]  # List of homogeneous coordinates of ending points
+            imgNodes = [ImageNode1, ImageNode2, ...]  # List of image nodes
+            ImagePath = "path/to/image_directory"
+            output = "path/to/output_directory"
+            updated_imgNodes = saveImageAdLine(hom_begin_points_ad, hom_end_points_ad, imgNodes, ImagePath, output)
+
+        Note:
+            - The function annotates the additional lines on each image and saves the annotated images to the output directory.
+        """
+        
+        hom_begin_points_ad,hom_end_points_ad= gmu.lineset_to_points(linesets)
+        
+
+        fig = plt.figure(figsize=(10, 10))
+        plt.imshow(self.resource)
+
+        istart_list = []
+        istop_list = []
+
+        adlist=[]
+        for count, start_list in enumerate(hom_begin_points_ad):
+            istart_sublist = []
+            istop_sublist = []
+            adlines=[]
+            for i,start in enumerate (start_list):
+                stop_list = hom_end_points_ad[count]
+                stop = stop_list[i]
+                uvCoordinates = self.world_to_pixel( np.array([[start],[stop]])) #this might be wrongly formatted
+
+
+                u_start, v_start = uvCoordinates[0], uvCoordinates[1]
+                u_stop, v_stop = uvCoordinates[0], uvCoordinates[1]
+                istart=[u_start, v_start]
+                istop=[u_stop, v_stop]
+                istart_sublist.append(uvCoordinates[0,:])
+                istop_sublist.append(uvCoordinates[1,:])
+            
+                plt.plot((u_start,u_stop),(v_start,v_stop), color=colorList[count], linewidth='0.2')
+                adline=((u_start,v_start),(u_stop,v_stop))
+
+        plt.axis("off")
+        plt.xlim([0, self.imageWidth])
+        plt.ylim([self.imageHeight, 0])
+        plt.close()
+
+    
+    def mask_image(hom_begin_points_ad,hom_end_points_ad,imgNodes,ImagePath,output):
+        """Saves masked images with annotated additional lines.
+
+        This function takes a list of images (`imgNodes`) and their associated additional lines represented by beginning and ending points in homogeneous coordinates. It annotates the additional lines on each image, masks the annotated regions, and saves the masked images to an output directory.
+
+        Args:
+            hom_begin_points_ad (list): A list of lists, where each inner list contains the homogeneous coordinates of the beginning points of additional lines.
+            hom_end_points_ad (list): A list of lists, where each inner list contains the homogeneous coordinates of the ending points of additional lines.
+            imgNodes (list): A list of image nodes containing information about images.
+            ImagePath (str): The path to the directory containing image files.
+            output (str): The path to the output directory where masked images will be saved.
+
+        Returns:
+            str: The path to the output directory containing the saved masked images.
+
+        Example:
+            hom_begin_points_ad = [[point1, point2, ...], [point1, point2, ...], ...]  # List of homogeneous coordinates of beginning points
+            hom_end_points_ad = [[point1, point2, ...], [point1, point2, ...], ...]  # List of homogeneous coordinates of ending points
+            imgNodes = [ImageNode1, ImageNode2, ...]  # List of image nodes
+            ImagePath = "path/to/image_directory"
+            output = "path/to/output_directory"
+            masked_images_dir = saveMaskedImage(hom_begin_points_ad, hom_end_points_ad, imgNodes, ImagePath, output)
+
+        Note:
+            - The function annotates the additional lines on each image and creates masks for the annotated regions.
+            - It saves the masked images to the output directory and returns the path to the directory.
+        """
+        
+        for im in imgNodes:
+            if os.path.exists(image_cv2):
+                image_vis = cv2.cvtColor(image_cv2, cv2.COLOR_BGR2RGB)
+                mask = np.zeros(image_cv2.shape[:2], dtype="uint8")
+
+                for count, start_list in enumerate(hom_begin_points_ad):
+                    for i,start in enumerate (start_list):
+                        stop_list = hom_end_points_ad[count]
+                        stop = stop_list[i]
+                        im.uvCoordinates_start = world_to_pixel(im,start)
+                        im.uvCoordinates_stop = world_to_pixel(im,stop)
+                        u_start, v_start = int(im.uvCoordinates_start[0]), int(im.uvCoordinates_start[1])
+                        u_stop, v_stop = int(im.uvCoordinates_stop[0]), int(im.uvCoordinates_stop[1])
+                        cv2.line(mask, (u_start,v_start),(u_stop,v_stop), (255, 255, 255, 255), thickness=75)
+
+                masked_img = cv2.bitwise_and(image_cv2, image_cv2, mask=mask)
+                output_dir = os.path.join(output,"Images", "Masked_Image")
+
+        return output_dir
+
+
     # def create_rays(self,imagePoints:np.array)->o3d.core.Tensor:
     #     """Generate a grid a rays from the camera location to a given set of imagePoints.\n
                 
