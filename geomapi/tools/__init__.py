@@ -180,8 +180,6 @@ def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs
             sensorInformation= next(s for s in sensors if s is not None and s.get('sensorid')==sensorid)
 
             #create image node 
-            test=int(sensorInformation['imageWidth'])
-            test2=    int(sensorInformation['imageHeight'] )
             node=ImageNode(subject='file:///'+str(uuid.uuid1()),
                         name=name, 
                          cartesianTransform=transform,
@@ -193,7 +191,6 @@ def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs
             
             #assign node to nodelist depending on whether it's in the folder    
             try:
-                test1=ut.get_filename(node.name)
                 i=names.index(ut.get_filename(node.name))
                 node.path=files[i]
                 nodelist.append(node)   

@@ -411,7 +411,7 @@ def getRMatrix(yi, yf):
 
     if (abs(phi) > 0.1):
         phi = phi * (np.pi / 180)
-
+        ax=ax.flatten()
         s_hat = np.array([[0, -ax[2], ax[1]],
                           [ax[2], 0, -ax[0]],
                           [-ax[1], ax[0], 0]])

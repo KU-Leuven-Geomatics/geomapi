@@ -1,0 +1,464 @@
+@prefix : <http://ontology.eil.utoronto.ca/icity/Geom/> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@base <http://ontology.eil.utoronto.ca/icity/Geom/> .
+
+<http://ontology.eil.utoronto.ca/icity/Geom/> rdf:type owl:Ontology ;
+                                               owl:versionIRI <http://ontology.eil.utoronto.ca/icity/Geom/1.0/> ;
+                                               owl:imports <http://geovocab.org/geometry> ;
+                                               <http://creativecommons.org/ns#license> "http://creativecommons.org/licenses/by/3.0/" ;
+                                               <http://purl.org/dc/elements/1.1/creator> "Megan Katsumi" ;
+                                               <http://purl.org/dc/elements/1.1/description> "The iCity-Geometry ontology directly reuses the GeoVocab Geometry ontology, with the introduction of a super-class for organization." ;
+                                               <http://purl.org/dc/elements/1.1/issued> "November 29, 2016" ;
+                                               <http://purl.org/dc/elements/1.1/title> "Geometry Ontology" ;
+                                               <http://purl.org/vocab/vann/preferredNamespacePrefix> "icity-geom" ;
+                                               <http://purl.org/vocab/vann/preferredNamespaceUri> "http://ontology.eil.utoronto.ca/icity/Geom/" ;
+                                               rdfs:comment """Developed as part of the overall iCity ontology effort, the iCity-Geometry Ontology is designed to capture concepts related to geometry. Reuses the GeoVocab Geometry ontology.
+		""" ;
+                                               owl:versionInfo 1.0 ;
+                                               <http://www.w3.org/ns/adms#relatedDocumentation> "Under development. Please see report on iCity Ontology v1." .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://creativecommons.org/ns#license
+<http://creativecommons.org/ns#license> rdf:type owl:AnnotationProperty .
+
+
+###  http://ontology.eil.utoronto.ca/icity/Geom/GeomOntologyAnnotationProperty
+:GeomOntologyAnnotationProperty rdf:type owl:AnnotationProperty ;
+                                <http://purl.org/dc/elements/1.1/description> "Annotation property added for organizational purposes, to group annotation properties defined in the Geovocab Geometry ontology." .
+
+
+###  http://purl.org/dc/elements/1.1/creator
+<http://purl.org/dc/elements/1.1/creator> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/date
+<http://purl.org/dc/elements/1.1/date> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/description
+<http://purl.org/dc/elements/1.1/description> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/issued
+<http://purl.org/dc/elements/1.1/issued> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/elements/1.1/title
+<http://purl.org/dc/elements/1.1/title> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/creator
+<http://purl.org/dc/terms/creator> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/description
+<http://purl.org/dc/terms/description> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/issued
+<http://purl.org/dc/terms/issued> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/modified
+<http://purl.org/dc/terms/modified> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/rights
+<http://purl.org/dc/terms/rights> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/title
+<http://purl.org/dc/terms/title> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/vocab/vann/preferredNamespacePrefix
+<http://purl.org/vocab/vann/preferredNamespacePrefix> rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/vocab/vann/preferredNamespaceUri
+<http://purl.org/vocab/vann/preferredNamespaceUri> rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2002/07/owl#versionInfo
+owl:versionInfo rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/2003/01/geo/wgs84_pos#alt
+<http://www.w3.org/2003/01/geo/wgs84_pos#alt> rdf:type owl:AnnotationProperty ;
+                                              rdfs:comment """The WGS84 altitude of a SpatialThing (decimal meters
+above the local reference ellipsoid).""" ;
+                                              rdfs:label "altitude" ;
+                                              rdfs:subPropertyOf :GeomOntologyAnnotationProperty ;
+                                              rdfs:domain <http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing> .
+
+
+###  http://www.w3.org/2003/01/geo/wgs84_pos#lat
+<http://www.w3.org/2003/01/geo/wgs84_pos#lat> rdf:type owl:AnnotationProperty ;
+                                              rdfs:comment "The WGS84 latitude of a SpatialThing (decimal degrees)." ;
+                                              rdfs:label "latitude" ;
+                                              rdfs:subPropertyOf :GeomOntologyAnnotationProperty ;
+                                              rdfs:domain <http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing> .
+
+
+###  http://www.w3.org/2003/01/geo/wgs84_pos#location
+<http://www.w3.org/2003/01/geo/wgs84_pos#location> rdf:type owl:AnnotationProperty ;
+                                                   rdfs:comment """The relation between something and the point,
+ or other geometrical thing in space, where it is.  For example, the realtionship between
+ a radio tower and a Point with a given lat and long.
+ Or a relationship between a park and its outline as a closed arc of points, or a road and
+ its location as a arc (a sequence of points).
+ Clearly in practice there will be limit to the accuracy of any such statement, but one would expect
+ an accuracy appropriate for the size of the object and uses such as mapping .
+ """ ;
+                                                   rdfs:label "location" ;
+                                                   rdfs:subPropertyOf <http://xmlns.com/foaf/0.1/based_near> .
+
+
+###  http://www.w3.org/2003/01/geo/wgs84_pos#long
+<http://www.w3.org/2003/01/geo/wgs84_pos#long> rdf:type owl:AnnotationProperty ;
+                                               rdfs:comment "The WGS84 longitude of a SpatialThing (decimal degrees)." ;
+                                               rdfs:label "longitude" ;
+                                               rdfs:subPropertyOf :GeomOntologyAnnotationProperty ;
+                                               rdfs:domain <http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing> .
+
+
+###  http://www.w3.org/2003/06/sw-vocab-status/ns#term_status
+<http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> rdf:type owl:AnnotationProperty .
+
+
+###  http://www.w3.org/ns/adms#relatedDocumentation
+<http://www.w3.org/ns/adms#relatedDocumentation> rdf:type owl:AnnotationProperty .
+
+
+###  http://xmlns.com/foaf/0.1/based_near
+<http://xmlns.com/foaf/0.1/based_near> rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://geovocab.org/geometry#bbox
+<http://geovocab.org/geometry#bbox> rdf:type owl:ObjectProperty ;
+                                    rdfs:subPropertyOf :GeomOntologyProperty ;
+                                    rdfs:domain <http://geovocab.org/geometry#Geometry> ;
+                                    rdfs:range <http://geovocab.org/geometry#BoundingBox> ;
+                                    rdfs:comment "Relates a Geometry to its Bounding Box." ;
+                                    rdfs:label "bounding box" ;
+                                    <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#boundary
+<http://geovocab.org/geometry#boundary> rdf:type owl:ObjectProperty ;
+                                        rdfs:subPropertyOf :GeomOntologyProperty ;
+                                        rdfs:domain <http://geovocab.org/geometry#Polygon> ;
+                                        rdfs:range <http://geovocab.org/geometry#LinearRing> ;
+                                        rdfs:comment "Super-property that groups all properties defining a polygon's boundaries." ;
+                                        rdfs:label "boundary" ;
+                                        <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#exterior
+<http://geovocab.org/geometry#exterior> rdf:type owl:ObjectProperty ;
+                                        rdfs:subPropertyOf <http://geovocab.org/geometry#boundary> ;
+                                        rdfs:domain <http://geovocab.org/geometry#Polygon> ;
+                                        rdfs:range <http://geovocab.org/geometry#LinearRing> ;
+                                        rdfs:comment "Defines a polygon's outer boundary." ;
+                                        rdfs:label "exterior" ;
+                                        <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#geometry
+<http://geovocab.org/geometry#geometry> rdf:type owl:ObjectProperty ;
+                                        rdfs:subPropertyOf :GeomOntologyProperty ;
+                                        rdfs:range <http://geovocab.org/geometry#Geometry> ;
+                                        rdfs:comment "Relates a resource to its geometric shape." ;
+                                        rdfs:label "geometry" ;
+                                        <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "testing" .
+
+
+###  http://geovocab.org/geometry#interior
+<http://geovocab.org/geometry#interior> rdf:type owl:ObjectProperty ;
+                                        rdfs:subPropertyOf <http://geovocab.org/geometry#boundary> ;
+                                        rdfs:domain <http://geovocab.org/geometry#Polygon> ;
+                                        rdfs:range <http://geovocab.org/geometry#LinearRing> ;
+                                        rdfs:comment "Defines an polygon's boundary within its outer boundary, i.e. a polygon with 'holes' in it." ;
+                                        rdfs:label "interior" ;
+                                        <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#lineStringMember
+<http://geovocab.org/geometry#lineStringMember> rdf:type owl:ObjectProperty ;
+                                                rdfs:subPropertyOf :GeomOntologyProperty ;
+                                                rdfs:domain <http://geovocab.org/geometry#MultiLineString> ;
+                                                rdfs:range <http://geovocab.org/geometry#LineString> ;
+                                                rdfs:comment "Links a LineString simple geometry to a MultiLineString composite geometry." ;
+                                                rdfs:label "LineString member" ;
+                                                <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#partOf
+<http://geovocab.org/geometry#partOf> rdf:type owl:ObjectProperty ;
+                                      rdfs:subPropertyOf :GeomOntologyProperty ;
+                                      rdfs:domain <http://www.w3.org/2003/01/geo/wgs84_pos#Point> ;
+                                      rdfs:range <http://geovocab.org/geometry#LineString> ;
+                                      rdfs:comment "Relates a point to a geometric shape's boundary." ;
+                                      rdfs:label "part of" ;
+                                      <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#pointMember
+<http://geovocab.org/geometry#pointMember> rdf:type owl:ObjectProperty ;
+                                           rdfs:subPropertyOf :GeomOntologyProperty ;
+                                           rdfs:domain <http://geovocab.org/geometry#MultiPoint> ;
+                                           rdfs:range <http://www.w3.org/2003/01/geo/wgs84_pos#Point> ;
+                                           rdfs:comment "Links a Point simple geometry to a MultiPoint composite Geometry." ;
+                                           rdfs:label "Point member" ;
+                                           <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#polygonMember
+<http://geovocab.org/geometry#polygonMember> rdf:type owl:ObjectProperty ;
+                                             rdfs:subPropertyOf :GeomOntologyProperty ;
+                                             rdfs:domain <http://geovocab.org/geometry#MultiPolygon> ;
+                                             rdfs:range <http://geovocab.org/geometry#Polygon> ;
+                                             rdfs:comment "Links a Polygon simple geometry to a MultiPolygon composite geometry." ;
+                                             rdfs:label "Polygon member" ;
+                                             <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#posList
+<http://geovocab.org/geometry#posList> rdf:type owl:ObjectProperty ;
+                                       rdfs:subPropertyOf :GeomOntologyProperty ;
+                                       rdfs:domain <http://geovocab.org/geometry#LineString> ;
+                                       rdfs:comment "Relates a LineString or LinearRing to the points that define them." ;
+                                       rdfs:label "position list" ;
+                                       <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://ontology.eil.utoronto.ca/icity/Geom/GeomOntologyProperty
+:GeomOntologyProperty rdf:type owl:ObjectProperty ;
+                      <http://purl.org/dc/elements/1.1/description> "Property added for organizational purposes, to group properties defined in the Geovocab Geometry ontology." .
+
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://geovocab.org/geometry#asWKT
+<http://geovocab.org/geometry#asWKT> rdf:type owl:DatatypeProperty ;
+                                     rdfs:subPropertyOf :GeomOntologyDataProperty ;
+                                     rdfs:comment "WKT serialization of the geometry." ;
+                                     rdfs:label "As WKT" ;
+                                     <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "deprecated" .
+
+
+###  http://ontology.eil.utoronto.ca/icity/Geom/GeomOntologyDataProperty
+:GeomOntologyDataProperty rdf:type owl:DatatypeProperty ;
+                          <http://purl.org/dc/elements/1.1/description> "Data property added for organizational purposes, to group data properties defined in the Geovocab Geometry ontology." .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://geovocab.org/geometry#BoundingBox
+<http://geovocab.org/geometry#BoundingBox> rdf:type owl:Class ;
+                                           rdfs:subClassOf <http://geovocab.org/geometry#Geometry> ;
+                                           rdfs:comment "Represents a bounding box composed by four line segments." ;
+                                           rdfs:label "Bounding Box" ;
+                                           <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#Geometry
+<http://geovocab.org/geometry#Geometry> rdf:type owl:Class ;
+                                        rdfs:subClassOf :GeomOntologyThing ;
+                                        rdfs:comment "Super-class grouping all geometrical representations (also ones in non-RDF formats, such as KML, GML, WKT...)." ;
+                                        rdfs:label "Geometry" ;
+                                        <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "testing" .
+
+
+###  http://geovocab.org/geometry#GeometryCollection
+<http://geovocab.org/geometry#GeometryCollection> rdf:type owl:Class ;
+                                                  rdfs:subClassOf <http://geovocab.org/geometry#Geometry> ;
+                                                  rdfs:comment "Super-class grouping all composite geometrical representations." ;
+                                                  rdfs:label "Geometry Collection" ;
+                                                  <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#LineString
+<http://geovocab.org/geometry#LineString> rdf:type owl:Class ;
+                                          rdfs:subClassOf <http://geovocab.org/geometry#Geometry> ;
+                                          rdfs:comment "Represents a series of points connected by straight lines." ;
+                                          rdfs:label "LineString" ;
+                                          <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#LinearRing
+<http://geovocab.org/geometry#LinearRing> rdf:type owl:Class ;
+                                          rdfs:subClassOf <http://geovocab.org/geometry#LineString> ;
+                                          rdfs:comment "Represents a series of points connected by straight lines, which form a closed shape. Last point must be the same as the first point." ;
+                                          rdfs:label "LinearRing" ;
+                                          <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#MultiLineString
+<http://geovocab.org/geometry#MultiLineString> rdf:type owl:Class ;
+                                               rdfs:subClassOf <http://geovocab.org/geometry#GeometryCollection> ;
+                                               rdfs:comment "Describes a geometric shape composed of several LineString resources." ;
+                                               rdfs:label "MultiLineString" ;
+                                               <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#MultiPoint
+<http://geovocab.org/geometry#MultiPoint> rdf:type owl:Class ;
+                                          rdfs:subClassOf <http://geovocab.org/geometry#GeometryCollection> ;
+                                          rdfs:comment "Describes a collection of Point resources, which define a resource's geometric representation." ;
+                                          rdfs:label "MultiPoint" ;
+                                          <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#MultiPolygon
+<http://geovocab.org/geometry#MultiPolygon> rdf:type owl:Class ;
+                                            rdfs:subClassOf <http://geovocab.org/geometry#GeometryCollection> ;
+                                            rdfs:comment "Describes a geometric shape composed of several Polygon resources." ;
+                                            rdfs:label "MultiPolygon" ;
+                                            <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://geovocab.org/geometry#Polygon
+<http://geovocab.org/geometry#Polygon> rdf:type owl:Class ;
+                                       rdfs:subClassOf <http://geovocab.org/geometry#Geometry> ,
+                                                       [ rdf:type owl:Restriction ;
+                                                         owl:onProperty <http://geovocab.org/geometry#interior> ;
+                                                         owl:someValuesFrom <http://geovocab.org/geometry#LinearRing>
+                                                       ] ,
+                                                       [ rdf:type owl:Restriction ;
+                                                         owl:onProperty <http://geovocab.org/geometry#exterior> ;
+                                                         owl:qualifiedCardinality "1"^^xsd:nonNegativeInteger ;
+                                                         owl:onClass <http://geovocab.org/geometry#LinearRing>
+                                                       ] ;
+                                       rdfs:comment "A closed area defined by an exterior boundary, and optionally one or more interior boundaries." ;
+                                       rdfs:label "Polygon" ;
+                                       <http://www.w3.org/2003/06/sw-vocab-status/ns#term_status> "unstable" .
+
+
+###  http://ontology.eil.utoronto.ca/icity/Geom/GeomOntologyThing
+:GeomOntologyThing rdf:type owl:Class ;
+                   <http://purl.org/dc/elements/1.1/description> "Class added for organizational purposes, to group classes defined in the Geovocab Geometry ontology." .
+
+
+###  http://www.w3.org/2003/01/geo/wgs84_pos#Point
+<http://www.w3.org/2003/01/geo/wgs84_pos#Point> rdf:type owl:Class ;
+                                                rdfs:subClassOf :GeomOntologyThing ;
+                                                rdfs:label "Point" .
+
+
+#################################################################
+#    Annotations
+#################################################################
+
+<http://www.w3.org/2003/01/geo/wgs84_pos#> <http://purl.org/dc/elements/1.1/date> "$Date: 2009/04/20 15:00:30 $" ;
+                                           <http://purl.org/dc/elements/1.1/description> """A vocabulary for representing latitude, longitude and
+ altitude information in the WGS84 geodetic reference datum.
+ Version $Id: wgs84_pos.rdf,v 1.22 2009/04/20 15:00:30 timbl Exp $. See http://www.w3.org/2003/01/geo/ for more details.""" ;
+                                           <http://purl.org/dc/elements/1.1/title> "WGS84 Geo Positioning: an RDF vocabulary" ;
+                                           rdfs:comment """
+Recent changes to this namespace:
+$Log: wgs84_pos.rdf,v $
+Revision 1.22  2009/04/20 15:00:30  timbl
+Remove the time bits which have been deal with elsewhere eg in iCal.
+
+Revision 1.21  2009/04/20 12:52:47  timbl
+try again
+
+Revision 1.20  2009/04/20 12:42:11  timbl
+Add Event (edited ages ago and never checked in), and location (following discussion http://chatlogs.planetrdf.com/swig/2009-04-20#T12-36-09)
+
+Revision 1.19  2009/04/20 12:36:31  timbl
+Add Event (edited ages ago and never checked in), and location (following discussion http://chatlogs.planetrdf.com/swig/2009-04-20#T12-36-09)
+
+Revision 1.18  2006/02/01 22:01:04  danbri
+Clarified that lat and long are decimal degrees, and that alt is decimal metres about local reference ellipsoid
+
+Revision 1.17  2004/02/06 17:38:12  danbri
+Fixed a bad commit screwup
+
+Revision 1.15  2003/04/19 11:24:08  danbri
+Fixed the typo even more.
+
+Revision 1.14  2003/04/19 11:16:56  danbri
+fixed a typo
+
+Revision 1.13  2003/02/19 22:27:27  connolly
+relaxed domain constraints on lat/long/alt from Point to SpatialThing
+
+Revision 1.12  2003/01/12 01:41:41  danbri
+Trying local copy of XSLT doc.
+
+Revision 1.11  2003/01/12 01:20:18  danbri
+added a link to morten's xslt rdfs viewer.
+
+Revision 1.10  2003/01/11 18:56:49  danbri
+Removed datatype range from lat and long properties, since they would
+have required each occurance of the property to mention the datatype.
+
+Revision 1.9  2003/01/11 11:41:31  danbri
+Another typo; repaired rdfs:Property to rdf:Property x4
+
+Revision 1.8  2003/01/11 11:05:02  danbri
+Added an rdfs:range for each lat/long/alt property,
+http://www.w3.org/2001/XMLSchema#float
+
+Revision 1.7  2003/01/10 20:25:16  danbri
+Longer rdfs:comment for Point, trying to be Earth-centric and neutral about
+coordinate system(s) at the same time. Feedback welcomed.
+
+Revision 1.6  2003/01/10 20:18:30  danbri
+Added CVS log comments into the RDF/XML as an rdfs:comment property of the
+vocabulary. Note that this is not common practice (but seems both harmless
+and potentially useful).
+
+
+revision 1.5
+date: 2003/01/10 20:14:31;  author: danbri;  state: Exp;  lines: +16 -5
+Updated schema:
+Added a dc:date, added url for more info. Changed the rdfs:label of the
+namespace from gp to geo. Added a class Point, set as the rdfs:domain of
+each property. Added XML comment on the lat_long property suggesting that
+we might not need it (based on #rdfig commentary from implementors).
+
+revision 1.4
+date: 2003/01/10 20:01:07;  author: danbri;  state: Exp;  lines: +6 -5
+Fixed typo; several rdfs:about attributes are now rdf:about. Thanks to MortenF in
+#rdfig for catching this error.
+
+revision 1.3
+date: 2003/01/10 11:59:03;  author: danbri;  state: Exp;  lines: +4 -3
+fixed buglet in vocab, added more wgs links
+
+revision 1.2
+date: 2003/01/10 11:01:11;  author: danbri;  state: Exp;  lines: +4 -4
+Removed alt from the as-a-flat-string property, and switched from
+space separated to comma separated.
+
+revision 1.1
+date: 2003/01/10 10:53:23;  author: danbri;  state: Exp;
+basic geo vocab
+
+""" ;
+                                           rdfs:label "geo" .
+
+
+<http://www.w3.org/2003/01/geo/wgs84_pos#lat_long> rdfs:comment "A comma-separated representation of a latitude, longitude coordinate." ;
+                                                   rdfs:label "lat/long" .
+
+
+###  Generated by the OWL API (version 5.1.7) https://github.com/owlcs/owlapi/

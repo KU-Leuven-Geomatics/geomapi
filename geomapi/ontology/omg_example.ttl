@@ -1,0 +1,139 @@
+@prefix	rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix bot: <https://w3id.org/bot#> .
+@prefix beo: <http://pi.pauwel.be/voc/buildingelement#> .
+@prefix dot: <https://w3id.org/dot#> .
+@prefix epsg: <http://www.opengis.net/def/crs/EPSG/0/> .
+@prefix unit: <http://qudt.org/vocab/unit/> .
+@prefix omg: <https://w3id.org/omg#> .
+@prefix fog: <https://w3id.org/fog#> . 
+@prefix gom: <https://w3id.org/gom#> .
+@prefix inst: <https://example.org/snk/20190918/data#> .
+
+### building topology
+inst:site a bot:Site ;
+	bot:hasBuilding inst:church .
+	
+inst:church a bot:Building ;
+	omg:hasGeometry inst:geometry-i1a , inst:geometry-i1b , inst:geometry-i1c , inst:geometry-i2 ;
+	bot:hasStorey inst:groundfloor .
+	
+inst:groundfloor a bot:Storey ;
+	omg:hasGeometry inst:geometry-i3 , inst:geometry-i4 ;
+	bot:hasSpace inst:nave .
+	
+inst:nave a bot:Space ;
+	bot:adjacentElement inst:roof1 , inst:wallA .
+	
+inst:roof1 a bot:Element , beo:Roof ;
+	omg:hasGeometry inst:geometry-i5 ;
+	dot:hasDamageElement inst:roof1-damage1 , inst:roof1-damage2 .
+
+inst:wallA a bot:Element , beo:Wall ;
+	omg:hasGeometry inst:geometry-i6 .
+	
+inst:roof1-damage1 a dot:DamageElement ;
+	omg:hasGeometry inst:geometry-i7 .
+
+### geometry descriptions
+#-- part1
+inst:geometry-i1a a gom:PointCloudGeometry ;
+	gom:hasCoordinateSystem epsg:6190 ;
+	gom:hasFileSize 11353506 ;
+	fog:asLas_v1.4-laz "fileA.laz"^^xsd:anyURI .
+inst:geometry-i1b a gom:PointCloudGeometry ;
+	gom:hasCoordinateSystem epsg:6190 ;
+	gom:hasFileSize 6303875 ;
+	fog:asLas_v1.4-laz "fileB.laz"^^xsd:anyURI .
+inst:geometry-i1c a gom:PointCloudGeometry ;
+	gom:hasCoordinateSystem epsg:6190 ;
+	gom:hasFileSize 870716 ;
+	fog:asLas_v1.4-laz "fileC.laz"^^xsd:anyURI .
+inst:geometry-i2 a gom:PointCloudGeometry ;
+	gom:hasCoordinateSystem epsg:6190 ;
+	gom:hasFileSize 3811517 ;
+	omg:derivedFromGeometry inst:geometry-i1a , inst:geometry-i1b , inst:geometry-i1c ;
+	fog:asPcd_v0.7-ascii "fileD.pcd"^^xsd:anyURI .
+	
+epsg:6190 a gom:CartesianCoordinateSystem .
+
+#-- part2
+inst:geometry-i3 a gom:PlanGeometry ;
+	gom:hasCoordinateSystem inst:cs1 ;
+	gom:hasFileSize 7541091 ;
+ 	fog:asDwg_v2018 "plan.dwg"^^xsd:anyURI .
+inst:geometry-i4 a gom:PlanGeometry ;
+	gom:hasCoordinateSystem inst:cs2 ;
+	gom:hasFileSize 906639 ;
+	omg:derivedFromGeometry inst:geometry-i3 ;
+ 	fog:asSvg_v1.1 "plan.svg"^^xsd:anyURI .
+	
+inst:cs1 a gom:CartesianCoordinateSystem .
+inst:transformation1 a gom:AffineCoordinateSystemTransformation ;
+	gom:fromCartesianCoordinateSystem epsg:6190 ;
+	gom:toCartesianCoordinateSystem inst:cs1 ;
+	gom:hasMatrix "[0.245985224843,-0.969273567200,0,0,0.969273567200,0.245985224843,0,0,0,0,1,0,-213778.578125000000,53863.355468750000,-8.199999809265,1]"^^gom:columnMajorArray .
+inst:cs2 a gom:CartesianCoordinateSystem .
+inst:transformation2 a gom:AffineCoordinateSystemTransformation ;
+	gom:fromCartesianCoordinateSystem inst:cs2 ;
+	gom:toCartesianCoordinateSystem inst:cs1 ;
+	gom:hasMatrix "[100,0,0,0,0,-100,1.2246467991473532e-14,0,0,-1.2246467991473532e-14,-100,0,-84.1,118.9,0,1]"^^gom:columnMajorArray .
+
+#-- part 3
+inst:geometry-i5 a gom:MeshGeometry ;
+	gom:hasCoordinateSystem inst:cs1 ;
+	gom:hasFileSize 982 ;
+	omg:hasGeometryContext inst:context1 ;
+	omg:derivedFromGeometry inst:geometry-i3 ;
+	fog:asPly_v1.0-binaryLE "embedded PLY 1"^^xsd:base64Binary .
+inst:geometry-i6 a omg:Geometry ;
+ 	gom:hasCoordinateSystem inst:cs1 ;
+	gom:hasFileSize 597 ;
+	omg:derivedFromGeometry inst:geometry-i3 ;
+	fog:asPly_v1.0-binaryLE "embedded PLY 2"^^xsd:base64Binary .
+inst:context1 a omg:GeometryContext .
+	
+#-- part 4
+inst:geometry-i7 a gom:MeshGeometry ;
+	gom:hasCoordinateSystem inst:cs1 ;
+	gom:hasFileSize 2040 ;
+	omg:hasGeometryContext inst:context1 ;
+	fog:asObj_v3.0-obj "embedded OBJ 1"^^xsd:string .
+
+### additional CS with defined units, but no registration
+inst:cs3 a gom:CartesianCoordinateSystem ;
+	gom:hasLengthUnit unit:KiloM .
+
+### Level of Accuracy (LOA) analysis example
+inst:building1 a bot:Building ;
+	omg:hasGeometry inst:building1-pc ;
+	bot:containsElement inst:wall1 .
+inst:wall1 a bot:Element ;
+	omg:hasGeometry inst:wall1-mesh .
+
+inst:building1-pc a gom:PointCloudGeometry ;
+	fog:asPcd_v0.7-ascii "fileE.pcd"^^xsd:anyURI .
+inst:wall1-mesh a gom:MeshGeometry ;
+	fog:asPly_v1.0-ascii "fileF.ply"^^xsd:anyURI ;
+	omg:isDerivedFromGeometry inst:building1-pc ;
+	gom:hasSurfaceArea 24.62 . # in m2
+
+inst:accuracyAnalysis1 a gom:RepresentedAccuracyAnalysis ;
+	gom:hasSurveyGeometry inst:building1-pc ;
+	gom:hasSimplifiedGeometry inst:wall1-mesh ;
+	gom:hasAnalysisFile "analysis.bin"^^xsd:anyURI ;
+	gom:totalRelevant 51.07 ; # in %
+	gom:maxOcclusionDistance 25 ; # in mm
+	gom:usedLocalModelMethod true ;
+	gom:totalOccluded 17.25 ; # in %
+    gom:totalLOA50 29.01 ; # in %
+    gom:totalLOA40 53.63 ; # in %
+    gom:totalLOA30 11.38 ; # in %
+    gom:totalLOA20 5.97 ; # in %
+	gom:totalLOA10 0.0 ; # in %
+	gom:total95PercentUpperLimit 17 . # in mm
+	
+
+

@@ -1,0 +1,76 @@
+# baseURI: https://w3id.org/express
+# imports: http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL
+
+@prefix ifcowl:  <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#> .
+@prefix inst:  <https://w3id.org/express> .
+@prefix list:  <https://w3id.org/list#> .
+@prefix express:  <https://w3id.org/express#> .
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+
+@prefix inst: <file:///parking.ifc> .
+@prefix ifcowl: <http://www.buildingsmart-tech.org/ifcOWL/IFC4_ADD2#> .
+@prefix express: <http://www.buildingsmart-tech.org/ifcOWL/EXPRESS#> .
+@prefix list: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix v4d: <https://w3id.org/v4d/core#> .
+
+
+#my own ifcElement
+
+
+# Defining the IfcSlab
+inst:Slab_268502 rdf:type ifcowl:IfcSlab ;
+    ifcowl:globalId_IfcRoot inst:GlobalId_162979 ;
+    ifcowl:name_IfcRoot inst:Label_162956 ;
+    ifcowl:objectType_IfcObject inst:Label_162767 ;
+    ifcowl:objectPlacement_IfcProduct inst:LocalPlacement_268500 ;
+    ifcowl:representation_IfcProduct inst:ProductDefShape_268497 ;
+    ifcowl:tag_IfcElement inst:Identifier_162957 ;
+    ifcowl:predefinedType_IfcSlab ifcowl:ROOF .
+
+# Global ID, Labels, and Identifiers
+inst:GlobalId_162979 rdf:type ifcowl:IfcGloballyUniqueId ;
+    express:hasString "3Yvq9Dii10oxVKLN5KTCbr" .
+inst:GlobalId_1 rdf:type ifcowl:IfcGloballyUniqueId ;
+    express:hasString "0$Z_Q8COz94wZzVDqlx6N0" .
+	
+inst:Label_162956 rdf:type ifcowl:IfcLabel ;
+    express:hasString "Basic Roof:Warm Roof - Concrete:379016" .
+inst:Label_162767 rdf:type ifcowl:IfcLabel ;
+    express:hasString "Basic Roof:Warm Roof - Concrete" .
+inst:Identifier_162957 rdf:type ifcowl:IfcIdentifier ;
+    express:hasString "379016" .
+
+# Placements and Definitions
+inst:LocalPlacement_268500 rdf:type ifcowl:IfcLocalPlacement ;
+    ifcowl:placementRelTo_IfcLocalPlacement inst:LocalPlacement_268476 ;
+    ifcowl:relativePlacement_IfcLocalPlacement inst:Axis2Placement3D_270602 .
+inst:LocalPlacement_268476 rdf:type ifcowl:IfcLocalPlacement ;
+    ifcowl:placementRelTo_IfcLocalPlacement inst:LocalPlacement_124 ;
+    ifcowl:relativePlacement_IfcLocalPlacement inst:Axis2Placement3D_268475 .
+inst:ProductDefShape_268497 rdf:type ifcowl:IfcProductDefinitionShape .
+
+# Axis and Points
+inst:Axis2Placement3D_270602 rdf:type ifcowl:IfcAxis2Placement3D .
+inst:Axis2Placement3D_268475 rdf:type ifcowl:IfcAxis2Placement3D ;
+    ifcowl:location_IfcPlacement inst:CartesianPoint_268477 .
+inst:CartesianPoint_268477 rdf:type ifcowl:IfcCartesianPoint ;
+    ifcowl:coordinates_IfcCartesianPoint inst:LengthMeasureList_162952 .
+
+# Length Measures
+inst:LengthMeasureList_162952 rdf:type ifcowl:IfcLengthMeasure_List ;
+    list:hasContents inst:LengthMeasure_152505 ;
+    list:hasNext inst:LengthMeasureList_162953 .
+inst:LengthMeasure_152505 rdf:type ifcowl:IfcLengthMeasure ;
+    express:hasDouble "-24116.2104213949"^^xsd:double .
+# ... (Continue similar pattern for other IfcLengthMeasure and List elements)
+
+# Additional Local Placements
+inst:LocalPlacement_32 rdf:type ifcowl:IfcLocalPlacement ;
+    ifcowl:placementRelTo_IfcLocalPlacement inst:LocalPlacement_269365 ;
+    ifcowl:relativePlacement_IfcLocalPlacement inst:Axis2Placement3D_31 .
+inst:LocalPlacement_269365 rdf:type ifcowl:IfcLocalPlacement .
+
+# (Continue similar pattern for any other remaining elements)

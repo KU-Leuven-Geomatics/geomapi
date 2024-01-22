@@ -1,0 +1,661 @@
+# baseURI: https://w3id.org/geomapi#
+# prefix: geomapi
+
+@prefix geomapi: <https://w3id.org/geomapi#> .
+@prefix bot: 	<https://w3id.org/bot#> .
+@prefix dcterms: <http://purl.org/dc/terms/> . 			#this has source
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix omg: <https://w3id.org/omg#> .					#geometries
+@prefix opm: <https://w3id.org/opm#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .			# literals
+@prefix schema: <http://schema.org/> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix fog: <https://w3id.org/fog#> .						# geometries
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .   # geometries/literals
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix voaf: <http://purl.org/vocommons/voaf#> .
+
+#----------------------------------------------------------------------------------------
+#Ontology description
+<https://w3id.org/geomapi#> rdf:type owl:Ontology , voaf:Vocabulary ;
+						dcterms:modified    "2024-01-01T01:01:01"^^xsd:dateTime ;
+						dcterms:issued    "2024-01-01T01:01:01"^^xsd:dateTime ;
+						owl:versionInfo    "0.0.1" ;
+						owl:versionIRI <https://w3id.org/geomapi-0.0.1> ;
+						dcterms:title    "Geomatics API ontology (GEOMAPI)"@en ;
+						dcterms:description    """The Geomatics API ontology (GEOMAPI) is an ontology defining the core concepts of close-range sensing observations.
+						It manage point clouds, imagery, polygonal meshes, BIM and CAD information in relation with the geomapi api (https://github.com/KU-Leuven-Geomatics/geomapi).
+						dcterms:creator "Maarten Bassier" ;
+						dcterms:creator "Jelle Vermandere" ;
+						dcterms:creator "Heinder De Winter" ;
+						dcterms:creator "Sam De Geyter" ;
+						dcterms:creator <https://orcid.org/0000-0002-5231-2853> ;
+						dcterms:creator <https://orcid.org/0000-0002-7809-9798> ;
+						dcterms:creator <https://orcid.org/0000-0003-4894-6965> ;
+						dcterms:creator <https://orcid.org/0000-0001-8526-8847> ;
+						dcterms:license <https://creativecommons.org/licenses/by/1.0/> ;
+						vann:preferredNamespacePrefix    "geomapi" ;
+						vann:preferredNamespaceUri <https://w3id.org/geomapi#> .
+						owl:imports <https://w3id.org/fog#>
+
+
+#################################################################
+#    DATA FORMATS
+###################################################################
+
+#Extend FOG data formats in geomapi
+	#IMG_EXTENSION = [".jpg", ".png", ".JPG", ".PNG", ".JPEG"]
+	#MESH_EXTENSION = [".obj",".ply",".fbx" ]
+	#PCD_EXTENSION = [".pcd", ".e57",".pts", ".ply", '.xml','.csv']
+
+#CAD formats -> mostly covered by fog
+geomapi:asDxF
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  dbp:extension ".dxf" ;
+  rdfs:comment "The datatype relation pointing to a geometry description following the proprietary DXF format. It consists of a single .dxf file (binary)."@en ;
+  rdfs:isDefinedBy geomapi: ;
+  rdfs:label "as DXF format (.dxf)"@en ;
+  rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
+
+#BIM formats -> ifc is in fog
+
+#MESH formats # -> this is to specific in fog and clutters the geometry parsing using the API's
+geomapi:asPolygonalMesh
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  dbp:extension ".obj" ;
+  dbp:extension ".ply" ;
+  dbp:extension ".fbx" ;
+  rdfs:comment "Polygonal mesh archetype (binary or ASCII) that can be parsed with Open3D or Trimesh."@en ;
+  rdfs:isDefinedBy geomapi: ;
+  rdfs:label "as polygonal mesh"@en ;
+  rdfs:subPropertyOf fog:hasSimpleGeometryDescription ; 
+
+#POINT CLOUD formats
+geomapi:asPointCloud
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  dbp:extension ".pcd" ;
+  dbp:extension ".e57" ;
+  dbp:extension ".las" ;
+  dbp:extension ".laz" ;
+  dbp:extension ".pts" ;
+  dbp:extension ".ply" ;
+  dbp:extension ".xml" ;
+  dbp:extension ".csv" ;
+  dbp:extension ".bin" ;
+  rdfs:comment "Point cloud formats (binary or ASCII) that can be parsed with Python Laspy, Pye57, Pandas or Open3D."@en ;
+  rdfs:isDefinedBy geomapi: ;
+  rdfs:label "as point cloud"@en ;
+  rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;  
+
+#IMAGE formats
+geomapi:asImage
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  dbp:extension ".jpeg" ;
+  dbp:extension ".jpg" ;
+  dbp:extension ".png" ;
+  rdfs:comment "Image archetype that can be parsed by Python PIL or OpenCV."@en ;
+  rdfs:isDefinedBy geomapi: ;
+  rdfs:label "as image"@en ;
+  rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
+
+geomapi:asTexture
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  dcterms:requires "can i fill in a method here????????" ;
+  rdfs:comment "A geometry texture file. This file always has to be used together with a geometry resource that references it."@en ;
+  rdfs:isDefinedBy geomapi: ;
+  rdfs:label "as texture file"@en ;
+  rdfs:subPropertyOf geomapi:asImage ;
+
+geomapi:asPanoramicImage
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  dcterms:requires "can i fill in a method here????????" ;
+  rdfs:comment "A panoramic image captured from a sensor or stiched together in software."@en ;
+  rdfs:isDefinedBy geomapi: ;
+  rdfs:label "as Panoramic image"@en ;
+  rdfs:subPropertyOf geomapi:asImage ; 
+
+geomapi:asOrthomosaic
+  rdf:type owl:DatatypeProperty ;
+  rdf:type owl:FunctionalProperty ;
+  dcterms:requires "can i fill in a method here????????" ;
+  rdfs:comment "Orhotographic composition of undistorted images as produced by a photogrammetric process."@en ;
+  rdfs:isDefinedBy geomapi: ;
+  rdfs:label "as Orthomosaic"@en ;
+  rdfs:subPropertyOf geomapi:asImage ;
+
+
+
+#################################################################
+#    MetaData definitions
+##################################################################
+
+geomapi:GeomapiMetaDataProperty rdf:type owl:AnnotationProperty ;
+                                <http://purl.org/dc/elements/1.1/description> "Geometric annotation property added querying purposes." .
+
+
+geomapi:cartesianBounds a owl:DatatypeProperty ; #annotation because otherwise it has to point to another URI, cluttering the repr.
+	rdfs:comment """The {X_min,X_max,Y_min,Y_max,Z_min,Z_max} bounds of a geometry.""" ;
+	rdfs:label "Cartesian Boundaries" ;
+	rdfs:subClassOf owl:Thing ;
+	rdfs:subPropertyOf :GeomapiMetaDataProperty ;
+	
+  rdfs:domain bot:Element ;
+  rdfs:range bot:Element ;
+  vs:term_status "stable" ;
+  rdfs:isDefinedBy bot: .
+
+<http://www.w3.org/2003/01/geo/wgs84_pos#alt> rdf:type owl:AnnotationProperty ;
+                                              rdfs:comment """The WGS84 altitude of a SpatialThing (decimal  above the local reference ellipsoid).""" ;
+                                              rdfs:label "altitude" ;
+                                              rdfs:subPropertyOf :GeomapiMetaDataProperty ;
+                                              rdfs:domain <http://www.w3.org/2003/01/geo/wgs84_pos#SpatialThing> .
+
+
+
+#################################################################
+#    Node Definitions
+#################################################################
+
+bot:Element a owl:Class ;
+  owl:disjointWith bot:Zone , bot:Interface ; 
+  vs:term_status "stable" ;
+  rdfs:isDefinedBy bot: .
+
+
+
+<http://dbpedia.org/page/Baroque>
+  a v4d:Style ;
+  rdfs:label "Baroque" ;
+.
+<https://babelnet.org/synset?word=bn:00025060n>
+  a v4d:Creator ;
+  rdfs:label "Salvador Dalí" ;
+.
+<https://babelnet.org/synset?word=bn:00046175n>
+  a v4d:Style ;
+  rdfs:label "Impressionism" ;
+.
+<https://babelnet.org/synset?word=bn:00055162n>
+  a v4d:Style ;
+  rdfs:label "minimalism" ;
+.
+v4d:
+  a owl:Ontology ;
+  spin:imports <http://topbraid.org/spin/owlrl-all> ;
+  owl:imports <file:///V4Design/ontologies/oa.rdf> ;
+  owl:imports <http://3dontology.org/3d.ttl> ;
+  owl:imports <http://purl.org/dc/elements/1.1/> ;
+  owl:imports <http://topbraid.org/schema/> ;
+  owl:imports edm: ;
+  owl:imports <http://www.w3.org/2004/02/skos/core> ;
+  owl:versionInfo "1st prototype" ;
+.
+<https://v4design.eu/ontologies/3DModel>
+  a owl:Class ;
+  rdfs:label "3DModel" ;
+  rdfs:subClassOf v4d:MediaType ;
+  skos:exactMatch <http://purl.org/ontology/x3d/3DModel> ;
+.
+<https://v4design.eu/ontologies/3DModelAnnotation>
+  a rdfs:Class ;
+  rdfs:label "3DModelAnnotation" ;
+  rdfs:subClassOf <http://www.w3.org/ns/oa#Annotation> ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom <https://v4design.eu/ontologies/3DModel> ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasTarget> ;
+    ] ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom <https://v4design.eu/ontologies/3DModelView> ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasBody> ;
+    ] ;
+  skos:broadMatch <http://www.w3.org/ns/oa#Annotation> ;
+  skos:relatedMatch <http://www.openarchives.org/ore/terms/Aggregation> ;
+.
+<https://v4design.eu/ontologies/3DModelView>
+  a owl:Class ;
+  rdfs:label "3DModelView" ;
+  rdfs:subClassOf v4d:View ;
+.
+v4d:AestheticView
+  a owl:Class ;
+  rdfs:label "AestheticView" ;
+  rdfs:subClassOf v4d:View ;
+.
+v4d:AestheticsAnnotation
+  a rdfs:Class ;
+  rdfs:label "AestheticsAnnotation" ;
+  rdfs:subClassOf <http://www.w3.org/ns/oa#Annotation> ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom v4d:AestheticView ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasBody> ;
+    ] ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom v4d:Image ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasTarget> ;
+    ] ;
+  skos:broadMatch <http://www.w3.org/ns/oa#Annotation> ;
+  skos:relatedMatch <http://www.openarchives.org/ore/terms/Aggregation> ;
+.
+v4d:Building
+  a owl:Class ;
+  rdfs:label "Building" ;
+  rdfs:subClassOf owl:Thing ;
+  skos:broader <http://schema.org/CivicStructure> ;
+.
+v4d:BuildingLocalisationAnnotation
+  a rdfs:Class ;
+  rdfs:label "BuildingLocalisationAnnotation" ;
+  rdfs:subClassOf <http://www.w3.org/ns/oa#Annotation> ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom v4d:LocalisationBuildingView ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasBody> ;
+    ] ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom [
+          a owl:Class ;
+          owl:unionOf (
+              v4d:Image
+              v4d:Video
+            ) ;
+        ] ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasTarget> ;
+    ] ;
+  skos:broadMatch <http://www.w3.org/ns/oa#Annotation> ;
+  skos:relatedMatch <http://www.openarchives.org/ore/terms/Aggregation> ;
+.
+v4d:Creator
+  a owl:Class ;
+  rdfs:label "Creator" ;
+  rdfs:subClassOf <http://schema.org/Person> ;
+  skos:relatedMatch edm:Agent ;
+.
+v4d:Exterior
+  a owl:Class ;
+  rdfs:label "Exterior" ;
+  rdfs:subClassOf v4d:Object ;
+.
+v4d:Image
+  a owl:Class ;
+  rdfs:label "Image" ;
+  rdfs:subClassOf v4d:MediaType ;
+  skos:exactMatch <http://schema.org/ImageObject> ;
+.
+v4d:Interior
+  a owl:Class ;
+  rdfs:label "Interior" ;
+  rdfs:subClassOf v4d:Object ;
+.
+v4d:LocalisationBuildingView
+  a owl:Class ;
+  rdfs:label "LocalisationBuildingView" ;
+  rdfs:subClassOf v4d:LocalisationView ;
+.
+v4d:LocalisationObjectView
+  a owl:Class ;
+  rdfs:label "LocalisationObjectView" ;
+  rdfs:subClassOf v4d:LocalisationView ;
+.
+v4d:LocalisationView
+  a owl:Class ;
+  rdfs:label "LocalisationView" ;
+  rdfs:subClassOf v4d:View ;
+.
+v4d:Location
+  a owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+.
+v4d:Mask
+  a owl:Class ;
+  rdfs:label "Mask" ;
+  rdfs:subClassOf v4d:Image ;
+  skos:broader <http://schema.org/ImageObject> ;
+.
+v4d:MediaType
+  a owl:Class ;
+  rdfs:label "MediaType" ;
+  rdfs:subClassOf owl:Thing ;
+  skos:exactMatch <http://schema.org/MediaObject> ;
+.
+v4d:Mesh
+  a owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+.
+v4d:Object
+  a owl:Class ;
+  rdfs:label "Object" ;
+  rdfs:subClassOf owl:Thing ;
+.
+v4d:ObjectLocalisationAnnotation
+  a rdfs:Class ;
+  rdfs:label "ObjectLocalisationAnnotation" ;
+  rdfs:subClassOf <http://www.w3.org/ns/oa#Annotation> ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom v4d:LocalisationObjectView ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasBody> ;
+    ] ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom [
+          a owl:Class ;
+          owl:unionOf (
+              v4d:Image
+              v4d:Video
+            ) ;
+        ] ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasTarget> ;
+    ] ;
+  skos:broadMatch <http://www.w3.org/ns/oa#Annotation> ;
+  skos:relatedMatch <http://www.openarchives.org/ore/terms/Aggregation> ;
+.
+v4d:Organization
+  a owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+.
+v4d:Person
+  a owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+.
+v4d:PointCloud
+  a owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+.
+v4d:SimmoEntity
+  a owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+.
+v4d:Style
+  a owl:Class ;
+  rdfs:label "Style" ;
+  rdfs:subClassOf owl:Thing ;
+.
+v4d:Tag
+  a owl:Class ;
+  rdfs:subClassOf owl:Thing ;
+.
+v4d:Text
+  a owl:Class ;
+  rdfs:label "Text" ;
+  rdfs:subClassOf v4d:MediaType ;
+  skos:exactMatch <http://schema.org/Text> ;
+.
+v4d:TextAnalysisAnnotation
+  a rdfs:Class ;
+  rdfs:label "TextAnalysisAnnotation" ;
+  rdfs:subClassOf <http://www.w3.org/ns/oa#Annotation> ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom v4d:Text ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasTarget> ;
+    ] ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom v4d:TextAnalysisView ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasBody> ;
+    ] ;
+  skos:broadMatch <http://www.w3.org/ns/oa#Annotation> ;
+  skos:relatedMatch <http://www.openarchives.org/ore/terms/Aggregation> ;
+.
+v4d:TextAnalysisView
+  a owl:Class ;
+  rdfs:label "TextAnalysisView" ;
+  rdfs:subClassOf v4d:View ;
+.
+v4d:TextGenerationAnnotation
+  a rdfs:Class ;
+  rdfs:label "TextGenerationAnnotation" ;
+  rdfs:subClassOf <http://www.w3.org/ns/oa#Annotation> ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom v4d:MediaType ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasTarget> ;
+    ] ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom v4d:TextGenerationView ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasBody> ;
+    ] ;
+  skos:broadMatch <http://www.w3.org/ns/oa#Annotation> ;
+  skos:relatedMatch <http://www.openarchives.org/ore/terms/Aggregation> ;
+.
+v4d:TextGenerationView
+  a owl:Class ;
+  rdfs:label "TextGenerationView" ;
+  rdfs:subClassOf v4d:View ;
+.
+v4d:Texture
+  a owl:Class ;
+  rdfs:label "Texture" ;
+  rdfs:subClassOf v4d:Image ;
+  skos:exactMatch x3d:Texture ;
+.
+v4d:TextureProposalAnnotation
+  a rdfs:Class ;
+  rdfs:subClassOf <http://www.w3.org/ns/oa#Annotation> ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom v4d:Texture ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasTarget> ;
+    ] ;
+  rdfs:subClassOf [
+      a owl:Restriction ;
+      owl:allValuesFrom v4d:TextureProposalView ;
+      owl:onProperty <http://www.w3.org/ns/oa#hasBody> ;
+    ] ;
+  skos:broadMatch <http://www.w3.org/ns/oa#Annotation> ;
+  skos:relatedMatch <http://www.openarchives.org/ore/terms/Aggregation> ;
+.
+v4d:TextureProposalView
+  a owl:Class ;
+  rdfs:label "TextProposalView" ;
+  rdfs:subClassOf v4d:View ;
+.
+v4d:Video
+  a owl:Class ;
+  rdfs:label "Video" ;
+  rdfs:subClassOf v4d:MediaType ;
+  skos:exactMatch <http://schema.org/VideoObject> ;
+  skos:exactMatch <http://vidont.org/Video> ;
+.
+v4d:View
+  a owl:Class ;
+  rdfs:label "View" ;
+  rdfs:subClassOf owl:Thing ;
+  skos:relatedMatch <http://www.openarchives.org/ore/terms/Proxy> ;
+.
+v4d:city
+  a owl:ObjectProperty ;
+  rdfs:range v4d:Location ;
+  rdfs:subPropertyOf v4d:location ;
+.
+v4d:country
+  a owl:ObjectProperty ;
+  rdfs:subPropertyOf v4d:location ;
+.
+v4d:creator
+  a owl:ObjectProperty ;
+  rdfs:domain [
+      a owl:Class ;
+      owl:unionOf (
+          v4d:AestheticView
+          <https://v4design.eu/ontologies/3DModelView>
+        ) ;
+    ] ;
+  rdfs:range v4d:Creator ;
+  owl:equivalentProperty <http://schema.org/creator> ;
+  skos:exactMatch <http://schema.org/creator> ;
+.
+v4d:description
+  a owl:DatatypeProperty ;
+  rdfs:range xsd:string ;
+  rdfs:subPropertyOf v4d:text ;
+.
+
+v4d:faceCount
+  a owl:DatatypeProperty ;
+  rdfs:domain <https://v4design.eu/ontologies/3DModelView> ;
+  rdfs:range xsd:integer ;
+.
+v4d:format
+  a owl:DatatypeProperty ;
+  rdfs:range xsd:integer ;
+.
+v4d:hasTopology
+  a owl:ObjectProperty ;
+.
+v4d:id
+  a owl:DatatypeProperty ;
+  rdfs:range xsd:string ;
+  skos:exactMatch <http://purl.org/dc/terms/identifier> ;
+.
+v4d:image
+  a owl:ObjectProperty ;
+  rdfs:domain [
+      a owl:Class ;
+      owl:unionOf (
+          <https://v4design.eu/ontologies/3DModelView>
+          v4d:TextureProposalView
+        ) ;
+    ] ;
+  rdfs:range v4d:Image ;
+  skos:exactMatch x3d:image ;
+  skos:exactMatch <http://schema.org/image> ;
+.
+v4d:lat
+  a owl:DatatypeProperty ;
+  rdfs:domain v4d:Location ;
+  skos:exactMatch <http://schema.org/latitude> ;
+.
+v4d:location
+  a owl:ObjectProperty ;
+  rdfs:range v4d:Location ;
+.
+v4d:long
+  a owl:DatatypeProperty ;
+  rdfs:domain v4d:Location ;
+  skos:exactMatch <http://schema.org/longitude> ;
+.
+v4d:mesh
+  a owl:ObjectProperty ;
+  rdfs:range v4d:Mesh ;
+.
+v4d:organization
+  a owl:ObjectProperty ;
+  rdfs:range v4d:Organization ;
+.
+v4d:originalImage
+  a owl:ObjectProperty ;
+  rdfs:domain v4d:LocalisationView ;
+  rdfs:range v4d:Image ;
+  skos:exactMatch <http://purl.org/dc/terms/source> ;
+.
+v4d:person
+  a owl:ObjectProperty ;
+  rdfs:range v4d:Person ;
+.
+v4d:pointCloud
+  a owl:ObjectProperty ;
+  rdfs:range v4d:PointCloud ;
+.
+v4d:probability
+  a owl:DatatypeProperty ;
+  rdfs:range xsd:double ;
+.
+v4d:reconstructionId
+  a owl:DatatypeProperty ;
+.
+<https://v4design.eu/ontologies/sample_model_repository#Tower_Building>
+  a v4d:Building ;
+  rdfs:label "tower" ;
+.
+v4d:simmo
+  a owl:ObjectProperty ;
+.
+v4d:simmoRef
+  a owl:DatatypeProperty ;
+  rdfs:domain v4d:MediaType ;
+  rdfs:range xsd:string ;
+.
+v4d:source
+  a owl:DatatypeProperty ;
+  skos:exactMatch <http://purl.org/dc/terms/source> ;
+.
+v4d:style
+  a owl:ObjectProperty ;
+  rdfs:domain [
+      a owl:Class ;
+      owl:unionOf (
+          v4d:AestheticView
+          v4d:TextureProposalView
+        ) ;
+    ] ;
+  rdfs:range v4d:Style ;
+.
+v4d:summary
+  a owl:DatatypeProperty ;
+  rdfs:domain v4d:TextGenerationView ;
+  rdfs:range xsd:string ;
+.
+v4d:tag
+  a owl:ObjectProperty ;
+  rdfs:domain [
+      a owl:Class ;
+      owl:unionOf (
+          v4d:LocalisationView
+          <https://v4design.eu/ontologies/3DModelView>
+          v4d:TextAnalysisView
+        ) ;
+    ] ;
+.
+v4d:tags
+  a owl:DatatypeProperty ;
+.
+v4d:text
+  a owl:DatatypeProperty ;
+  rdfs:range xsd:string ;
+  skos:exactMatch <http://schema.org/text> ;
+.
+v4d:textureCount
+  a owl:DatatypeProperty ;
+  rdfs:domain <https://v4design.eu/ontologies/3DModelView> ;
+  rdfs:range xsd:integer ;
+.
+v4d:textureSize
+  a owl:DatatypeProperty ;
+  rdfs:domain <https://v4design.eu/ontologies/3DModelView> ;
+.
+v4d:thumb
+  a owl:DatatypeProperty ;
+  rdfs:domain <https://v4design.eu/ontologies/3DModelView> ;
+  skos:exactMatch <http://schema.org/thumbnailUrl> ;
+.
+v4d:title
+  a owl:DatatypeProperty ;
+  rdfs:range xsd:string ;
+  rdfs:subPropertyOf v4d:text ;
+.
+v4d:uri
+  a owl:DatatypeProperty ;
+  rdfs:domain v4d:MediaType ;
+  rdfs:range xsd:string ;
+  skos:exactMatch <http://purl.org/dc/terms/identifier> ;
+.
+v4d:vertices
+  a owl:DatatypeProperty ;
+  rdfs:domain <https://v4design.eu/ontologies/3DModelView> ;
+.
