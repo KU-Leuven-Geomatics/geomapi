@@ -1,0 +1,683 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ImageNode &mdash; Geomapi 0.3.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=1e28cc32"></script>
+        <script src="../_static/doctools.js?v=888ff710"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="SessionNode" href="tutorial_sessionnodes.html" />
+    <link rel="prev" title="BIMNode" href="tutorial_bimnodes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_geometrynodes.html">GeometryNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ImageNode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#imagenode-from-properties">ImageNode from properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imagenode-from-path">ImageNode from Path</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imagenode-from-structure-from-motion-pipelines">ImageNode from Structure-from-Motion pipelines</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#capturing-reality">Capturing Reality</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#agisoft-metashape">Agisoft Metashape</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#imagenode-with-getresource">ImageNode with getResource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imagenode-from-resource">ImageNode from resource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imagenode-from-graph-and-graphpath">ImageNode from Graph and graphPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imagenode-to-graph">ImageNode to Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imagenode-analysis">ImageNode analysis</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_sessionnodes.html">SessionNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">ImageNode</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/tutorial_imagenodes.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="imagenode">
+<h1>ImageNode<a class="headerlink" href="#imagenode" title="Link to this heading"></a></h1>
+<p>The ImageNode class in Geomapi represents the data and metadata of image data. The data itself and methods build upon Open3D and OpenCV concepts while the metadata builds upon the RDFlib framework:</p>
+<p><a class="reference external" href="https://docs.opencv.org/4.x/d3/df2/tutorial_py_basic_ops.html">https://docs.opencv.org/4.x/d3/df2/tutorial_py_basic_ops.html</a></p>
+<p><a class="reference external" href="https://docs.opencv.org/4.x/d3/df2/tutorial_py_basic_ops.html">https://rdflib.readthedocs.io/</a></p>
+<p>The code below shows how to create a ImageNode from various inputs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#IMPORT PACKAGES</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">,</span> <span class="n">Literal</span><span class="p">,</span> <span class="n">RDF</span>
+<span class="kn">import</span> <span class="nn">open3d</span> <span class="k">as</span> <span class="nn">o3d</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">from</span> <span class="nn">PIL</span> <span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+
+
+<span class="c1">#IMPORT MODULES</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span> 
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">geomapi.utils</span> <span class="k">as</span> <span class="nn">ut</span>
+<span class="kn">from</span> <span class="nn">geomapi.utils</span> <span class="kn">import</span> <span class="n">geometryutils</span> <span class="k">as</span> <span class="n">gmu</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools</span> <span class="k">as</span> <span class="nn">tl</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The autoreload extension is already loaded. To reload it, use:
+  %reload_ext autoreload
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">autoreload</span> 2
+</pre></div>
+</div>
+</div>
+</div>
+<section id="imagenode-from-properties">
+<h2>ImageNode from properties<a class="headerlink" href="#imagenode-from-properties" title="Link to this heading"></a></h2>
+<p>A placeholder ImageNode can be initialised without any data or metadata.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;myName&#39;</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_xmlPath&#39;: None,
+ &#39;_xmpPath&#39;: None,
+ &#39;imageWidth&#39;: None,
+ &#39;imageHeight&#39;: None,
+ &#39;focalLength35mm&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///myNode&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;myName&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="imagenode-from-path">
+<h2>ImageNode from Path<a class="headerlink" href="#imagenode-from-path" title="Link to this heading"></a></h2>
+<p>Instead, it is much more likely to initialise a ImageNode from a path containing an image file. This sets the: <br></p>
+<ol class="arabic simple">
+<li><p>subject</p></li>
+<li><p>name</p></li>
+<li><p>timestamp</p></li>
+<li><p>path</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IMG&#39;</span><span class="p">,</span><span class="s1">&#39;DJI_0067.JPG&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_xmlPath&#39;: None,
+ &#39;_xmpPath&#39;: None,
+ &#39;imageWidth&#39;: 5472,
+ &#39;imageHeight&#39;: 3078,
+ &#39;focalLength35mm&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///DJI_0067&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IMG\\DJI_0067.JPG&#39;,
+ &#39;_name&#39;: &#39;DJI_0067&#39;,
+ &#39;_timestamp&#39;: &#39;2018-06-06T15:21:17&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None,
+ &#39;resolutionUnit&#39;: 2,
+ &#39;geospatialTransform&#39;: [51.05982777777778, 3.7198242777777777, 1.814],
+ &#39;coordinateSystem&#39;: &#39;geospatial-wgs84&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<p>Additionally, any relevant properties from the EXIF data will be stored such as the geospatial transform.</p>
+</section>
+<section id="imagenode-from-structure-from-motion-pipelines">
+<h2>ImageNode from Structure-from-Motion pipelines<a class="headerlink" href="#imagenode-from-structure-from-motion-pipelines" title="Link to this heading"></a></h2>
+<p>As GEOMAPI is a geomatics API, the cartesianTransform of nodes is crucial to many of its functionality. For images, this is generally derived from Structure-from-Motion (SfM) pipelines. These pipelines allign the images in a common coordinate system of which the geospatial components are stored in software specific formats.</p>
+<br>
+<p>GEOMAPI currently supports two formats. <a class="reference external" href="https://www.agisoft.com/">Agisoft Metashape</a> and <a class="reference external" href="https://www.capturingreality.com/">Capturing Reality</a>.</p>
+<section id="capturing-reality">
+<h3>Capturing Reality<a class="headerlink" href="#capturing-reality" title="Link to this heading"></a></h3>
+<p>To import the pose of an image from the Capturing Reality pipeline, one should export the coordinate information of the image to an <a class="reference external" href="https://support.capturingreality.com/hc/en-us/articles/360012410660-Coordinate-System-Preservation-with-XMPs-Full-body-Scans">XMP</a> file. These files are xml formatted and stored per image.</p>
+<p><img alt="rendering" src="../_images/capturingreality1.PNG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xmpPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IMG&#39;</span><span class="p">,</span><span class="s1">&#39;IMG_2173.xmp&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">xmpPath</span><span class="o">=</span><span class="n">xmpPath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_xmlPath&#39;: None,
+ &#39;_xmpPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IMG\\IMG_2173.xmp&#39;,
+ &#39;imageWidth&#39;: 5616,
+ &#39;imageHeight&#39;: 3744,
+ &#39;focalLength35mm&#39;: 24.3771542355288,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///IMG_2173&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IMG\\IMG_2173.JPG&#39;,
+ &#39;_name&#39;: &#39;IMG_2173&#39;,
+ &#39;_timestamp&#39;: &#39;2022-03-13T13:55:26&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: array([[-0.05442451,  0.08978218,  0.99447329, -8.94782375],
+        [-0.78368672, -0.62101649,  0.01317728, 11.25314019],
+        [ 0.6187674 , -0.77863835,  0.10415962,  6.54284524],
+        [ 0.        ,  0.        ,  0.        ,  1.        ]]),
+ &#39;coordinateSystem&#39;: &#39;geospatial-wgs84&#39;,
+ &#39;principalPointU&#39;: -0.00291855667677505,
+ &#39;principalPointV&#39;: -0.00415035446181888,
+ &#39;distortionCoeficients&#39;: [-0.126115439984335,
+  0.0981832072267781,
+  0.0312044509604729,
+  0.0,
+  0.0,
+  0.0],
+ &#39;resolutionUnit&#39;: 2,
+ &#39;geospatialTransform&#39;: [None, None, None]}
+</pre></div>
+</div>
+</div>
+</div>
+<p>which yields cartesianTransform and some internal camera parameters such as the focalLength35mm, which is needed for digital renders.</p>
+</section>
+<section id="agisoft-metashape">
+<h3>Agisoft Metashape<a class="headerlink" href="#agisoft-metashape" title="Link to this heading"></a></h3>
+<p>Alternatively, Metashape exports its camera poses and properties in a common <a class="reference external" href="https://www.agisoft.com/forum/index.php?topic=6211.0">XML file </a>. Therefore, one should provide both the subject in the form of the camera label, and the XML file.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xmlPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IMG&#39;</span><span class="p">,</span><span class="s1">&#39;ReferenceLAMBERT08_TAW.xml&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;101_0366_0037&#39;</span><span class="p">,</span><span class="n">xmlPath</span><span class="o">=</span><span class="n">xmlPath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>  
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_xmlPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IMG\\ReferenceLAMBERT08_TAW.xml&#39;,
+ &#39;_xmpPath&#39;: None,
+ &#39;imageWidth&#39;: 5472,
+ &#39;imageHeight&#39;: 3648,
+ &#39;focalLength35mm&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///101_0366_0037&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IMG\\101_0366_0037.jpg&#39;,
+ &#39;_name&#39;: &#39;101_0366_0037&#39;,
+ &#39;_timestamp&#39;: &#39;2021-06-07T16:49:33&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: array([[-9.02585284e-01, -4.30511097e-01,  0.00000000e+00,
+          6.00578072e+05],
+        [ 4.30511097e-01, -9.02585284e-01,  0.00000000e+00,
+          6.96277256e+05],
+        [ 0.00000000e+00,  0.00000000e+00,  1.00000000e+00,
+          3.13904134e+01],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+          1.00000000e+00]]),
+ &#39;sxy&#39;: 0.02,
+ &#39;sz&#39;: 0.05,
+ &#39;resolutionUnit&#39;: 2,
+ &#39;geospatialTransform&#39;: [51.074569000007855,
+  3.6636115834699305,
+  74.1250002610359],
+ &#39;coordinateSystem&#39;: &#39;geospatial-wgs84&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<p>which also yields the accuracies of the SfM pose estimation.</p>
+<p><img alt="rendering" src="../_images/Georeferencedoutput.png" /></p>
+</section>
+</section>
+<section id="imagenode-with-getresource">
+<h2>ImageNode with getResource<a class="headerlink" href="#imagenode-with-getresource" title="Link to this heading"></a></h2>
+<p>Given the above XMP or XML files, all metadata of the node can be set. However, one can call getResource to also load the image.</p>
+<p><strong>NOTE</strong>: GetResource is optional and might slow down any analysis. Only work with data when all metadata options have been exhausted.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xmpPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IMG&#39;</span><span class="p">,</span><span class="s1">&#39;IMG_7257.xmp&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">xmpPath</span><span class="o">=</span><span class="n">xmpPath</span><span class="p">,</span> <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">resource</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;numpy.ndarray&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="rendering" src="../_images/IMG_7257.JPG" /></p>
+</section>
+<section id="imagenode-from-resource">
+<h2>ImageNode from resource<a class="headerlink" href="#imagenode-from-resource" title="Link to this heading"></a></h2>
+<p>A similar result is achieved by initialising a ImageNode from a PIL, Open3D or nd.array(OPENCV) instance. In this case, GetResource (bool) means nothing.</p>
+<p>OpenCV images are stored as np.ndarrays</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IMG&#39;</span><span class="p">,</span><span class="s1">&#39;IMG_202200706_00___70_.png&#39;</span><span class="p">)</span>
+<span class="n">img</span><span class="o">=</span><span class="n">cv2</span><span class="o">.</span><span class="n">imread</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>          
+<span class="n">node</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">img</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">resource</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;numpy.ndarray&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>PIL images are a seperate class but are transferred to np.ndarrays</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IMG&#39;</span><span class="p">,</span><span class="s1">&#39;IMG_202200706_00___70_.png&#39;</span><span class="p">)</span>
+<span class="n">img</span><span class="o">=</span><span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span> <span class="n">filePath</span><span class="p">)</span>   
+<span class="n">node</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">img</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">resource</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;numpy.ndarray&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Finally, Open3D also has a seperate class but also uses np.ndarrays to buffer the data</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IMG&#39;</span><span class="p">,</span><span class="s1">&#39;IMG_202200706_00___70_.png&#39;</span><span class="p">)</span>
+<span class="n">img</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_image</span><span class="p">(</span> <span class="n">filePath</span><span class="p">)</span>   
+<span class="nb">print</span><span class="p">(</span><span class="n">img</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">img</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">resource</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Image of size 5472x3078, with 3 channels.
+Use numpy.asarray to access buffer data.
+&lt;class &#39;numpy.ndarray&#39;&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="imagenode-from-graph-and-graphpath">
+<h2>ImageNode from Graph and graphPath<a class="headerlink" href="#imagenode-from-graph-and-graphpath" title="Link to this heading"></a></h2>
+<p>If a Image was already serialized, a node can be initialised from the graph or graphPath.</p>
+<p><strong>NOTE</strong>: The graphPath is the more complete option as it is used to absolutize the node’s path information. However, it is also the slower option as the entire graph encapsulation the node is parsed multiple times.</p>
+<p><strong>USE</strong>: linkeddatatools.graph_to_nodes resolves this issue.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;imgGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">graphPath</span><span class="p">)</span>
+
+<span class="c1">#only print first node</span>
+<span class="n">newGraph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">newGraph</span><span class="o">=</span><span class="n">ut</span><span class="o">.</span><span class="n">bind_ontologies</span><span class="p">(</span><span class="n">newGraph</span><span class="p">)</span>
+<span class="n">newGraph</span><span class="o">+=</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">URIRef</span><span class="p">(</span><span class="s1">&#39;file:///101_0366_0037&#39;</span><span class="p">),</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">newGraph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix exif: &lt;http://www.w3.org/2003/12/exif/ns#&gt; .
+@prefix gom: &lt;https://w3id.org/gom#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///101_0366_0037&gt; a v4d:ImageNode ;
+    e57:cartesianTransform &quot;&quot;&quot;[[-9.02585284e-01 -4.30511097e-01  0.00000000e+00  6.00578072e+05]
+ [ 4.30511097e-01 -9.02585284e-01  0.00000000e+00  6.96277256e+05]
+ [ 0.00000000e+00  0.00000000e+00  1.00000000e+00  3.13904134e+01]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]&quot;&quot;&quot; ;
+    e57:geospatialTransform &quot;[51.074569000007855, 3.6636115834699305, 74.1250002610359]&quot; ;
+    exif:imageHeight 3648 ;
+    exif:imageWidth 5472 ;
+    exif:resolutionUnit 2 ;
+    gom:coordinateSystem &quot;geospatial-wgs84&quot; ;
+    v4d:name &quot;101_0366_0037&quot; ;
+    v4d:path &quot;IMG\\101_0366_0037.jpg&quot; ;
+    v4d:sxy &quot;0.02&quot;^^xsd:float ;
+    v4d:sz &quot;0.05&quot;^^xsd:float ;
+    v4d:xmlPath &quot;IMG\\ReferenceLAMBERT08_TAW.xml&quot; ;
+    openlabel:timestamp &quot;2021-06-07T16:49:33&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_xmlPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IMG\\ReferenceLAMBERT08_TAW.xml&#39;,
+ &#39;_xmpPath&#39;: None,
+ &#39;imageWidth&#39;: 5472.0,
+ &#39;imageHeight&#39;: 3648.0,
+ &#39;focalLength35mm&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///101_0366_0036&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=Na1390b788e234a5bba013b41d08c95c5 (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\imgGraph.ttl&#39;,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IMG\\101_0366_0036.jpg&#39;,
+ &#39;_name&#39;: &#39;101_0366_0036&#39;,
+ &#39;_timestamp&#39;: &#39;2021-06-07T16:49:28&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: array([[-9.01077021e-01, -4.33659085e-01,  0.00000000e+00,
+          6.00575993e+05],
+        [ 4.33659085e-01, -9.01077021e-01,  0.00000000e+00,
+          6.96281654e+05],
+        [ 0.00000000e+00,  0.00000000e+00,  1.00000000e+00,
+          3.13845765e+01],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+          1.00000000e+00]]),
+ &#39;type&#39;: &#39;https://w3id.org/v4d/core#ImageNode&#39;,
+ &#39;geospatialTransform&#39;: array([51.07460836,  3.66358133, 74.11900087]),
+ &#39;resolutionUnit&#39;: 2,
+ &#39;coordinateSystem&#39;: &#39;geospatial-wgs84&#39;,
+ &#39;sxy&#39;: 0.02,
+ &#39;sz&#39;: 0.05}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="imagenode-to-graph">
+<h2>ImageNode to Graph<a class="headerlink" href="#imagenode-to-graph" title="Link to this heading"></a></h2>
+<p>The Graph serialisation is inherited from Node functionality.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">,</span>
+                    <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">newGraphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s1">&#39;myGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">newGraphPath</span><span class="p">)</span>
+
+<span class="n">newNode</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">newGraphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix exif: &lt;http://www.w3.org/2003/12/exif/ns#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///myNode&gt; a v4d:ImageNode ;
+    exif:imageHeight 3078 ;
+    exif:imageWidth 5472 ;
+    v4d:name &quot;IMG_202200706_00___70_&quot; ;
+    v4d:path &quot;..\\..\\..\\test\\testfiles\\IMG\\IMG_202200706_00___70_.png&quot; ;
+    openlabel:timestamp &quot;2022-08-08T14:32:56&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="imagenode-analysis">
+<h2>ImageNode analysis<a class="headerlink" href="#imagenode-analysis" title="Link to this heading"></a></h2>
+<p>ImageNodes can be attributed with a range of relationships. This is extremely usefull for Graph navigation and linking together different resources. In <a class="reference external" href="https://rdflib.readthedocs.io/en/stable/intro_to_creating_rdf.html">Semantic Web Technologies</a>, relationships are defined by triples that have other subjects as literals.</p>
+<p>In this first example, we create both virtual images of the BIM and a mesh from the same location as a geolocalised image.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">meshNode</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;MESH&#39;</span><span class="p">,</span><span class="s1">&#39;week22.obj&#39;</span><span class="p">),</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">meshNode</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TriangleMesh with 330263 points and 485077 triangles.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bimGraphPath</span><span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;bimGraph1.ttl&#39;</span><span class="p">)</span>
+<span class="n">bimGraph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">bimGraphPath</span><span class="p">)</span>
+<span class="n">bimNodes</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">bimGraph</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">):</span>
+    <span class="n">bimNodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">s</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">bimGraphPath</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bimNodes</span><span class="p">))</span>
+<span class="n">geometry</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">join_geometries</span><span class="p">([</span><span class="n">n</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">bimNodes</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Open3D WARNING] Unable to load file d:\Scan-to-BIM repository\geomapi\test\testfiles\282_SC_f2_Round:Ø30:883870.obj with ASSIMP
+[Open3D WARNING] Unable to load file d:\Scan-to-BIM repository\geomapi\test\testfiles\B1_CL.obj with ASSIMP
+[Open3D WARNING] Unable to load file d:\Scan-to-BIM repository\geomapi\test\testfiles\Default Grid.obj with ASSIMP
+[Open3D WARNING] Unable to load file d:\Scan-to-BIM repository\geomapi\test\testfiles\Precast Stair:Stair:1194239.obj with ASSIMP
+[Open3D WARNING] Unable to load file d:\Scan-to-BIM repository\geomapi\test\testfiles\Precast Stair:Stair:1195754.obj with ASSIMP
+100
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xmpPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IMG&#39;</span><span class="p">,</span><span class="s1">&#39;IMG_7255.xmp&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">xmpPath</span><span class="o">=</span><span class="n">xmpPath</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">resource</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">cartesianTransform</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;class &#39;numpy.ndarray&#39;&gt;
+[[-9.73302276e-01  2.28468791e-01  2.20156949e-02  4.27609137e+01]
+ [ 3.17698956e-02  2.29092449e-01 -9.72886079e-01  9.87548132e+01]
+ [-2.27317735e-01 -9.46212799e-01 -2.30234632e-01  5.42623981e+00]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>Downsampling is advised as geometry repositories typically are not as dense as actual image footage.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">im</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">get_virtual_image</span><span class="p">(</span><span class="n">meshNode</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="n">downsampling</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Real image&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Virtual image&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">imshow</span><span class="p">(</span><span class="n">im</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a697996787530e74f22ac392db3a27f8fc8af505984da3042c7f9fcfcb97c9eb.png" src="../_images/a697996787530e74f22ac392db3a27f8fc8af505984da3042c7f9fcfcb97c9eb.png" />
+</div>
+</div>
+<p><strong>NOTE</strong>: there is a rotational error on the virtual image, perhaps due to a misalignemtn of the mesh or the image within the structure-from-motion pipeline.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">virtualNode</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">subject</span><span class="o">.</span><span class="n">toPython</span><span class="p">()</span> <span class="o">+</span> <span class="s1">&#39;-virtual&#39;</span><span class="p">,</span>
+                <span class="n">isDerivedFromGeometry</span><span class="o">=</span><span class="n">meshNode</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
+                <span class="n">isDerivedFromImage</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
+                <span class="n">analysisTimestamp</span><span class="o">=</span><span class="n">meshNode</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
+<span class="n">virtualNode</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">virtualNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix omg: &lt;https://w3id.org/omg#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+
+&lt;file:///IMG_7255-virtual&gt; a v4d:ImageNode ;
+    omg:isDerivedFromGeometry &quot;file:///week22&quot; ;
+    v4d:analysisTimestamp &quot;2022-08-02T08:25:01&quot; ;
+    v4d:isDerivedFromImage &quot;file:///IMG_7255&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial_bimnodes.html" class="btn btn-neutral float-left" title="BIMNode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial_sessionnodes.html" class="btn btn-neutral float-right" title="SessionNode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
