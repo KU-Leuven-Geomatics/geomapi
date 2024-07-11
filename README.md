@@ -14,10 +14,17 @@ to process and analyse big data in construction applications.
 
 ## Installation
 
-Use the package manager [pip](https://pypi.org/project/geomapi) to install geomapi.
+Use the package manager [pip](https://pypi.org/project/geomapi) to install geomapi as a user.
 
 ```bash
+conda create --name geomapi_user python=3.10
 pip install geomapi
+```
+
+Or as a developer, install the dependencies from the root folder through the command line.
+
+```bash
+pip install -r requirements.txt
 ```
 
 ## Documentation
@@ -44,12 +51,18 @@ Please create a new branch if you would like to make changes and submit them for
 ## Citation
 If you want to cite us, refer to the following publication (accepted). 
 ```
-@article{geomapi,
-    title={Processing 3D data with semantic web technologies},
-    author={Bassier M., Vermandere J., De Geyter S. and De Winter H.},
-    booktitle={Automation in Construction},
-    year={2024}
-}
+@article{GEOMAPI,
+            title = {GEOMAPI: Processing close-range sensing data of construction scenes with semantic web technologies},
+            journal = {Automation in Construction},
+            volume = {164},
+            pages = {105454},
+            year = {2024},
+            issn = {0926-5805},
+            doi = {https://doi.org/10.1016/j.autcon.2024.105454},
+            url = {https://www.sciencedirect.com/science/article/pii/S0926580524001900},
+            author = {Maarten Bassier and Jelle Vermandere and Sam De Geyter and Heinder De Winter},
+            keywords = {Geomatics, Semantic Web Technologies, Construction, Close-range sensing, BIM, Point clouds, Photogrammetry}
+            }
 ```
 ## TEAM
 - maarten.bassier@kuleuven.be (PI)
