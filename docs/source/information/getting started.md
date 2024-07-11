@@ -5,7 +5,7 @@ headingDivider: 4
 ---
 # Getting started
 
-GEOMAPI manages close-range sensing resources like images and point clouds. It greatly epands the functionality of Open Source projects such as OpenCV and Open3D to create homogeneous and easy to use resources. It has three levels.
+GEOMAPI manages close-range sensing resources like images and point clouds. It greatly expands the functionality of Open Source projects such as OpenCV and Open3D to create homogeneous and easy to use resources. It has three levels.
 
 
 1. Utilities
@@ -16,6 +16,9 @@ GEOMAPI manages close-range sensing resources like images and point clouds. It g
 ## Installation
 
 You will need a python environment $ 3.7 \leq x \leq 3.10$ as Open3D currently doesn't support python $\leq 3.10$. Use the package manager [pip](https://pypi.org/project/geomapi) to install geomapi.
+
+You will need a Python environment \(3.7 \leq x \leq 3.10\) as Open3D currently doesn't support Python \(\leq 3.10\). Use the package manager [pip](https://pypi.org/project/geomapi) to install `geomapi`.
+
 
 ```bash
 pip install geomapi
