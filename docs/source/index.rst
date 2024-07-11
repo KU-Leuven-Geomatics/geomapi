@@ -3,7 +3,7 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Geomapi's documentation!
+Welcome to GEOMAPI's documentation!
 ===================================
 
 .. image:: ../pics/week23-uav4.PNG
@@ -74,6 +74,8 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
    :maxdepth: 1
    :caption: Development:
 
+   development/environment creation
+
    development/packaging
 
    development/ontology creation
@@ -91,19 +93,18 @@ Please do refer to the following publication when using GEOMAPI in your projects
 .. code-block:: bibtex
     :linenos:
 
-    @article{GEOMAPI,
-        author = {Bassier, M. and Vermandere, J. and De Geyter, S. and De Winter, H. and Bartczak, E.},
-        doi = {accepted},
-        issn = {0926-580},
-        journal = {Automation in Construction},
-        keywords = {3D Reconstruction, Geomatics, Semantic Web Technologies, Construction, Remote sensing, BIM, Point clouds, Photogrammetry},
-        pages = {pp. 1--38},
-        publisher = {Elsevier},
-        title = {{GEOMAPI: Processing 3D data with semantic web technologies}},
-        url = {Accepted},
-        volume = {X},
-        year = {2024}
-    }
+   @article{GEOMAPI,
+            title = {GEOMAPI: Processing close-range sensing data of construction scenes with semantic web technologies},
+            journal = {Automation in Construction},
+            volume = {164},
+            pages = {105454},
+            year = {2024},
+            issn = {0926-5805},
+            doi = {https://doi.org/10.1016/j.autcon.2024.105454},
+            url = {https://www.sciencedirect.com/science/article/pii/S0926580524001900},
+            author = {Maarten Bassier and Jelle Vermandere and Sam De Geyter and Heinder De Winter},
+            keywords = {Geomatics, Semantic Web Technologies, Construction, Close-range sensing, BIM, Point clouds, Photogrammetry}
+            }
 
 
 .. Indices and tables
