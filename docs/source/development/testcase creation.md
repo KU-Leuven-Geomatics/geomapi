@@ -9,11 +9,23 @@ The DO's and DON'T's of creating properly documented testcases
 
 ## Setup
 
-Install pytest
+Install pytest and coverage
 
 ```py
 pip install -U pytest
+pip install coverage
 ```
+
+Next, discover tests in Vs code in the **Testing** tab on the left. You also have to create the coverage file
+
+```py
+python -m coverage run -m unittest discover -s tests
+python -m coverage report
+python -m coverage html
+```
+
+Check the results in htmlcov/
+
 
 ## File structure
 

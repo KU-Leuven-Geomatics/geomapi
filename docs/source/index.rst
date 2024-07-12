@@ -24,7 +24,7 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
 
    information/getting started
 
-
+   information/nodes
 
 .. toctree::
    :maxdepth: 1
