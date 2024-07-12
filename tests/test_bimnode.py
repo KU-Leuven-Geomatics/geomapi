@@ -9,7 +9,7 @@ import cv2
 import ifcopenshell
 import numpy as np
 import rdflib
-from ifcopenshell.util.selector import Selector
+import ifcopenshell.util.selector 
 from rdflib import RDF, RDFS, Graph, Literal, URIRef
 
 #GEOMAPI
@@ -303,8 +303,10 @@ class TestNode(unittest.TestCase):
     def get_metadata_from_ifc_path(self):
         #ifc1
         a=0
-        selector = Selector()
-        for ifcElement in selector.parse(self.dataLoaderParking.ifc, '.ifcObject'):
+        # selector = Selector()
+        # for ifcElement in selector.parse(self.dataLoaderParking.ifc, '.ifcObject'):
+        elements=ifcopenshell.util.selector.filter_elements(self.dataLoaderParking.ifc, 'IfcElement')
+        for ifcElement in elements:
             a+=1
             node=BIMNode(ifcPath=self.dataLoaderParking.ifcPath,globalId=ifcElement.GlobalId)            
             self.assertEqual(node.className,ifcElement.is_a())
@@ -318,8 +320,8 @@ class TestNode(unittest.TestCase):
     def test_get_metadata_from_ifcElement(self):
         #ifc3
         a=0
-        selector = Selector()
-        for ifcElement in selector.parse(self.dataLoaderRoad.ifc, '.ifcObject'):
+        elements=ifcopenshell.util.selector.filter_elements(self.dataLoaderParking.ifc, 'IfcElement')
+        for ifcElement in elements:
             a+=1
             node=BIMNode(resource=ifcElement)
             self.assertEqual(node.className,ifcElement.is_a())

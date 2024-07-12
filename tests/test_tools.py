@@ -119,7 +119,7 @@ class TestTools(unittest.TestCase):
    
     def test_ifc_to_nodes(self):
         #IFC1
-        nodes=tl.ifc_to_nodes(path=self.dataLoaderParking.ifcPath,classes='.IfcColumn')
+        nodes=tl.ifc_to_nodes(path=self.dataLoaderParking.ifcPath,classes='IfcColumn')
         self.assertEqual(len(nodes), 125)
 
 

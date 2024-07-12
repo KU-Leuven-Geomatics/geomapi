@@ -13,7 +13,7 @@ import ifcopenshell
 import numpy as np
 import open3d as o3d
 import pye57
-from ifcopenshell.util.selector import Selector
+import ifcopenshell.util.selector
 
 #GEOMAPI
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -160,11 +160,11 @@ class TestGeometryutils(unittest.TestCase):
         self.assertIsInstance(mesh,o3d.geometry.TriangleMesh)
        
     def test_ifc_to_mesh(self):
-        classes= '.IfcBeam | .IfcColumn | .IfcWall | .IfcSlab'
-        selector = Selector()
+        classes= 'IfcBeam,IfcColumn,IfcWall,IfcSlab'
         ifcCounter=0
         meshCounter =0
-        for ifcElement in selector.parse(self.dataLoaderParking.ifc, classes): 
+        
+        for ifcElement in ifcopenshell.util.selector.filter_elements(self.dataLoaderParking.ifc,classes): 
             ifcCounter+=1
             mesh=gmu.ifc_to_mesh(ifcElement)
             self.assertIsInstance(mesh,o3d.geometry.TriangleMesh)
