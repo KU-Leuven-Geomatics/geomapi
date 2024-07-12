@@ -301,10 +301,7 @@ class TestNode(unittest.TestCase):
         self.assertRaises(ValueError,BIMNode,ifcPath='qsffqsdf.dwg')
 
     def get_metadata_from_ifc_path(self):
-        #ifc1
         a=0
-        # selector = Selector()
-        # for ifcElement in selector.parse(self.dataLoaderParking.ifc, '.ifcObject'):
         elements=ifcopenshell.util.selector.filter_elements(self.dataLoaderParking.ifc, 'IfcElement')
         for ifcElement in elements:
             a+=1

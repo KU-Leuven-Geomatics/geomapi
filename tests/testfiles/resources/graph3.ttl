@@ -1,0 +1,20 @@
+@prefix exif: <http://www.w3.org/2003/12/exif/ns#> .
+@prefix gom: <https://w3id.org/gom#> .
+@prefix openlabel: <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#> .
+@prefix v4d: <https://w3id.org/v4d/core#> .
+@prefix xcr: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<file:///DJI_0085> a v4d:Node ;
+    xcr:distortionCoeficients "[0.00123387104398438, -0.0154902079106269, 0.0173681449872249, 0.0, 0.0, 0.0]" ;
+    xcr:focalLength35mm "3693.1078961549015"^^xsd:float ;
+    xcr:principalPointU "-0.00219347744418651"^^xsd:float ;
+    xcr:principalPointV "-0.00481084380622187"^^xsd:float ;
+    exif:imageHeight "3078.0"^^xsd:float ;
+    exif:imageWidth "5472.0"^^xsd:float ;
+    gom:coordinateSystem "absolute" ;
+    v4d:name "DJI_0085" ;
+    v4d:path "..\\..\\..\\DJI_0085.JPG" ;
+    v4d:xmpPath "..\\..\\..\\DJI_0085.xmp" ;
+    openlabel:timestamp "2023-11-23T15:10:19" .
+

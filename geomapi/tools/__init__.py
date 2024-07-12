@@ -19,13 +19,14 @@ import uuid
 import rdflib
 from rdflib import Graph
 from rdflib import URIRef, Literal
-# from rdflib.namespace import CSVW, DC, DCAT, DCTERMS, DOAP, FOAF, ODRL2, ORG, OWL, \
-#                            PROF, PROV, RDF, RDFS, SDO, SH, SKOS, SOSA, SSN, TIME, \
-#                            VOID, XMLNS, XSD
+from rdflib.namespace import CSVW, DC, DCAT, DCTERMS, DOAP, FOAF, ODRL2, ORG, OWL, \
+                           PROF, PROV, RDF, RDFS, SDO, SH, SKOS, SOSA, SSN, TIME, \
+                           VOID, XMLNS, XSD
 import ifcopenshell
 import ifcopenshell.util
 import ifcopenshell.geom as geom
-from ifcopenshell.util.selector import Selector
+import ifcopenshell.util.selector
+
 import multiprocessing
 import concurrent.futures
 
@@ -548,7 +549,7 @@ def get_loa_class_per_bimnode(BIMNodes:List[BIMNode] , path:str=None):
             if attr not in ['classes','type']:
                 setattr(n,attr,o.toPython()) 
 
-def ifc_to_nodes(path:str, classes:str='.IfcBuildingElement',getResource : bool=True,**kwargs)-> List[BIMNode]:
+def ifc_to_nodes(path:str, classes:str='IfcBuildingElement',getResource : bool=True,**kwargs)-> List[BIMNode]:
     """
     Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
 
@@ -563,7 +564,7 @@ def ifc_to_nodes(path:str, classes:str='.IfcBuildingElement',getResource : bool=
 
     Args:
         1. ifcPath (string):  absolute ifc file path e.g. "D:/myifc.ifc"\n
-        2. classes (string, optional): ifcClasses seperated by | e.g. '.IfcBeam | .IfcColumn '#'.IfcWall | .IfcSlab | .IfcBeam | .IfcColumn | .IfcStair | .IfcWindow | .IfcDoor'. Defaults to '.IfcBuildingElement'.   
+        2. classes (string, optional): ifcClasses e.g. 'IfcBeam, IfcColumn, IfcWall, IfcSlab'. Defaults to 'IfcBuildingElement'.   
     
     Raises:
         ValueError: 'No valid ifcPath.'
@@ -575,11 +576,13 @@ def ifc_to_nodes(path:str, classes:str='.IfcBuildingElement',getResource : bool=
     
     nodelist=[]   
     ifc = ifcopenshell.open(path)   
-    selector = Selector()
-    for ifcElement in selector.parse(ifc, classes):
+    
+    elements=ifcopenshell.util.selector.filter_elements(ifc, classes)
+    for ifcElement in elements:
         node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
         node.ifcPath=path
         nodelist.append(node)
+  
     return nodelist
 
 
