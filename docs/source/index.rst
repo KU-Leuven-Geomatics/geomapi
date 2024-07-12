@@ -22,9 +22,14 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
    :maxdepth: 1
    :caption: Information:
 
-   information/getting started
+   information/1.getting started
 
-   information/ontology
+   information/2.tutorial_nodes
+
+   information/3.tutorial_functionality
+
+   information/4.tutorial_ontology
+
 
 .. toctree::
    :maxdepth: 1
