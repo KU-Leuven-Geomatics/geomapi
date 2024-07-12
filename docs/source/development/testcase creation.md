@@ -7,6 +7,14 @@ headingDivider: 4
 
 The DO's and DON'T's of creating properly documented testcases
 
+## Setup
+
+Install pytest
+
+```py
+pip install -U pytest
+```
+
 ## File structure
 
 Use one main `.ipynb` file, located at `docs/source/testcases/` for you specific testcase.

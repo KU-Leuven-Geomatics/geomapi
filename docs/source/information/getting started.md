@@ -3,7 +3,7 @@ marp: true
 paginate : true
 headingDivider: 3
 ---
-# Introduction
+# Getting Started
 
 GEOMAPI manages close-range sensing resources like images and point clouds. It greatly expands the functionality of Open Source projects such as OpenCV and Open3D to create homogeneous and easy to use resources.
 
