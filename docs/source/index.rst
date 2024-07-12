@@ -90,10 +90,8 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
 
 Please do refer to the following publication when using GEOMAPI in your projects. 
 
-.. code-block:: bibtex
-    :linenos:
-
-   @article{GEOMAPI,
+```
+@article{GEOMAPI,
             title = {GEOMAPI: Processing close-range sensing data of construction scenes with semantic web technologies},
             journal = {Automation in Construction},
             volume = {164},
@@ -105,6 +103,7 @@ Please do refer to the following publication when using GEOMAPI in your projects
             author = {Maarten Bassier and Jelle Vermandere and Sam De Geyter and Heinder De Winter},
             keywords = {Geomatics, Semantic Web Technologies, Construction, Close-range sensing, BIM, Point clouds, Photogrammetry}
             }
+```
 
 
 .. Indices and tables
