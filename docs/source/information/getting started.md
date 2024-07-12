@@ -5,7 +5,7 @@ headingDivider: 4
 ---
 # Getting started
 
-GEOMAPI manages close-range sensing resources like images and point clouds. It greatly expands the functionality of Open Source projects such as OpenCV and Open3D to create homogeneous and easy to use resources. It has three levels.
+GEOMAPI manages close-range sensing resources like images and point clouds. It greatly expands the functionality of Open Source projects such as OpenCV and Open3D to create homogeneous and easy to use resources.
 
 ## Installation
 
@@ -17,84 +17,57 @@ conda activate geomapi_user
 pip install geomapi
 ```
 
-## Creating your first node
+# Creating your first node
 a Node is a unit that stores both data and metadata from close-range sensing data. They handle different types of data, like point clouds or images, and they contain detailed information such as location, shape, and relevant properties. This structure helps in efficient querying and analysis of the data.
 
-![bg vertical right:50% h:70%](../../pics/geomapi_ontology.png)
+![bg vertical right:50% h:70%](../../pics/GEOMAPI_metadata3.png)
 
 
-### Initialisation
+## Initialisation
 
-Consider the following three nodes from the testfiles, built from either a path, a data resource or piece of metadata.
+Consider the following nodes from the testfiles, built from either a path, a data resource or piece of metadata. Additionally, we can build nodes from [Linked Data](https://en.wikipedia.org/wiki/Linked_data) Graphs!
 
 ```py
-from geomapi.nodes import *
-
-pcd=o3d.io.read_point_cloud('/tests/testfiles/mesh/parking.pcd')
+from geomapi.nodes import ImageNode, PointCloudNode, MeshNode, BIMNode, Node
+pcd=o3d.io.read_point_cloud('../tests/testfiles/pcd/parking.pcd')
 pcdNode = PointCloudNode(resource=pcd) # built from resource or data
-
-meshNode= MeshNode (path='/tests/testfiles/mesh/parking.obj') # .stl and .obj are supported
-
-imagePath=ImageNode(xmpPath='/tests/testfiles/mesh/parking.obj') # .xmp contains pose information from CapturingReality software. MetaShape .xml is also supported.
+meshNode= MeshNode (path='../tests/testfiles/mesh/parking.obj') # .stl and .obj are supported
+imgNode=ImageNode(xmpPath='../tests/testfiles/img/DJI_0085.xmp') # .xmp contains pose information from CapturingReality software. MetaShape .xml is also supported.
+bimNodes=tl.graph_path_to_nodes('../tests/testfiles/graphs/graph.ttl') #loads nodes from a graph file representing an IFCfile with BIM objects.
 ```
   ![bg vertical right:50% h:70%](../../pics/node_resources1.png)
 
+As you can see, each Node inherits the Base Node properties so they can be created in a very similar way. Look at the [Node Tutorial](../tutorial/tutorial_nodes.ipynb) notebook to learn more about how to create and use nodes.
 
-Each Node inherits the Base Node properties so they can be created in a very similar way.
-
-
-
-A Node Can be initialised using a number of different parameters
+## Functionality
+The cool thing about these Nodes is that they can be jointly querried now i.e. we can find the nearest nodes without having to use the actual data!
 
 ```py
-from geomapi.node import Node
-newNode = Node()
+import geomapi.tools as tl
+tl.select_nodes_k_nearest_neighbors(pcdNode,[meshNode,imgNode,bimNodes],k=1) #selects the k nearest neighbors of a point cloud node from a list of nodes
+
+([<geomapi.nodes.meshnode.MeshNode at 0x1d6ea7c2170>], DoubleVector[2.09905]) # the meshNode is the closest Node 2m away!
 ```
 
-### Without a Graph
-
-If no Graph or -path is provided, You can create an empty node of any type with a (random) subject ID and no metadata.
-
+GEOMAPI divides functions into three layers.
+1. [**Utilities**](../tutorial/utility_functions.ipynb): Base functions for point clouds and images that support the Node system
 ```py
-newNode = Node(subject = "myNode")
+import geomapi.utils as ut
+from geomapi.utils import geometryutils as gmu
 ```
-
-### With Graph
-
-You can create a Node using a Graph or -Path, this will parse all the variables inside the Graph. If a subject is provided, it will use that specific subject for the Graph.
-
+2. [**Nodes**](../tutorial/node_functions.ipynb): Node specific functions such as projecting rays from an image in 3D, mutations, sampling, etc.
 ```py
-newNode = Node(graphPath = "http://www.w3.org/People/Berners-Lee/card")
+imgNode=ImageNode(xmlPath='../tests/testfiles/img/road.xml', path='../tests/testfiles/img/101_0367_0007.JPG') 
+imgNode.create_rays(imagePoints=[[0,0],[0,1],[1,0],[1,1]],depths=25) #creates rays from image points
 ```
-
-## Node Types
-
-Currently, the API supports 6 Specialised Nodes:
-
+3. [**Tools**](../tutorial/tool_functions.ipynb): Functions that combine nodes i.e. distance calculations, intersections, analyzes
 ```py
-from geomapi.nodes import ImageNode()
-from geomapi.nodes import GeometryNode()
-from geomapi.nodes import PointcloudNode()
-from geomapi.nodes import MeshNode()
-from geomapi.nodes import BIMNode()
-from geomapi.nodes import LinesetNode()
-from geomapi.nodes import OrthoNode()
-from geomapi.nodes import SessionNode()
+import geomapi.tools as tl
+import geomapi.tools.progresstools as pgt
+pgt.project_pcd_to_rgbd_images (pointClouds, imgNodes, depth_max=15)
 ```
+Each subpackage is abriviated using the first letter of each word: validationtools -> vt. If there are doubles, insert the first different letter in between: geometryutils -> gmu. Packages with a single word become the first letter + the first constant: tools -> tl, utils -> ut.
 
-Each Node Can be created just like a regular node, but it has extra inputs to assing variables.
-Check out the tutorial section for info about each specific node.
-
-## Working with Sessions
-
-Since each node Only points to 1 resource, we use Sessions to group them.
-A Session is a collection of Resources that are taken in a single recording session. This means that all they are all in the same coordinate system and are documenting the same information.
-Check out the tutorial section about SessionNodes to get started.
-
-## Importing sub-packages
-
-The packages are typically abriviated using the first letter of each word: validationtools -> vt, in case there are doubles, insert the first different letter inbetween: geometryutils -> gmu. Packages with a single word become the first letter + the first constant: tools -> tl, utils -> ut
-
-## Further Reading
-
-Check out the testcases to learn about practical uses for the package
+## Ontology
+GEOMAPI works with Linked Data to homogenize it's functionality. At its core, it uses the in-house [geomapi ontology](https://github.com/KU-Leuven-Geomatics/geomapi/blob/main/geomapi/ontology/geomapi_ontology.ttl)
+![bg vertical right:50% h:70%](../../pics/geomapi_ontology.png)
