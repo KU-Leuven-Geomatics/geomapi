@@ -7,26 +7,43 @@ headingDivider: 4
 
 GEOMAPI manages close-range sensing resources like images and point clouds. It greatly expands the functionality of Open Source projects such as OpenCV and Open3D to create homogeneous and easy to use resources. It has three levels.
 
-
-1. Utilities
-
-
-
-
 ## Installation
 
-You will need a python environment $ 3.7 \leq x \leq 3.10$ as Open3D currently doesn't support python $\leq 3.10$. Use the package manager [pip](https://pypi.org/project/geomapi) to install geomapi.
-
-You will need a Python environment \(3.7 \leq x \leq 3.10\) as Open3D currently doesn't support Python \(\leq 3.10\). Use the package manager [pip](https://pypi.org/project/geomapi) to install `geomapi`.
-
+You will need a python environment  3.7 $\leq$ x $\leq$ 3.10 as Open3D currently doesn't support python $\leq$ 3.11 (due to Open3D dependencies). Use the package manager [pip](https://pypi.org/project/geomapi) to install `geomapi`.
 
 ```bash
+conda create --name geomapi_user python=3.10
+conda activate geomapi_user
 pip install geomapi
 ```
 
 ## Creating your first node
+a Node is a unit that stores both data and metadata from close-range sensing data. They handle different types of data, like point clouds or images, and they contain detailed information such as location, shape, and relevant properties. This structure helps in efficient querying and analysis of the data.
 
-All Node types inherit the Base Node so they can be created in a very similar way.
+![bg vertical right:50% h:70%](../../pics/geomapi_ontology.png)
+
+
+### Initialisation
+
+Consider the following three nodes from the testfiles, built from either a path, a data resource or piece of metadata.
+
+```py
+from geomapi.nodes import *
+
+pcd=o3d.io.read_point_cloud('/tests/testfiles/mesh/parking.pcd')
+pcdNode = PointCloudNode(resource=pcd) # built from resource or data
+
+meshNode= MeshNode (path='/tests/testfiles/mesh/parking.obj') # .stl and .obj are supported
+
+imagePath=ImageNode(xmpPath='/tests/testfiles/mesh/parking.obj') # .xmp contains pose information from CapturingReality software. MetaShape .xml is also supported.
+```
+  ![bg vertical right:50% h:70%](../../pics/node_resources1.png)
+
+
+Each Node inherits the Base Node properties so they can be created in a very similar way.
+
+
+
 A Node Can be initialised using a number of different parameters
 
 ```py

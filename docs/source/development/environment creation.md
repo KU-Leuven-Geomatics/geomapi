@@ -12,6 +12,7 @@ To use geomapi as a package, we will create a Python 3.10 environment and intall
 
 ```bash
 conda create --name geomapi_user python=3.10
+conda activate geomapi_user
 pip install geomapi
 ```
 
@@ -25,7 +26,8 @@ If you are uncomfortable with the command line, you can use the [Anaconda](https
 Developers should create a similar environment.
 
 ```bash
-conda create --name geomapi_user python=3.10
+conda create --name geomapi_dev python=3.10
+conda activate geomapi_dev
 ```
 Open Vscode, open a new terminal and navigate to the root of the repository.
 Type the following command to install the dependencies.
