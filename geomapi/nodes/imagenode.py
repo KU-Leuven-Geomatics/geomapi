@@ -79,6 +79,8 @@ class ImageNode(Node):
 
         #instance variables
         self.xmlPath=xmlPath
+        self.xmpPath=xmpPath
+        
 
         #initialisation functionality
         if getMetaData:
@@ -285,14 +287,14 @@ class ImageNode(Node):
             return False
         
         #validate extension
-        if extension not in ut.IMG_EXTENSION:
+        if extension not in ut.IMG_EXTENSIONS:
             raise ValueError('Invalid extension')
 
         # check if already exists
         if directory and os.path.exists(os.path.join(directory,self.get_name() + extension)):
             self.path=os.path.join(directory,self.get_name() + extension)
             return True
-        elif not directory and self.get_path() and os.path.exists(self.path) and extension in ut.IMG_EXTENSION:
+        elif not directory and self.get_path() and os.path.exists(self.path) and extension in ut.IMG_EXTENSIONS:
             return True    
           
         #get directory

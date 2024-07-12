@@ -129,7 +129,7 @@ class LinesetNode (GeometryNode):
         get o3d.geometry.TriangleMesh from self.path or self.name
         """
         if getattr(self,'mesh',None) is None:
-            self.mesh = o3d.io.read_triangle_mesh(self.get_resource_path(fileFormat=ut.MESH_EXTENSION))
+            self.mesh = o3d.io.read_triangle_mesh(self.get_resource_path(fileFormat=ut.MESH_EXTENSIONS))
                 
             if getattr(self,'ifcPath',None) is not None and getattr(self,'globalId',None) is not None :
                 try:

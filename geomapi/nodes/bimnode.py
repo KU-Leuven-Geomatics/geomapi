@@ -20,7 +20,7 @@ import os
 import ifcopenshell
 import ifcopenshell.geom as geom
 import ifcopenshell.util
-from ifcopenshell.util.selector import Selector
+import ifcopenshell.util.selector
 
 
 #IMPORT MODULES
@@ -170,11 +170,10 @@ class BIMNode (GeometryNode):
         """
         if self._globalId:
             pass 
-        elif os.path.exists(self.ifcPath):
-            selector = Selector()
+        elif os.path.exists(self.ifcPath): # takes first element, not sure if this is good!
             ifc = ifcopenshell.open(self.ifcPath)  
-            ifcElement=next(ifcElement for ifcElement in selector.parse(ifc, '.ifcObject') )
-            self._globalId=ifcElement.GlobalId
+            ifcElement=next((ifcElement for ifcElement in ifcopenshell.util.selector.filter_elements(ifc,"IfcElement")),None)
+            self._globalId=ifcElement.GlobalId if ifcElement else None
         return self._globalId
 
     def save_resource(self, directory:str=None,extension :str = '.ply') ->bool:
@@ -195,14 +194,14 @@ class BIMNode (GeometryNode):
             return False
         
         #validate extension
-        if extension not in ut.MESH_EXTENSION:
+        if extension not in ut.MESH_EXTENSIONS:
             raise ValueError('Invalid extension')
 
         # check if already exists
         if directory and os.path.exists(os.path.join(directory,self.subject + extension)):
             self.path=os.path.join(directory,self.subject + extension)
             return True
-        elif not directory and self.get_path() and os.path.exists(self.path) and extension in ut.MESH_EXTENSION:
+        elif not directory and self.get_path() and os.path.exists(self.path) and extension in ut.MESH_EXTENSIONS:
             return True
                     
         #get directory

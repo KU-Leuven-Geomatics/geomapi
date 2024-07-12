@@ -169,7 +169,7 @@ class PointCloudNode (GeometryNode):
             return False
 
         #validate extension
-        if extension not in ut.PCD_EXTENSION:
+        if extension not in ut.PCD_EXTENSIONS:
             raise ValueError('Invalid extension')
 
         filename=ut.validate_string(self.name)
@@ -178,7 +178,7 @@ class PointCloudNode (GeometryNode):
         if directory and os.path.exists(os.path.join(directory,filename + extension)):
             self.path=os.path.join(directory,filename + extension)
             return True
-        elif not directory and self.subject and os.path.exists(self.path) and extension in ut.MESH_EXTENSION:
+        elif not directory and self.subject and os.path.exists(self.path) and extension in ut.MESH_EXTENSIONS:
             return True        
                    
         #get path        
