@@ -20,3 +20,4 @@ laspy
 scikit-learn
 colour
 ezdxf
+pyvista
