@@ -26,6 +26,10 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
 
    information/nodes
 
+   information/functionality
+
+   information/ontology
+
 .. toctree::
    :maxdepth: 1
    :caption: API Reference   
