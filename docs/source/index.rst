@@ -24,10 +24,6 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
 
    information/getting started
 
-   information/nodes
-
-   information/functionality
-
    information/ontology
 
 .. toctree::
@@ -91,10 +87,17 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
    :caption: Contribution
 
    team/team
+   `GitHub <https://github.com/KU-Leuven-Geomatics/geomapi>`_
 
 Please do refer to the following publication when using GEOMAPI in your projects. 
 
-```
+.. image:: ../pics/paper.PNG
+   :target: https://www.sciencedirect.com/science/article/pii/S0926580524001900
+   :width: 200px
+   :height: 300px
+   :alt: GEOMAPI Paper
+
+.. code-block:: none
 @article{GEOMAPI,
             title = {GEOMAPI: Processing close-range sensing data of construction scenes with semantic web technologies},
             journal = {Automation in Construction},
@@ -107,7 +110,7 @@ Please do refer to the following publication when using GEOMAPI in your projects
             author = {Maarten Bassier and Jelle Vermandere and Sam De Geyter and Heinder De Winter},
             keywords = {Geomatics, Semantic Web Technologies, Construction, Close-range sensing, BIM, Point clouds, Photogrammetry}
             }
-```
+
 
 
 .. Indices and tables

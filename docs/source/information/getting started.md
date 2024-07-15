@@ -37,7 +37,7 @@ bimNodes=tl.graph_path_to_nodes('../tests/testfiles/graphs/graph.ttl') #loads no
 ```
   ![bg vertical right:50% h:70%](../../pics/node_resources1.png)
 
-As you can see, each Node inherits the Base Node properties so they can be created in a very similar way. Look at the [Node Tutorial](../tutorial/tutorial_nodes.ipynb) notebook to learn more about how to create and use nodes.
+As you can see, each Node inherits the Base Node properties so they can be created in a very similar way. Look at the [Node Tutorial](../tutorial/tutorial_nodes.ipynb) notebooks to learn more about how to create and use nodes.
 
 ### Functionality
 The cool thing about these Nodes is that they can be jointly querried. We can find neighbouring nodes way faster by not using the actual data!
@@ -66,7 +66,8 @@ import geomapi.tools as tl
 import geomapi.tools.progresstools as pgt
 pgt.project_pcd_to_rgbd_images (pointClouds, imgNodes, depth_max=15)
 ```
-Each subpackage is abriviated using the first letter of each word: validationtools -> vt. If there are doubles, insert the first different letter in between: geometryutils -> gmu. Packages with a single word become the first letter + the first constant: tools -> tl, utils -> ut.
+
+Look at the [Function Tutorial](../tutorial/tutorial_nodes.ipynb) notebooks to learn more about how to use the different functions.
 
 ### Ontology
 GEOMAPI works with Linked Data to define the concepts, relationships and functions. At its core, it uses the in-house [geomapi ontology](https://github.com/KU-Leuven-Geomatics/geomapi/blob/main/geomapi/ontology/geomapi_ontology.ttl) that is linked to specific functions within the GEOMAPI toolbox. For instance, every Node has an [RDF Graph](https://en.wikipedia.org/wiki/Resource_Description_Framework) mimic, allowing to interact with any online resource.
@@ -76,4 +77,4 @@ Visit the [Ontology Tutorial](../tutorial/tutorial_ontology.md) to learn more ab
 ![bg vertical right:50% h:70%](../../pics/geomapi_ontology.png)
 
 
-Continue to the next sections to learn more about each part of the GEOMAPI structure
+Continue to the next sections to learn more about each part of the GEOMAPI structure.
