@@ -1,0 +1,209 @@
+# baseURI: https://v4design.eu/ontologies/
+# imports: file:///V4Design/ontologies/oa.rdf
+# imports: http://3dontology.org/3d.ttl
+# imports: http://purl.org/dc/elements/1.1/
+# imports: http://topbraid.org/schema/
+# imports: http://www.europeana.eu/schemas/edm/
+# imports: http://www.w3.org/2004/02/skos/core
+# prefix: v4d
+
+@prefix geomapi: <https://w3id.org/geomapi#> .
+@prefix bot: 	<https://w3id.org/bot#> .
+@prefix dcterms: <http://purl.org/dc/terms/> . 			#this has source
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix omg: <https://w3id.org/omg#> .					#geometries
+@prefix opm: <https://w3id.org/opm#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .			# literals
+@prefix schema: <http://schema.org/> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix fog: <https://w3id.org/fog#> .						# geometries
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .   # geometries/literals
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix voaf: <http://purl.org/vocommons/voaf#> .
+@prefix ifc:  <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#> .
+
+@prefix inst: <http://parking#> .
+
+
+#################################################################
+#    Resource definitions
+###################################################################
+
+inst:BT1_Bodembedekking_WSV10_1nj0iZxXz9KwaRtJh__age 
+	rdf:type geomapi:BIMNode ;
+	rdfs:label "BT1_Bodembedekking_WSV10" ;
+	geomapi:ifcGlobalId """1nj0iZxXz9KwaRtJh__age""" ;
+	geomapi:ifcObjectType """IfcSite""";
+	geomapi:cartesianBounds """[1.00575633e+05 1.00623411e+05 1.96241897e+05 1.96312352e+05
+ 6.42895733e+00 6.78639411e+00]""" ;
+    geomapi:cartesianTransform """[[1.00000000e+00 0.00000000e+00 0.00000000e+00 1.00607748e+05]
+ [0.00000000e+00 1.00000000e+00 0.00000000e+00 1.96264271e+05]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00 6.61026494e+00]
+ [0.00000000e+00 0.00000000e+00 0.00000000e+00 1.00000000e+00]]""" ;
+    geomapi:pointCount 93 ;
+    geomapi:faceCount 180 ;    
+    geomapi:orientedBounds """[[1.00576842e+05 1.96312718e+05 6.67746409e+00]
+ [1.00623412e+05 1.96242934e+05 6.73611683e+00]
+ [1.00574549e+05 1.96311188e+05 6.74329361e+00]
+ [1.00576837e+05 1.96312715e+05 6.41316789e+00]
+ [1.00621113e+05 1.96241400e+05 6.53765016e+00]
+ [1.00574543e+05 1.96311184e+05 6.47899742e+00]
+ [1.00623407e+05 1.96242931e+05 6.47182064e+00]
+ [1.00621118e+05 1.96241404e+05 6.80194636e+00]]""" ;
+ 	fog:asIfc "..\\ifc\\road.ifc" ;
+ 	dcterms:created "2023-11-23T10:08:36"^^xsd:dateTime .
+
+inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0
+	rdf:type geomapi:BIMNode ;
+    geomapi:ifcBuildingElement "IfcWall" ;
+    geomapi:ifcGlobalId "0$Z_Q8COz94wZzVDqlx6N0" ;
+    fog:asIfc  "..\\ifc\\parking.ifc" ;
+    e57:cartesianBounds "[19.76203899 21.40168648 45.18697778 61.20120036  3.75        8.24      ]" ;
+    e57:cartesianTransform """[[ 1.          0.          0.         20.70099441]
+ [ 0.          1.          0.         52.14007717]
+ [ 0.          0.          1.          5.25045455]
+ [ 0.          0.          0.          1.        ]]""" ;
+    geomapi:pointCount 22 ;
+    geomapi:faceCount 40 ;
+    rdfs:label "Basic Wall:162_WA_f2_Retaining concrete 160mm:915429" ;
+    geomapi:ifcObjectType "Basic Wall:162_WA_f2_Retaining concrete 160mm" ;
+    geomapi:orientedBounds """[[19.92133317 61.20120036  3.75      ]
+ [21.40170711 45.19729553  3.75      ]
+ [19.92133317 61.20120036  8.24      ]
+ [19.7619927  61.18646124  3.75      ]
+ [21.24236663 45.18255641  8.24      ]
+ [19.7619927  61.18646124  8.24      ]
+ [21.24236663 45.18255641  3.75      ]
+ [21.40170711 45.19729553  8.24      ]]""" ;
+    dcterms:created "2023-11-23T10:08:36" .
+
+inst:parking_915429_0_Z_Q8COz94wZzVDqlx6N0
+	rdf:type geomapi:MeshNode ;
+	rdfs:label "parking" ;
+    geomapi:cartesianBounds "[10.45079231 79.55210876 27.31818581 74.1269989  -2.62377906 20.99546814]" ;
+    geomapi:cartesianTransform """[[ 1.          0.          0.         46.62896589]
+ [ 0.          1.          0.         54.52713206]
+ [ 0.          0.          1.          5.31642376]
+ [ 0.          0.          0.          1.        ]]""" ;
+    geomapi:pointCount 62143 ;
+    geomapi:faceCount 49999 ;
+    geomapi:orientedBounds """[[  1.91106719  40.84350475   1.85887215]
+ [ 67.90585268  23.57467616  -7.72339247]
+ [ 13.87308273  88.49223338  -1.62747261]
+ [  5.24411682  41.58815304  23.47220674]
+ [ 83.20091784  71.96805308  10.40359737]
+ [ 17.20613235  89.23688167  19.98586199]
+ [ 71.2389023   24.31932445  13.88994213]
+ [ 79.86786822  71.22340479 -11.20973722]]""" ;
+    geomapi:asPolygonalMesh "..\\mesh\\parking.obj" ;
+    dcterms:created "2023-11-23T11:21:49" .
+
+inst:parking2
+	rdf:type geomapi:PointCloudNode ;
+    geomapi:cartesianBounds "[17.38922501 79.04823303 38.1408577  71.8666153   0.8287577   9.90541553]" ;
+    geomapi:cartesianTransform """[[ 1.          0.          0.         47.46935912]
+ [ 0.          1.          0.         55.46003894]
+ [ 0.          0.          1.          4.59512571]
+ [ 0.          0.          0.          1.        ]]""" ;
+    geomapi:e57Index 0 ;
+    geomapi:pointCount 55648 ;
+    rdfs:label "parking" ;
+    geomapi:orientedBounds """[[19.031228   78.85752965 12.51335747]
+ [82.51981999 70.21753381 10.08902663]
+ [14.29439273 44.35339839 11.4328731 ]
+ [18.6900821  79.22515428  2.26923262]
+ [77.44183883 36.0810272  -1.23558259]
+ [13.95324684 44.72102303  1.18874825]
+ [82.1786741  70.58515845 -0.15509822]
+ [77.78298472 35.71340256  9.00854226]]""" ;
+    geomapi:asPointCloud "..\\pcd\\parking.pcd" ;
+    dcterms:created "2023-11-23T15:10:19" .
+
+
+#################################################################
+#    Single Epoch analysis
+###################################################################
+
+inst:progress_estimation_analysis_1
+	rdf:type geomapi:analysis;
+	rdfs:label "Determines wheter a BIMNode Geometry is present on the construction site"@en ;
+	geomapi:parameter """"searchDistance:0.5""",""""k:6""";
+	geomapi:method """"geomapi.tools.determine_progress""";
+	geomapi:source inst:BT1_Bodembedekking_WSV10_1nj0iZxXz9KwaRtJh__age, 
+					inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0;
+	geomapi:reference inst:parking_915429_0_Z_Q8COz94wZzVDqlx6N0
+	dcterms:created "2023-11-23T10:08:36"^^xsd:dateTime ;
+
+inst:progress_estimation_result_1
+	rdf:type geomapi:result;
+	rdfs:label "built_status" ;
+	geomapi:resultOf inst:progress_estimation_analysis_1 ;
+	geomapi:probability 0.7 ;
+	geomapi:result """built""";
+	
+inst:progress_estimation_result_2
+	rdf:type geomapi:result;
+	rdfs:label "built_status" ;
+	geomapi:resultOf inst:progress_estimation_analysis_1 ;
+	geomapi:probability 1.0 ;
+	geomapi:result """Unseen""";
+
+inst:BT1_Bodembedekking_WSV10_1nj0iZxXz9KwaRtJh__age
+	geomapi:hasResult inst:progress_estimation_result_1
+
+inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0
+	geomapi:hasResult inst:progress_estimation_result_2
+
+
+#################################################################
+#    Topology analysis
+###################################################################
+
+inst:topology_analysis_1
+	rdf:type geomapi:analysis;
+	rdfs:label "Determines which source resources reside within the reference"@en ;
+	geomapi:reference	inst:parking2;
+	geomapi:source inst:BT1_Bodembedekking_WSV10_1nj0iZxXz9KwaRtJh__age,
+						inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0,
+						inst:parking_915429_0_Z_Q8COz94wZzVDqlx6N0;					
+	geomapi:parameter """strict:False""";
+	geomapi:method """"geomapi.tools.select_nodes_within_boundaries""";
+	dcterms:created "2023-11-23T10:08:36"^^xsd:dateTime ;
+
+inst:BT1_Bodembedekking_WSV10_1nj0iZxXz9KwaRtJh__age 		
+	geomapi:within inst:parking2
+
+# state not within inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0 can be inferred from the analysis participation and the absence of the within datatype assigned to the node
+
+#################################################################
+#    Multi-epoch analysis
+###################################################################
+
+inst:progress_estimation_analysis_2
+	rdf:type geomapi:analysis;
+	rdfs:label "Determines wheter a BIMNode Geometry is present on the construction site"@en ;
+	geomapi:parameter """"searchDistance:0.5""",""""k:6""";
+	geomapi:method """"geomapi.tools.determine_progress""";
+	geomapi:source inst:BT1_Bodembedekking_WSV10_1nj0iZxXz9KwaRtJh__age, 
+					inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0;
+	geomapi:reference inst:progress_estimation_analysis_1,
+						inst:parking2;
+	dcterms:created "2023-12-23T10:08:36"^^xsd:dateTime ;
+	
+	
+inst:progress_estimation_result_3
+	rdf:type geomapi:result;
+	rdfs:label "built_status" ;
+	geomapi:resultOf inst:progress_estimation_analysis_2 ;
+	geomapi:probability 0.5 ;
+	geomapi:result """Under Construction""";
+	geomapi:derivedFrom
+
+inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0
+	geomapi:hasResult inst:progress_estimation_result_3
+
+# No new result was computed for inst:BT1_Bodembedekking_WSV10_1nj0iZxXz9KwaRtJh__age as it was already built.
+# This can be inferred from the the latest previous results of the instance 

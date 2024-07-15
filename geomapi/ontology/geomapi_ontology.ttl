@@ -1,0 +1,604 @@
+# baseURI: https://w3id.org/geomapi#
+# prefix: geomapi
+
+#GENERAL
+@prefix geomapi: <https://w3id.org/geomapi#> .
+@prefix dcterms: <http://purl.org/dc/terms/> . 			#this has source
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .			# literals
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix voaf: <http://purl.org/vocommons/voaf#> .
+@prefix dbp: <http://dbpedia.org/ontology/>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace> . # you don't use this
+
+#GEOMETRIES
+@prefix gom: <https://w3id.org/gom#>.
+@prefix geom: <http://ontology.eil.utoronto.ca/icity/Geom/> .
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .   # geometries/literals
+@prefix omg: <https://w3id.org/omg#> .					#geometries
+@prefix fog: <https://w3id.org/fog#> .						# geometries
+@prefix ifc: <https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL> .		
+@prefix dggs: <https://w3id.org/dggs/as> .		
+	
+#IMAGES
+@prefix exif: <http://www.w3.org/2003/12/exif/ns#> .
+@prefix xcr: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+#BUILDINGS
+@prefix bot: 	<https://w3id.org/bot#> .
+@prefix ifc:  <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#> .
+
+
+
+#################################################################
+#    ONTOLOGY DESCRIPTION
+###################################################################
+<https://w3id.org/geomapi#> rdf:type owl:Ontology , voaf:Vocabulary ;
+						dcterms:modified    "2024-01-01T01:01:01"^^xsd:dateTime ;
+						dcterms:issued    "2024-01-01T01:01:01"^^xsd:dateTime ;
+						owl:versionInfo    "0.0.1" ;
+						owl:versionIRI <https://w3id.org/geomapi-0.0.1> ;
+						dcterms:title    "Geomatics API ontology (GEOMAPI)"@en ;
+						dcterms:description    """The Geomatics API ontology (GEOMAPI) is an ontology defining the core concepts of close-range sensing observations. It manage point clouds, imagery, polygonal meshes, BIM and CAD information in relation with the geomapi api (https://github.com/KU-Leuven-Geomatics/geomapi). """ ;
+						dcterms:creator "Maarten Bassier" ;
+						dcterms:creator "Jelle Vermandere" ;
+						dcterms:creator "Heinder De Winter" ;
+						dcterms:creator "Sam De Geyter" ;
+						dcterms:creator <https://orcid.org/0000-0002-5231-2853> ;
+						dcterms:creator <https://orcid.org/0000-0002-7809-9798> ;
+						dcterms:creator <https://orcid.org/0000-0003-4894-6965> ;
+						dcterms:creator <https://orcid.org/0000-0001-8526-8847> ;
+						dcterms:license <https://creativecommons.org/licenses/by/1.0/> ;
+						vann:preferredNamespacePrefix    "geomapi" ;
+						vann:preferredNamespaceUri <https://w3id.org/geomapi#> ;
+						owl:imports <https://w3id.org/fog#> .
+
+
+
+#################################################################
+#    DATA FORMATS
+###################################################################
+
+#what with the XML files?
+
+#CAD formats -> mostly covered by fog
+geomapi:asDxF
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ; 	# unique valued property
+	dbp:extension ".dxf" ;
+	rdfs:comment "Path to .dxf file."@en ;
+	rdfs:isDefinedBy geomapi: ;
+	rdfs:label "as DXF format (.dxf)"@en ;
+	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
+	rdfs:domain geomapi:LineSetNode; 			
+	rdfs:range xsd:string .
+
+#BIM formats -> fog:asIfc
+
+#MESH formats # -> this is too specific in fog and clutters the geometry parsing using the API's
+geomapi:asPolygonalMesh
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	dbp:extension ".obj" ; #we have added extensions
+	dbp:extension ".ply" ;
+	dbp:extension ".fbx" ;
+	rdfs:comment "Path to binary or ASCII file format that can be parsed with Open3D or Trimesh."@en ;
+	rdfs:isDefinedBy geomapi: ;
+	rdfs:seeAlso dcterms:source,geo:Geometry;		
+	rdfs:label "as polygonal mesh"@en ;
+	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ; 
+	rdfs:domain geomapi:MeshNode; 			
+	rdfs:range xsd:string .
+
+#POINT CLOUD formats
+geomapi:asPointCloud 
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;			# this points to a file
+	dbp:extension ".pcd" ;
+	dbp:extension ".e57" ;
+	dbp:extension ".las" ;
+	dbp:extension ".laz" ;
+	dbp:extension ".pts" ;
+	dbp:extension ".ply" ;
+	dbp:extension ".csv" ;
+	dbp:extension ".bin" ;
+	rdfs:comment "Point cloud formats (binary or ASCII) that can be parsed with Python Laspy, Pye57, Pandas or Open3D."@en ;
+	rdfs:isDefinedBy geomapi: ;
+	rdfs:seeAlso dcterms:source,geo:Geometry;		
+	rdfs:label "as point cloud"@en ;
+	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
+	rdfs:domain geomapi:PointCloudNode;
+	rdfs:range xsd:string .
+	
+geomapi:asPointCloudXML
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;			
+	dbp:extension ".xml" ;
+	rdfs:comment "Point cloud XML support format."@en ;
+	rdfs:isDefinedBy geomapi: ;
+	rdfs:seeAlso dcterms:source,geo:Geometry;		
+	rdfs:label "as point cloud xml"@en ;
+	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
+	rdfs:domain geomapi:PointCloudNode;
+	rdfs:range xsd:string .
+
+#IMAGE formats
+geomapi:asImage
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	dbp:extension ".jpeg" ;
+	dbp:extension ".jpg" ;
+	dbp:extension ".png" ;
+	rdfs:comment "Path to an image file that can be parsed by Python PIL or OpenCV."@en ;
+	rdfs:isDefinedBy geomapi: ;
+	rdfs:seeAlso dcterms:source;		
+	rdfs:label "as image"@en ;
+	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
+	rdfs:domain geomapi:ImageNode;
+	rdfs:range xsd:string . 
+
+geomapi:asTexture 						#how is this different from an image, yes there is a parsing difference, but that should be tackled by the Node, not this property?
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	dcterms:requires "can i fill in a method here????????" ; # can i fill in a method here????????
+	rdfs:comment "Path to a geometry texture file. This file always has to be used together with a geometry resource that references it."@en ;
+	rdfs:isDefinedBy geomapi: ;
+	rdfs:seeAlso dcterms:source;		
+	rdfs:label "as texture file"@en ;
+	rdfs:subPropertyOf geomapi:asImage ;
+	rdfs:domain geomapi:MeshNode;
+	rdfs:range xsd:string .
+
+
+
+
+#################################################################
+#    PROPERTIES difference between AnnotationProperty (human info), DatatypeProperty (literals), ObjectProperty (classes)
+##################################################################
+#	omg:transformsGeometry ex:globalTransform_1 #is this for an offset?
+
+geomapi:cartesianTransform 
+	rdf:type owl:DatatypeProperty ;				
+	rdf:type owl:FunctionalProperty ; 
+	rdfs:comment """The 4x4 transformation matrix."""@en  ;
+	rdfs:label "Transformation matrix"@en ;
+	rdfs:seeAlso geo:hasBoundingBox;				# this is with lat,long e.g. "MINLAT:40.7644, MAXLAT:40.8005, MINLON:-73.9818, MAXLON:-73.9498"
+	rdfs:domain geomapi:Node ; 						# this properties applies to nodes
+	rdfs:range gom:rowMajorArray. 					# this property should be connected to a literal such as xsd:str
+
+geomapi:centroid									# what do we do with lat,long,alt?
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """The 3x1 matrix with the centroid of a geometry [X,Y,Z]."""@en  ;
+	rdfs:label "Centroid"@en ;
+	rdfs:seeAlso geo:hasCentroid	;	
+	rdfs:domain geomapi:Node ; 			
+	rdfs:range gom:rowMajorArray. 	
+	
+geomapi:cartesianBounds
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """The 6x1 matrix with the cartesian bounds of a geometry [X_min,X_max,Y_min,Y_max,Z_min,Z_max] ."""@en  ;
+	rdfs:label "Cartesian Boundaries"@en ;
+	rdfs:seeAlso geo:hasBoundingBox	;	
+	rdfs:seeAlso geom:bbox;
+	rdfs:domain geomapi:Node ; 			
+	rdfs:range gom:rowMajorArray. 		
+	
+#geomapi:orientedBounds # we are going to deprecate this
+#	rdf:type owl:DatatypeProperty ;
+#	rdf:type owl:FunctionalProperty ;
+#	rdfs:comment """The 8x3 matrix with the 8 bounding points of the Oriented Bounding Box [[X_0,Y_0,Z_0],[X_1,Y_1,Z_1], ...]."""@en  ;
+#	rdfs:label "Oriented Boundaries"@en ;
+#	rdfs:seeAlso geo:hasBoundingBox;		
+#	rdfs:domain geomapi:GeometryNode; 			
+#	rdfs:range gom:rowMajorArray. 
+
+#geomapi:2DBox 
+#	rdf:type owl:DatatypeProperty ;
+#	rdf:type owl:FunctionalProperty ;
+#	rdfs:comment """The 4x1 matrix with the parameters (location, size) in (m or pix) of an axis aligned Bounding Box [x,y,sx,sy]. If it is a relative definition, then its [u,v,su,sv]."""@en  ;
+#	rdfs:seeAlso <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#_bounding_boxes> ;
+#	rdfs:label "2DBox"@en ;
+#	rdfs:seeAlso geo:hasBoundingBox;		
+#	rdfs:domain geomapi:ImageNode; 			
+#	rdfs:range gom:rowMajorArray. 	
+	
+#geomapi:2DHull
+#	rdf:type owl:DatatypeProperty ;
+#	rdf:type owl:FunctionalProperty ;
+#	rdfs:comment """The nx2 matrix with the location "[[u_1,v_1],....[u_i,v_i]]" of the 2D bounding points of the convex hull in the resource. Minumum 3 non-colinear points needed! """@en  ;
+#	rdfs:seeAlso <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#_bounding_boxes> ;
+#	rdfs:label "2DHull"@en ;
+#	rdfs:domain geomapi:ImageNode; 			
+#	rdfs:range gom:rowMajorArray. 	
+
+geomapi:3DBox 
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """The 9x1 matrix with the parameters (location, rotation, size) in (m) of an Oriented Bounding Box [x,y,z,rx,ry,rz,sx,sy,sz], with rotations applied Rz->Ry->Rz. If it is a relative definition, then its [u,v,w,ru,rv,rw,su,sv,sw]"""@en  ;
+	rdfs:seeAlso <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#_bounding_boxes> ;
+	rdfs:label "3D Bounding Box"@en ;
+	rdfs:seeAlso geo:hasBoundingBox;		
+	rdfs:domain geomapi:Node; 			
+	rdfs:range gom:rowMajorArray. 	
+	
+geomapi:3DHull
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """The nx3 matrix with the location "[[u_1,v_1,w_1],....[u_i,v_i,w_1]]" of the 3D bounding points of the convex hull in the resource. Minumum 4 non-coplanar points needed! """@en  ;
+	rdfs:seeAlso <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#_bounding_boxes> ;
+	rdfs:label "3D Convex Hull"@en ;
+	rdfs:domain geomapi:Node; 			
+	rdfs:range gom:rowMajorArray. 	
+	
+geomapi:pointCount
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """Number of points in a mesh or point cloud."""@en  ;
+	rdfs:label "Number of vertices"@en ;
+	rdfs:domain geomapi:GeometryNode;			
+	rdfs:range xsd:integer. 	
+	
+geomapi:faceCount
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """Number of faces in a polygonal mesh."""@en  ;
+	rdfs:label "Number of faces"@en ;
+	rdfs:domain geomapi:MeshNode,
+				geomapi:BIMNode;			
+	rdfs:range xsd:integer. 	
+	
+geomapi:e57Index
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """E57 file point cloud index."""@en  ;
+	rdfs:label "E57 index"@en ;
+	rdfs:domain geomapi:PointCloudNode;			
+	rdfs:range xsd:integer.
+
+geomapi:ifcGlobalId
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """IFC (Industry Foundation Classes) GUID identifier."""@en  ;
+	rdfs:label "IFC GUID"@en ;
+	rdfs:domain geomapi:BIMNode;			
+	rdfs:range xsd:string; 	
+	rdfs:seeAlso fog:hasIfcId-guid,ifc:IfcGloballyUniqueId.	
+
+geomapi:ifcObjectType
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """IFC Family type e.g. [Basic Roof:Warm Roof - Concrete, etc.]"""@en  ;
+	rdfs:label "IFC ObjectType"@en ;
+	rdfs:domain geomapi:BIMNode;			
+	rdfs:range xsd:string; 	
+	rdfs:seeAlso ifc:objectType_IfcObject.	
+	
+geomapi:ifcBuildingElement 
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """IFCOWL IfcBuildingElement class i.e. [IfcBeam,IfcColumn, etc.]."""@en  ;
+	rdfs:label "IfcBuildingElement"@en ;
+	rdfs:domain geomapi:BIMNode;			
+	rdfs:range xsd:string; 	
+	rdfs:seeAlso ifc:IfcBuildingElement.
+	
+geomapi:parameter
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """Superclass of parameters that are assigned to Nodes, Results or Analyses. should be formatted as "key:value" i.e. a "searchdistance:0.5" ."""@en  ;
+	rdfs:label "Parameter"@en ;
+	rdfs:domain geomapi:;
+	rdfs:range xsd:string.
+
+geomapi:accuracy
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """Spatial accuracy (m) of a resource."""@en  ;
+	rdfs:label "Accuracy"@en ;
+	rdfs:domain geomapi:Node;			
+	rdfs:range xsd:float; 
+	rdfs:seeAlso geo:hasSpatialAccuracy;	
+	rdfs:subClassOf geomapi:parameter .
+	
+geomapi:probability
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """Percentual probability [0:1] of a result."""@en  ;
+	rdfs:label "Probability"@en ;
+	rdfs:domain geomapi:Result;			
+	rdfs:range xsd:float; 
+	rdfs:subClassOf geomapi:parameter .
+
+geomapi:method
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """Method that was used for an analysis."""@en  ;
+	rdfs:label "Method"@en ;
+	rdfs:domain geomapi:Analysis;			
+	rdfs:range xsd:float; 
+	rdfs:subClassOf geomapi:parameter .
+	
+	
+#################################################################
+#    RELATIONSHIPS -> between classes
+##################################################################
+
+
+geomapi:adjacent
+	rdf:type owl:SymmetricProperty ;
+	rdfs:comment """Geomatics property: Target and source node orientedBounds intersect in 3D."""@en  ;
+	rdfs:label "intersects"@en ;
+	rdfs:seeAlso bot:adjacentElement,
+				dggs:sfTouches,
+				geo:sfOverlap;	
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:Node; 
+	geomapi:method """"geomapi.tools.select_nodes_with_overlapping_boundaries""".
+
+geomapi:overlaps
+	rdf:type owl:SymmetricProperty ;
+	rdfs:comment """Geomatics property: Target and source node orientedBounds intersect in 3D."""@en  ;
+	rdfs:label "intersects"@en ;
+	rdfs:seeAlso bot:intersectingElement,
+				dggs:sfOverlaps,
+				geo:sfOverlap;	
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:Node; 
+	geomapi:method """"geomapi.tools.select_nodes_with_overlapping_boundaries""".
+
+geomapi:intersects # this goes in two directions
+	rdf:type owl:SymmetricProperty ;
+	rdfs:comment """Geomatics property: Target and source node resources collide geometrically in 3D. This is more strict than overlap."""@en  ;
+	rdfs:label "intersects"@en ;
+	rdfs:seeAlso bot:intersectingElement,
+				dggs:sfIntersects,
+					geo:sfIntersects;	
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:Node; 	
+	geomapi:method """"geomapi.tools.select_nodes_with_intersecting_resources""";
+	rdfs:subPropertyOf geomapi:overlaps .
+	
+geomapi:contains
+	rdf:type owl:ObjectProperty ;
+	rdfs:comment """Geomatics property: Target node convex hull lies completely within source node convex hull in 3D."""@en  ;
+	rdfs:seeAlso bot:containsElement,
+				dggs:sfContains,
+				geo:sfContains ;	
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:Node; 	
+	owl:inverseOf geomapi:within ;
+	geomapi:method """geomapi.tools.select_nodes_within_boundaries""".
+
+geomapi:within  
+	rdf:type owl:ObjectProperty ;
+	rdfs:comment """Geomatics property: Source node convex hull lies completely within target node convex hull in 3D. This is inverse to the contain statement"""@en  ;
+	rdfs:seeAlso geo:sfWithin,
+				dggs:sfWithin;	
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:Node; 	
+	geomapi:method """geomapi.tools.select_nodes_that_contain_boundaries""".
+
+
+geomapi:disjoint  # this is an inverse relationship that can also be inferred
+	rdf:type owl:SymmetricProperty ;
+	rdfs:comment """Geomatics property: Source Node orientedBounds do not overlap with the target Node orientedBounds in 3D."""@en  ;
+	rdfs:seeAlso geo:sfDisjoint,
+				dggs:sfDisjoint;	
+	rdfs:domain geomapi:Node; 	
+	rdfs:range geomapi:Node; 
+	owl:inverseOf geomapi:overlaps,
+					geomapi:intersects,
+					geomapi:contains,
+					geomapi:within;
+	geomapi:method """geomapi.tools.select_nodes_with_overlapping_boundaries""".
+					
+					
+					
+					
+
+geomapi:derivedFrom   # you might use this to shortcut the resultOf and hasResult chain, if you can infer something about a resource that does not really need an analysis
+	rdf:type owl:ObjectProperty ;
+	rdfs:comment """The source node has information that is derived from target Node i.e. a camera Node that has its depthmap raytraced based on a PointCloudNode. Note that this does not have to be part of a resource. Use partOf instead if that is the case."""@en  ;
+	rdfs:seeAlso  owl:similarAs;	
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:Node.
+
+geomapi:similarAs		#redundant
+	rdf:type owl:ObjectProperty ;
+	rdfs:comment """The source and reference Nodes describe the similar content i.e. two separately scanned point clouds of the same scene. This is not a strict relationship that implies that some but not all metadata is shared between both Nodes and that for most applications, using either one will yield te intented result. Use geomapi:sameAs if you a need a more strict relationship."""@en  ;
+	rdfs:seeAlso owl:similarAs;	
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:Node.
+
+geomapi:sameAs 			#strict
+	rdf:type owl:ObjectProperty ;
+	rdfs:comment """The source and reference Nodes are direct mutations of each other i.e. a pointcloud converted to a meshNode or the point cloud colorized by a different scalar field. This is a strict relationship that implies that the metadata is shared between both Nodes and that only one of the Nodes should be used at a time in an application."""@en  ;
+	rdfs:seeAlso owl:sameAs,
+					dggs:sfEqual;	
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:Node.
+
+
+
+
+geomapi:partOf
+	rdf:type owl:ObjectProperty ;
+	rdfs:comment """Geomatics property: Source Node is a part of the target Node. Depending whether Absolute or a Relative copy, the metadata or the data itself is inherited."""@en  ;
+	rdfs:seeAlso omg:isPartOfGeometry, 
+				geo:partOf; 				
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:Node,
+				geomapi:AbsolutePart,
+				geomapi:RelativePart. 
+	
+geomapi:hasPart
+	rdf:type owl:ObjectProperty ;
+	rdfs:comment """Geomatics property: Source Node is the origin of the target Node. Depending whether Absolute or a Relative copy, the metadata or the data itself is inherited."""@en  ;
+	rdfs:seeAlso geo:GeometryCollection, 
+				bot:hasSubElement;	
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:setNode; 	
+	owl:inverseOf geomapi:partOf .
+
+	
+	
+	
+geomapi:resultOf
+	rdf:type owl:ObjectProperty ;
+	rdfs:comment """Relationship from a geomapi:Result to a geomapi:Analysis."""@en  ;
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:Analysis.
+	
+geomapi:hasResult
+	rdf:type owl:ObjectProperty ;
+	rdfs:comment """Relationship from a geomapi:Node to a geomapi:Result."""@en  ;
+	rdfs:domain geomapi:Node;
+	rdfs:range geomapi:Result.
+	
+
+#################################################################
+#    CLASSES
+#################################################################
+geomapi:Node 
+	rdf:type owl:Class ;
+	rdfs:seeAlso geo:SpatialObject; 	#any spatial phenomenon
+	rdfs:label "Node"@en ;
+	rdfs:comment """Archetype of all geomapi resource classes. Defines a set of Geospatial metadata e.g. the cartesian transform of a geomatics resource e.g. a geolocated image or a point cloud. Each node definition is tied to specific GEOMAPI python functionality."""@en  ;
+	rdfs:isDefinedBy geomapi: .
+	
+	
+  
+geomapi:GeometryNode 
+	rdf:type owl:Class ;
+	rdfs:subClassOf geomapi:Node ;
+	rdfs:label "GeometryNode"@en ;
+	rdfs:comment """Archetype of geometry based nodes i.e. PointCloudNode, BIMNode, MeshNode and LineSetNode that share the following propertyset [orientedBoundingBox, cartesianBounds] and methods."""@en  ;
+	rdfs:isDefinedBy geomapi: ;
+	rdfs:seeAlso omg:geometry .
+	owl:disjointWith geomapi:ImageNode .
+
+geomapi:PointCloudNode 
+	rdf:type owl:Class ;
+	rdfs:subClassOf geomapi:GeometryNode ;
+	rdfs:label "PointCloudNode"@en ;
+	rdfs:comment """PointCloudNode connecting the RDF graph, point cloud resource and metadata with geospatial methods."""@en  ;
+	rdfs:isDefinedBy geomapi: ;
+	owl:disjointWith geomapi:MeshNode, geomapi:LineSetNode, geomapi:BIMNode .
+
+geomapi:MeshNode
+	rdf:type owl:Class ;
+	rdfs:subClassOf geomapi:GeometryNode ;
+	rdfs:label "MeshNode"@en ;
+	rdfs:comment """MeshNode connecting the RDF graph, mesh resource and metadata with geospatial methods."""@en  ;
+	rdfs:isDefinedBy geomapi: ;
+	owl:disjointWith geomapi:PointCloudNode, geomapi:LineSetNode, geomapi:BIMNode .
+
+
+geomapi:LineSetNode 
+	rdf:type owl:Class ;
+	rdfs:subClassOf geomapi:GeometryNode ;
+	rdfs:label "LineSetNode"@en ;
+	rdfs:comment """LineSetNode connecting the RDF graph, lineset resources and metadata with geospatial methods."""@en  ;
+	rdfs:isDefinedBy geomapi: ;
+	owl:disjointWith geomapi:PointCloudNode, geomapi:MeshNode, geomapi:BIMNode .
+
+
+geomapi:BIMNode 
+	rdf:type owl:Class ;
+	rdfs:subClassOf geomapi:GeometryNode ;
+	rdfs:label "BIMNode"@en ;
+	rdfs:comment """BIMNode connecting the RDF graph, ifc geometries and metadata with geospatial methods."""@en  ;
+	rdfs:isDefinedBy geomapi: ;
+	rdfs:seeAlso bot:Element;
+	owl:disjointWith geomapi:PointCloudNode, geomapi:MeshNode, geomapi:LineSetNode .
+
+	
+	
+
+
+geomapi:ImageNode 
+	rdf:type owl:Class ;
+	rdfs:subClassOf geomapi:Node ;
+	rdfs:label "ImageNode"@en ;
+	rdfs:comment """Archetype of image based nodes i.e. CameraNode, OrthoNode, PanoNode and LineSetNode that share the following propertyset [orientedBoundingBox, cartesianBounds] and methods."""@en  ;
+	rdfs:isDefinedBy geomapi: ;
+	owl:disjointWith geomapi:GeometryNode .
+
+geomapi:CameraNode
+	rdf:type owl:Class ;
+	rdfs:subClassOf geomapi:ImageNode ;
+	rdfs:label "CameraNode"@en ;
+	rdfs:comment """RDF representation of pinhole cameras imagery. Has unique raytracing methods."""@en  ;
+	rdfs:isDefinedBy geomapi: ;
+	owl:disjointWith geomapi:OrthoNode, 
+					geomapi:PanoNode .
+
+geomapi:OrthoNode 
+	rdf:type owl:Class ;
+	rdfs:subClassOf geomapi:ImageNode ;
+	rdfs:label "OrthoNode"@en ;
+	rdfs:comment """RDF representation of orthomosaics imagery. Has unique raytracing methods."""@en  ;
+	rdfs:isDefinedBy geomapi: ;
+	owl:disjointWith geomapi:CameraNode, 
+							geomapi:PanoNode .
+
+geomapi:PanoNode 
+	rdf:type owl:Class ;
+	rdfs:subClassOf geomapi:ImageNode ;
+	rdfs:label "PanoNode"@en ;
+	rdfs:comment """RDF representation of panoramic imagery. Has unique raytracing methods."""@en  ;
+	rdfs:isDefinedBy geomapi: ;
+	owl:disjointWith geomapi:CameraNode, 
+					geomapi:OrthoNode .
+
+
+
+
+	
+geomapi:RelativePart 
+	rdf:type owl:Class ;
+	rdfs:label "RelativePart"@en ;
+	rdfs:comment """RelativePart is an undeep copy of a part of a resource defined by a 2DBox,2DHull,3DBox or 3Dhull. It is used to store subselections without copying the data."""@en  ;	
+	rdfs:isDefinedBy geomapi: ;
+	rdfs:seeAlso omg:isPartOfGeometry, 
+				geo:partOf. 				#aren't these relationships?
+
+geomapi:AbsolutePart 
+	rdf:type owl:Class ;
+	rdfs:subClassOf geomapi:Node ;
+	rdfs:label "AbsolutePart"@en ;
+	rdfs:comment """AbsolutePart is a deep copy of a part of a resource and thus has its own resource. It is used to store parts of a resource that have been altered or manipulated."""@en  ;	
+	rdfs:isDefinedBy geomapi: ;
+	rdfs:seeAlso omg:isPartOfGeometry, 
+				geo:partOf. 				#aren't these relationships?
+
+geomapi:SetNode 
+	rdf:type owl:Class ;
+	rdfs:subClassOf geomapi:Node ;
+	rdfs:label "SetNode"@en ;
+	rdfs:comment """setNode is a metadata collection of several data Nodes defined by a 3DBox, 3Dhull and cartesianTransform. It is used to easly select groups of resource Nodes and jointly transform them."""@en  ;	
+	rdfs:isDefinedBy geomapi: ;
+	rdfs:seeAlso geo:GeometryCollection . 	#any spatial phenomenon
+
+#waar zijn de classes voor multi-modality -> je zou moeten kunnen switchen tussen classes
+
+#waar zijn de classes voor multi-temporality -> je zou gemakkelijk time-series moeten kunnen construeren
+
+
+
+geomapi:Analysis
+	rdf:type owl:Class ;
+	rdfs:label "Analysis"@en ;
+	rdfs:comment """Geospatial analysis. This URI contains the parameters of the analysis and which nodes have contributed to the analysis."""@en  ;	
+	rdfs:isDefinedBy geomapi: .
+
+geomapi:Result
+	rdf:type owl:Class ;
+	rdfs:label "Result"@en ;
+	rdfs:comment """Result of a geospatial analysis. This URI contains the results of the analysis and which node it is assigned to."""@en  ;	
+	rdfs:isDefinedBy geomapi: .
+	

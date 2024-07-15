@@ -1,0 +1,281 @@
+# baseURI: https://v4design.eu/ontologies/
+# imports: file:///V4Design/ontologies/oa.rdf
+# imports: http://3dontology.org/3d.ttl
+# imports: http://purl.org/dc/elements/1.1/
+# imports: http://topbraid.org/schema/
+# imports: http://www.europeana.eu/schemas/edm/
+# imports: http://www.w3.org/2004/02/skos/core
+
+@prefix geomapi: <https://w3id.org/geomapi#> .
+@prefix schema: <http://schema.org/> .
+
+#GENERAL
+@prefix geomapi: <https://w3id.org/geomapi#> .
+@prefix dcterms: <http://purl.org/dc/terms/> . 			#this has source
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:      <http://www.w3.org/2001/XMLSchema#> .			# literals
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix voaf: <http://purl.org/vocommons/voaf#> .
+@prefix dbp: <http://dbpedia.org/ontology/>.
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+
+#GEOMETRIES
+@prefix gom: <https://w3id.org/gom#>.
+@prefix geom: <http://ontology.eil.utoronto.ca/icity/Geom/> .
+@prefix geo: <http://www.opengis.net/ont/geosparql#> .   # geometries/literals
+@prefix omg: <https://w3id.org/omg#> .					#geometries
+@prefix fog: <https://w3id.org/fog#> .						# geometries
+@prefix fog: <https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL> .		
+
+#IMAGES
+@prefix exif: <http://www.w3.org/2003/12/exif/ns#> .
+@prefix xcr: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+#BUILDINGS
+@prefix bot: 	<https://w3id.org/bot#> .
+@prefix ifc:  <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#> .
+
+@prefix inst: <http://parking#> .
+
+#################################################################
+#    OTHER ONTOLOGIES
+###################################################################
+#omg:isPartOfGeometry -> rdfs:range omg:Geometry ;1
+#omg:Geometry
+#omg:hasGeometry 
+#geom:partOf
+#fog:hasIfcId-guid
+
+#_globalId-> ifc:IfcGloballyUniqueId
+#linkedNodes
+
+#self._subject=None
+#"self._graph=None
+#self._graphPath=None 
+#self._path=None  -> geomapi:asPointCloud "...pcd"
+#"self._name=None	-> rdfs:label "BT1_Bodembedekking_WSV10" ;
+#"self._timestamp=None -> dcterms:created "2023-11-23T10:08:36"^^xsd:dateTime ;
+#self._resource=None 
+#self._cartesianTransform=None -> 
+
+
+#fog:asE57
+
+
+#################################################################
+#    Resource definitions
+###################################################################
+
+inst:BT1_Bodembedekking_WSV10_1nj0iZxXz9KwaRtJh__age 
+	rdf:type geomapi:BIMNode ;
+	rdfs:label "BT1_Bodembedekking_WSV10" ;
+	geomapi:ifcGlobalId """1nj0iZxXz9KwaRtJh__age""" ;
+	geomapi:ifcObjectType """IfcSite""";
+	geomapi:cartesianBounds """[1.00575633e+05 1.00623411e+05 1.96241897e+05 1.96312352e+05
+ 6.42895733e+00 6.78639411e+00]""" ;
+    geomapi:cartesianTransform """[[1.00000000e+00 0.00000000e+00 0.00000000e+00 1.00607748e+05]
+ [0.00000000e+00 1.00000000e+00 0.00000000e+00 1.96264271e+05]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00 6.61026494e+00]
+ [0.00000000e+00 0.00000000e+00 0.00000000e+00 1.00000000e+00]]""" ;
+    geomapi:pointCount 93 ;
+    geomapi:faceCount 180 ;    
+    geomapi:orientedBounds """[[1.00576842e+05 1.96312718e+05 6.67746409e+00]
+ [1.00623412e+05 1.96242934e+05 6.73611683e+00]
+ [1.00574549e+05 1.96311188e+05 6.74329361e+00]
+ [1.00576837e+05 1.96312715e+05 6.41316789e+00]
+ [1.00621113e+05 1.96241400e+05 6.53765016e+00]
+ [1.00574543e+05 1.96311184e+05 6.47899742e+00]
+ [1.00623407e+05 1.96242931e+05 6.47182064e+00]
+ [1.00621118e+05 1.96241404e+05 6.80194636e+00]]""" ;
+ 	fog:asIfc "..\\ifc\\road.ifc" ;
+	gom:coordinateSystem "local" ;
+ 	dcterms:created "2023-11-23T10:08:36"^^xsd:dateTime .
+	
+
+inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0
+	rdf:type geomapi:BIMNode ;
+    geomapi:ifcBuildingElement "IfcWall" ;
+    geomapi:ifcGlobalId "0$Z_Q8COz94wZzVDqlx6N0" ;
+    fog:asIfc  "..\\ifc\\parking.ifc" ;
+    geomapi:cartesianBounds "[19.76203899 21.40168648 45.18697778 61.20120036  3.75        8.24      ]" ;
+    geomapi:cartesianTransform """[[ 1.          0.          0.         20.70099441]
+ [ 0.          1.          0.         52.14007717]
+ [ 0.          0.          1.          5.25045455]
+ [ 0.          0.          0.          1.        ]]""" ;
+    geomapi:pointCount 22 ;
+    geomapi:faceCount 40 ;
+    rdfs:label "Basic Wall:162_WA_f2_Retaining concrete 160mm:915429" ;
+    geomapi:ifcObjectType "Basic Wall:162_WA_f2_Retaining concrete 160mm" ;
+    geomapi:orientedBounds """[[19.92133317 61.20120036  3.75      ]
+ [21.40170711 45.19729553  3.75      ]
+ [19.92133317 61.20120036  8.24      ]
+ [19.7619927  61.18646124  3.75      ]
+ [21.24236663 45.18255641  8.24      ]
+ [19.7619927  61.18646124  8.24      ]
+ [21.24236663 45.18255641  3.75      ]
+ [21.40170711 45.19729553  8.24      ]]""" ;
+	gom:coordinateSystem "local" ;
+    dcterms:created "2023-11-23T10:08:36" .
+
+inst:parking_915429_0_Z_Q8COz94wZzVDqlx6N0
+	rdf:type geomapi:MeshNode ;
+	rdfs:label "parking" ;
+    geomapi:cartesianBounds "[10.45079231 79.55210876 27.31818581 74.1269989  -2.62377906 20.99546814]" ;
+    geomapi:cartesianTransform """[[ 1.          0.          0.         46.62896589]
+ [ 0.          1.          0.         54.52713206]
+ [ 0.          0.          1.          5.31642376]
+ [ 0.          0.          0.          1.        ]]""" ;
+    geomapi:pointCount 62143 ;
+    geomapi:faceCount 49999 ;
+    geomapi:orientedBounds """[[  1.91106719  40.84350475   1.85887215]
+ [ 67.90585268  23.57467616  -7.72339247]
+ [ 13.87308273  88.49223338  -1.62747261]
+ [  5.24411682  41.58815304  23.47220674]
+ [ 83.20091784  71.96805308  10.40359737]
+ [ 17.20613235  89.23688167  19.98586199]
+ [ 71.2389023   24.31932445  13.88994213]
+ [ 79.86786822  71.22340479 -11.20973722]]""" ;
+    geomapi:asPolygonalMesh "..\\mesh\\parking.obj" ;
+	gom:coordinateSystem "local" ;
+    dcterms:created "2023-11-23T11:21:49" .
+
+inst:parking2
+	rdf:type geomapi:PointCloudNode ;
+    geomapi:cartesianBounds "[17.38922501 79.04823303 38.1408577  71.8666153   0.8287577   9.90541553]" ;
+    geomapi:cartesianTransform """[[ 1.          0.          0.         47.46935912]
+ [ 0.          1.          0.         55.46003894]
+ [ 0.          0.          1.          4.59512571]
+ [ 0.          0.          0.          1.        ]]""" ;
+    geomapi:e57Index 0 ;
+    geomapi:pointCount 55648 ;
+    rdfs:label "parking" ;
+    geomapi:orientedBounds """[[19.031228   78.85752965 12.51335747]
+ [82.51981999 70.21753381 10.08902663]
+ [14.29439273 44.35339839 11.4328731 ]
+ [18.6900821  79.22515428  2.26923262]
+ [77.44183883 36.0810272  -1.23558259]
+ [13.95324684 44.72102303  1.18874825]
+ [82.1786741  70.58515845 -0.15509822]
+ [77.78298472 35.71340256  9.00854226]]""" ;
+    geomapi:asPointCloud "..\\pcd\\parking.pcd" ;
+	gom:coordinateSystem "local" ;
+    dcterms:created "2023-11-23T15:10:19" .
+
+inst:DJI_0085
+	rdf:type geomapi:ImageNode ;
+    geomapi:cartesianTransform """[[-8.13902571e-02  6.83059476e-01 -7.25813597e-01  5.18276221e+01]
+ [ 9.96648497e-01  4.97790854e-02 -6.49139139e-02  6.10007435e+01]
+ [-8.20972697e-03 -7.28664391e-01 -6.84821733e-01  1.50408221e+01]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]""" ;
+    xcr:distortionCoeficients "[0.00123387104398438, -0.0154902079106269, 0.0173681449872249, 0.0, 0.0, 0.0]" ;
+    xcr:focalLength35mm "3693.1078961549015"^^xsd:float ;
+    xcr:principalPointU "-0.00219347744418651"^^xsd:float ;
+    xcr:principalPointV "-0.00481084380622187"^^xsd:float ;
+    exif:imageHeight 3078 ;
+    exif:imageWidth 5472 ;
+    gom:coordinateSystem "local" ;
+    rdfs:label "DJI_0085" ;
+    geomapi:asImage "DJI_0085.JPG" ;
+    dcterms:created "2023-11-23T15:10:19" .
+
+
+	
+#################################################################
+#    Topology analysis
+###################################################################
+
+inst:topology_analysis_1
+	rdf:type geomapi:analysis;
+	rdfs:label "Determines topological relationships between resources"@en ;
+	geomapi:source inst:BT1_Bodembedekking_WSV10_1nj0iZxXz9KwaRtJh__age,
+					inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0,
+					inst:parking_915429_0_Z_Q8COz94wZzVDqlx6N0,
+					inst:parking2;
+	geomapi:parameter """strict:False""";
+	dcterms:created "2023-11-23T10:08:36"^^xsd:dateTime .
+
+inst:BT1_Bodembedekking_WSV10_1nj0iZxXz9KwaRtJh__age 		
+	geomapi:within inst:parking2 .
+
+inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0
+	geomapi:disjoint inst:parking2 .
+	
+inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0 		
+	geomapi:intersects inst:parking_915429_0_Z_Q8COz94wZzVDqlx6N0 .
+
+# disjoint property of inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0 can be inferred from the analysis participation and the absence of the within datatype assigned to the node
+
+
+#################################################################
+#    Topology with a set
+###################################################################
+
+inst:c8c9c891-9454-11ee-8f1b-c8f75043ce59
+	rdf:type geomapi:setNode ;
+    geomapi:cartesianBounds """[  1.91106719  83.20091785  23.57467616  89.23688167 -11.20973723
+  30.108778  ]""" ;
+    geomapi:cartesianTransform """[[ 1.          0.          0.         43.46215291]
+ [ 0.          1.          0.         53.18355995]
+ [ 0.          0.          1.          7.99068353]
+ [ 0.          0.          0.          1.        ]]""" ;
+    geomapi:hasParts inst:BT1_Bodembedekking_WSV10_1nj0iZxXz9KwaRtJh__age,
+						inst:parking2;
+	geomapi:orientedBounds """[[ 19.37807907  89.90021377  35.43105215]
+ [ 90.64709061  69.82481362  25.60686511]
+ [  5.24835494  39.80787362  35.28979876]
+ [ 14.60709746  91.35194443  -2.14632865]
+ [ 71.74638487  21.18420414 -12.11176907]
+ [  0.47737333  41.25960428  -2.28758204]
+ [ 85.876109    71.27654429 -11.97051569]
+ [ 76.51736648  19.73247347  25.46561173]]""" ;
+	gom:coordinateSystem "local" ;
+    dcterms:created "2023-11-23T11:21:49" .
+
+
+inst:topology_analysis_2
+	rdf:type geomapi:analysis;
+	rdfs:label "Determines topological relationships between resources"@en ;
+	geomapi:source inst:parking_915429_0_Z_Q8COz94wZzVDqlx6N0,
+					inst:c8c9c891-9454-11ee-8f1b-c8f75043ce59,
+					inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0;					
+	geomapi:parameter """strict:False""";
+	dcterms:created "2023-11-23T10:08:36"^^xsd:dateTime .
+
+inst:parking_915429_0_Z_Q8COz94wZzVDqlx6N0
+	geomapi:overlaps inst:c8c9c891-9454-11ee-8f1b-c8f75043ce59 .
+	
+inst:c8c9c891-9454-11ee-8f1b-c8f75043ce59 				
+	geomapi:contains inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0.
+
+inst:Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0
+	geomapi:hasParent inst:c8c9c891-9454-11ee-8f1b-c8f75043ce59 .	
+	
+#################################################################
+#    Topology with parts
+###################################################################
+
+inst:DJI_0085_0
+	rdf:type geomapi:RelativePart ;
+	geomapi:partOf inst:DJI_0085;
+	geomapi:2DBox "[200 200  100 100]";
+	geomapi:2DHull """[[0 0 ],
+					[0 1 ],
+					[1 0 ],
+					[1 1 ]]"""; 
+    rdfs:label "DJI_0085_0" .
+	
+inst:parking2_0
+	rdf:type geomapi:RelativePart ;
+	geomapi:partOf inst:parking2;
+	geomapi:3DBox "[ -10 0 -5 0 0 0 10 10 10] ";
+	geomapi:3DHull """[[ -5.,   5.,   0.],
+				   [-15.,   5.,   0.],
+				   [ -5.,  -5.,   0.],
+				   [-15.,  -5.,   0.],
+				   [ -5.,   5., -10.],
+				   [-15.,   5., -10.],
+				   [ -5.,  -5., -10.],
+				   [-15.,  -5., -10.]]"""; 
+    rdfs:label "parking2_0" .
