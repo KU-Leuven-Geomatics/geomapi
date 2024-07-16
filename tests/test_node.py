@@ -80,7 +80,6 @@ class TestNode(unittest.TestCase):
 ################################## TEST FUNCTIONS ######################
     def test_node_creation_with_subject(self):
         node=Node()
-        node.subject=None
         self.assertIsNotNone(node.subject)
         node=Node('http://pointcloud2_0')
         self.assertEqual(node.subject.toPython(),'http://pointcloud2_0')
@@ -370,6 +369,35 @@ class TestNode(unittest.TestCase):
         node.to_graph(tempGraphPath,save=True)
         testnode=Node(graphPath=tempGraphPath)
         self.assertEqual(node.subject.toPython(),testnode.subject.toPython())
+    
+    def test_cartesian_transform(self):
+        #list
+        node= Node(cartesianTransform=[1,0,0,3,0,1,0,0,0,0,1,0,0,0,0,1]) 
+        self.assertEqual(node.cartesianTransform[0, 3],3)
+
+        #np.array
+        node= Node(cartesianTransform=np.array([[1,0,0,3],[0,1,0,0],[0,0,1,0],[0,0,0,1]]) )
+        self.assertEqual(node.cartesianTransform[0, 3],3)
+        
+        #nested list
+        node= Node(cartesianTransform=[[1,0,0,3],[0,1,0,0],[0,0,1,0],[0,0,0,1]])
+        self.assertEqual(node.cartesianTransform[0, 3],3)
+        
+        #translation nested list
+        node= Node(cartesianTransform=[[3,0,0]])
+        self.assertEqual(node.cartesianTransform[0, 3],3) 
+        
+        #translation list
+        node= Node(cartesianTransform=[3,0,0])
+        self.assertEqual(node.cartesianTransform[0, 3],3)
+        
+        #translation np.array
+        node= Node(cartesianTransform=np.array([[3,0,0]]) )
+        self.assertEqual(node.cartesianTransform[0, 3],3)       
+        
+        #invalid
+        self.assertRaises(ValueError,Node,cartesianTransform=[1,0,0,3,0,1,0,0,0,0,1,0,0,])
+        
     
 if __name__ == '__main__':
     unittest.main()

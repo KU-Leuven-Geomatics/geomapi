@@ -2,6 +2,8 @@
 **Node** is an abstract Python Class to govern the data and metadata of remote sensing data (pcd, images, meshes, orthomosaics).
 It is the base class for all other node classes. It contains the base RDF graph functionality and I/O from and to RDF files.
 
+![Node Image](../../docs/pics/ontology_node.png)
+
 **IMPORTANT**: The Node class is an archetype class from which specific data classes (e.g., PointCloudNode) inherit.
 Do not use this class directly if you can use a child class with more functionality.
 
@@ -10,8 +12,6 @@ Goals:
 - Serialize the metadata of remote sensing and geospatial files (BIM, Point clouds, meshes, etc.) as RDF Graphs.
 - Attach spatial and temporal analyses through RDF Graph navigation.
 """
-from IPython.display import Image, display
-display(Image(filename="../../docs/pics/ontology_node.png", width=400, height=300))
 
 #IMPORT PACKAGES
 import os
@@ -192,11 +192,11 @@ class Node:
     @graph.setter
     def graph(self,graph):
         if graph is None:
-            return None
-        elif (type(graph) is rdflib.Graph):
+            self._graph = None
+        elif isinstance(graph, Graph):
             self._graph=graph
         else:
-            raise TypeError('type(graph) should be rdflib.Graph')    
+            raise TypeError('The graph must be an instance of rdflib.Graph')
 
     #---------------------SUBJECT----------------------------    
     @property
@@ -214,8 +214,8 @@ class Node:
     @subject.setter
     def subject(self,subject):
         if subject is None:
-            return None
-        elif type(subject) is rdflib.URIRef:
+            self._subject = None
+        elif isinstance(subject, URIRef):
             self._subject=subject
         else:
             string=str(subject)
