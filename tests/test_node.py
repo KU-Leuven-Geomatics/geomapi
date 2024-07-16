@@ -419,6 +419,32 @@ class TestNode(unittest.TestCase):
         points=orientedBoundingBox.get_box_points()
         node= Node(orientedBoundingBox=points)
         self.assertAlmostEqual(node.orientedBoundingBox.get_min_bound()[0],orientedBoundingBox.get_min_bound()[0],delta=0.01)   
+        
+    def test_convexHull(self):
+        # None
+        convexHull = None
+        node = Node(convexHull=convexHull)
+        self.assertIsNone(node.convexHull)
+
+        # TriangleMesh
+        convexHull = self.dataLoader.mesh.compute_convex_hull()[0]
+        node = Node(convexHull=convexHull)
+        self.assertAlmostEqual(node.convexHull.get_min_bound()[0], convexHull.get_min_bound()[0], delta=0.01)
+
+        # np.array(nx3)
+        points = np.asarray(self.dataLoader.mesh.vertices)
+        node = Node(convexHull=points)
+        self.assertAlmostEqual(node.convexHull.get_min_bound()[0], self.dataLoader.mesh.compute_convex_hull()[0].get_min_bound()[0], delta=0.01)
+
+        # geometry
+        node = Node(convexHull=self.dataLoader.mesh)
+        self.assertAlmostEqual(node.convexHull.get_min_bound()[0], self.dataLoader.mesh.compute_convex_hull()[0].get_min_bound()[0], delta=0.01)
+
+        # Vector3dVector
+        points = o3d.utility.Vector3dVector(np.asarray(self.dataLoader.mesh.vertices))
+        node = Node(convexHull=points)
+        self.assertAlmostEqual(node.convexHull.get_min_bound()[0], self.dataLoader.mesh.compute_convex_hull()[0].get_min_bound()[0], delta=0.01)
+
 
 if __name__ == '__main__':
     unittest.main()

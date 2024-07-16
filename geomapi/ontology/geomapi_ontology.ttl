@@ -177,15 +177,15 @@ geomapi:centroid									# what do we do with lat,long,alt?
 	rdfs:domain geomapi:Node ; 			
 	rdfs:range gom:rowMajorArray. 	
 	
-geomapi:cartesianBounds
-	rdf:type owl:DatatypeProperty ;
-	rdf:type owl:FunctionalProperty ;
-	rdfs:comment """The 6x1 matrix with the cartesian bounds of a geometry [X_min,X_max,Y_min,Y_max,Z_min,Z_max] ."""@en  ;
-	rdfs:label "Cartesian Boundaries"@en ;
-	rdfs:seeAlso geo:hasBoundingBox	;	
-	rdfs:seeAlso geom:bbox;
-	rdfs:domain geomapi:Node ; 			
-	rdfs:range gom:rowMajorArray. 		
+#geomapi:cartesianBounds
+#	rdf:type owl:DatatypeProperty ;
+#	rdf:type owl:FunctionalProperty ;
+#	rdfs:comment """The 6x1 matrix with the cartesian bounds of a geometry [X_min,X_max,Y_min,Y_max,Z_min,Z_max] ."""@en  ;
+#	rdfs:label "Cartesian Boundaries"@en ;
+#	rdfs:seeAlso geo:hasBoundingBox	;	
+#	rdfs:seeAlso geom:bbox;
+#	rdfs:domain geomapi:Node ; 			
+#	rdfs:range gom:rowMajorArray. 		
 	
 #geomapi:orientedBounds # we are going to deprecate this
 #	rdf:type owl:DatatypeProperty ;
@@ -215,22 +215,22 @@ geomapi:cartesianBounds
 #	rdfs:domain geomapi:ImageNode; 			
 #	rdfs:range gom:rowMajorArray. 	
 
-geomapi:3DBox 
+geomapi:orientedBoundingBox
 	rdf:type owl:DatatypeProperty ;
 	rdf:type owl:FunctionalProperty ;
-	rdfs:comment """The 9x1 matrix with the parameters (location, rotation, size) in (m) of an Oriented Bounding Box [x,y,z,rx,ry,rz,sx,sy,sz], with rotations applied Rz->Ry->Rz. If it is a relative definition, then its [u,v,w,ru,rv,rw,su,sv,sw]"""@en  ;
+	rdfs:comment """The 9x1 matrix with the parameters (location, rotation, size) in (m) of the Oriented Bounding Box [x,y,z,rx,ry,rz,sx,sy,sz], with rotations applied Rz->Ry->Rz. If it is a relative definition, then its [u,v,w,ru,rv,rw,su,sv,sw]"""@en  ;
 	rdfs:seeAlso <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#_bounding_boxes> ;
-	rdfs:label "3D Bounding Box"@en ;
+	rdfs:label "Oriented Bounding Box"@en ;
 	rdfs:seeAlso geo:hasBoundingBox;		
 	rdfs:domain geomapi:Node; 			
 	rdfs:range gom:rowMajorArray. 	
 	
-geomapi:3DHull
+geomapi:convexHull
 	rdf:type owl:DatatypeProperty ;
 	rdf:type owl:FunctionalProperty ;
 	rdfs:comment """The nx3 matrix with the location "[[u_1,v_1,w_1],....[u_i,v_i,w_1]]" of the 3D bounding points of the convex hull in the resource. Minumum 4 non-coplanar points needed! """@en  ;
 	rdfs:seeAlso <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#_bounding_boxes> ;
-	rdfs:label "3D Convex Hull"@en ;
+	rdfs:label "Convex Hull"@en ;
 	rdfs:domain geomapi:Node; 			
 	rdfs:range gom:rowMajorArray. 	
 	

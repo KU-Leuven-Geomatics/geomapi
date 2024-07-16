@@ -8,9 +8,9 @@ It is the base class for all other node classes. It contains the base RDF graph 
 Do not use this class directly if you can use a child class with more functionality.
 
 Goals:
-- Govern the metadata and geospatial information of big data files in an accessible and lightweight format.
-- Serialize the metadata of remote sensing and geospatial files (BIM, Point clouds, meshes, etc.) as RDF Graphs.
-- Attach spatial and temporal analyses through RDF Graph navigation.
+ - Govern the metadata and geospatial information of big data files in an accessible and lightweight format.
+ - Serialize the metadata of remote sensing and geospatial files (BIM, Point clouds, meshes, etc.) as RDF Graphs.
+ - Attach spatial and temporal analyses through RDF Graph navigation.
 """
 
 #IMPORT PACKAGES
@@ -39,7 +39,8 @@ class Node:
                  timestamp: Optional[str] = None,
                  resource = None,
                  cartesianTransform: Optional[np.ndarray] = None,
-                 orientedBoundingBox = None,
+                 orientedBoundingBox: Optional[o3d.geometry.OrientedBoundingBox] = None,
+                 convexHull: Optional[o3d.geometry.TriangleMesh] =None,
                  **kwargs):
         """
         Creates a Node from one or more of the following inputs.
@@ -53,6 +54,8 @@ class Node:
             timestamp (str, optional): Timestamp for the node.
             resource (optional): Resource associated with the node.
             cartesianTransform (np.ndarray, optional): The (4x4) transformation matrix.
+            orientedBoundingBox (o3d.geometry.OrientedBoundingBox, optional): The oriented bounding box of the node.
+            convexHull (o3d.geometry.TriangleMesh, optional): The convex hull of the node.            
             
         Returns:
             Node: An instance of the Node class.
@@ -67,6 +70,7 @@ class Node:
         self._resource=None 
         self._cartesianTransform=None
         self._orientedBoundingBox=None
+        self._convexHull=None
 
         #instance variables        
         self.subject=subject
@@ -78,6 +82,7 @@ class Node:
         self.resource=resource 
         self.cartesianTransform=cartesianTransform
         self.orientedBoundingBox=orientedBoundingBox
+        self.convexHull=convexHull
 
         #initialisation functionality
         if not self._timestamp and self._path:
@@ -166,15 +171,16 @@ class Node:
     #---------------------GRAPHPATH----------------------------    
     @property
     def graphPath(self):
-        """Get the path (str) of graph of the node, or the graphPath in which the subject is contained.
-        """        
+        """The path (str) of graph of the node."""        
+
         return ut.parse_path(self._graphPath)
 
     @graphPath.setter
     def graphPath(self,value):
         if value is None:
             self._graphPath=None
-        elif (next(str(value).endswith(extension) for extension in ut.RDF_EXTENSIONS) ):
+        # elif any(str(value).endswith(extension) for extension in ut.RDF_EXTENSIONS):
+        elif any(str(value).endswith(extension) for extension in ut.RDF_EXTENSIONS):
             self._graphPath=str(value)
         else:
             raise ValueError('self.graphPath has invalid type, path or extension')    
@@ -182,11 +188,8 @@ class Node:
     #---------------------GRAPH----------------------------    
     @property
     def graph(self):
-        """Get the graph (RDFLib.Graph) of the node. If no graph is present, you can use get_graph() to parse the graph from a graphPath. Alternatively,
-        you can use to_graph() to serialize the Nodes attributes to RDF.
-        
-        Features:
-            1. self.graphPath
+        """The Graph (RDFLib.Graph) of the node. If no graph is present, you can use get_graph() to parse the graph from a graphPath. Alternatively,
+        you can use to_graph() to serialize the Nodes attributes to RDF. 
         """       
         return self._graph
 
@@ -304,23 +307,35 @@ class Node:
         return self._orientedBoundingBox
 
     @orientedBoundingBox.setter
-    def orientedBoundingBox(self,value):
+    def orientedBoundingBox(self, value):
         if value is None:
             self._orientedBoundingBox = None
-            return
-        
-        if isinstance(value, o3d.geometry.OrientedBoundingBox):
-            self._orientedBoundingBox = value
-        elif isinstance(value, o3d.geometry.Geometry):
-            self._orientedBoundingBox = value.get_oriented_bounding_box()
-        elif isinstance(value, o3d.utility.Vector3dVector):
-            self._orientedBoundingBox = o3d.geometry.OrientedBoundingBox.create_from_points(value)
-        elif isinstance(value, list) or isinstance(value, np.ndarray):
-            try:
-                points = o3d.utility.Vector3dVector(np.reshape(np.asarray(value), (-1, 3)))
-                self._orientedBoundingBox = o3d.geometry.OrientedBoundingBox.create_from_points(points)
-            except:
-                raise ValueError('Input must be orientedBoundingBox (o3d.geometry.OrientedBoundingBox), an Open3D Geometry or a list of Vector3dVector or np.array objects')
+        else:
+            self.set_orientedBoundingBox(value)
+
+#---------------------CONVEXHULL----------------------------
+    @property
+    def convexHull(self):
+        """
+        The convex hull of the Node containing the bounding hull of the geometry.
+
+        Inputs:
+            Open3D.geometry.TriangleMesh\n
+            Open3D geometry\n
+            set of points (np.array(nx3)) or Vector3dVector\n
+
+        Returns:
+            o3d.geometry.TriangleMesh: The convex hull of the node.
+        """
+        return self._convexHull
+
+    @convexHull.setter
+    def convexHull(self, value):
+        if value is None:
+            self._convexHull = None
+        else:
+            self.set_convexHull(value)
+
             
 #---------------------METHODS----------------------------     
     def get_metadata_from_graph(self, graph:Graph,subject:URIRef):
@@ -449,9 +464,8 @@ class Node:
         Helper method to set the cartesianTransform attribute.
 
         Args:
-            value (numpy.ndarray or list): Input value which can be:
-                - (4x4) full transformation matrix
-                - (3x1) translation vector
+            - (4x4) full transformation matrix
+            - (3x1) translation vector
 
         Raises:
             ValueError: If the input is not a valid numpy array of shape (4,4) or (3,).
@@ -471,6 +485,44 @@ class Node:
         """
         return self._cartesianTransform 
 
+    def set_orientedBoundingBox(self, value):
+        """Set the oriented bounding box for the Node."""
+        if isinstance(value, o3d.geometry.OrientedBoundingBox):
+            self._orientedBoundingBox = value
+        elif isinstance(value, o3d.geometry.Geometry):
+            self._orientedBoundingBox = value.get_oriented_bounding_box()
+        elif isinstance(value, o3d.utility.Vector3dVector):
+            self._orientedBoundingBox = o3d.geometry.OrientedBoundingBox.create_from_points(value)
+        elif isinstance(value, list) or isinstance(value, np.ndarray):
+            try:
+                points = o3d.utility.Vector3dVector(np.reshape(np.asarray(value), (-1, 3)))
+                self._orientedBoundingBox = o3d.geometry.OrientedBoundingBox.create_from_points(points)
+            except:
+                raise ValueError('Input must be orientedBoundingBox (o3d.geometry.OrientedBoundingBox), an Open3D Geometry or a list of Vector3dVector or np.array objects')
+
+    def get_orientedBoundingBox(self) -> Optional[o3d.geometry.OrientedBoundingBox]:
+        """Get the oriented bounding box of the Node."""
+        return self._orientedBoundingBox
+
+    def set_convexHull(self, value):
+        """Set the convex hull for the Node."""
+        if isinstance(value, o3d.geometry.TriangleMesh):
+            self._convexHull = value
+        elif isinstance(value, o3d.geometry.Geometry):
+            self._convexHull = value.compute_convex_hull()[0]
+        elif isinstance(value, o3d.utility.Vector3dVector):
+            self._convexHull = o3d.geometry.TriangleMesh.create_from_points(value).compute_convex_hull()[0]
+        elif isinstance(value, list) or isinstance(value, np.ndarray):
+            try:
+                points = o3d.utility.Vector3dVector(np.reshape(np.asarray(value), (-1, 3)))
+                self._convexHull = o3d.geometry.TriangleMesh.create_from_points(points).compute_convex_hull()[0]
+            except:
+                raise ValueError('Input must be a TriangleMesh (o3d.geometry.TriangleMesh), an Open3D Geometry or a list of Vector3dVector or np.array objects')
+            
+    def get_convexHull(self) -> Optional[o3d.geometry.TriangleMesh]:
+            """Get the convex hull of the Node."""
+            return self._convexHull
+        
     def get_resource(self):
         """Returns the resource from the Node type. Overwrite this function for each node type to access more utilities.
         """
@@ -480,11 +532,6 @@ class Node:
         """sets the resource for the Node type. Overwrite this function for each node type to access more utilities.
         """
         self._resource=value
-
-    def clear_resource(self):
-        """Clear all resources (images, pcd, meshes, ortho's, etc.) in the Node.
-        """
-        self._resource=None
     
     def set_path(self, value):
         """sets the path for the Node type. Overwrite this function for each node type to access more utilities.
@@ -638,5 +685,7 @@ class Node:
             return False
         except:
             raise ValueError('Save failed despite valid graphPath.') 
+
+
 
 ###############################################
