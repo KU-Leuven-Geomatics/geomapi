@@ -2,7 +2,7 @@
 **Node** is an abstract Python Class to govern the data and metadata of remote sensing data (pcd, images, meshes, orthomosaics).
 It is the base class for all other node classes. It contains the base RDF graph functionality and I/O from and to RDF files.
 
-![Node Image](../../docs/pics/ontology_node.png)
+.. image:: ../../../docs/pics/ontology_node.png
 
 **IMPORTANT**: The Node class is an archetype class from which specific data classes (e.g., PointCloudNode) inherit.
 Do not use this class directly if you can use a child class with more functionality.
@@ -16,6 +16,7 @@ Goals:
 #IMPORT PACKAGES
 import os
 import re
+from pathlib import Path 
 from typing import List, Optional
 import uuid
 import datetime
@@ -104,31 +105,29 @@ class Node:
     #---------------------PATH----------------------------
     @property
     def path(self): 
-        """Get the resource path (str) of the node. If no path is present, you can use get_path() to reconstruct the path from either 
-        the graphPath or working directory
+        """Path (str) of the resource of the node. If no path is present, you can use get_path() to reconstruct the path from either 
+        the graphPath or working directory.
         
-        Features:
-            1. folder\n
-            2. self.name\n
-            3. self.graphPath\n
+        Args:
+            value (str): The new path for the node.
+        
+        Raises:
+            ValueError: If the path has an invalid type, path, or extension.
+        
         """
-
-        return ut.parse_path(self._path)
+        return self._path
     
     @path.setter
-    def path(self,value):
+    def path(self,value):        
         if value is None:
-            return None
-        nodeExtensions=ut.get_node_resource_extensions(str(type(self)))
-        if (ut.get_extension(str(value)) in nodeExtensions):
-            self._path=str(value)
+            self._path=None
         else:
-            raise ValueError('self.path has invalid type, path or extension')
+            self.set_path(value)   
 
     #---------------------NAME----------------------------
     @property
     def name(self):
-        """Get the name (str) of the node. This can include characters that the operating
+        """The name (str) of the node. This can include characters that the operating
         system does not allow. If no name is present, you can use get_name() to construct a name from the subject or path.
 
         Features:
@@ -140,11 +139,9 @@ class Node:
     @name.setter
     def name(self,name):
         if name is None:
-            return None
-        try: 
+            self._name=None
+        else:
             self._name=str(name)
-        except:
-            raise TypeError('self.name should be string compatible')
 
     #---------------------TIMESTAMP----------------------------
     @property
@@ -160,7 +157,7 @@ class Node:
     @timestamp.setter
     def timestamp(self,timestamp):
         if timestamp is None:
-            return None
+            self._timestamp=None
         elif timestamp:
             self._timestamp=ut.validate_timestamp(timestamp)
         else:
@@ -169,14 +166,14 @@ class Node:
     #---------------------GRAPHPATH----------------------------    
     @property
     def graphPath(self):
-        """Get the path (str) of graph of the node, or the graphPath in which the subject is contained."""
-        
+        """Get the path (str) of graph of the node, or the graphPath in which the subject is contained.
+        """        
         return ut.parse_path(self._graphPath)
 
     @graphPath.setter
     def graphPath(self,value):
         if value is None:
-            return None
+            self._graphPath=None
         elif (next(str(value).endswith(extension) for extension in ut.RDF_EXTENSIONS) ):
             self._graphPath=str(value)
         else:
@@ -248,7 +245,7 @@ class Node:
     @resource.setter
     def resource(self,value):
         if value is None:
-            return None
+            self._resource=None
         else:
             self.set_resource(value)
 
@@ -288,7 +285,7 @@ class Node:
         if value is None:
             self._cartesianTransform = None
         else:
-            self._set_cartesianTransform(value)
+            self.set_cartesianTransform(value)
             
     #---------------------ORIENTEDBOUNDINGBOX----------------------------
     @property
@@ -447,7 +444,7 @@ class Node:
         self._name=ut.get_subject_name(self.subject)
         return self.name
 
-    def _set_cartesianTransform(self, value):
+    def set_cartesianTransform(self, value):
         """
         Helper method to set the cartesianTransform attribute.
 
@@ -488,6 +485,11 @@ class Node:
         """Clear all resources (images, pcd, meshes, ortho's, etc.) in the Node.
         """
         self._resource=None
+    
+    def set_path(self, value):
+        """sets the path for the Node type. Overwrite this function for each node type to access more utilities.
+        """
+        self._path = Path(value).as_posix()
             
     def get_path(self) -> str:
         """Returns the full path of the resource from this Node.\n

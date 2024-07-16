@@ -26,7 +26,6 @@ from geomapi.nodes import *
 #DATA
 sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
-from data_loader_road import DATALOADERROADINSTANCE 
 
 
 class TestNode(unittest.TestCase):
@@ -41,8 +40,7 @@ class TestNode(unittest.TestCase):
         print('-----------------Setup Class----------------------')
         st = time.time()
         
-        cls.dataLoaderParking = DATALOADERPARKINGINSTANCE
-        cls.dataLoaderRoad = DATALOADERROADINSTANCE
+        cls.dataLoader = DATALOADERPARKINGINSTANCE
         
         #TIME TRACKING           
         et = time.time()
@@ -403,21 +401,21 @@ class TestNode(unittest.TestCase):
         self.assertIsNone(node.orientedBoundingBox)
 
         #box
-        node= Node(orientedBoundingBox=self.dataLoaderRoad.mesh.get_oriented_bounding_box())
-        self.assertAlmostEqual(node.orientedBoundingBox.get_min_bound()[0],self.dataLoaderRoad.mesh.get_oriented_bounding_box().get_min_bound()[0],delta=0.01)   
+        node= Node(orientedBoundingBox=self.dataLoader.mesh.get_oriented_bounding_box())
+        self.assertAlmostEqual(node.orientedBoundingBox.get_min_bound()[0],self.dataLoader.mesh.get_oriented_bounding_box().get_min_bound()[0],delta=0.01)   
 
         #np.array(nx3)
-        orientedBoundingBox=self.dataLoaderParking.mesh.get_oriented_bounding_box()
+        orientedBoundingBox=self.dataLoader.mesh.get_oriented_bounding_box()
         points=np.asarray(orientedBoundingBox.get_box_points())
         node= Node(orientedBoundingBox=points)
         self.assertAlmostEqual(node.orientedBoundingBox.get_min_bound()[0],orientedBoundingBox.get_min_bound()[0],delta=0.01)   
 
         #geometry
-        node= Node(orientedBoundingBox=self.dataLoaderParking.mesh)
+        node= Node(orientedBoundingBox=self.dataLoader.mesh)
         self.assertAlmostEqual(node.orientedBoundingBox.get_min_bound()[0],orientedBoundingBox.get_min_bound()[0],delta=0.01)   
 
         #Vector3dVector
-        orientedBoundingBox=self.dataLoaderParking.mesh.get_oriented_bounding_box()
+        orientedBoundingBox=self.dataLoader.mesh.get_oriented_bounding_box()
         points=orientedBoundingBox.get_box_points()
         node= Node(orientedBoundingBox=points)
         self.assertAlmostEqual(node.orientedBoundingBox.get_min_bound()[0],orientedBoundingBox.get_min_bound()[0],delta=0.01)   
