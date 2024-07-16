@@ -4,7 +4,7 @@ paginate : true
 headingDivider: 4
 ---
 # Ontology
-The geomapi ontology defines (1) the close-range sensing nodes with the appropriate metric and non-metric metadata, (2) the relationships to efficiently retrieve the geospatial resources and (3) define the concepts to store multi-modal and multi-temporal analyses and results. The ontology reuses existing concepts wherever possible (see Table) and is validated through GraphDB.
+The [geomapi ontology](link) defines (1) the close-range sensing nodes with the appropriate metric and non-metric metadata, (2) the relationships to efficiently retrieve the geospatial resources and (3) define the concepts to store multi-modal and multi-temporal analyses and results. The ontology reuses existing concepts wherever possible (see Table) and is validated through GraphDB.
 
 ![bg vertical right:50% h:70%](../../pics/ontology2.png)
 
@@ -15,39 +15,43 @@ Listing of the used existing ontologies and prototype V4D ontology modules.
 | Prefix | Namespace |
 |--------|-----------|
 | **General** | |
-| rdf | http://www.w3.org/1999/02/22-rdf-syntax-ns# |
-| rdfs | http://www.w3.org/2000/01/rdf-schema# |
-| owl | http://www.w3.org/2002/07/owl# |
-| xsd | http://www.w3.org/2001/XMLSchema# |
-| dcterms | http://purl.org/dc/terms/ |
-| voaf | http://purl.org/vocommons/voaf# |
-| vann | http://purl.org/vocab/vann/ |
-| dbp | http://dbpedia.org/ontology/ |
+| [rdf](http://www.w3.org/1999/02/22-rdf-syntax-ns#) | http://www.w3.org/1999/02/22-rdf-syntax-ns# |
+| [rdfs](http://www.w3.org/2000/01/rdf-schema#) | http://www.w3.org/2000/01/rdf-schema# |
+| [owl](http://www.w3.org/2002/07/owl#) | http://www.w3.org/2002/07/owl# |
+| [xsd](http://www.w3.org/2001/XMLSchema#) | http://www.w3.org/2001/XMLSchema# |
+| [dcterms](http://purl.org/dc/terms/) | http://purl.org/dc/terms/ |
+| [voaf](http://purl.org/vocommons/voaf#) | http://purl.org/vocommons/voaf# |
+| [vann](http://purl.org/vocab/vann/) | http://purl.org/vocab/vann/ |
+| [dbp](http://dbpedia.org/ontology/) | http://dbpedia.org/ontology/ |
 | **Geometry** | |
-| geo | http://www.opengis.net/ont/geosparql# |
-| bot | https://w3id.org/bot# |
-| bpo | https://w3id.org/bpo# |
-| omg | https://w3id.org/omg# |
-| fog | https://w3id.org/fog# |
-| geom | http://ontology.eil.utoronto.ca/icity/Geom/ |
-| ifc | https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL |
-| dggs | https://w3id.org/dggs/as |
+| [geo](http://www.opengis.net/ont/geosparql#) | http://www.opengis.net/ont/geosparql# |
+| [bot](https://w3id.org/bot#) | https://w3id.org/bot# |
+| [bpo](https://w3id.org/bpo#) | https://w3id.org/bpo# |
+| [omg](https://w3id.org/omg#) | https://w3id.org/omg# |
+| [fog](https://w3id.org/fog#) | https://w3id.org/fog# |
+| [geom](http://ontology.eil.utoronto.ca/icity/Geom/) | http://ontology.eil.utoronto.ca/icity/Geom/ |
+| [ifc](https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL) | https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL |
+| [dggs](https://w3id.org/dggs/as) | https://w3id.org/dggs/as |
 | **Texture** | |
-| xcr | http://www.w3.org/1999/02/22-rdf-syntax-ns# |
-| exif | http://www.w3.org/2003/12/exif/ns# |
+| [xcr](http://www.w3.org/1999/02/22-rdf-syntax-ns#) | http://www.w3.org/1999/02/22-rdf-syntax-ns# |
+| [exif](http://www.w3.org/2003/12/exif/ns#) | http://www.w3.org/2003/12/exif/ns# |
 | **Coordinate systems** | |
-| gom | https://w3id.org/gom# |
-| epsg | http://www.opengis.net/def/crs/EPSG/0/ |
+| [gom](https://w3id.org/gom#) | https://w3id.org/gom# |
+| [epsg](http://www.opengis.net/def/crs/EPSG/0/) | http://www.opengis.net/def/crs/EPSG/0/ |
 
 ## Nodes
 GEOMAPI extends these concepts by standardizing the metric information. gom:rowMajorArray and gom:columnMajorArray datatypes are used as base properties. 
-Note that while all nodes use the same concept, their implementation might differ. For instance, the ´3D Convex Hull´ of a point cloud is defined by the alpha shape of the point set, while for an ImageNode, this is the viewing frustrum up to a default depth (30m).
+Note that while all nodes use the same concept, their implementation might differ. For instance, the `3D Convex Hull` of a point cloud is defined by the alpha shape of the point set, while for an ImageNode, this is the viewing frustrum up to a default depth (30m). Additionally, these base parameters are defined to be both `owl:DatatypeProperty` and `owl:FunctionalProperty` meaning that they contain metric information that is unique to the URI. We might revise this later on when we deal with observation uncertainties, but for now, we only allow 1 `geomapi:cartensianTransform` for a resource at a time. 
 
 ![partnodes](../../pics/ontology_datatypes.png)
 
-For building information, GEOMAPI links to the BOT, PRODUCT, and IFCOWL ontologies, focusing on shape and appearance data while referring to other ontologies for detailed semantic information. 
+For building information, GEOMAPI links to the [BOT](https://w3id.org/bot#), PRODUCT, and [IFCOWL](https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL) ontologies, focusing on shape and appearance data while referring to other ontologies for detailed semantic information. 
 
-For image data, it incorporates elements from Capturing Reality’s XCR ontology and the EXIF standard, using GOM terminology for coordinate systems.
+For image data, it incorporates elements from Capturing Reality’s [xcr](http://www.w3.org/1999/02/22-rdf-syntax-ns#) ontology and the [exif](http://www.w3.org/2003/12/exif/ns#) standard, using [gom](https://w3id.org/gom#) terminology for coordinate systems.
+
+
+
+
 
 ## Relationships
 

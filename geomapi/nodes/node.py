@@ -1,54 +1,58 @@
 """
-**Node** is an abstract Python Class to govern the data and metadata of remote sensing data (pcd, images, meshes, orthomozaik).
-It is the base class for all other node classes. It contains the base RDF graph functionality and i/o from and to RDF files. \n
-   
-**IMPORTANT**: the Node class is an archytype class from which specific data classes (e.g. PointCloudNode) inherit.
+**Node** is an abstract Python Class to govern the data and metadata of remote sensing data (pcd, images, meshes, orthomosaics).
+It is the base class for all other node classes. It contains the base RDF graph functionality and I/O from and to RDF files.
+
+**IMPORTANT**: The Node class is an archetype class from which specific data classes (e.g., PointCloudNode) inherit.
 Do not use this class directly if you can use a child class with more functionality.
 
-Goals:\n
-- Govern the metadata and geospatial information of big data files in an accesible and lightweight format. \n
-- Serialize the metadata of remote sensing and geospatial files (BIM, Point clouds, meshes, etc.) as RDF Graphs  \n
-- Attach spatial en temporal analyses through RDF Graph navigation   \n
-    
+Goals:
+- Govern the metadata and geospatial information of big data files in an accessible and lightweight format.
+- Serialize the metadata of remote sensing and geospatial files (BIM, Point clouds, meshes, etc.) as RDF Graphs.
+- Attach spatial and temporal analyses through RDF Graph navigation.
 """
+from IPython.display import Image, display
+display(Image(filename="../../docs/pics/ontology_node.png", width=400, height=300))
+
 #IMPORT PACKAGES
-from operator import contains
 import os
-from posixpath import relpath
 import re
-from typing import List
+from typing import List, Optional
 import uuid
 import datetime
 import numpy as np
-
 from rdflib import Graph, URIRef, Literal
-import rdflib
 from rdflib.namespace import RDF
 
 #IMPORT MODULES
 import geomapi.utils as ut
+import geomapi.utils.geometryutils as gmu
 
 class Node:
-    def __init__(self,  subject: URIRef = None,
-                        graph: Graph = None,
-                        graphPath: str = None,                        
-                        name:str=None,
-                        path:str=None,
-                        timestamp:str=None,
-                        resource=None,
-                        cartesianTransform:np.ndarray=None,
-                        **kwargs):
-        """Creates a Node from one or more of the following inputs. \n
-
+    def __init__(self, 
+                 subject: Optional[URIRef] = None,
+                 graph: Optional[Graph] = None,
+                 graphPath: Optional[str] = None,
+                 name: Optional[str] = None,
+                 path: Optional[str] = None,
+                 timestamp: Optional[str] = None,
+                 resource = None,
+                 cartesianTransform: Optional[np.ndarray] = None,
+                 **kwargs):
+        """
+        Creates a Node from one or more of the following inputs.
+        
         Args:
-            1.graph (Graph, optional): An RDF Graph to parse.\n
-            2.graphPath (str, optional): The path of an RDF Graph to parse. If no subject is provided, the first subject of the graph is retained. \n
-            3.path(str,optional): A filepath to a resource. \n
-            4.subject (URIRef, optional): A subject to use as identifier for the Node. If a graph is also present, the subject should be part of the graph.\n
-            5.name (str, optional): A name of the Node. This is not a unique identifier but serves as non-functional description.\n
-
+            subject (URIRef, optional): A subject to use as identifier for the Node. If a graph is also present, the subject should be part of the graph.
+            graph (Graph, optional): An RDF Graph to parse.
+            graphPath (str, optional): The path of an RDF Graph to parse. If no subject is provided, the first subject of the graph is retained.
+            name (str, optional): A name of the Node. This is not a unique identifier but serves as non-functional description.
+            path (str, optional): A filepath to a resource.
+            timestamp (str, optional): Timestamp for the node.
+            resource (optional): Resource associated with the node.
+            cartesianTransform (np.ndarray, optional): The (4x4) transformation matrix.
+            
         Returns:
-            Node
+            Node: An instance of the Node class.
         """
         #private attributes 
         self._subject=None
@@ -60,8 +64,7 @@ class Node:
         self._resource=None 
         self._cartesianTransform=None
 
-        #instance variables
-        
+        #instance variables        
         self.subject=subject
         self.graphPath=graphPath
         self.graph=graph
@@ -72,15 +75,16 @@ class Node:
         self.cartesianTransform=cartesianTransform
 
         #initialisation functionality
-        if self._path:
+        if not self._timestamp and self._path:
             self.name=ut.get_filename(path)
-            if  os.path.exists(self._path):
+            if os.path.exists(self._path):
                 self.timestamp=ut.get_timestamp(path) 
 
-        if(graphPath and os.path.exists(self._graphPath) and not self._graph):
+        if not self._graph and (graphPath and os.path.exists(self._graphPath)):
             self._graph = Graph().parse(graphPath) 
 
-        self.get_subject()      
+        self.get_subject()
+        
         if(self._graph):
             if ut.check_if_subject_is_in_graph(self._graph,self._subject):
                 self._graph=ut.get_subject_graph(self._graph,self._subject)
@@ -141,7 +145,7 @@ class Node:
     #---------------------TIMESTAMP----------------------------
     @property
     def timestamp(self):
-        """Get the timestamp (str(yyyy-MM-ddTHH:mm:ss)) of the node. If no timestamp is present, use get_timestamp() to gather the timestamp from the path or graphPath.
+        """The timestamp (str(yyyy-MM-ddTHH:mm:ss)) of the node. If no timestamp is present, use get_timestamp() to gather the timestamp from the path or graphPath.
 
         Features:
             1. self.path\n
@@ -227,9 +231,10 @@ class Node:
     #---------------------RESOURCE----------------------------    
     @property
     def resource(self):
-        """Get the resource (mesh, pcd, etc.) of the node. If no resource is present, you can use get_resource() to load the resource from a path or search it through the name and graphpath. 
+        """Get the resource (mesh, pcd, etc.) of the node. If no resource is present, you can use get_resource(),\n
+        to load the resource from a path or search it through the name and graphpath. 
 
-        Features:
+        Inputs:
             1. self.path\n
             2. self.name\n
             3. self.graphPath\n
@@ -246,40 +251,87 @@ class Node:
     @resource.deleter
     def resource(self):
         self._resource=None
-        #This will be depricated. use resource instead
-        if getattr(self,'mesh',None) is not None:
-            self._mesh=None
-        if getattr(self,'image',None) is not None:
-            self._image=None
-        if getattr(self,'pcd',None) is not None:
-            self._pcd=None
-        if getattr(self,'ortho',None) is not None:
-            self._ortho=None
          
     #---------------------CARTESIANTRANSFORM----------------------------    
     @property
     def cartesianTransform(self):
-        """Get the Cartesian Transform (translation & rotation matrix) (np.ndarray(4x4)) of the node.
-        Note that the initialisation from different inputs may result in different cartesianTransform values.\n
-        E.g. the pose of a mesh is retrieved from the mean of the vertices,
-             while the same pose initiated from the cartesianBounds equals the mean of that cartesianBounds array.
-        \n
-        If no cartesianTransform is present, you can use get_cartesianTransform() to construct the cartesiantransform from the resource, cartesianBounds, orientedBounds or orientedBoundingBox.     
+        """
+        The (4x4) transformation matrix of the node containing the translation & rotation.
+        Depending on the type of Node and the different inputs, different matrix values will be obtained.
         
-        Features:
-            1. self.cartesianBounds\n
-            2. self.resource\n
-            3. self.orientedBounds\n
-            4. self.orientedBoundingBox\n
-        """      
+        Examples:
+            - The pose of a mesh is determined by the average of its bounding vertices.
+            - The pose of an image is at the center of the lens complex.
+        
+        Returns:
+            numpy.ndarray: The (4x4) transformation matrix.
+        """
         return self._cartesianTransform
 
     @cartesianTransform.setter
-    def cartesianTransform(self,value):
+    def cartesianTransform(self, value):
+        """
+        Sets the cartesianTransform for the Node.
+
+        Args:
+            value (numpy.ndarray or list): Input value which can be:
+                - (4x4) full transformation matrix
+                - (3x1) translation vector
+
+        Raises:
+            ValueError: If the input is not a valid numpy array of shape (4,4) or (3,).
+        """
+        if value is None:
+            self._cartesianTransform = None
+        else:
+            self._set_cartesianTransform(value)
+            
+    #---------------------CARRTESIANBOUNDS----------------------------
+    @property
+    def cartesianBounds(self): 
+        """Get the cartesianBounds of the node from various inputs.
+
+        Args:
+            1.np.array(6x1), list (6 elements) \n
+            2.Vector3dVector (n elements)\n
+            3.orientedBounds (np.array(8x3))\n 
+            4.Open3D.geometry.OrientedBoundingBox\n
+            5.Open3D geometry\n
+        
+        Returns:
+            cartesianBounds (np.array [6x1]) [xMin,xMax,yMin,yMax,zMin,zMax]
+        """
+        return self._cartesianBounds
+
+    @cartesianBounds.setter
+    def cartesianBounds(self,value):
         if value is None:
             return None
-        else:
-            self.set_cartesianTransform(value)
+        try: #lists, np.arrays
+            self._cartesianBounds=np.reshape(value,6)
+        except:
+            try: #orientedBounds
+                box=gmu.get_oriented_bounding_box(value)
+                min=box.get_min_bound()
+                max=box.get_max_bound()
+                self._cartesianBounds=np.array([min[0],max[0],min[1],max[1],min[2],max[2]])
+            except:
+                try: #orientedBoundingBox
+                    min=value.get_min_bound()
+                    max=value.get_max_bound()
+                    self._cartesianBounds=np.array([min[0],max[0],min[1],max[1],min[2],max[2]])
+                except:
+                    try: #Vector3dVector
+                        box=gmu.get_oriented_bounding_box(np.asarray(value))
+                        min=box.get_min_bound()
+                        max=box.get_max_bound()
+                        self._cartesianBounds=np.array([min[0],max[0],min[1],max[1],min[2],max[2]])
+                    except:
+                        try:#resource
+                            self._cartesianBounds=gmu.get_cartesian_bounds(self._resource)
+                        except:
+                            raise ValueError('Input must be cartesianBounds (np.array [6x1]): [xMin,xMax,yMin,yMax,zMin,zMax], list like object, orientedBounds (np.Array(8x3)), or Open3D Bounding Box.')
+
 
 #---------------------METHODS----------------------------     
     def get_metadata_from_graph(self, graph:Graph,subject:URIRef):
@@ -399,36 +451,51 @@ class Node:
 
         Returns:
             name (str)
-        """
-                      
+        """                      
         self._name=ut.get_subject_name(self.subject)
         return self.name
 
-    def set_cartesianTransform(self,value):
-        """sets the cartesianTransform for the Node type. Overwrite this function for each node type.
+    def _set_cartesianTransform(self, value):
         """
-        # print("This is the base Node functionality, overwite for each childNode to retrieve the relevant cartesianTransform")
+        Helper method to set the cartesianTransform attribute.
+
+        Args:
+            value (numpy.ndarray or list): Input value which can be:
+                - (4x4) full transformation matrix
+                - (3x1) translation vector
+
+        Raises:
+            ValueError: If the input is not a valid numpy array of shape (4,4) or (3,).
+        """
+        value = np.reshape(np.asarray(value),(-1))
+
+        if value.shape == (16,):
+            self._cartesianTransform = value.reshape((4, 4))
+        elif value.shape == (3,):
+            self._cartesianTransform = gmu.get_cartesian_transform(translation=value)
+        else:
+            raise ValueError('Input must be a numpy array of shape (4,4) or (3,).')
+
 
     def get_cartesianTransform(self):
-        """Returns the cartesianTransform from the Node type. Overwrite this function for each node type."""
-        # print("This is the base Node functionality, overwite for each childNode to retrieve the relevant cartesianTransform")
+        """Returns the cartesianTransform from the Node type. Overwrite this function for each node type to access more utilities.
+        """
+        return self._cartesianTransform 
 
     def get_resource(self):
-        """Returns the resource from the Node type. Overwrite this function for each node type.
+        """Returns the resource from the Node type. Overwrite this function for each node type to access more utilities.
         """
-        # print("This is the base Node functionality, overwite for each childNode to import the relevant resource type")
+        return self._resource
 
     def set_resource(self,value):
-        """sets the resource for the Node type. Overwrite this function for each node type.
+        """sets the resource for the Node type. Overwrite this function for each node type to access more utilities.
         """
-        # print("This is the base Node functionality, overwite for each childNode to import the relevant resource type")
-
+        self._resource=value
 
     def clear_resource(self):
         """Clear all resources (images, pcd, meshes, ortho's, etc.) in the Node.
         """
-        if getattr(self,'resource',None) is not None:
-            self.resource=None
+        self._resource=None
             
     def get_path(self) -> str:
         """Returns the full path of the resource from this Node.\n
