@@ -26,10 +26,7 @@ from geomapi.nodes import *
 #DATA
 sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
-
-# from data_loader_parking import DataLoaderParking
-# from data_loader_road import DataLoaderRoad
-
+from data_loader_road import DATALOADERROADINSTANCE 
 
 
 class TestNode(unittest.TestCase):
@@ -44,8 +41,9 @@ class TestNode(unittest.TestCase):
         print('-----------------Setup Class----------------------')
         st = time.time()
         
-        cls.dataLoader = DATALOADERPARKINGINSTANCE
-
+        cls.dataLoaderParking = DATALOADERPARKINGINSTANCE
+        cls.dataLoaderRoad = DATALOADERROADINSTANCE
+        
         #TIME TRACKING           
         et = time.time()
         print("startup time: "+str(et - st))
@@ -398,6 +396,31 @@ class TestNode(unittest.TestCase):
         #invalid
         self.assertRaises(ValueError,Node,cartesianTransform=[1,0,0,3,0,1,0,0,0,0,1,0,0,])
         
-    
+    def test_orientedBoundingBox(self):
+        #None
+        orientedBoundingBox=None
+        node= Node(orientedBoundingBox=orientedBoundingBox)
+        self.assertIsNone(node.orientedBoundingBox)
+
+        #box
+        node= Node(orientedBoundingBox=self.dataLoaderRoad.mesh.get_oriented_bounding_box())
+        self.assertAlmostEqual(node.orientedBoundingBox.get_min_bound()[0],self.dataLoaderRoad.mesh.get_oriented_bounding_box().get_min_bound()[0],delta=0.01)   
+
+        #np.array(nx3)
+        orientedBoundingBox=self.dataLoaderParking.mesh.get_oriented_bounding_box()
+        points=np.asarray(orientedBoundingBox.get_box_points())
+        node= Node(orientedBoundingBox=points)
+        self.assertAlmostEqual(node.orientedBoundingBox.get_min_bound()[0],orientedBoundingBox.get_min_bound()[0],delta=0.01)   
+
+        #geometry
+        node= Node(orientedBoundingBox=self.dataLoaderParking.mesh)
+        self.assertAlmostEqual(node.orientedBoundingBox.get_min_bound()[0],orientedBoundingBox.get_min_bound()[0],delta=0.01)   
+
+        #Vector3dVector
+        orientedBoundingBox=self.dataLoaderParking.mesh.get_oriented_bounding_box()
+        points=orientedBoundingBox.get_box_points()
+        node= Node(orientedBoundingBox=points)
+        self.assertAlmostEqual(node.orientedBoundingBox.get_min_bound()[0],orientedBoundingBox.get_min_bound()[0],delta=0.01)   
+
 if __name__ == '__main__':
     unittest.main()

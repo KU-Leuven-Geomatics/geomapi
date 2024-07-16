@@ -22,6 +22,7 @@ import datetime
 import numpy as np
 from rdflib import Graph, URIRef, Literal
 from rdflib.namespace import RDF
+import open3d as o3d 
 
 #IMPORT MODULES
 import geomapi.utils as ut
@@ -37,6 +38,7 @@ class Node:
                  timestamp: Optional[str] = None,
                  resource = None,
                  cartesianTransform: Optional[np.ndarray] = None,
+                 orientedBoundingBox = None,
                  **kwargs):
         """
         Creates a Node from one or more of the following inputs.
@@ -63,6 +65,7 @@ class Node:
         self._timestamp=None 
         self._resource=None 
         self._cartesianTransform=None
+        self._orientedBoundingBox=None
 
         #instance variables        
         self.subject=subject
@@ -73,6 +76,7 @@ class Node:
         self.timestamp=timestamp
         self.resource=resource 
         self.cartesianTransform=cartesianTransform
+        self.orientedBoundingBox=orientedBoundingBox
 
         #initialisation functionality
         if not self._timestamp and self._path:
@@ -286,53 +290,41 @@ class Node:
         else:
             self._set_cartesianTransform(value)
             
-    #---------------------CARRTESIANBOUNDS----------------------------
+    #---------------------ORIENTEDBOUNDINGBOX----------------------------
     @property
-    def cartesianBounds(self): 
-        """Get the cartesianBounds of the node from various inputs.
-
-        Args:
-            1.np.array(6x1), list (6 elements) \n
-            2.Vector3dVector (n elements)\n
-            3.orientedBounds (np.array(8x3))\n 
-            4.Open3D.geometry.OrientedBoundingBox\n
-            5.Open3D geometry\n
-        
-        Returns:
-            cartesianBounds (np.array [6x1]) [xMin,xMax,yMin,yMax,zMin,zMax]
+    def orientedBoundingBox(self): 
         """
-        return self._cartesianBounds
+        The o3d.orientedBoundingBox of the Node containing the bounding box of the geometry.
 
-    @cartesianBounds.setter
-    def cartesianBounds(self,value):
+        Inputs:
+            Open3D.geometry.OrientedBoundingBox\n
+            Open3D geometry\n
+            set of points (np.array(nx3)) or Vector3dVector\n
+
+        Returns:
+            o3d.geometry.OrientedBoundingBox: The oriented bounding box of the node.
+        """
+        return self._orientedBoundingBox
+
+    @orientedBoundingBox.setter
+    def orientedBoundingBox(self,value):
         if value is None:
-            return None
-        try: #lists, np.arrays
-            self._cartesianBounds=np.reshape(value,6)
-        except:
-            try: #orientedBounds
-                box=gmu.get_oriented_bounding_box(value)
-                min=box.get_min_bound()
-                max=box.get_max_bound()
-                self._cartesianBounds=np.array([min[0],max[0],min[1],max[1],min[2],max[2]])
+            self._orientedBoundingBox = None
+            return
+        
+        if isinstance(value, o3d.geometry.OrientedBoundingBox):
+            self._orientedBoundingBox = value
+        elif isinstance(value, o3d.geometry.Geometry):
+            self._orientedBoundingBox = value.get_oriented_bounding_box()
+        elif isinstance(value, o3d.utility.Vector3dVector):
+            self._orientedBoundingBox = o3d.geometry.OrientedBoundingBox.create_from_points(value)
+        elif isinstance(value, list) or isinstance(value, np.ndarray):
+            try:
+                points = o3d.utility.Vector3dVector(np.reshape(np.asarray(value), (-1, 3)))
+                self._orientedBoundingBox = o3d.geometry.OrientedBoundingBox.create_from_points(points)
             except:
-                try: #orientedBoundingBox
-                    min=value.get_min_bound()
-                    max=value.get_max_bound()
-                    self._cartesianBounds=np.array([min[0],max[0],min[1],max[1],min[2],max[2]])
-                except:
-                    try: #Vector3dVector
-                        box=gmu.get_oriented_bounding_box(np.asarray(value))
-                        min=box.get_min_bound()
-                        max=box.get_max_bound()
-                        self._cartesianBounds=np.array([min[0],max[0],min[1],max[1],min[2],max[2]])
-                    except:
-                        try:#resource
-                            self._cartesianBounds=gmu.get_cartesian_bounds(self._resource)
-                        except:
-                            raise ValueError('Input must be cartesianBounds (np.array [6x1]): [xMin,xMax,yMin,yMax,zMin,zMax], list like object, orientedBounds (np.Array(8x3)), or Open3D Bounding Box.')
-
-
+                raise ValueError('Input must be orientedBoundingBox (o3d.geometry.OrientedBoundingBox), an Open3D Geometry or a list of Vector3dVector or np.array objects')
+            
 #---------------------METHODS----------------------------     
     def get_metadata_from_graph(self, graph:Graph,subject:URIRef):
         """Convert the data contained in a graph to a set of node attributes.
