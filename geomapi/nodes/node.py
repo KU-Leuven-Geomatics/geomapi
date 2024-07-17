@@ -45,16 +45,16 @@ class Node:
         Creates a Node from one or more of the following inputs.
         
         Args:
-            subject (URIRef, optional): A subject to use as identifier for the Node. If a graph is also present, the subject should be part of the graph.
-            graph (Graph, optional): An RDF Graph to parse.
-            graphPath (str, optional): The path of an RDF Graph to parse. If no subject is provided, the first subject of the graph is retained.
-            name (str, optional): A name of the Node. This is not a unique identifier but serves as non-functional description.
-            path (str, optional): A filepath to a resource.
-            timestamp (str, optional): Timestamp for the node.
-            resource (optional): Resource associated with the node.
-            cartesianTransform (np.ndarray, optional): The (4x4) transformation matrix.
-            orientedBoundingBox (o3d.geometry.OrientedBoundingBox, optional): The oriented bounding box of the node.
-            convexHull (o3d.geometry.TriangleMesh, optional): The convex hull of the node.            
+            - subject (URIRef, optional): A subject to use as identifier for the Node. If a graph is also present, the subject should be part of the graph.
+            - graph (Graph, optional): An RDF Graph to parse.
+            - graphPath (str, optional): The path of an RDF Graph to parse. If no subject is provided, the first subject of the graph is retained.
+            - name (str, optional): A name of the Node. This is not a unique identifier but serves as non-functional description.
+            - path (str, optional): A filepath to a resource.
+            - timestamp (str, optional): Timestamp for the node.
+            - resource (optional): Resource associated with the node.
+            - cartesianTransform (np.ndarray, optional): The (4x4) transformation matrix.
+            - orientedBoundingBox (o3d.geometry.OrientedBoundingBox, optional): The oriented bounding box of the node.
+            - convexHull (o3d.geometry.TriangleMesh, optional): The convex hull of the node.            
             
         Returns:
             Node: An instance of the Node class.
@@ -112,11 +112,10 @@ class Node:
     #---------------------PATH----------------------------
     @property
     def path(self): 
-        """Path (str) of the resource of the node. If no path is present, you can use get_path() to reconstruct the path from either 
-        the graphPath or working directory.
+        """Path (str) of the resource of the node. If no path is present, you can use `get_path()` to reconstruct the path from either the graphPath or working directory.
         
         Args:
-            value (str): The new path for the node.
+            - value (str): The new path for the node.
         
         Raises:
             ValueError: If the path has an invalid type, path, or extension.
@@ -135,11 +134,11 @@ class Node:
     @property
     def name(self):
         """The name (str) of the node. This can include characters that the operating
-        system does not allow. If no name is present, you can use get_name() to construct a name from the subject or path.
+        system does not allow. If no name is present, you can use `get_name()` to construct a name from the subject or path.
 
-        Features:
-            1. self.path\n
-            2. self.subject\n
+        Args:
+            - self.path
+            - self.subject
         """        
         return self._name
 
@@ -150,11 +149,11 @@ class Node:
     #---------------------TIMESTAMP----------------------------
     @property
     def timestamp(self) -> str:
-        """The timestamp (str(yyyy-MM-ddTHH:mm:ss)) of the node. If no timestamp is present, use get_timestamp() to gather the timestamp from the path or graphPath.
+        """The timestamp (str(yyyy-MM-ddTHH:mm:ss)) of the node. If no timestamp is present, use `get_timestamp()` to gather the timestamp from the path or graphPath.
 
         Features:
-            1. self.path\n
-            2. self.graphPath\n
+            - self.path
+            - self.graphPath
         """
         return self._timestamp
 
@@ -170,8 +169,7 @@ class Node:
     #---------------------GRAPHPATH----------------------------    
     @property
     def graphPath(self) -> str:
-        """The path (str) of graph of the node."""        
-
+        """The path (str) of graph of the node. This can be both a local file or a remote URL.""" 
         return ut.parse_path(self._graphPath)
 
     @graphPath.setter
@@ -187,8 +185,7 @@ class Node:
     #---------------------GRAPH----------------------------    
     @property
     def graph(self) -> Graph:
-        """The Graph (RDFLib.Graph) of the node. If no graph is present, you can use get_graph() to parse the graph from a graphPath. Alternatively,
-        you can use to_graph() to serialize the Nodes attributes to RDF. 
+        """The Graph (RDFLib.Graph) of the node. If no graph is present, you can use `get_graph()` to parse the graph from a graphPath. Alternatively, you can use `to_graph()` to serialize the Nodes attributes to RDF. 
         """       
         return self._graph
 
@@ -204,13 +201,12 @@ class Node:
     #---------------------SUBJECT----------------------------    
     @property
     def subject(self) -> URIRef:
-        """Get the subject (RDFLib.URIRef) of the node. If no subject is present, you can use get_subject() to construct it from a graph, name or path.
-        Otherwise, a random guid is generated.
+        """Get the subject (RDFLib.URIRef) of the node. If no subject is present, you can use `get_subject()` to construct it from a graph, name or path. Otherwise, a random guid is generated.
         
         Features:
-            1. self.name\n
-            2. self.graph\n
-            3. self.path\n
+            - self.name
+            - self.graph
+            - self.path
         """
         return self._subject
 
@@ -234,8 +230,7 @@ class Node:
     #---------------------RESOURCE----------------------------    
     @property
     def resource(self):
-        """The resource (mesh, image, etc.) of the node. If no resource is present, you can use ´get_resource()´,\n
-        to load the resource from a path or search it through the name and graphpath. 
+        """The resource (mesh, image, etc.) of the node. If no resource is present, you can use `get_resource()`, to load the resource from a path or search it through the name and graphpath. 
 
         Inputs:
             - self.path
@@ -259,8 +254,7 @@ class Node:
     @property
     def cartesianTransform(self) -> np.ndarray:
         """
-        The (4x4) transformation matrix of the node containing the translation & rotation. 
-        If no matrix is present, you can use get_cartesian_transform(), to gather it from the resource, orientedBoundingBox, or convexHull.
+        The (4x4) transformation matrix of the node containing the translation & rotation. If no matrix is present, you can use `get_cartesian_transform()`, to gather it from the resource, orientedBoundingBox, or convexHull.
         
         Examples:
             - The pose of a mesh is determined by the average of its bounding vertices.
@@ -274,12 +268,11 @@ class Node:
     @cartesianTransform.setter
     def cartesianTransform(self, value: Optional[Union[np.ndarray, List[float]]]):
         """
-        Sets the cartesianTransform for the Node.
+        Sets the cartesianTransform for the Node. 
 
         Args:
-            value (numpy.ndarray or list): Input value which can be:
-                - (4x4) full transformation matrix
-                - (3x1) translation vector
+            - (4x4) full transformation matrix
+            - (3x1) translation vector
 
         Raises:
             ValueError: If the input is not a valid numpy array of shape (4,4) or (3,).
@@ -293,8 +286,7 @@ class Node:
     @property
     def orientedBoundingBox(self) -> o3d.geometry.OrientedBoundingBox: 
         """
-        The o3d.orientedBoundingBox of the Node containing the bounding box of the geometry.
-        If no box is present, you can use get_oriented_bounding_box(), to gather it from the resource, cartesianTransform or convexHull.
+        The o3d.orientedBoundingBox of the Node containing the bounding box of the geometry. If no box is present, you can use `get_oriented_bounding_box()`, to gather it from the resource, cartesianTransform or convexHull.
 
         Inputs:
             - Open3D.geometry.OrientedBoundingBox
@@ -317,9 +309,7 @@ class Node:
     @property
     def convexHull(self) -> o3d.geometry.TriangleMesh:
         """
-        The convex hull of the Node containing the bounding hull of the geometry.
-        If no convex hull is present, you can use get_convex_hull(), to gather it from the resource, cartesianTransform or orientedBoundingBox.
-
+        The convex hull of the Node containing the bounding hull of the geometry. If no convex hull is present, you can use `get_convex_hull()`, to gather it from the resource, cartesianTransform or orientedBoundingBox.
 
         Inputs:
             - Open3D.geometry.TriangleMesh
@@ -341,14 +331,13 @@ class Node:
             
 #---------------------METHODS----------------------------     
     def get_metadata_from_graph(self, graph:Graph,subject:URIRef):
-        """Convert the data contained in a graph to a set of node attributes.
-        If the graph contains multiple subjects, it is reduced to the subject's triples. \n
+        """Convert the data contained in a graph to a set of node attributes. If the graph contains multiple subjects, it is reduced to the subject's triples.
         
-        **NOTE**: The use of a SessionNode is advised when dealing with multi-subject graphs.\n
+        **NOTE**: The use of a SessionNode is advised when dealing with multi-subject graphs.
 
         Args:
-            1. self.graph (RDFlib.Graph):  Graph to parse\n
-            2. self.subject (RDFlib.URIRef): The subject to parse the graph for
+            - self.graph (RDFlib.Graph):  Graph to parse
+            - self.subject (RDFlib.URIRef): The subject to parse the graph for
         
         """
         if len([x for x in self._graph.subjects(RDF.type)])>1:
@@ -400,10 +389,10 @@ class Node:
                 setattr(self,attr,object.toPython()) 
 
     def get_subject(self) -> str:
-        """Returns and validates the current subject. If empty, a new subject is created based on an unique GUID.\n
+        """Returns and validates the current subject. If empty, a new subject is created based on an unique GUID.
 
         Returns:
-            subject (URIREF)
+            - subject (URIREF)
         """
         #subject
         if self._subject:
@@ -424,9 +413,14 @@ class Node:
         return self._subject
 
     def get_timestamp(self):
-        """Get the timestamp (str) of the Node. 
-        This can be retrieved from user input, the path, the graphPath or the current time.\n
+        """Get the timestamp (str) of the Node. If no timestamp is present, it is gathered from the folowing parameters.
 
+        Features:
+            - self._timestamp
+            - self._path
+            - self._graphPath
+            * datetime.datetime.now()
+        
         Returns:
             timestamp (str): '%Y-%m-%dT%H:%M:%S'
         """
@@ -440,7 +434,12 @@ class Node:
         return self._timestamp
 
     def get_name(self) -> str:
-        """Returns the name (str) of the Node.\n
+        """Returns the name (str) of the Node. If no name is present, it is gathered from the following parameters.
+        
+        Features:
+            - self._name
+            - self._path
+            - self._subject
 
         Returns:
            name (str)
@@ -475,12 +474,12 @@ class Node:
                 raise ValueError('Input must be a numpy array of shape (4,4) or (3,).')
 
     def get_cartesian_transform(self) -> np.ndarray:
-        """Get the cartesianTransform of the node from various inputs.
-
-        Args:
-            resource
-            orientedBoundingBox
-            convexHull
+        """Get the cartesianTransform of the node from various inputs. if no cartesianTransform is present, it is gathered from the following inputs.
+        
+        Features:
+            - self._resource
+            - self._orientedBoundingBox
+            - self._convexHull
 
         Returns:
             cartesianTransform(np.ndarray(4x4))
@@ -512,7 +511,13 @@ class Node:
         return self._cartesianTransform
     
     def set_oriented_bounding_box(self, value):
-        """Set the oriented bounding box for the Node."""
+        """Set the oriented bounding box for the Node.
+        
+        Args:
+            - orientedBoundingBox (o3d.geometry.OrientedBoundingBox)
+            - Open3D geometry
+            - set of points (np.array(nx3)) or Vector3dVector
+        """
         if isinstance(value, o3d.geometry.OrientedBoundingBox):
             self._orientedBoundingBox = value
         elif isinstance(value, o3d.geometry.Geometry):
@@ -527,13 +532,12 @@ class Node:
                 raise ValueError('Input must be orientedBoundingBox (o3d.geometry.OrientedBoundingBox), an Open3D Geometry or a list of Vector3dVector or np.array objects')
 
     def get_oriented_bounding_box(self) -> o3d.geometry.OrientedBoundingBox:
-        """Gets the Open3D OrientedBoundingBox of the node from various inputs.
-
-        Args:
-            1. cartesianBounds
-            2. orientedBounds
-            3. cartesianTransform
-            4. Open3D geometry
+        """Gets the Open3D OrientedBoundingBox of the node. If no orientedBoundingBox is present, it is gathered from the following inputs.
+        
+        Features:
+            1. self._resource
+            2. self._convexHull
+            3. self._cartesianTransform
 
         Returns:
             o3d.geometry.OrientedBoundingBox
@@ -564,7 +568,13 @@ class Node:
         return self._orientedBoundingBox
 
     def set_convex_hull(self, value):
-        """Set the convex hull for the Node."""
+        """Set the convex hull for the Node from various inputs.
+        
+        Args:
+            - convexHull (o3d.geometry.TriangleMesh)
+            - Open3D geometry
+            - set of points (np.array(nx3)) or Vector3dVector
+        """
         if isinstance(value, o3d.geometry.TriangleMesh):
             self._convexHull = copy.deepcopy(value)
         elif isinstance(value, o3d.geometry.Geometry):
@@ -579,12 +589,12 @@ class Node:
                 raise ValueError('Input must be a TriangleMesh (o3d.geometry.TriangleMesh), an Open3D Geometry or a list of Vector3dVector or np.array objects')
             
     def get_convex_hull(self) -> o3d.geometry.TriangleMesh:
-        """Gets the Open3D Convex Hull of the node from various inputs.
-
-        Args:
-            resource
-            orientedBoundingBox
-            cartesianTransform
+        """Gets the Open3D Convex Hull of the node. If no convex hull is present, it is gathered from the following inputs.
+        
+        Features:
+            - self._resource
+            - self._orientedBoundingBox
+            - self._cartesianTransform
 
         Returns:
             o3d.geometry.TriangleMesh
@@ -636,11 +646,13 @@ class Node:
         self._path = Path(value).as_posix()
             
     def get_path(self) -> str:
-        """Returns the full path of the resource from this Node.\n
-
+        """Returns the full path of the resource from this Node. If no path is present, it is gathered from the following inputs.
+        
         Features:
-            1. self.graphPath\n
-            2. self._name or self._subject\n
+            - self._path
+            - self._graphPath
+            - self._name
+            - self._subject
 
         Returns:
             path (str)
@@ -667,11 +679,11 @@ class Node:
             return None
 
     def get_graph(self):
-        """Returns the graph of the Node.
-
+        """Returns the graph of the Node. if no graph is present, it is gathered from the following inputs.
+        
         Features:
-            1. self.graphPath\n
-            2. self._subject\n
+            - self.graphPath
+            - self._subject
 
         Returns:
             graph (RDFlib.GRAPH)
@@ -689,9 +701,9 @@ class Node:
         """Converts the current Node variables to a graph and optionally save.
 
         Args:
-            1. graphPath (str, optional): The full path to write the graph to. Defaults to None.\n
-            2. overwrite (bool, optional=True): Overwrite current graph values or not\n
-            3. save (bool, optional=False): Save the graph to the self.graphPath or graphPath.\n
+            - graphPath (str, optional): The full path to write the graph to. Defaults to None.
+            - overwrite (bool, optional=True): Overwrite current graph values or not
+            - save (bool, optional=False): Save the graph to the self.graphPath or graphPath.
         """
         if graphPath and next(graphPath.endswith(extension) for extension in ut.RDF_EXTENSIONS) :
             self._graphPath=graphPath
@@ -746,16 +758,15 @@ class Node:
         return self._graph
 
     def save_graph(self,graphPath : str = None) -> bool:
-        """Serialize the graph in an RDF file on drive.
-        The RDF graph will be stored in self.graphPath or provided graphPath (str).
+        """Serialize the graph in an RDF file on drive. The RDF graph will be stored in self.graphPath or provided graphPath (str).
 
         Args:
-            graphPath (str, optional)\n
+            - graphPath (str, optional)
 
         Raises:
-            ValueError: No valid graphPath if file/folder location is not found\n
-            ValueError: No valid extension if not in ut.RDF_EXTENSIONS\n
-            ValueError: Save failed despite valid graphPath and extension (serialization error).\n
+            - ValueError: No valid graphPath if file/folder location is not found
+            - ValueError: No valid extension if not in ut.RDF_EXTENSIONS
+            - ValueError: Save failed despite valid graphPath and extension (serialization error).
 
         Returns:
             bool: True if file is succesfully saved.
@@ -792,10 +803,10 @@ class Node:
         Apply a transformation to the Node's cartesianTransform, resource, and convexHull.
         
         Args:
-            transformation (Optional[np.ndarray]): A 4x4 transformation matrix.
-            rotation (Optional[Union[np.ndarray, Tuple[float, float, float]]]): A 3x3 rotation matrix or Euler angles $(R_z,R_y,R_x)$ for rotation.
-            translation (Optional[np.ndarray]): A 3-element translation vector.
-            rotate_around_center (bool): If True, rotate around the object's center.
+            - transformation (Optional[np.ndarray]): A 4x4 transformation matrix.
+            - rotation (Optional[Union[np.ndarray, Tuple[float, float, float]]]): A 3x3 rotation matrix or Euler angles $(R_z,R_y,R_x)$ for rotation.
+            - translation (Optional[np.ndarray]): A 3-element translation vector.
+            - rotate_around_center (bool): If True, rotate around the object's center.
         """
         if self.cartesianTransform is None:
             self.get_cartesian_transform()
