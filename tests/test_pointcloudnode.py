@@ -144,7 +144,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(node.subject.toPython(),self.dataLoaderParking.pcdSubject.toPython())
         node.to_graph()
         initialGraph=ut.get_subject_graph(self.dataLoaderParking.pcdGraph,subject=self.dataLoaderParking.pcdSubject)
-        self.assertEqual(len(node.graph),len(initialGraph))
+        self.assertEqual(len(node.graph),len(initialGraph)) 
 
     def test_creation_from_resource_and_path(self):        
         node= PointCloudNode(resource=self.dataLoaderParking.pcd,

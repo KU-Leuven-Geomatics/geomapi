@@ -380,10 +380,10 @@ class PointCloudNode (GeometryNode):
                                 translationVector=np.nan_to_num(translationVector)       
                             except:
                                 translationVector=np.array([0.0,0.0,0.0])
-                        self.cartesianTransform=gmu.get_cartesian_transform(rotationMatrix,translationVector)
+                        self.cartesianTransform=gmu.get_cartesian_transform(translation=translationVector,rotation=rotationMatrix)
                     # SET POSE FROM cartesianBounds
-                    elif self.cartesianBounds is not None:            
-                        self.cartesianTransform=gmu.get_cartesian_transform(self.cartesianBounds)
+                    # elif self.cartesianBounds is not None:            
+                    #     self.cartesianTransform=gmu.get_cartesian_transform(self.cartesianBounds)
 
                     pointsnode=e57xml.find('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}points')
                     if not pointsnode is None:

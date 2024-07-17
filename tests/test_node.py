@@ -12,7 +12,7 @@ import numpy as np
 import open3d as o3d
 import rdflib
 from rdflib import RDF, RDFS, Graph, Literal, URIRef
-
+import copy
 
 
 #GEOMAPI
@@ -22,6 +22,7 @@ sys.path.append(parent_dir)
 import geomapi.utils as ut
 import geomapi.tools as tl 
 from geomapi.nodes import *
+import geomapi.utils.geometryutils as gmu
 
 #DATA
 sys.path.append(current_dir)
@@ -445,6 +446,260 @@ class TestNode(unittest.TestCase):
         node = Node(convexHull=points)
         self.assertAlmostEqual(node.convexHull.get_min_bound()[0], self.dataLoader.mesh.compute_convex_hull()[0].get_min_bound()[0], delta=0.01)
 
+   
+    def test_full_transformation_matrix(self):
+        
+        #empty node
+        node = Node()        
+        transformation = np.array([[1, 0, 0, 1],
+                                   [0, 1, 0, 2],
+                                   [0, 0, 1, 3],
+                                   [0, 0, 0, 1]])
+        node.transform(transformation=transformation)
+        self.assertEqual(node.cartesianTransform[0,3],1)
+        
+        #node with resource
+        resource=copy.deepcopy(self.dataLoader.mesh)
+        center=resource.get_center()
+        node=Node(resource=resource,cartesianTransform=center)
+        node.transform(transformation=transformation)
+        self.assertAlmostEqual(node.resource.get_center()[0],center[0]+1,delta=0.01 )
+        self.assertEqual(node.cartesianTransform[0,3],center[0]+1)
 
+        #node with convexhull
+        convexHull=resource.compute_convex_hull()[0]
+        convexHullCenter=convexHull.get_center()
+        node=Node(convexHull=convexHull,cartesianTransform=convexHullCenter)
+        node.transform(transformation=transformation)
+        self.assertAlmostEqual(node.convexHull.get_center()[0],convexHullCenter[0]+1,delta=0.01 )
+        self.assertEqual(node.cartesianTransform[0,3],convexHullCenter[0]+1)
+        
+        #node with orientedboundingBox
+        boundingBox=resource.get_oriented_bounding_box()
+        boundingBoxCenter=boundingBox.get_center()
+        node=Node(orientedBoundingBox=boundingBox,cartesianTransform=boundingBoxCenter)
+        node.transform( transformation)
+        self.assertAlmostEqual(node.orientedBoundingBox.get_center()[0],boundingBoxCenter[0]+1,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,3],boundingBoxCenter[0]+1,delta=0.01 )
+        
+        
+        #node with resource, convexHull and orientedboundingBox
+        node=Node(resource=resource,convexHull=convexHull,orientedBoundingBox=boundingBox)
+        node.transform(transformation=transformation)
+        self.assertAlmostEqual(node.resource.get_center()[0],center[0]+1,delta=0.01 )
+        self.assertAlmostEqual(node.convexHull.get_center()[0],convexHullCenter[0]+1,delta=0.01 )
+        self.assertAlmostEqual(node.orientedBoundingBox.get_center()[0],boundingBoxCenter[0]+1,delta=0.01 )
+
+    def test_invalid_transformation_matrix(self):
+        node = Node()
+        
+        transformation_invalid = np.array([[1, 0, 0],
+                                           [0, 1, 0],
+                                           [0, 0, 1]])
+        with self.assertRaises(ValueError):
+            node.transform(transformation=transformation_invalid)
+
+    def test_transform_translation(self):
+        #empty node
+        node = Node()        
+        translation = [1,2,3]
+        node.transform(translation=translation)
+        self.assertEqual(node.cartesianTransform[0,3],1)
+        
+        #node with resource
+        resource=copy.deepcopy(self.dataLoader.mesh)
+        center=resource.get_center()
+        node=Node(resource=resource,cartesianTransform=center)
+        node.transform(translation=translation)
+        self.assertAlmostEqual(node.resource.get_center()[0],center[0]+1,delta=0.01 )
+        self.assertEqual(node.cartesianTransform[0,3],center[0]+1)
+
+        #node with convexhull
+        convexHull=resource.compute_convex_hull()[0]
+        convexHullCenter=convexHull.get_center()
+        node=Node(convexHull=convexHull,cartesianTransform=convexHullCenter)
+        node.transform(translation=translation)
+        self.assertAlmostEqual(node.convexHull.get_center()[0],convexHullCenter[0]+1,delta=0.01 )
+        self.assertEqual(node.cartesianTransform[0,3],convexHullCenter[0]+1)
+        
+        #node with orientedboundingBox
+        boundingBox=resource.get_oriented_bounding_box()
+        boundingBoxCenter=boundingBox.get_center()
+        node=Node(orientedBoundingBox=boundingBox,cartesianTransform=boundingBoxCenter)
+        node.transform( translation=translation)
+        self.assertAlmostEqual(node.orientedBoundingBox.get_center()[0],boundingBoxCenter[0]+1,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,3],boundingBoxCenter[0]+1,delta=0.01 )
+        
+        
+        #node with resource, convexHull and orientedboundingBox
+        node=Node(resource=resource,convexHull=convexHull,orientedBoundingBox=boundingBox)
+        node.transform(translation=translation)
+        self.assertAlmostEqual(node.resource.get_center()[0],center[0]+1,delta=0.01 )
+        self.assertAlmostEqual(node.convexHull.get_center()[0],convexHullCenter[0]+1,delta=0.01 )
+        self.assertAlmostEqual(node.orientedBoundingBox.get_center()[0],boundingBoxCenter[0]+1,delta=0.01 )
+
+    def test_transform_rotation(self):
+        #90° rotation around z-axis
+        rotation_euler = [0,0,90]
+        rotation_matrix=   np.array( [[ 0, -1 , 0.        ],
+                                        [ 1,  0,  0.        ],
+                                        [ 0.   ,       0.    ,      1.        ]])  
+        
+        #(0,0) node with rotation matrix     
+        node = Node()          
+        node.transform(rotation=rotation_matrix)
+        self.assertAlmostEqual(node.cartesianTransform[0,3],0,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,0],0,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,1],-1,delta=0.01 )
+                
+        #(0,0) empty node with euler  
+        node = Node()
+        node.transform(rotation=rotation_euler)
+        self.assertAlmostEqual(node.cartesianTransform[0,3],0,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,0],0,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,1],-1,delta=0.01 )
+        
+        
+        #additional euler angles
+        node = Node(cartesianTransform=gmu.get_cartesian_transform(rotation=rotation_euler))
+        node.transform(rotation=rotation_euler)
+        self.assertAlmostEqual(node.cartesianTransform[0,3],0,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,0],-1,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,1],0,delta=0.01 )
+        
+        #additional matrix angles
+        node = Node(cartesianTransform=gmu.get_cartesian_transform(rotation=rotation_matrix))
+        node.transform(rotation=rotation_matrix)
+        self.assertAlmostEqual(node.cartesianTransform[0,3],0,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,0],-1,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,1],0,delta=0.01 )
+        
+    def test_transform_rotation_out_of_center(self):
+        rotation_euler = [0,0,90]
+
+        #rotation out of center
+        node = Node(cartesianTransform=gmu.get_cartesian_transform(translation=[0,1,0]))
+        node.transform(rotation=rotation_euler, rotate_around_center=False)
+        self.assertAlmostEqual(node.cartesianTransform[0,3],-1,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,0],0,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,1],-1,delta=0.01 )
+        
+        #resource,rotation out of center
+        resource=copy.deepcopy(self.dataLoader.mesh)
+        node = Node(resource=resource)
+        node.transform(rotation=rotation_euler, rotate_around_center=False)
+        self.assertAlmostEqual(node.cartesianTransform[0,3],-54.5276,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,0],0,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,1],0-1,delta=0.01 )
+        self.assertAlmostEqual(node._resource.get_center()[0],-54.5276,delta=0.01 )
+        
+        #oriented bounding box,rotation out of center
+        orientedBoundingBox=copy.deepcopy(self.dataLoader.mesh.get_oriented_bounding_box())
+        node = Node(orientedBoundingBox=orientedBoundingBox)
+        node.transform(rotation=rotation_euler, rotate_around_center=False)
+        self.assertAlmostEqual(node.cartesianTransform[0,3],-56.4058,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,0],0,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,1],0-1,delta=0.01 )
+        self.assertAlmostEqual(node._orientedBoundingBox.get_center()[0],-56.4058,delta=0.01 )
+
+        #convex hull,rotation out of center
+        convexHull=copy.deepcopy(self.dataLoader.mesh.compute_convex_hull()[0])
+        node = Node(convexHull=convexHull)
+        node.transform(rotation=rotation_euler, rotate_around_center=False)
+        self.assertAlmostEqual(node.cartesianTransform[0,3],-50.6200,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,0],0,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,1],0-1,delta=0.01 )
+        self.assertAlmostEqual(node._convexHull.get_center()[0],-50.6200,delta=0.01 )
+        
+        #resource, oriented bounding box, convex hull,rotation out of center
+        resource=copy.deepcopy(self.dataLoader.mesh)
+        orientedBoundingBox=copy.deepcopy(self.dataLoader.mesh.get_oriented_bounding_box())
+        convexHull=copy.deepcopy(self.dataLoader.mesh.compute_convex_hull()[0])
+        node = Node(resource=resource,orientedBoundingBox=orientedBoundingBox,convexHull=convexHull) #resource gets advantage
+        node.transform(rotation=rotation_euler, rotate_around_center=False)
+        self.assertAlmostEqual(node.cartesianTransform[0,3],-54.5276,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,0],0,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,1],0-1,delta=0.01 )
+        self.assertAlmostEqual(node._resource.get_center()[0],-54.5276,delta=0.01 )
+        
+           
+    def test_get_cartesian_transform(self):
+        # Case 1: When cartesianTransform is already set
+        node = Node(cartesianTransform=np.eye(4))
+        np.testing.assert_array_almost_equal(node.get_cartesian_transform(), np.eye(4))
+
+        # Case 2: When cartesianTransform is None but resource is present
+        node = Node(resource=self.dataLoader.mesh)
+        center = self.dataLoader.mesh.get_center()
+        expected_transform = np.eye(4)
+        expected_transform[:3, 3] = center
+        np.testing.assert_array_almost_equal(node.get_cartesian_transform(), expected_transform)
+
+        # Case 3: When cartesianTransform and resource are None but convexHull is present
+        convex_hull = self.dataLoader.mesh.compute_convex_hull()[0]
+        node = Node(convexHull=convex_hull)
+        center = convex_hull.get_center()
+        expected_transform = np.eye(4)
+        expected_transform[:3, 3] = center
+        np.testing.assert_array_almost_equal(node.get_cartesian_transform(), expected_transform)
+
+        # Case 4: When cartesianTransform, resource, and convexHull are None but orientedBoundingBox is present
+        oriented_bounding_box = self.dataLoader.mesh.get_oriented_bounding_box()
+        node = Node(orientedBoundingBox=oriented_bounding_box)
+        center = oriented_bounding_box.get_center()
+        expected_transform = np.eye(4)
+        expected_transform[:3, 3] = center
+        np.testing.assert_array_almost_equal(node.get_cartesian_transform(), expected_transform)
+
+    def test_get_oriented_bounding_box(self):
+        # Case 1: When orientedBoundingBox is already set
+        oriented_bounding_box = self.dataLoader.mesh.get_oriented_bounding_box()
+        node = Node(orientedBoundingBox=oriented_bounding_box)
+        self.assertEqual(node.get_oriented_bounding_box(), oriented_bounding_box)
+
+        # Case 2: When orientedBoundingBox is None but resource is present
+        node = Node(resource=self.dataLoader.mesh)
+        self.assertEqual(node.get_oriented_bounding_box().get_center()[0], self.dataLoader.mesh.get_oriented_bounding_box().get_center()[0])
+
+        # Case 3: When orientedBoundingBox and resource are None but convexHull is present
+        convex_hull = self.dataLoader.mesh.compute_convex_hull()[0]
+        node = Node(convexHull=convex_hull)
+        self.assertEqual(node.get_oriented_bounding_box().get_center()[0], convex_hull.get_oriented_bounding_box().get_center()[0])
+
+        # Case 4: When orientedBoundingBox, resource, and convexHull are None but cartesianTransform is present
+        transform = np.eye(4)
+        transform[:3, 3] = np.array([1, 1, 1])
+        node = Node(cartesianTransform=transform)
+        expected_box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
+        expected_box.transform(transform)
+        expected_box=expected_box.get_oriented_bounding_box()
+        self.assertEqual(node.get_oriented_bounding_box().get_center().tolist(), expected_box.get_center().tolist())
+
+    def test_get_convex_hull(self):
+        # Case 1: When convexHull is already set
+        convex_hull = self.dataLoader.mesh.compute_convex_hull()[0]
+        node = Node(convexHull=convex_hull)
+        self.assertEqual(node.get_convex_hull().get_center()[0], convex_hull.get_center()[0])
+
+        # Case 2: When convexHull is None but resource is present
+        node = Node(resource=self.dataLoader.mesh)
+        self.assertEqual(node.get_convex_hull().get_center()[0], self.dataLoader.mesh.compute_convex_hull()[0].get_center()[0])
+
+        # Case 3: When convexHull and resource are None but orientedBoundingBox is present
+        oriented_bounding_box = self.dataLoader.mesh.get_oriented_bounding_box()
+        node = Node(orientedBoundingBox=oriented_bounding_box)
+        points = oriented_bounding_box.get_box_points()
+        pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
+        convexHull = pcd.compute_convex_hull()[0]
+        self.assertEqual(node.get_convex_hull().get_center()[0], convexHull.get_center()[0])
+
+        # Case 4: When convexHull, resource, and orientedBoundingBox are None but cartesianTransform is present
+        transform = np.eye(4)
+        transform[:3, 3] = np.array([1, 1, 1])
+        node = Node(cartesianTransform=transform)
+        expected_hull = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
+        expected_hull.transform(transform)
+        self.assertEqual(node.get_convex_hull().get_center().tolist(), expected_hull.get_center().tolist())
+ 
 if __name__ == '__main__':
     unittest.main()

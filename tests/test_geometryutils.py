@@ -217,28 +217,85 @@ class TestGeometryutils(unittest.TestCase):
         mesh=gmu.generate_visual_cone_from_image(cartesianTransform)
         self.assertIsInstance(mesh,o3d.geometry.TriangleMesh)
       
-    def test_get_cartesian_transform(self):
-        cartesianBounds=np.array([-1.0,1,-0.5,0.5,-5,-4])       
-        translation=np.array([1, 2, 3])
-        rotation=np.array([1,0,0,5,2,6,4,7,8])
+    # def test_get_cartesian_transform(self):
+    #     cartesianBounds=np.array([-1.0,1,-0.5,0.5,-5,-4])       
+    #     translation=np.array([1, 2, 3])
+    #     rotation=np.array([1,0,0,5,2,6,4,7,8])
 
-        #no data
-        cartesianTransform=gmu.get_cartesian_transform()
-        self.assertEqual(cartesianTransform.shape[0],4)
-        self.assertEqual(cartesianTransform.shape[1],4)
-        self.assertEqual(cartesianTransform[1,1],1)
-        self.assertEqual(cartesianTransform[2,3],0)
+    #     #no data
+    #     cartesianTransform=gmu.get_cartesian_transform()
+    #     self.assertEqual(cartesianTransform.shape[0],4)
+    #     self.assertEqual(cartesianTransform.shape[1],4)
+    #     self.assertEqual(cartesianTransform[1,1],1)
+    #     self.assertEqual(cartesianTransform[2,3],0)
 
-        #rotation + translation
-        cartesianTransform=gmu.get_cartesian_transform(rotation=rotation,translation=translation)
-        self.assertEqual(cartesianTransform[1,1],2)
-        self.assertEqual(cartesianTransform[0,3],1)
+    #     #rotation + translation
+    #     cartesianTransform=gmu.get_cartesian_transform(rotation=rotation,translation=translation)
+    #     self.assertEqual(cartesianTransform[1,1],2)
+    #     self.assertEqual(cartesianTransform[0,3],1)
 
-        #cartesianBounds
-        cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=cartesianBounds)
-        self.assertEqual(cartesianTransform[1,1],1)
-        self.assertEqual(cartesianTransform[2,3],-4.5)
+    #     #cartesianBounds
+    #     cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=cartesianBounds)
+    #     self.assertEqual(cartesianTransform[1,1],1)
+    #     self.assertEqual(cartesianTransform[2,3],-4.5)
         
+    
+    def test_get_cartesian_transform(self):
+        # Test cases
+        test_cases = [
+            {
+                "name": "identity_transform",
+                "rotation": None,
+                "translation": None,
+                "expected": np.eye(4)
+            },
+            {
+                "name": "rotation_matrix", # Rotation of 90 degrees around the Z-axis
+                "rotation": np.array([[0, -1, 0],
+                                      [1, 0, 0],
+                                      [0, 0, 1]]),
+                "translation": None,
+                "expected": np.array([[0, -1, 0, 0],
+                                      [1, 0, 0, 0],
+                                      [0, 0, 1, 0],
+                                      [0, 0, 0, 1]])
+            },
+            {
+                "name": "euler_angles",
+                "rotation": (0,0,90),  # Rotation of 90 degrees around the Z-axis
+                "translation": None,
+                "expected": np.array([[0, -1, 0, 0],
+                                      [1, 0, 0, 0],
+                                      [0, 0, 1, 0],
+                                      [0, 0, 0, 1]])
+            },
+            {
+                "name": "translation_vector",
+                "rotation": None,
+                "translation": np.array([1, 2, 3]),
+                "expected": np.array([[1, 0, 0, 1],
+                                      [0, 1, 0, 2],
+                                      [0, 0, 1, 3],
+                                      [0, 0, 0, 1]])
+            },
+            {
+                "name": "rotation_and_translation",
+                "rotation": np.array([[0, -1, 0],
+                                      [1, 0, 0],
+                                      [0, 0, 1]]),
+                "translation": np.array([1, 2, 3]),
+                "expected": np.array([[0, -1, 0, 1],
+                                      [1, 0, 0, 2],
+                                      [0, 0, 1, 3],
+                                      [0, 0, 0, 1]])
+            }
+        ]
+
+        for case in test_cases:
+            with self.subTest(case["name"]):
+                result = gmu.get_cartesian_transform(rotation=case["rotation"], translation=case["translation"])
+                np.testing.assert_array_almost_equal(result, case["expected"], decimal=6)
+                
     def test_get_oriented_bounds(self):        
         box=self.dataLoaderRoad.mesh.get_axis_aligned_bounding_box()
         boxPoints=np.asarray(box.get_box_points())

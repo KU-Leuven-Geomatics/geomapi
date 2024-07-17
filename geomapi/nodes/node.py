@@ -1,11 +1,9 @@
 """
-**Node** is an abstract Python Class to govern the data and metadata of remote sensing data (pcd, images, meshes, orthomosaics).
-It is the base class for all other node classes. It contains the base RDF graph functionality and I/O from and to RDF files.
+**Node** is an abstract Python Class to govern the data and metadata of remote sensing data (pcd, images, meshes, orthomosaics). It is the base class for all other node classes. It contains the base RDF graph functionality and I/O from and to RDF files.
 
 .. image:: ../../../docs/pics/ontology_node.png
 
-**IMPORTANT**: The Node class is an archetype class from which specific data classes (e.g., PointCloudNode) inherit.
-Do not use this class directly if you can use a child class with more functionality.
+**IMPORTANT**: The Node class is an archetype class from which specific data classes (e.g., PointCloudNode) inherit. Do not use this class directly if you can use a child class with more functionality.
 
 Goals:
  - Govern the metadata and geospatial information of big data files in an accessible and lightweight format.
@@ -17,13 +15,14 @@ Goals:
 import os
 import re
 from pathlib import Path 
-from typing import List, Optional
+from typing import List, Optional,Tuple,Union
 import uuid
 import datetime
 import numpy as np
 from rdflib import Graph, URIRef, Literal
 from rdflib.namespace import RDF
 import open3d as o3d 
+import copy
 
 #IMPORT MODULES
 import geomapi.utils as ut
@@ -72,7 +71,7 @@ class Node:
         self._orientedBoundingBox=None
         self._convexHull=None
 
-        #instance variables        
+        #instance variables (protected inputs)       
         self.subject=subject
         self.graphPath=graphPath
         self.graph=graph
@@ -80,29 +79,32 @@ class Node:
         self.name=name
         self.timestamp=timestamp
         self.resource=resource 
-        self.cartesianTransform=cartesianTransform
         self.orientedBoundingBox=orientedBoundingBox
         self.convexHull=convexHull
+        self.cartesianTransform=cartesianTransform
 
-        #initialisation functionality
+        self.initialize(kwargs)
+
+    def initialize(self, kwargs):
         if not self._timestamp and self._path:
-            self.name=ut.get_filename(path)
+            self._name = ut.get_filename(self._path)
             if os.path.exists(self._path):
-                self.timestamp=ut.get_timestamp(path) 
+                self._timestamp = ut.get_timestamp(self._path)
 
-        if not self._graph and (graphPath and os.path.exists(self._graphPath)):
-            self._graph = Graph().parse(graphPath) 
+        if not self._graph and self._graphPath and os.path.exists(self._graphPath):
+            self._graph = Graph().parse(self._graphPath)
 
         self.get_subject()
-        
-        if(self._graph):
-            if ut.check_if_subject_is_in_graph(self._graph,self._subject):
-                self._graph=ut.get_subject_graph(self._graph,self._subject)
-                self.get_metadata_from_graph(self._graph,self._subject) 
+
+        if self._graph:
+            if ut.check_if_subject_is_in_graph(self._graph, self._subject):
+                self._graph = ut.get_subject_graph(self._graph, self._subject)
+                self.get_metadata_from_graph(self._graph, self._subject)
             elif 'session' in str(type(self)):
                 pass
             else:
-                raise ValueError( 'Subject not in graph')
+                raise ValueError('Subject not in graph')
+
         self.__dict__.update(kwargs)
 
 #---------------------PROPERTIES----------------------------
@@ -122,7 +124,7 @@ class Node:
         """
         return self._path
     
-    @path.setter
+    @path.setter #if i change this, the code breaks for no reason
     def path(self,value):        
         if value is None:
             self._path=None
@@ -142,15 +144,12 @@ class Node:
         return self._name
 
     @name.setter
-    def name(self,name):
-        if name is None:
-            self._name=None
-        else:
-            self._name=str(name)
+    def name(self, value: Optional[str]):
+        self._name = None if value is None else str(value)
 
     #---------------------TIMESTAMP----------------------------
     @property
-    def timestamp(self):
+    def timestamp(self) -> str:
         """The timestamp (str(yyyy-MM-ddTHH:mm:ss)) of the node. If no timestamp is present, use get_timestamp() to gather the timestamp from the path or graphPath.
 
         Features:
@@ -170,7 +169,7 @@ class Node:
 
     #---------------------GRAPHPATH----------------------------    
     @property
-    def graphPath(self):
+    def graphPath(self) -> str:
         """The path (str) of graph of the node."""        
 
         return ut.parse_path(self._graphPath)
@@ -187,7 +186,7 @@ class Node:
 
     #---------------------GRAPH----------------------------    
     @property
-    def graph(self):
+    def graph(self) -> Graph:
         """The Graph (RDFLib.Graph) of the node. If no graph is present, you can use get_graph() to parse the graph from a graphPath. Alternatively,
         you can use to_graph() to serialize the Nodes attributes to RDF. 
         """       
@@ -204,7 +203,7 @@ class Node:
 
     #---------------------SUBJECT----------------------------    
     @property
-    def subject(self):
+    def subject(self) -> URIRef:
         """Get the subject (RDFLib.URIRef) of the node. If no subject is present, you can use get_subject() to construct it from a graph, name or path.
         Otherwise, a random guid is generated.
         
@@ -235,15 +234,15 @@ class Node:
     #---------------------RESOURCE----------------------------    
     @property
     def resource(self):
-        """Get the resource (mesh, pcd, etc.) of the node. If no resource is present, you can use get_resource(),\n
+        """The resource (mesh, image, etc.) of the node. If no resource is present, you can use ´get_resource()´,\n
         to load the resource from a path or search it through the name and graphpath. 
 
         Inputs:
-            1. self.path\n
-            2. self.name\n
-            3. self.graphPath\n
+            - self.path
+            - self.name
+            - self.graphPath
         """        
-        return self.get_resource()
+        return self._resource
 
     @resource.setter
     def resource(self,value):
@@ -258,10 +257,10 @@ class Node:
          
     #---------------------CARTESIANTRANSFORM----------------------------    
     @property
-    def cartesianTransform(self):
+    def cartesianTransform(self) -> np.ndarray:
         """
-        The (4x4) transformation matrix of the node containing the translation & rotation.
-        Depending on the type of Node and the different inputs, different matrix values will be obtained.
+        The (4x4) transformation matrix of the node containing the translation & rotation. 
+        If no matrix is present, you can use get_cartesian_transform(), to gather it from the resource, orientedBoundingBox, or convexHull.
         
         Examples:
             - The pose of a mesh is determined by the average of its bounding vertices.
@@ -273,7 +272,7 @@ class Node:
         return self._cartesianTransform
 
     @cartesianTransform.setter
-    def cartesianTransform(self, value):
+    def cartesianTransform(self, value: Optional[Union[np.ndarray, List[float]]]):
         """
         Sets the cartesianTransform for the Node.
 
@@ -288,18 +287,19 @@ class Node:
         if value is None:
             self._cartesianTransform = None
         else:
-            self.set_cartesianTransform(value)
+            self.set_cartesian_transform(value)
             
     #---------------------ORIENTEDBOUNDINGBOX----------------------------
     @property
-    def orientedBoundingBox(self): 
+    def orientedBoundingBox(self) -> o3d.geometry.OrientedBoundingBox: 
         """
         The o3d.orientedBoundingBox of the Node containing the bounding box of the geometry.
+        If no box is present, you can use get_oriented_bounding_box(), to gather it from the resource, cartesianTransform or convexHull.
 
         Inputs:
-            Open3D.geometry.OrientedBoundingBox\n
-            Open3D geometry\n
-            set of points (np.array(nx3)) or Vector3dVector\n
+            - Open3D.geometry.OrientedBoundingBox
+            - Open3D geometry
+            - set of points (np.array(nx3)) or Vector3dVector
 
         Returns:
             o3d.geometry.OrientedBoundingBox: The oriented bounding box of the node.
@@ -311,18 +311,20 @@ class Node:
         if value is None:
             self._orientedBoundingBox = None
         else:
-            self.set_orientedBoundingBox(value)
+            self.set_oriented_bounding_box(value)
 
 #---------------------CONVEXHULL----------------------------
     @property
-    def convexHull(self):
+    def convexHull(self) -> o3d.geometry.TriangleMesh:
         """
         The convex hull of the Node containing the bounding hull of the geometry.
+        If no convex hull is present, you can use get_convex_hull(), to gather it from the resource, cartesianTransform or orientedBoundingBox.
+
 
         Inputs:
-            Open3D.geometry.TriangleMesh\n
-            Open3D geometry\n
-            set of points (np.array(nx3)) or Vector3dVector\n
+            - Open3D.geometry.TriangleMesh
+            - Open3D geometry
+            - set of points (np.array(nx3)) or Vector3dVector
 
         Returns:
             o3d.geometry.TriangleMesh: The convex hull of the node.
@@ -334,7 +336,7 @@ class Node:
         if value is None:
             self._convexHull = None
         else:
-            self.set_convexHull(value)
+            self.set_convex_hull(value)
 
             
 #---------------------METHODS----------------------------     
@@ -447,19 +449,10 @@ class Node:
             if self._path:
                 self._name=ut.get_filename(self._path)
             else:                     
-                self._name=ut.get_subject_name(self.subject)
-        return self.name
-    
-    def get_subjectname(self) -> str:
-        """Returns the subjectname (str) of the Node.\n
+                self._name=ut.get_subject_name(self._subject)
+        return self._name
 
-        Returns:
-            name (str)
-        """                      
-        self._name=ut.get_subject_name(self.subject)
-        return self.name
-
-    def set_cartesianTransform(self, value):
+    def set_cartesian_transform(self, value):
         """
         Helper method to set the cartesianTransform attribute.
 
@@ -470,22 +463,55 @@ class Node:
         Raises:
             ValueError: If the input is not a valid numpy array of shape (4,4) or (3,).
         """
-        value = np.reshape(np.asarray(value),(-1))
-
-        if value.shape == (16,):
-            self._cartesianTransform = value.reshape((4, 4))
-        elif value.shape == (3,):
-            self._cartesianTransform = gmu.get_cartesian_transform(translation=value)
+        if isinstance(value, np.ndarray) and value.shape == (4, 4):
+            self._cartesianTransform = value
         else:
-            raise ValueError('Input must be a numpy array of shape (4,4) or (3,).')
+            value = np.reshape(np.asarray(value), (-1))
+            if value.shape == (16,):
+                self._cartesianTransform = value.reshape((4, 4))
+            elif value.shape == (3,):
+                self._cartesianTransform = gmu.get_cartesian_transform(translation=value)
+            else:
+                raise ValueError('Input must be a numpy array of shape (4,4) or (3,).')
 
+    def get_cartesian_transform(self) -> np.ndarray:
+        """Get the cartesianTransform of the node from various inputs.
 
-    def get_cartesianTransform(self):
-        """Returns the cartesianTransform from the Node type. Overwrite this function for each node type to access more utilities.
+        Args:
+            resource
+            orientedBoundingBox
+            convexHull
+
+        Returns:
+            cartesianTransform(np.ndarray(4x4))
         """
-        return self._cartesianTransform 
-
-    def set_orientedBoundingBox(self, value):
+        if self._cartesianTransform is not None:
+            return self._cartesianTransform
+        
+        if self._resource is not None:
+            try:
+                self._cartesianTransform = gmu.get_cartesian_transform(translation=self._resource.get_center())
+            except Exception as e:
+                print(f"Failed to get cartesian transform from resource: {e}")
+        
+        if self._cartesianTransform is None and self._convexHull is not None:
+            try:
+                self._cartesianTransform = gmu.get_cartesian_transform(translation=self._convexHull.get_center())
+            except Exception as e:
+                print(f"Failed to get cartesian transform from convex hull: {e}")
+        
+        if self._cartesianTransform is None and self._orientedBoundingBox is not None:
+            try:
+                self._cartesianTransform = gmu.get_cartesian_transform(translation=self._orientedBoundingBox.get_center())
+            except Exception as e:
+                print(f"Failed to get cartesian transform from oriented bounding box: {e}")
+        
+        if self._cartesianTransform is None:
+            self._cartesianTransform = np.eye(4)
+        
+        return self._cartesianTransform
+    
+    def set_oriented_bounding_box(self, value):
         """Set the oriented bounding box for the Node."""
         if isinstance(value, o3d.geometry.OrientedBoundingBox):
             self._orientedBoundingBox = value
@@ -500,28 +526,95 @@ class Node:
             except:
                 raise ValueError('Input must be orientedBoundingBox (o3d.geometry.OrientedBoundingBox), an Open3D Geometry or a list of Vector3dVector or np.array objects')
 
-    def get_orientedBoundingBox(self) -> Optional[o3d.geometry.OrientedBoundingBox]:
-        """Get the oriented bounding box of the Node."""
+    def get_oriented_bounding_box(self) -> o3d.geometry.OrientedBoundingBox:
+        """Gets the Open3D OrientedBoundingBox of the node from various inputs.
+
+        Args:
+            1. cartesianBounds
+            2. orientedBounds
+            3. cartesianTransform
+            4. Open3D geometry
+
+        Returns:
+            o3d.geometry.OrientedBoundingBox
+        """
+        if self._orientedBoundingBox is not None:
+            return self._orientedBoundingBox
+        
+        if self._resource is not None:
+            try:
+                self._orientedBoundingBox = self._resource.get_oriented_bounding_box()
+            except Exception as e:
+                print(f"Failed to get oriented bounding box from resource: {e}")
+        
+        if self._orientedBoundingBox is None and self._convexHull is not None:
+            try:
+                self._orientedBoundingBox = self._convexHull.get_oriented_bounding_box()
+            except Exception as e:
+                print(f"Failed to get oriented bounding box from convex hull: {e}")
+        
+        if self._orientedBoundingBox is None and self._cartesianTransform is not None:
+            try:
+                box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
+                box.transform(self._cartesianTransform)
+                self._orientedBoundingBox = box.get_oriented_bounding_box()
+            except Exception as e:
+                print(f"Failed to get oriented bounding box from cartesian transform: {e}")
+        
         return self._orientedBoundingBox
 
-    def set_convexHull(self, value):
+    def set_convex_hull(self, value):
         """Set the convex hull for the Node."""
         if isinstance(value, o3d.geometry.TriangleMesh):
-            self._convexHull = value
+            self._convexHull = copy.deepcopy(value)
         elif isinstance(value, o3d.geometry.Geometry):
             self._convexHull = value.compute_convex_hull()[0]
         elif isinstance(value, o3d.utility.Vector3dVector):
-            self._convexHull = o3d.geometry.TriangleMesh.create_from_points(value).compute_convex_hull()[0]
+            self._convexHull = o3d.geometry.PointCloud(value).compute_convex_hull()[0]
         elif isinstance(value, list) or isinstance(value, np.ndarray):
             try:
                 points = o3d.utility.Vector3dVector(np.reshape(np.asarray(value), (-1, 3)))
-                self._convexHull = o3d.geometry.TriangleMesh.create_from_points(points).compute_convex_hull()[0]
+                self._convexHull = o3d.geometry.PointCloud(points).compute_convex_hull()[0]
             except:
                 raise ValueError('Input must be a TriangleMesh (o3d.geometry.TriangleMesh), an Open3D Geometry or a list of Vector3dVector or np.array objects')
             
-    def get_convexHull(self) -> Optional[o3d.geometry.TriangleMesh]:
-            """Get the convex hull of the Node."""
+    def get_convex_hull(self) -> o3d.geometry.TriangleMesh:
+        """Gets the Open3D Convex Hull of the node from various inputs.
+
+        Args:
+            resource
+            orientedBoundingBox
+            cartesianTransform
+
+        Returns:
+            o3d.geometry.TriangleMesh
+        """
+        if self._convexHull is not None:
             return self._convexHull
+        
+        if self._resource is not None:
+            try:
+                self._convexHull = self._resource.compute_convex_hull()[0]
+            except Exception as e:
+                print(f"Failed to compute convex hull from resource: {e}")
+        
+        if self._convexHull is None and self._orientedBoundingBox is not None:
+            try:
+                points = self._orientedBoundingBox.get_box_points()
+                pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
+                self._convexHull = pcd.compute_convex_hull()[0]
+            except Exception as e:
+                print(f"Failed to compute convex hull from oriented bounding box: {e}")
+        
+        if self._convexHull is None and self._cartesianTransform is not None:
+            try:
+                box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
+                box.transform(self._cartesianTransform)
+                self._convexHull = box
+            except Exception as e:
+                print(f"Failed to compute convex hull from cartesian transform: {e}")
+        
+        return self._convexHull
         
     def get_resource(self):
         """Returns the resource from the Node type. Overwrite this function for each node type to access more utilities.
@@ -531,8 +624,12 @@ class Node:
     def set_resource(self,value):
         """sets the resource for the Node type. Overwrite this function for each node type to access more utilities.
         """
-        self._resource=value
-    
+        self._resource=copy.deepcopy(value) #copy is required to avoid reference issues
+
+    def get_center(self) -> np.ndarray:
+        """Returns the center of the node."""
+        return self._cartesianTransform[:3, 3]
+
     def set_path(self, value):
         """sets the path for the Node type. Overwrite this function for each node type to access more utilities.
         """
@@ -686,6 +783,77 @@ class Node:
         except:
             raise ValueError('Save failed despite valid graphPath.') 
 
-
-
+    def transform(self, 
+                  transformation: Optional[np.ndarray] = None, 
+                  rotation: Optional[Union[np.ndarray, Tuple[float, float, float]]] = None, 
+                  translation: Optional[np.ndarray] = None, 
+                  rotate_around_center: bool = True):
+        """
+        Apply a transformation to the Node's cartesianTransform, resource, and convexHull.
+        
+        Args:
+            transformation (Optional[np.ndarray]): A 4x4 transformation matrix.
+            rotation (Optional[Union[np.ndarray, Tuple[float, float, float]]]): A 3x3 rotation matrix or Euler angles $(R_z,R_y,R_x)$ for rotation.
+            translation (Optional[np.ndarray]): A 3-element translation vector.
+            rotate_around_center (bool): If True, rotate around the object's center.
+        """
+        if self.cartesianTransform is None:
+            self.get_cartesian_transform()
+            
+        if transformation is not None:
+            transformation=np.reshape(np.asarray(transformation),(4,4))            
+        elif translation is not None or rotation is not None:
+            transformation = gmu.get_cartesian_transform(rotation=rotation, translation=translation)
+            
+   
+        if rotate_around_center:
+            #cartesian transformation                
+            transform_to_center = gmu.get_cartesian_transform (translation=-self.cartesianTransform[:3,3] ) 
+            transform_back = gmu.get_cartesian_transform (translation=self.cartesianTransform[:3,3] )
+            self._cartesianTransform = transform_back @ transformation @ transform_to_center @ self.cartesianTransform
+            
+            #resource
+            if self._resource is not None:
+                transform_to_center = gmu.get_cartesian_transform (translation=-self.resource.get_center() )
+                transform_back = gmu.get_cartesian_transform (translation=self.resource.get_center() )                
+                self._resource.transform(transform_to_center)
+                self._resource.transform(transformation)
+                self._resource.transform(transform_back)                
+                                     
+            #oriented bounding box
+            if self._orientedBoundingBox is not None:
+                transform_to_center = gmu.get_cartesian_transform (translation=-self._orientedBoundingBox.get_center() )
+                transform_back = gmu.get_cartesian_transform (translation=self._orientedBoundingBox.get_center() )            
+                points=self._orientedBoundingBox.get_box_points()
+                pcd=o3d.geometry.PointCloud(points)      
+                pcd.transform(transform_to_center)
+                pcd.transform(transformation)      
+                pcd.transform(transform_back )
+                self._orientedBoundingBox=o3d.geometry.OrientedBoundingBox.create_from_points(pcd.points)
+            
+            #convex hull
+            if self._convexHull is not None:
+                transform_to_center = gmu.get_cartesian_transform (translation=-self._convexHull.get_center() )
+                transform_back = gmu.get_cartesian_transform (translation=self._convexHull.get_center() )
+                self._convexHull.transform(transform_to_center)
+                self._convexHull.transform( transformation)
+                self._convexHull.transform(transform_back)
+                            
+        else:
+            #cartesian transformation                
+            self._cartesianTransform = transformation @ self.cartesianTransform 
+            
+            #resource
+            self._resource.transform(transformation) if self._resource is not None else None
+            
+            #oriented bounding box
+            if self._orientedBoundingBox is not None:
+                points=self._orientedBoundingBox.get_box_points()
+                pcd=o3d.geometry.PointCloud(points)            
+                pcd.transform(transformation )
+                self._orientedBoundingBox=o3d.geometry.OrientedBoundingBox.create_from_points(pcd.points)
+            
+            #convex hull
+            self._convexHull.transform( transformation ) if self._convexHull is not None else None
+    
 ###############################################

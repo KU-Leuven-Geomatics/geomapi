@@ -565,7 +565,7 @@ class PanoNode(ImageNode):
 #         # else:
 #         #     raise ValueError ('subject not in xml file') 
 
-#     def set_cartesianTransform(self,value):
+#     def set_cartesian_transform(self,value):
 #         """Set the cartesianTransform of the ImageNode from various inputs.
         
 #         Args:

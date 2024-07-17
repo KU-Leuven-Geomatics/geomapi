@@ -1216,6 +1216,7 @@ def e57_to_pcd(e57:pye57.e57.E57,e57Index : int = 0,percentage:float=1.0)->o3d.g
     
     #get transformation
     cartesianTransform=e57_get_cartesian_transform(header)
+    
 
     #get raw geometry (no transformation)
     rawData = e57.read_scan_raw(e57Index)    
@@ -1251,7 +1252,7 @@ def e57_to_pcd(e57:pye57.e57.E57,e57Index : int = 0,percentage:float=1.0)->o3d.g
         pcd.normals=o3d.utility.Vector3dVector(normals)
 
     #return transformed data
-    pcd.transform(cartesianTransform)    
+    pcd.transform(cartesianTransform)    if cartesianTransform is not None else None
     return pcd
 
 def arrays_to_mesh(tuple) -> o3d.geometry.TriangleMesh:
@@ -1379,7 +1380,7 @@ def e57_get_xyz_from_raw_data(rawData: dict)->np.ndarray:
     pointArray=np.reshape(np.vstack(( x,y,z)).flatten('F'),(len(x),3))
     return pointArray
 
-def e57_get_cartesianTransform(header)-> np.array:
+def e57_get_cartesian_transform(header)-> np.array:
     """Returns the cartesianTransform from an e57 header.\n
 
     Args:
@@ -1423,7 +1424,7 @@ def e57_to_arrays(e57Path:str,e57Index : int = 0,percentage:float=1.0,tasknr:int
     
     #get transformation
     header = e57.get_header(e57Index)    
-    cartesianTransform= e57_get_cartesianTransform(header)
+    cartesianTransform= e57_get_cartesian_transform(header)
     
     #get points    
     rawData = e57.read_scan_raw(e57Index)    
@@ -1646,46 +1647,47 @@ def generate_visual_cone_from_image(cartesianTransform : np.array, height : floa
     else:
         raise ValueError("The given cartesianTransform is not a 4x4 np.array") 
 
-def get_cartesian_transform(rotation: np.array= None, 
-                            translation:  np.array=  None,
-                            cartesianBounds:  np.array= None ) -> np.ndarray:
-    """Return cartesianTransform from rotation, translation or cartesianBounds inputs.\n
+def get_cartesian_transform(translation: np.array = None,
+                            rotation: np.array = None                            
+                            ) -> np.ndarray:
+    """Return cartesianTransform from rotation, translation or cartesianBounds inputs.
 
     Args:
-        1. rotation (np.array[3x3]) : rotation matrix\n
-        2. translation (np.array[1x3]) : translation vector\n
-        3. cartesianBounds (np.array[1x6]) : [xMin,xMax,yMin,yMax,zMin,zMax]\n
+        translation (Optional[np.ndarray]): A 3-element translation vector.
+        rotation (Optional[Union[np.ndarray, Tuple[float, float, float]]]): A 3x3 rotation matrix or Euler angles $(R_x,R_y,R_z)$ for rotation.
+        
 
     Returns:
-        cartesianTransform (np.array[4x4])
+        cartesianTransform (np.ndarray): A 4x4 transformation matrix.
     """   
-    r=np.diag(np.diag(np.ones((3,3))))
-    t=np.zeros((3,1))
-    c=np.zeros((6,1))
+    # Initialize identity rotation matrix and zero translation vector
+    r = np.eye(3)
+    t = np.zeros((3, 1))
 
+    # Update rotation matrix if provided
     if rotation is not None:
-        if rotation.size==9:
-            r=rotation
-            r=np.reshape(r,(3, 3))
+        rotation=np.asarray(rotation)
+        if rotation.size == 3:
+            r = R.from_euler('xyz', rotation,degrees=True).as_matrix()
+        elif rotation.size == 9:
+            r = np.reshape(np.asarray(rotation), (3, 3))
         else:
-            raise ValueError("The rotation is not a 3x3 np.array")
+            raise ValueError("Rotation must be either a 3x3 matrix or a tuple/list of three Euler angles.")
+
+    # Update translation vector if provided
     if translation is not None:
-        if translation.size==3:
-            t=translation
-            t=np.reshape(t,(3, 1))  
-        else:
-            raise ValueError("The translation is not a 3x1 np.array")      
-    elif cartesianBounds is not None:
-        if cartesianBounds.size==6:
-            t=get_translation(cartesianBounds)    
-            t=np.reshape(t,(3, 1))
-        else:
-            raise ValueError("The cartesianBounds is not a 6x1 np.array")
-    h= np.zeros((1,4))
-    h[0,3]=1
-    transform= np.concatenate((r,t),axis=1,dtype=float)
-    transform= np.concatenate((transform,h),axis=0,dtype=float)
-    return transform
+        t = np.reshape(np.asarray(translation), (3, 1))
+
+    # Create the last row of the transformation matrix
+    h = np.array([[0, 0, 0, 1]])
+
+    # Concatenate rotation and translation to form the 3x4 upper part of the transformation matrix
+    transformation = np.hstack((r, t))
+
+    # Add the last row to make it a 4x4 matrix
+    transformation = np.vstack((transformation, h))
+
+    return transformation
 
 def mesh_to_pcd(mesh:o3d.geometry.TriangleMesh,voxelSize : float = 0.1) -> o3d.geometry.PointCloud:
     """Sample a point cloud on a triangle mesh (Open3D).\n

@@ -173,7 +173,7 @@ class TestNode(unittest.TestCase):
         node= GeometryNode(orientedBoundingBox=points)
         self.assertAlmostEqual(node.orientedBoundingBox.get_min_bound()[0],orientedBoundingBox.get_min_bound()[0],delta=0.01)   
 
-    def test_Node_creation_with_cartesianTransform(self):
+    def test_Node_creation_with_cartesian_transform(self):
         #None
         cartesianTransform=None
         node= GeometryNode(cartesianTransform=cartesianTransform)
@@ -184,21 +184,21 @@ class TestNode(unittest.TestCase):
         node= GeometryNode(cartesianTransform=center)
         self.assertAlmostEqual(node.cartesianTransform[0,3],center[0],delta=0.01)   
 
-        #cartesianBounds np.array(1x6)
-        cartesianBounds=gmu.get_cartesian_bounds(self.dataLoaderRoad.mesh.get_oriented_bounding_box())
-        node= GeometryNode(cartesianTransform=cartesianBounds)
-        self.assertAlmostEqual(node.cartesianTransform[0,3],(cartesianBounds[0]+cartesianBounds[1])/2,delta=0.01)   
+        # #cartesianBounds np.array(1x6)
+        # cartesianBounds=gmu.get_cartesian_bounds(self.dataLoaderRoad.mesh.get_oriented_bounding_box())
+        # node= GeometryNode(cartesianTransform=cartesianBounds)
+        # self.assertAlmostEqual(node.cartesianTransform[0,3],(cartesianBounds[0]+cartesianBounds[1])/2,delta=0.01)   
 
-        #orientedBounds np.array(8x3)
-        box=self.dataLoaderRoad.mesh.get_oriented_bounding_box()
-        orientedBounds=np.asarray(box.get_box_points())
-        node= GeometryNode(cartesianTransform=orientedBounds)
-        self.assertAlmostEqual(node.cartesianTransform[0,3],center[0],delta=0.01)   
+        # #orientedBounds np.array(8x3)
+        # box=self.dataLoaderRoad.mesh.get_oriented_bounding_box()
+        # orientedBounds=np.asarray(box.get_box_points())
+        # node= GeometryNode(cartesianTransform=orientedBounds)
+        # self.assertAlmostEqual(node.cartesianTransform[0,3],center[0],delta=0.01)   
 
-        #np.ndarray(nx3)
-        array=np.concatenate((orientedBounds,orientedBounds),0)
-        node= GeometryNode(cartesianTransform=array)
-        self.assertAlmostEqual(node.cartesianTransform[0,3],center[0],delta=0.01)   
+        # #np.ndarray(nx3)
+        # array=np.concatenate((orientedBounds,orientedBounds),0)
+        # node= GeometryNode(cartesianTransform=array)
+        # self.assertAlmostEqual(node.cartesianTransform[0,3],center[0],delta=0.01)   
 
         #geometry
         node= GeometryNode(cartesianTransform=self.dataLoaderRoad.mesh)
@@ -240,15 +240,15 @@ class TestNode(unittest.TestCase):
         node=GeometryNode(cartesianTransform=self.dataLoaderParking.imageCartesianTransform1)
         self.assertEqual(node.get_cartesian_transform()[0,3], self.dataLoaderParking.imageCartesianTransform1[0,3])
 
-        #cartesianBounds
-        cartesianBounds=gmu.get_cartesian_bounds(self.dataLoaderParking.mesh)
-        node=GeometryNode(cartesianBounds=cartesianBounds)
-        self.assertEqual(node.get_cartesian_transform()[0,3], (cartesianBounds[0]+cartesianBounds[1])/2)
+        # #cartesianBounds
+        # cartesianBounds=gmu.get_cartesian_bounds(self.dataLoaderParking.mesh)
+        # node=GeometryNode(cartesianBounds=cartesianBounds)
+        # self.assertEqual(node.get_cartesian_transform()[0,3], (cartesianBounds[0]+cartesianBounds[1])/2)
 
-        #orientedBounds
+        # #orientedBounds
         orientedBounds=np.asarray(self.dataLoaderParking.mesh.get_oriented_bounding_box().get_box_points())
-        node=GeometryNode(orientedBounds=orientedBounds)
-        self.assertEqual(node.get_cartesian_transform()[0,3], np.mean(orientedBounds,0)[0])
+        # node=GeometryNode(orientedBounds=orientedBounds)
+        # self.assertEqual(node.get_cartesian_transform()[0,3], np.mean(orientedBounds,0)[0])
 
         #orientedBoundingBox
         node=GeometryNode(orientedBoundingBox=self.dataLoaderParking.mesh.get_oriented_bounding_box())

@@ -237,7 +237,7 @@ class GeometryNode (Node):
             return None
         return self._orientedBoundingBox
 
-    def set_cartesianTransform(self,value):
+    def set_cartesian_transform(self,value):
         """Set the cartesianTransform of the node from various inputs.\n
         
         Args:
@@ -247,20 +247,20 @@ class GeometryNode (Node):
             4. np.ndarray or Vector3dVector (8x3 or nx3)\n
             5. Open3D.geometry\n
         """        
-        try: #np.ndarray (4x4) 
+        try: #1. np.ndarray (4x4) 
             self._cartesianTransform=np.reshape(value,(4,4))
         except:
-            try: #np.ndarray or Vector3dVector (1x3)  
+            try: #2. np.ndarray or Vector3dVector (1x3)  
                 self._cartesianTransform=gmu.get_cartesian_transform(translation=np.asarray(value))
             except:  
-                try: # cartesianBounds (np.ndarray (6x1))
-                    self._cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=np.asarray(value))
-                except:
-                    try: # np.ndarray or Vector3dVector (8x3 or nx3)
+                # try: #3. cartesianBounds (np.ndarray (6x1))
+                #     self._cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=np.asarray(value))
+                # except:
+                    try: #4. np.ndarray or Vector3dVector (8x3 or nx3)
                         center=np.mean(np.asarray(value),0)
                         self._cartesianTransform=gmu.get_cartesian_transform(translation=center)
                     except:
-                        try: # Open3D.geometry
+                        try: #5. Open3D.geometry
                             self._cartesianTransform=gmu.get_cartesian_transform(translation=value.get_center())
                         except:
                             raise ValueError('Input must be np.ndarray(6x1,4x4,3x1,nx3), an Open3D geometry or a list of Vector3dVector objects.')
@@ -280,8 +280,8 @@ class GeometryNode (Node):
         """
         if self._cartesianTransform is not None:
             pass
-        elif self._cartesianBounds is not None:
-            self._cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=self._cartesianBounds)
+        # elif self._cartesianBounds is not None:
+        #     self._cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=self._cartesianBounds)
         elif self._orientedBounds is not None:
             center=np.mean(self._orientedBounds,0)
             self._cartesianTransform=gmu.get_cartesian_transform(translation=center)

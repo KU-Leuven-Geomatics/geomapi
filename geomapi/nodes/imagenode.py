@@ -678,7 +678,7 @@ class ImageNode(Node):
         # else:
         #     raise ValueError ('subject not in xml file') 
 
-    def set_cartesianTransform(self,value):
+    def set_cartesian_transform(self,value):
         """Set the cartesianTransform of the ImageNode from various inputs.
         
         Args:
@@ -694,9 +694,9 @@ class ImageNode(Node):
             try: #np.ndarray or Vector3dVector (1x3)  
                 self._cartesianTransform=gmu.get_cartesian_transform(translation=np.asarray(value))
             except:  
-                try: # cartesianBounds (np.ndarray (6x1))
-                    self._cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=np.asarray(value))
-                except:
+                # try: # cartesianBounds (np.ndarray (6x1))
+                #     self._cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=np.asarray(value))
+                # except:
                     try: # np.ndarray or Vector3dVector (8x3 or nx3)
                         center=np.mean(np.asarray(value),0)
                         self._cartesianTransform=gmu.get_cartesian_transform(translation=center)
@@ -723,8 +723,8 @@ class ImageNode(Node):
             pass
         elif getattr(self,'cartesianTransform',None) is not None:
             self._cartesianTransform = np.reshape(self.cartesianTransform, (4,4))
-        elif getattr(self,'_cartesianBounds',None) is not None:
-            self._cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=self._cartesianBounds)
+        # elif getattr(self,'_cartesianBounds',None) is not None:
+        #     self._cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=self._cartesianBounds)
         elif getattr(self,'_orientedBounds',None) is not None:
             center=np.mean(self._orientedBounds,0)
             self._cartesianTransform=gmu.get_cartesian_transform(translation=center)
