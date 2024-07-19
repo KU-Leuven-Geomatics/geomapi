@@ -1,0 +1,199 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.tools.validationtools.geomapi_updates &mdash; Geomapi 0.3.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=1e28cc32"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/functionality.html">Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_geometrynodes.html">GeometryNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_sessionnodes.html">SessionNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+<li class="toctree-l1"><a class="reference external" href="`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_">`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">geomapi.tools.validationtools.geomapi_updates</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.tools.validationtools.geomapi_updates.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.tools.validationtools.geomapi_updates">
+<span id="geomapi-tools-validationtools-geomapi-updates"></span><h1>geomapi.tools.validationtools.geomapi_updates<a class="headerlink" href="#module-geomapi.tools.validationtools.geomapi_updates" title="Link to this heading"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.geomapi_updates.decode_depthmap">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.geomapi_updates.</span></span><span class="sig-name descname"><span class="pre">decode_depthmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(8192,</span> <span class="pre">4096)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.geomapi_updates.decode_depthmap" title="Link to this definition"></a></dt>
+<dd><p>Function to decode the depthmaps generated by the navvis processing
+source: Location of the PNG files containing the depthmap
+resize(bool): If the resulting dethmap needs to be resized to match the size of the corresponding pano, by default True
+size: size of the corresponding pano, by default 8192x4096</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.geomapi_updates.plot_pano_positions">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.geomapi_updates.</span></span><span class="sig-name descname"><span class="pre">plot_pano_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">panos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.geomapi_updates.plot_pano_positions" title="Link to this definition"></a></dt>
+<dd><p>ppcs: list of PanoPoseCollection
+headings: boolean (default: False) - plots headings as vectors
+with size 1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.geomapi_updates.get_heading">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.geomapi_updates.</span></span><span class="sig-name descname"><span class="pre">get_heading</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orientation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.geomapi_updates.get_heading" title="Link to this definition"></a></dt>
+<dd><p>Heading measured as angle from x to y axis. In equirectangular format
+this is the center of the pano. Headings are always positive to
+simplify subsequent calculations.</p>
+<p>See ‘<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.html</a>’</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.geomapi_updates.get_zenit">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.geomapi_updates.</span></span><span class="sig-name descname"><span class="pre">get_zenit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orientation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.geomapi_updates.get_zenit" title="Link to this definition"></a></dt>
+<dd><p>Angle with the vertical</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.geomapi_updates.navvis_csv_to_nodes">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.geomapi_updates.</span></span><span class="sig-name descname"><span class="pre">navvis_csv_to_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csvPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">panoPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includeDepth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depthPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filterByFolder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode" title="geomapi.nodes.panonode.PanoNode"><span class="pre">PanoNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.geomapi_updates.navvis_csv_to_nodes" title="Link to this definition"></a></dt>
+<dd><p>Parse Navvis csv file and output a set of PanoNodes</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>csvPath (str): csv file path e.g. “D:/Data/pano/pano-poses.csv”
+panoPath (str, optional): _description_. Defaults to None.
+includeDepth (bool, optional): _description_. Defaults to True.
+depthPath (str, optional): _description_. Defaults to None.
+skip (int, optional): select every nth image from the xml. Defaults to None.
+filterByFolder (bool, optional): _description_. Defaults to True.</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[panonode.PanoNode]:</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

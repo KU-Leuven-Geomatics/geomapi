@@ -1,0 +1,639 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.nodes.imagenode &mdash; Geomapi 0.3.4 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=1e28cc32"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.nodes.linesetnode" href="geomapi.nodes.linesetnode.html" />
+    <link rel="prev" title="geomapi.nodes.geometrynode" href="geomapi.nodes.geometrynode.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/functionality.html">Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.bimnode.html">geomapi.nodes.bimnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.geometrynode.html">geomapi.nodes.geometrynode</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.nodes.imagenode</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode"><code class="docutils literal notranslate"><span class="pre">ImageNode</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.__init__"><code class="docutils literal notranslate"><span class="pre">ImageNode.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.xmlPath"><code class="docutils literal notranslate"><span class="pre">ImageNode.xmlPath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.xmpPath"><code class="docutils literal notranslate"><span class="pre">ImageNode.xmpPath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.orientedBoundingBox"><code class="docutils literal notranslate"><span class="pre">ImageNode.orientedBoundingBox</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.set_resource"><code class="docutils literal notranslate"><span class="pre">ImageNode.set_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_resource"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_path"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_xmp_path"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_xmp_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.save_resource"><code class="docutils literal notranslate"><span class="pre">ImageNode.save_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_oriented_bounding_box"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_oriented_bounding_box()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_image_features"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_image_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_resource"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_metadata_from_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_mesh_geometry"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_mesh_geometry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_virtual_image"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_virtual_image()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_pinhole_camera_parameters"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_pinhole_camera_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_intrinsic_camera_parameters"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_intrinsic_camera_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_exif_data"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_metadata_from_exif_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_xmp_path"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_metadata_from_xmp_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_xml_path"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_metadata_from_xml_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.set_cartesian_transform"><code class="docutils literal notranslate"><span class="pre">ImageNode.set_cartesian_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_cartesian_transform"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_cartesian_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.create_rays"><code class="docutils literal notranslate"><span class="pre">ImageNode.create_rays()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.world_to_pixel_coordinates"><code class="docutils literal notranslate"><span class="pre">ImageNode.world_to_pixel_coordinates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.project_lineset_on_image"><code class="docutils literal notranslate"><span class="pre">ImageNode.project_lineset_on_image()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.mask_image"><code class="docutils literal notranslate"><span class="pre">ImageNode.mask_image()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.linesetnode.html">geomapi.nodes.linesetnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.meshnode.html">geomapi.nodes.meshnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.node.html">geomapi.nodes.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.orthonode.html">geomapi.nodes.orthonode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html">geomapi.nodes.pointcloudnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.sessionnode.html">geomapi.nodes.sessionnode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_geometrynodes.html">GeometryNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_sessionnodes.html">SessionNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+<li class="toctree-l1"><a class="reference external" href="`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_">`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.nodes.html">geomapi.nodes</a></li>
+      <li class="breadcrumb-item active">geomapi.nodes.imagenode</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.nodes.imagenode.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.nodes.imagenode">
+<span id="geomapi-nodes-imagenode"></span><h1>geomapi.nodes.imagenode<a class="headerlink" href="#module-geomapi.nodes.imagenode" title="Link to this heading"></a></h1>
+<p>ImageNode is a Python Class to govern the data and metadata of image data (OpenCV, PIL).</p>
+<p>This node builds upon the OpenCV and PIL API for the image definitions.
+It directly inherits from Node.
+Be sure to check the properties defined in the above classes to initialise the Node.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geomapi.nodes.imagenode.</span></span><span class="sig-name descname"><span class="pre">ImageNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmpPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmlPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getResource</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getMetaData</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node" title="geomapi.nodes.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmpPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmlPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getResource</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">getMetaData</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.__init__" title="Link to this definition"></a></dt>
+<dd><p>Creates a Node from one or more of the following inputs.
+By default, no data is imported in the Node to speed up processing.
+If you also want the data, call node.get_resource() or set getResource() to True.</p>
+<p>Args:</p>
+<blockquote>
+<div><ol class="arabic simple">
+<li><p>graph (RDFlib Graph) : Graph with a single subject (if multiple subjects are present, only the first will be used to initialise the MeshNode)</p></li>
+<li><p>graphPath (str):  Graph file path with a single subject (if multiple subjects are present, only the first will be used to initialise the MeshNode)</p></li>
+<li><p>path (str) : path to image file (Note that this node will also contain the data)</p></li>
+<li><p>resource (ndarray, PIL Image,Open3D) : OpenCV, PIL (Note that this node will also contain the data)</p></li>
+<li><p>xmlPath (str) : Xml file path from Agisoft Metashape</p></li>
+<li><p>xmpPath (str) :  xmp file path from RealityCapture</p></li>
+</ol>
+<ul class="simple">
+<li><p>getResource (bool, optional= False): If True, the node will search for its physical resource on drive</p></li>
+<li><p>getMetaData (bool, optional= True): If True, the node will attempt to extract metadata from the resource if present</p></li>
+</ul>
+</div></blockquote>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>An ImageNode with metadata</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.xmlPath">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xmlPath</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.xmlPath" title="Link to this definition"></a></dt>
+<dd><p>Get the xmlPath (str) of the node.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.xmpPath">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xmpPath</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.xmpPath" title="Link to this definition"></a></dt>
+<dd><p>Get the xmpPath (str) of the node.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.orientedBoundingBox">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">orientedBoundingBox</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.orientedBoundingBox" title="Link to this definition"></a></dt>
+<dd><p>Get the orientedBoundingBox of the Node from various inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>Open3D.geometry.OrientedBoundingBox</p></li>
+<li><p>Open3D geometry</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>orientedBoundingBox (o3d.geometry.OrientedBoundingBox)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.set_resource">
+<span class="sig-name descname"><span class="pre">set_resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.set_resource" title="Link to this definition"></a></dt>
+<dd><p>Set the resource of the Node from various inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>np.ndarray (OpenCV)</p></li>
+<li><p>PIL Image</p></li>
+<li><p>Open3D Image</p></li>
+</ol>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: Resource must be np.ndarray (OpenCV), PIL Image or Open3D Image.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_resource">
+<span class="sig-name descname"><span class="pre">get_resource</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_resource" title="Link to this definition"></a></dt>
+<dd><p>Returns the resource (image) in the node.
+If none is present, it will search for the data on drive from the following inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>self.path</p></li>
+<li><p>self.graphPath</p></li>
+<li><p>self.name or self.subject</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>np.ndarray or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_path">
+<span class="sig-name descname"><span class="pre">get_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_path" title="Link to this definition"></a></dt>
+<dd><p>Returns the full path of the resource.
+If none is present, it will search for the data on drive from the following inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>self.graphPath</p></li>
+<li><p>self.name</p></li>
+<li><p>self.subject</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>resource path (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_xmp_path">
+<span class="sig-name descname"><span class="pre">get_xmp_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_xmp_path" title="Link to this definition"></a></dt>
+<dd><p>Returns the xmpPath in the node.
+If none is present, it will search for the data on drive from the following inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>self.graphPath</p></li>
+<li><p>self.name</p></li>
+<li><p>self.subject</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>str or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.save_resource">
+<span class="sig-name descname"><span class="pre">save_resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.png'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.save_resource" title="Link to this definition"></a></dt>
+<dd><p>Export the resource of the Node.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>directory (str, optional): directory folder to store the data.</p></li>
+<li><p>extension (str, optional): file extension. Defaults to ‘.png’.</p></li>
+</ol>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: Unsuitable extension. Please check permitted extension types in utils._init_.</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: return True if export was succesful</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_oriented_bounding_box">
+<span class="sig-name descname"><span class="pre">get_oriented_bounding_box</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.OrientedBoundingBox</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_oriented_bounding_box" title="Link to this definition"></a></dt>
+<dd><p>Gets the Open3D OrientedBoundingBox of the node from the conical mesh representation based on the
+cartesianTransform, the focal length at 35mm and a viewing range.</p>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>o3d.geometry.orientedBoundingBox</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_image_features">
+<span class="sig-name descname"><span class="pre">get_image_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">featureType</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Orb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_image_features" title="Link to this definition"></a></dt>
+<dd><p>Get the keypoints and the descriptors of this Nodes Image resource</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>featureType (str, optional): The featuretype to detect, use: orb, sift. Defaults to “Orb”.
+max (int, optional): The max features to detect. Defaults to 1000.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Tuple[np.array, np.array]: The keypoints and the descriptors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_metadata_from_resource">
+<span class="sig-name descname"><span class="pre">get_metadata_from_resource</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_resource" title="Link to this definition"></a></dt>
+<dd><p>Returns the metadata from a resource.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>imageHeight</p></li>
+<li><p>imageWidth</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if exif data is successfully parsed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_mesh_geometry">
+<span class="sig-name descname"><span class="pre">get_mesh_geometry</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">focalLength35mm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">24</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.TriangleMesh</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_mesh_geometry" title="Link to this definition"></a></dt>
+<dd><p>Generate a concical mesh representation using the Image’s cartesianTransform and focalLength35mm.</p>
+<img alt="../_images/virtual_image2.PNG" src="../_images/virtual_image2.PNG" />
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>depth (float, optional): Viewing depth of the image. Defaults to 10m.</p></li>
+<li><p>focalLength35mm (float,optional): standardised focal length on 35mm film (w=36mm, h = 24mm)</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.TriangleMesh</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_virtual_image">
+<span class="sig-name descname"><span class="pre">get_virtual_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">downsampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.Image</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_virtual_image" title="Link to this definition"></a></dt>
+<dd><p>Generates a virtual image of a set of geometries given the ImageNode’s pose and piholeModel.</p>
+<img alt="../_images/rendering3.PNG" src="../_images/rendering3.PNG" />
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>geometries (o3d.geometry): geometries to include in the scene of the virtual image.</p></li>
+<li><p>downsampling (int, optional): pixel downsampling of the image both in height and width (each step reduces the density by factor 4). Defaults to 2.</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.Image or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_pinhole_camera_parameters">
+<span class="sig-name descname"><span class="pre">get_pinhole_camera_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">downsampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.camera.PinholeCameraParameters</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_pinhole_camera_parameters" title="Link to this definition"></a></dt>
+<dd><p>Returns the intrinsic and extrinsix camera parameters based on the following attributes.</p>
+<img alt="../_images/pinholemodel1.PNG" src="../_images/pinholemodel1.PNG" />
+<dl>
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>self.imageWidth: width of the image in pixels (u)</p></li>
+<li><p>self.imageHeight: height of the image in pixels (v)</p></li>
+<li><p>self.focalLength35mm: focal length with a standardised Field-of-View.</p></li>
+<li><p>self.cartesianTransform: the inverted transform equals the external camera pose.</p></li>
+</ol>
+<ol class="arabic simple" start="2">
+<li><p>downsampling (int, optional): pixel downsampling of the image both in height and width (each step reduces the density by factor 4). Defaults to 2.</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.camera.PinholeCameraParameters()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_intrinsic_camera_parameters">
+<span class="sig-name descname"><span class="pre">get_intrinsic_camera_parameters</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">downsampling</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.camera.PinholeCameraIntrinsic</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_intrinsic_camera_parameters" title="Link to this definition"></a></dt>
+<dd><p>Returns the intrinsic camera parameters based on the following attributes.</p>
+<dl>
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>self.imageWidth: width of the image in pixels (u). Defaults to 640p</p></li>
+<li><p>self.imageHeight: height of the image in pixels (v). Defaults to 480p</p></li>
+<li><p>self.focalLength35mm: focal length with a standardised Field-of-View. Defaults to 25mm</p></li>
+<li><p>self.PrincipalPointU: cx</p></li>
+</ol>
+<ol class="arabic simple" start="4">
+<li><p>self.PrincipalPointV: cy</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.camera.PinholeCameraIntrinsic(width,height,fx,fy,cx,cy)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_metadata_from_exif_data">
+<span class="sig-name descname"><span class="pre">get_metadata_from_exif_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_exif_data" title="Link to this definition"></a></dt>
+<dd><p>Returns the metadata from a resource.</p>
+<dl>
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>GPSInfo (geospatialTransform (np.array(3,1))</p></li>
+<li><p>coordinateSystem (str)</p></li>
+</ol>
+<ol class="arabic simple" start="2">
+<li><p>DateTime (‘%Y-%m-%dT%H:%M:%S’)</p></li>
+<li><p>XResolution (int)</p></li>
+<li><p>YResolution (int)</p></li>
+<li><p>ResolutionUnit (int)</p></li>
+<li><p>ExifImageWidth (int)</p></li>
+<li><p>ExifImageHeight (int)</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if meta data is successfully parsed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_metadata_from_xmp_path">
+<span class="sig-name descname"><span class="pre">get_metadata_from_xmp_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_xmp_path" title="Link to this definition"></a></dt>
+<dd><p>Read Metadata from .xmp file generated by <a class="reference external" href="https://www.capturingreality.com/">https://www.capturingreality.com/</a>.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>geospatialTransform (np.array(3x1))</p></li>
+<li><p>coordinateSystem (str)</p></li>
+<li><p>focalLength35mm (float)</p></li>
+<li><p>principalPointU (float)</p></li>
+<li><p>principalPointV (float)</p></li>
+<li><p>cartesianTransform (np.array(4x4))</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if metadata is sucesfully parsed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_metadata_from_xml_path">
+<span class="sig-name descname"><span class="pre">get_metadata_from_xml_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_xml_path" title="Link to this definition"></a></dt>
+<dd><p>Extract image metadata from XML Node generated by Agisoft Metashape (self.xmlData and self.subject should be present).</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>cartesianTransform (np.array(4x4))</p></li>
+<li><p>sxy: accuracy in XY (m)</p></li>
+<li><p>sz: accuracy in Z (m)</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if metadata is successfully parsed</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.set_cartesian_transform">
+<span class="sig-name descname"><span class="pre">set_cartesian_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.set_cartesian_transform" title="Link to this definition"></a></dt>
+<dd><p>Set the cartesianTransform of the ImageNode from various inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>cartesianTransform(np.ndarray(4x4))</p></li>
+<li><p>np.ndarray or Vector3dVector (1x3)</p></li>
+<li><p>cartesianBounds (np.ndarray (6x1))</p></li>
+<li><p>np.ndarray or Vector3dVector (8x3 or nx3)</p></li>
+<li><p>Open3D.geometry</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_cartesian_transform">
+<span class="sig-name descname"><span class="pre">get_cartesian_transform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_cartesian_transform" title="Link to this definition"></a></dt>
+<dd><p>Get the cartesianTransform from various inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>self.cartesianBounds (np.array(6x1))</p></li>
+<li><p>self.orientedBounds (np.array(8x3)) or a list of Vector3dVector objects</p></li>
+<li><p>orientedBoundingBox</p></li>
+<li><p>Open3D.geometry</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>cartesianTransform(np.ndarray(4x4))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.create_rays">
+<span class="sig-name descname"><span class="pre">create_rays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imagePoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.core.Tensor</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.create_rays" title="Link to this definition"></a></dt>
+<dd><p>Generate a grid a rays from the camera location to a given set of imagePoints.</p>
+<p><strong>NOTE</strong>: This function targets a subselection of imagePoints, use o3d.t.geometry.RaycastingScene.create_rays_pinhole if you want a dense raytracing for the full image.</p>
+<img alt="../_images/Raycasting_1.PNG" src="../_images/Raycasting_1.PNG" />
+<dl class="simple">
+<dt>Args:</dt><dd><p>imagePoints (np.array[n,2]): imagePoints are conform uv image coordinates system. so top left is (0,0). The camera intrinsic matrix is used to map it to the proper image coordinates.</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.core.Tensor (n,6): [:,0:3] is the camera center and [:,3:6] are the directions of the rays towards the imagePoints.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.world_to_pixel_coordinates">
+<span class="sig-name descname"><span class="pre">world_to_pixel_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">world_coordinates</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.world_to_pixel_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Converts 3D world coordinates to pixel coordinates in an image.</p>
+<p>This function takes 3D world coordinates and converts them to pixel coordinates in an image. It uses camera parameters such as the transformation matrix, focal length, image width, and image height.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>world_coordinates (np.ndarray): A 3D point in world coordinates to be converted.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.ndarray: A 2D array containing the pixel coordinates (row, column) in the image.</p>
+</dd>
+<dt>Example:</dt><dd><p>n = CameraParameters()  # Initialize camera parameters object
+point_world = np.array([x, y, z])  # 3D point in world coordinates
+pixel_coordinates = world_to_pixel(n, point_world)</p>
+</dd>
+<dt>Note:</dt><dd><ul class="simple">
+<li><p>The function performs a series of transformations, including world to camera, camera to image, and image centering.</p></li>
+<li><p>It returns the pixel coordinates as a 2D array.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.project_lineset_on_image">
+<span class="sig-name descname"><span class="pre">project_lineset_on_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linesets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.LineSet</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorList</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.project_lineset_on_image" title="Link to this definition"></a></dt>
+<dd><p>Project Opend3D linesets onto the resource of the ImageNode.</p>
+<p><strong>NOTE</strong>: this affects the original image</p>
+<p>This function takes a list of images (<cite>imgNodes</cite>) and their associated additional lines represented by beginning and ending points in homogeneous coordinates. It annotates the additional lines on each image and saves the annotated images to an output directory.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>linesets (List[o3d.LineSet]): List[m] of linesets
+colorList (List[np.array]): mx3 array with colors [0;1]</p>
+</dd>
+<dt>Returns:</dt><dd><p>list: A list of image nodes with additional line information.</p>
+</dd>
+<dt>Example:</dt><dd><p>hom_begin_points_ad = [[point1, point2, …], [point1, point2, …], …]  # List of homogeneous coordinates of beginning points
+hom_end_points_ad = [[point1, point2, …], [point1, point2, …], …]  # List of homogeneous coordinates of ending points
+imgNodes = [ImageNode1, ImageNode2, …]  # List of image nodes
+ImagePath = “path/to/image_directory”
+output = “path/to/output_directory”
+updated_imgNodes = saveImageAdLine(hom_begin_points_ad, hom_end_points_ad, imgNodes, ImagePath, output)</p>
+</dd>
+<dt>Note:</dt><dd><ul class="simple">
+<li><p>The function annotates the additional lines on each image and saves the annotated images to the output directory.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.mask_image">
+<span class="sig-name descname"><span class="pre">mask_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">hom_end_points_ad</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imgNodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ImagePath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.mask_image" title="Link to this definition"></a></dt>
+<dd><p>Saves masked images with annotated additional lines.</p>
+<p>This function takes a list of images (<cite>imgNodes</cite>) and their associated additional lines represented by beginning and ending points in homogeneous coordinates. It annotates the additional lines on each image, masks the annotated regions, and saves the masked images to an output directory.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>hom_begin_points_ad (list): A list of lists, where each inner list contains the homogeneous coordinates of the beginning points of additional lines.
+hom_end_points_ad (list): A list of lists, where each inner list contains the homogeneous coordinates of the ending points of additional lines.
+imgNodes (list): A list of image nodes containing information about images.
+ImagePath (str): The path to the directory containing image files.
+output (str): The path to the output directory where masked images will be saved.</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: The path to the output directory containing the saved masked images.</p>
+</dd>
+<dt>Example:</dt><dd><p>hom_begin_points_ad = [[point1, point2, …], [point1, point2, …], …]  # List of homogeneous coordinates of beginning points
+hom_end_points_ad = [[point1, point2, …], [point1, point2, …], …]  # List of homogeneous coordinates of ending points
+imgNodes = [ImageNode1, ImageNode2, …]  # List of image nodes
+ImagePath = “path/to/image_directory”
+output = “path/to/output_directory”
+masked_images_dir = saveMaskedImage(hom_begin_points_ad, hom_end_points_ad, imgNodes, ImagePath, output)</p>
+</dd>
+<dt>Note:</dt><dd><ul class="simple">
+<li><p>The function annotates the additional lines on each image and creates masks for the annotated regions.</p></li>
+<li><p>It saves the masked images to the output directory and returns the path to the directory.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.nodes.geometrynode.html" class="btn btn-neutral float-left" title="geomapi.nodes.geometrynode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.nodes.linesetnode.html" class="btn btn-neutral float-right" title="geomapi.nodes.linesetnode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
