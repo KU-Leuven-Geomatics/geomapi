@@ -1,0 +1,1216 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.utils &mdash; Geomapi 0.3.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8da8c241"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.utils.cadutils" href="geomapi.utils.cadutils.html" />
+    <link rel="prev" title="geomapi.nodes.sessionnode" href="geomapi.nodes.sessionnode.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/functionality.html">Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">geomapi.utils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html">geomapi.utils.cadutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html">geomapi.utils.geometryutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geospatialutils.html">geomapi.utils.geospatialutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html">geomapi.utils.imageutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.time_funtion"><code class="docutils literal notranslate"><span class="pre">time_funtion()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_extension"><code class="docutils literal notranslate"><span class="pre">get_extension()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_min_average_and_max_value"><code class="docutils literal notranslate"><span class="pre">get_min_average_and_max_value()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.replace_str_index"><code class="docutils literal notranslate"><span class="pre">replace_str_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.random_color"><code class="docutils literal notranslate"><span class="pre">random_color()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.split_list"><code class="docutils literal notranslate"><span class="pre">split_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_folder_path"><code class="docutils literal notranslate"><span class="pre">get_folder_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_variables_in_class"><code class="docutils literal notranslate"><span class="pre">get_variables_in_class()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_list_of_files"><code class="docutils literal notranslate"><span class="pre">get_list_of_files()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_subject_graph"><code class="docutils literal notranslate"><span class="pre">get_subject_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_paths_in_class"><code class="docutils literal notranslate"><span class="pre">get_paths_in_class()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.parse_exif_gps_data"><code class="docutils literal notranslate"><span class="pre">parse_exif_gps_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.dms_to_dd"><code class="docutils literal notranslate"><span class="pre">dms_to_dd()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.dd_to_dms"><code class="docutils literal notranslate"><span class="pre">dd_to_dms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.parse_dms"><code class="docutils literal notranslate"><span class="pre">parse_dms()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_exif_data"><code class="docutils literal notranslate"><span class="pre">get_exif_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_filename"><code class="docutils literal notranslate"><span class="pre">get_filename()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_folder"><code class="docutils literal notranslate"><span class="pre">get_folder()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_timestamp"><code class="docutils literal notranslate"><span class="pre">get_timestamp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.literal_to_cartesianTransform"><code class="docutils literal notranslate"><span class="pre">literal_to_cartesianTransform()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.literal_to_array"><code class="docutils literal notranslate"><span class="pre">literal_to_array()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.literal_to_orientedBounds"><code class="docutils literal notranslate"><span class="pre">literal_to_orientedBounds()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.literal_to_float"><code class="docutils literal notranslate"><span class="pre">literal_to_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.literal_to_string"><code class="docutils literal notranslate"><span class="pre">literal_to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.literal_to_list"><code class="docutils literal notranslate"><span class="pre">literal_to_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.literal_to_int"><code class="docutils literal notranslate"><span class="pre">literal_to_int()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.literal_to_uriref"><code class="docutils literal notranslate"><span class="pre">literal_to_uriref()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.check_if_subject_is_in_graph"><code class="docutils literal notranslate"><span class="pre">check_if_subject_is_in_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_graph_intersection"><code class="docutils literal notranslate"><span class="pre">get_graph_intersection()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_graph_subject"><code class="docutils literal notranslate"><span class="pre">get_graph_subject()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.literal_to_linked_subjects"><code class="docutils literal notranslate"><span class="pre">literal_to_linked_subjects()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.string_to_list"><code class="docutils literal notranslate"><span class="pre">string_to_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.string_to_rotation_matrix"><code class="docutils literal notranslate"><span class="pre">string_to_rotation_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.xml_to_float"><code class="docutils literal notranslate"><span class="pre">xml_to_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.xcr_to_lat"><code class="docutils literal notranslate"><span class="pre">xcr_to_lat()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.xcr_to_long"><code class="docutils literal notranslate"><span class="pre">xcr_to_long()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.xcr_to_alt"><code class="docutils literal notranslate"><span class="pre">xcr_to_alt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.cartesianTransform_to_literal"><code class="docutils literal notranslate"><span class="pre">cartesianTransform_to_literal()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.featured3d_to_literal"><code class="docutils literal notranslate"><span class="pre">featured3d_to_literal()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.featured2d_to_literal"><code class="docutils literal notranslate"><span class="pre">featured2d_to_literal()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.item_to_list"><code class="docutils literal notranslate"><span class="pre">item_to_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.check_if_uri_exists"><code class="docutils literal notranslate"><span class="pre">check_if_uri_exists()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_subject_name"><code class="docutils literal notranslate"><span class="pre">get_subject_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.validate_string"><code class="docutils literal notranslate"><span class="pre">validate_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.parse_path"><code class="docutils literal notranslate"><span class="pre">parse_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.is_float"><code class="docutils literal notranslate"><span class="pre">is_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.is_int"><code class="docutils literal notranslate"><span class="pre">is_int()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.is_string"><code class="docutils literal notranslate"><span class="pre">is_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.is_uriref"><code class="docutils literal notranslate"><span class="pre">is_uriref()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_attribute_from_predicate"><code class="docutils literal notranslate"><span class="pre">get_attribute_from_predicate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.bind_ontologies"><code class="docutils literal notranslate"><span class="pre">bind_ontologies()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.clean_attributes_list"><code class="docutils literal notranslate"><span class="pre">clean_attributes_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.check_if_path_is_valid"><code class="docutils literal notranslate"><span class="pre">check_if_path_is_valid()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.validate_timestamp"><code class="docutils literal notranslate"><span class="pre">validate_timestamp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_node_resource_extensions"><code class="docutils literal notranslate"><span class="pre">get_node_resource_extensions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_node_type"><code class="docutils literal notranslate"><span class="pre">get_node_type()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.get_data_type"><code class="docutils literal notranslate"><span class="pre">get_data_type()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#geomapi.utils.match_uri"><code class="docutils literal notranslate"><span class="pre">match_uri()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_geometrynodes.html">GeometryNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_sessionnodes.html">SessionNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+<li class="toctree-l1"><a class="reference external" href="`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_">`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">geomapi.utils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.utils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="geomapi-utils">
+<h1>geomapi.utils<a class="headerlink" href="#geomapi-utils" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.cadutils.html">geomapi.utils.cadutils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.calculate_angle_between_lines"><code class="docutils literal notranslate"><span class="pre">calculate_angle_between_lines()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.calculate_perpendicular_distance"><code class="docutils literal notranslate"><span class="pre">calculate_perpendicular_distance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.ezdxf_entities_sample_point_cloud"><code class="docutils literal notranslate"><span class="pre">ezdxf_entities_sample_point_cloud()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.lines_to_o3d"><code class="docutils literal notranslate"><span class="pre">lines_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.circles_to_o3d"><code class="docutils literal notranslate"><span class="pre">circles_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.arcs_to_o3d"><code class="docutils literal notranslate"><span class="pre">arcs_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.ellipses_to_o3d"><code class="docutils literal notranslate"><span class="pre">ellipses_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.points_to_o3d"><code class="docutils literal notranslate"><span class="pre">points_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.splines_to_o3d"><code class="docutils literal notranslate"><span class="pre">splines_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.ezdxf_entities_to_o3d"><code class="docutils literal notranslate"><span class="pre">ezdxf_entities_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.ezdxf_to_o3d"><code class="docutils literal notranslate"><span class="pre">ezdxf_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.solids_to_o3d"><code class="docutils literal notranslate"><span class="pre">solids_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.lwpolylines_to_o3d"><code class="docutils literal notranslate"><span class="pre">lwpolylines_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.polylines_to_o3d"><code class="docutils literal notranslate"><span class="pre">polylines_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.meshes_to_o3d"><code class="docutils literal notranslate"><span class="pre">meshes_to_o3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.sample_pcd_from_linesets"><code class="docutils literal notranslate"><span class="pre">sample_pcd_from_linesets()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.get_linesets_inliers_in_box"><code class="docutils literal notranslate"><span class="pre">get_linesets_inliers_in_box()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.geometryutils.html">geomapi.utils.geometryutils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_visible_point_cloud_from_meshes"><code class="docutils literal notranslate"><span class="pre">create_visible_point_cloud_from_meshes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.mesh_to_trimesh"><code class="docutils literal notranslate"><span class="pre">mesh_to_trimesh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_mesh_by_convex_hull"><code class="docutils literal notranslate"><span class="pre">crop_mesh_by_convex_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.sample_geometry"><code class="docutils literal notranslate"><span class="pre">sample_geometry()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.mesh_sample_points_uniformly"><code class="docutils literal notranslate"><span class="pre">mesh_sample_points_uniformly()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.pcd_get_normals"><code class="docutils literal notranslate"><span class="pre">pcd_get_normals()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_points_and_normals"><code class="docutils literal notranslate"><span class="pre">get_points_and_normals()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.compute_nearest_neighbor_with_normal_filtering"><code class="docutils literal notranslate"><span class="pre">compute_nearest_neighbor_with_normal_filtering()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.compute_nearest_neighbors"><code class="docutils literal notranslate"><span class="pre">compute_nearest_neighbors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.filter_pcd_by_distance"><code class="docutils literal notranslate"><span class="pre">filter_pcd_by_distance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.filter_geometry_by_distance"><code class="docutils literal notranslate"><span class="pre">filter_geometry_by_distance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_indices_in_hull"><code class="docutils literal notranslate"><span class="pre">get_indices_in_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_points_in_hull"><code class="docutils literal notranslate"><span class="pre">get_points_in_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_mesh_representation"><code class="docutils literal notranslate"><span class="pre">get_mesh_representation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.mesh_get_lineset"><code class="docutils literal notranslate"><span class="pre">mesh_get_lineset()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.rays_to_points"><code class="docutils literal notranslate"><span class="pre">rays_to_points()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.project_meshes_to_rgbd_images"><code class="docutils literal notranslate"><span class="pre">project_meshes_to_rgbd_images()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.rays_to_lineset"><code class="docutils literal notranslate"><span class="pre">rays_to_lineset()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_mesh_collisions_trimesh"><code class="docutils literal notranslate"><span class="pre">get_mesh_collisions_trimesh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.divide_pcd_per_height"><code class="docutils literal notranslate"><span class="pre">divide_pcd_per_height()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_pcd_collisions"><code class="docutils literal notranslate"><span class="pre">get_pcd_collisions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_data3d_from_pcd"><code class="docutils literal notranslate"><span class="pre">get_data3d_from_pcd()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.arrays_to_pcd"><code class="docutils literal notranslate"><span class="pre">arrays_to_pcd()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_update_point_field"><code class="docutils literal notranslate"><span class="pre">e57_update_point_field()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.segment_pcd_by_connected_component"><code class="docutils literal notranslate"><span class="pre">segment_pcd_by_connected_component()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.describe_element"><code class="docutils literal notranslate"><span class="pre">describe_element()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.save_dataframe_as_ply"><code class="docutils literal notranslate"><span class="pre">save_dataframe_as_ply()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.color_by_intensity"><code class="docutils literal notranslate"><span class="pre">color_by_intensity()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.array_subsample"><code class="docutils literal notranslate"><span class="pre">array_subsample()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.las_subsample"><code class="docutils literal notranslate"><span class="pre">las_subsample()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.dataframe_to_las"><code class="docutils literal notranslate"><span class="pre">dataframe_to_las()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.las_add_extra_dimensions"><code class="docutils literal notranslate"><span class="pre">las_add_extra_dimensions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.las_get_normals"><code class="docutils literal notranslate"><span class="pre">las_get_normals()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.las_to_pcd"><code class="docutils literal notranslate"><span class="pre">las_to_pcd()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.dataframe_to_pcd"><code class="docutils literal notranslate"><span class="pre">dataframe_to_pcd()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_to_pcd"><code class="docutils literal notranslate"><span class="pre">e57_to_pcd()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.arrays_to_mesh"><code class="docutils literal notranslate"><span class="pre">arrays_to_mesh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.img_to_arrays"><code class="docutils literal notranslate"><span class="pre">img_to_arrays()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.mesh_to_arrays"><code class="docutils literal notranslate"><span class="pre">mesh_to_arrays()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.pcd_to_arrays"><code class="docutils literal notranslate"><span class="pre">pcd_to_arrays()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_get_xyz_from_spherical_raw_data"><code class="docutils literal notranslate"><span class="pre">e57_get_xyz_from_spherical_raw_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_get_xyz_from_raw_data"><code class="docutils literal notranslate"><span class="pre">e57_get_xyz_from_raw_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_get_cartesian_transform"><code class="docutils literal notranslate"><span class="pre">e57_get_cartesian_transform()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_to_arrays"><code class="docutils literal notranslate"><span class="pre">e57_to_arrays()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57path_to_pcd"><code class="docutils literal notranslate"><span class="pre">e57path_to_pcd()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57path_to_pcds_multiprocessing"><code class="docutils literal notranslate"><span class="pre">e57path_to_pcds_multiprocessing()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.box_to_mesh"><code class="docutils literal notranslate"><span class="pre">box_to_mesh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.ifc_get_materials"><code class="docutils literal notranslate"><span class="pre">ifc_get_materials()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.ifc_to_mesh"><code class="docutils literal notranslate"><span class="pre">ifc_to_mesh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_oriented_bounding_box"><code class="docutils literal notranslate"><span class="pre">get_oriented_bounding_box()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.generate_visual_cone_from_image"><code class="docutils literal notranslate"><span class="pre">generate_visual_cone_from_image()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_cartesian_transform"><code class="docutils literal notranslate"><span class="pre">get_cartesian_transform()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.mesh_to_pcd"><code class="docutils literal notranslate"><span class="pre">mesh_to_pcd()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.pcd_to_voxelmesh"><code class="docutils literal notranslate"><span class="pre">pcd_to_voxelmesh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.octree_to_voxelmesh"><code class="docutils literal notranslate"><span class="pre">octree_to_voxelmesh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.voxelgrid_to_mesh"><code class="docutils literal notranslate"><span class="pre">voxelgrid_to_mesh()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.generate_virtual_images"><code class="docutils literal notranslate"><span class="pre">generate_virtual_images()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.generate_virtual_image"><code class="docutils literal notranslate"><span class="pre">generate_virtual_image()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_get_normals"><code class="docutils literal notranslate"><span class="pre">e57_get_normals()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.array_to_colors"><code class="docutils literal notranslate"><span class="pre">array_to_colors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_get_colors"><code class="docutils literal notranslate"><span class="pre">e57_get_colors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_fix_rotation_order"><code class="docutils literal notranslate"><span class="pre">e57_fix_rotation_order()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.evaluate_feature"><code class="docutils literal notranslate"><span class="pre">evaluate_feature()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_matching_indices"><code class="docutils literal notranslate"><span class="pre">get_matching_indices()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_geometry_by_box"><code class="docutils literal notranslate"><span class="pre">crop_geometry_by_box()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.divide_box_in_boxes"><code class="docutils literal notranslate"><span class="pre">divide_box_in_boxes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.expand_box"><code class="docutils literal notranslate"><span class="pre">expand_box()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.split_pcd_by_labels"><code class="docutils literal notranslate"><span class="pre">split_pcd_by_labels()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.join_geometries"><code class="docutils literal notranslate"><span class="pre">join_geometries()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_dataframe_from_meshes"><code class="docutils literal notranslate"><span class="pre">crop_dataframe_from_meshes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.las_get_data"><code class="docutils literal notranslate"><span class="pre">las_get_data()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_point_cloud_from_meshes"><code class="docutils literal notranslate"><span class="pre">crop_point_cloud_from_meshes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_identity_point_cloud"><code class="docutils literal notranslate"><span class="pre">create_identity_point_cloud()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.split_quad_faces"><code class="docutils literal notranslate"><span class="pre">split_quad_faces()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.transform_dataframe"><code class="docutils literal notranslate"><span class="pre">transform_dataframe()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.transform_points"><code class="docutils literal notranslate"><span class="pre">transform_points()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.normalize_vectors"><code class="docutils literal notranslate"><span class="pre">normalize_vectors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_xyz_grid"><code class="docutils literal notranslate"><span class="pre">create_xyz_grid()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_geometry_by_distance"><code class="docutils literal notranslate"><span class="pre">crop_geometry_by_distance()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_box_inliers"><code class="docutils literal notranslate"><span class="pre">get_box_inliers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_mesh_inliers"><code class="docutils literal notranslate"><span class="pre">get_mesh_inliers()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_box_intersections"><code class="docutils literal notranslate"><span class="pre">get_box_intersections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_triangles_center"><code class="docutils literal notranslate"><span class="pre">get_triangles_center()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_cartesian_bounds"><code class="docutils literal notranslate"><span class="pre">get_cartesian_bounds()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_translation"><code class="docutils literal notranslate"><span class="pre">get_translation()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_oriented_bounds"><code class="docutils literal notranslate"><span class="pre">get_oriented_bounds()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_rotation_matrix"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_mesh_collisions_open3d"><code class="docutils literal notranslate"><span class="pre">get_mesh_collisions_open3d()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_geometry_from_path"><code class="docutils literal notranslate"><span class="pre">get_geometry_from_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.compute_raycasting_collisions"><code class="docutils literal notranslate"><span class="pre">compute_raycasting_collisions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_geometry_by_raycasting"><code class="docutils literal notranslate"><span class="pre">crop_geometry_by_raycasting()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.voxel_traversal"><code class="docutils literal notranslate"><span class="pre">voxel_traversal()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_3d_camera"><code class="docutils literal notranslate"><span class="pre">create_3d_camera()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.show_geometries"><code class="docutils literal notranslate"><span class="pre">show_geometries()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.save_view_point"><code class="docutils literal notranslate"><span class="pre">save_view_point()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_convex_hull"><code class="docutils literal notranslate"><span class="pre">get_convex_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.execute_global_registration"><code class="docutils literal notranslate"><span class="pre">execute_global_registration()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.execute_fast_global_registration"><code class="docutils literal notranslate"><span class="pre">execute_fast_global_registration()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.weighted_average_quaternions"><code class="docutils literal notranslate"><span class="pre">weighted_average_quaternions()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.geospatialutils.html">geomapi.utils.geospatialutils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geospatialutils.html#geomapi.utils.geospatialutils.belgian_datum_to_wgs84"><code class="docutils literal notranslate"><span class="pre">belgian_datum_to_wgs84()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geospatialutils.html#geomapi.utils.geospatialutils.wgs84_to_belgian_datum"><code class="docutils literal notranslate"><span class="pre">wgs84_to_belgian_datum()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geospatialutils.html#geomapi.utils.geospatialutils.spherical_coordinates_to_lambert72"><code class="docutils literal notranslate"><span class="pre">spherical_coordinates_to_lambert72()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geospatialutils.html#geomapi.utils.geospatialutils.lambert72_to_spherical_coordinates"><code class="docutils literal notranslate"><span class="pre">lambert72_to_spherical_coordinates()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.imageutils.html">geomapi.utils.imageutils</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.image_resize"><code class="docutils literal notranslate"><span class="pre">image_resize()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.grb01_to_rgb255"><code class="docutils literal notranslate"><span class="pre">grb01_to_rgb255()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.rgb2gray"><code class="docutils literal notranslate"><span class="pre">rgb2gray()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.gray2rgb"><code class="docutils literal notranslate"><span class="pre">gray2rgb()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.initiate_hed_line_detection"><code class="docutils literal notranslate"><span class="pre">initiate_hed_line_detection()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.calculateGSD"><code class="docutils literal notranslate"><span class="pre">calculateGSD()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.detect_hed_lines"><code class="docutils literal notranslate"><span class="pre">detect_hed_lines()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.fill_black_pixels"><code class="docutils literal notranslate"><span class="pre">fill_black_pixels()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.subdivide_image"><code class="docutils literal notranslate"><span class="pre">subdivide_image()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.calibrate_camera"><code class="docutils literal notranslate"><span class="pre">calibrate_camera()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.get_features"><code class="docutils literal notranslate"><span class="pre">get_features()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.match_features"><code class="docutils literal notranslate"><span class="pre">match_features()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.match_images"><code class="docutils literal notranslate"><span class="pre">match_images()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.create_transformation_matrix"><code class="docutils literal notranslate"><span class="pre">create_transformation_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.split_transformation_matrix"><code class="docutils literal notranslate"><span class="pre">split_transformation_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.AlignmentPose"><code class="docutils literal notranslate"><span class="pre">AlignmentPose</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.AlignmentPose.__init__"><code class="docutils literal notranslate"><span class="pre">AlignmentPose.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPose"><code class="docutils literal notranslate"><span class="pre">PanoPose</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPose.__init__"><code class="docutils literal notranslate"><span class="pre">PanoPose.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPose.heading"><code class="docutils literal notranslate"><span class="pre">PanoPose.heading</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPose.zenit"><code class="docutils literal notranslate"><span class="pre">PanoPose.zenit</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPose.get_direction_to_other_pose"><code class="docutils literal notranslate"><span class="pre">PanoPose.get_direction_to_other_pose()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPoseCollection"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPoseCollection.__init__"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPoseCollection.headings"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.headings</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPoseCollection.zenits"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.zenits</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPoseCollection.box"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.box</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPoseCollection.transform"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.transform()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.PanoPoseCollection.plot"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.plot()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.read_leica_pano_poses_xml"><code class="docutils literal notranslate"><span class="pre">read_leica_pano_poses_xml()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.read_navvis_pano_poses_csv"><code class="docutils literal notranslate"><span class="pre">read_navvis_pano_poses_csv()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.read_navvis_alignment_xml"><code class="docutils literal notranslate"><span class="pre">read_navvis_alignment_xml()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.plot_pose_collections"><code class="docutils literal notranslate"><span class="pre">plot_pose_collections()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.plot_pose_collections_3D"><code class="docutils literal notranslate"><span class="pre">plot_pose_collections_3D()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.decode_depthmap"><code class="docutils literal notranslate"><span class="pre">decode_depthmap()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</div>
+<p id="module-geomapi.utils">General Basic functions to support other modules.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.time_funtion">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">time_funtion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.time_funtion" title="Link to this definition"></a></dt>
+<dd><p>Measures how long the functions takes to run and returns the result</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>func (function): The funtion to measure, write without ()
+<a href="#id1"><span class="problematic" id="id2">*</span></a>args (Tuple) : The arguments for the funtion, pass as a tuple with a * in front to pass the arguments seperatly</p>
+</dd>
+<dt>Returns:</dt><dd><p>object: The result of the function</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_extension">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_extension</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.get_extension" title="Link to this definition"></a></dt>
+<dd><p>Returns the file extension.</p>
+<p>E.g. D://myData//test.txt -&gt; .txt</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>path (str): file path</p>
+</dd>
+<dt>Returns:</dt><dd><p>extension (str) e.g. ‘.txt’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_min_average_and_max_value">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_min_average_and_max_value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">arrays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ignoreZero</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.utils.get_min_average_and_max_value" title="Link to this definition"></a></dt>
+<dd><p>Return an min,average and max values of a list of arrays.</p>
+<p><strong>NOTE</strong> Nan is automatically ignored.</p>
+<dl>
+<dt>Args:</dt><dd><p>1.arrays (List[np.array]): arrays are automatically flattened.</p>
+<p>2.ignoreZero (bool, optional): Ignores 0.0 in the arrays array. Defaults to True.</p>
+<p>3.Threshhold (float, optional): Return Nan if less than a threhold is not Nan. Defaults to 0.0.</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[float]: average values</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.replace_str_index">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">replace_str_index</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">text</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">index</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replacement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'_'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.replace_str_index" title="Link to this definition"></a></dt>
+<dd><p>Replace a string character at the location of the index with the replacement.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>text (str)</p></li>
+<li><p>index (int): index to replace.</p></li>
+<li><p>replacement (str, optional): replacement character. Defaults to ‘_’.</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>text (str) with updated characters</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.random_color">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">random_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.utils.random_color" title="Link to this definition"></a></dt>
+<dd><p>Generate random color (either [0-1] or [0-255]).</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>range (int, optional): 1 or 255. Defaults to 1.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: Range should be either 1 or 255.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array[3x1]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.split_list">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">split_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">l</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.split_list" title="Link to this definition"></a></dt>
+<dd><p>Split list into approximately equal chunks. Last list might have an unequal number of elements.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Args:</dt><dd><p>list (object): list to split.</p>
+</dd>
+</dl>
+</div></blockquote>
+<dl>
+<dt>.</dt><dd><blockquote>
+<div><p>n (int,optional): number of splits.</p>
+<p>l:(int,optional): length of each chunk.</p>
+</div></blockquote>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>List[List]:</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_folder_path">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_folder_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.get_folder_path" title="Link to this definition"></a></dt>
+<dd><p>Returns the folderPath.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>path(str): file path</p>
+</dd>
+<dt>Raises:</dt><dd><p>FileNotFoundError: If the given graphPath or sessionPath does not lead to a valid systempath</p>
+</dd>
+<dt>Returns:</dt><dd><p>The path (str) to the folder</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_variables_in_class">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_variables_in_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.utils.get_variables_in_class" title="Link to this definition"></a></dt>
+<dd><p>Returns a list of class attributes in the class.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>cls(class): class e.g. MeshNode</p>
+</dd>
+<dt>Returns:</dt><dd><p>list of class attribute names</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_list_of_files">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_list_of_files</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directoryPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#geomapi.utils.get_list_of_files" title="Link to this definition"></a></dt>
+<dd><p>Get a list of all filepaths in the directory and subdirectories.</p>
+<dl>
+<dt>Args:</dt><dd><p>directoryPath: directory path e.g.</p>
+<blockquote>
+<div><p>“D:Data2018-06 Werfopvolging Academiestraat Gentweek 22&quot;</p>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>A list of filepaths</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_subject_graph">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_subject_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">rdflib.Graph</span></span></span><a class="headerlink" href="#geomapi.utils.get_subject_graph" title="Link to this definition"></a></dt>
+<dd><p>Returns a subselection of the full Graph that only contains the triples of one subject.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>graph (Graph)</p></li>
+<li><p>subject (URIRef, optional): If no subject is provided, the first one is picked. Defaults to first subject in the graph.</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>Graph with the triples of one subject</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_paths_in_class">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_paths_in_class</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cls</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#geomapi.utils.get_paths_in_class" title="Link to this definition"></a></dt>
+<dd><p>Returns list of path attributes in the class.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>cls (class): class e.g. MeshNode</p>
+</dd>
+<dt>Rerturns:</dt><dd><p>class atttributes that contain ‘path’ information e.g. cls.ifcPath, cls.path, etc.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.parse_exif_gps_data">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">parse_exif_gps_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#geomapi.utils.parse_exif_gps_data" title="Link to this definition"></a></dt>
+<dd><p>Returns decimal degrees from world angles in exif data.</p>
+<dl>
+<dt>Args:</dt><dd><p>data (float or tuple): decimal degrees or (degrees, minutes, seconds) notation of world angles</p>
+<p>reference (str): direction character i.e. ‘S’,’W’,’s’ or ‘w’.</p>
+</dd>
+<dt>Returns:</dt><dd><p>decimal degrees (float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.dms_to_dd">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">dms_to_dd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">degrees</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#geomapi.utils.dms_to_dd" title="Link to this definition"></a></dt>
+<dd><p>Convert world angles (degrees, minutes, seconds, direction) to decimal degrees.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>degrees (float)</p></li>
+<li><p>minutes (float)</p></li>
+<li><p>seconds (float)</p></li>
+<li><p>direction (str): ‘N’ and ‘E’ are positive, ‘W’ and ‘S’ are negative</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>decimal degrees (float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.dd_to_dms">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">dd_to_dms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deg</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.utils.dd_to_dms" title="Link to this definition"></a></dt>
+<dd><p>Convert decimal degrees to List[degrees, minutes, seconds] notation.</p>
+<p><strong>NOTE</strong>: Direction is not determined (should be easy based on sign).</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>decimal degrees (float)</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[degrees(float),minutes(float),seconds(float)]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.parse_dms">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">parse_dms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dms</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.parse_dms" title="Link to this definition"></a></dt>
+<dd><p>Returns decimal degrees (float) notation of geospatial coordinates from various (degrees, minutes, seconds, direction) notations.</p>
+<dl class="simple">
+<dt>Args (degrees, minutes, seconds,direction):</dt><dd><ol class="arabic simple">
+<li><p>dms (np.array):</p></li>
+<li><p>dms (tuple[float,float,float,float])</p></li>
+<li><p>dms (str): stringed list with values</p></li>
+</ol>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: ‘dms.size!=4’</p>
+</dd>
+<dt>Returns:</dt><dd><p>decimal degrees (float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_exif_data">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_exif_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img:</span> <span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/opt/hostedtoolcache/Python/3.12.5/x64/lib/python3.12/site-packages/PIL/Image.py'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#geomapi.utils.get_exif_data" title="Link to this definition"></a></dt>
+<dd><p>Returns a dictionary from the exif data of an Image (PIL) item. Also
+converts the GPS Tags.</p>
+<p><a class="reference external" href="https://pillow.readthedocs.io/en/stable/reference/Image.html">https://pillow.readthedocs.io/en/stable/reference/Image.html</a></p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Img (PIL.image)</p>
+</dd>
+<dt>Returns:</dt><dd><p>exifData (dict): dictionary containing all meta data of the PIL Image.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_filename">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_filename</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">splitter</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.get_filename" title="Link to this definition"></a></dt>
+<dd><p>Deconstruct filepath and return filename.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>path (str): filepath</p>
+</dd>
+<dt>Returns:</dt><dd><p>filename (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_folder">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_folder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.get_folder" title="Link to this definition"></a></dt>
+<dd><p>Deconstruct path and return folder</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>path (str): filepath</p>
+</dd>
+<dt>Returns:</dt><dd><p>folderPath (str)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_timestamp">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.get_timestamp" title="Link to this definition"></a></dt>
+<dd><p>Returns the timestamp (‘%Y-%m-%dT%H:%M:%S’) from a filepath.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>path (str): filepath</p>
+</dd>
+<dt>Returns:</dt><dd><p>dateTime (str): ‘%Y-%m-%dT%H:%M:%S’</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.literal_to_cartesianTransform">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">literal_to_cartesianTransform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Literal</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.utils.literal_to_cartesianTransform" title="Link to this definition"></a></dt>
+<dd><p>Returns cartesianTransform from rdflib.literal. This function is used to convert a serialized (str) to a usable np.array.</p>
+<dl>
+<dt>Args:</dt><dd><p>literal (URIRef):  stringed list or np array of the cartesianTransform e.g.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>e57:cartesianTransform “”[[ 3.48110207e-01  9.37407536e-01  9.29487057e-03  2.67476305e+01]</dt><dd><p>[-9.37341584e-01  3.48204779e-01 -1.20077869e-02  6.17326932e+01]
+[-1.44927083e-02 -4.53243552e-03  9.99884703e-01  4.84636987e+00]
+[ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]””</p>
+</dd>
+</dl>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>cartesianTransform (np.array([4x4])): geometric transform of a Node/Resource.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.literal_to_array">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">literal_to_array</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Literal</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.utils.literal_to_array" title="Link to this definition"></a></dt>
+<dd><p>Returns array from rdflib.literal.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>literal (rdflib): literal containing serialized list or array</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: ‘Conversion error’</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.literal_to_orientedBounds">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">literal_to_orientedBounds</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Literal</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.utils.literal_to_orientedBounds" title="Link to this definition"></a></dt>
+<dd><p>Returns orientedBounds from rdflib.literal. This function is used to convert a serialized (str) to a usable np.array.</p>
+<dl>
+<dt>Args:</dt><dd><p>literal (URIRef):  stringed list or np array of the orientedBounds e.g.</p>
+<blockquote>
+<div><p>v4d:orientedBounds  “”[[-1.96025758e+01  1.65884155e+02  2.22874746e+01]</p>
+<blockquote>
+<div><p>[ 1.22465470e+02  1.23859440e+02  2.29468276e+01]</p>
+<p>[-5.26111779e+01  5.43129133e+01  2.33762930e+01]</p>
+<p>[-1.95654774e+01  1.65648750e+02 -7.09825603e-01]</p>
+<p>[ 8.94939663e+01  1.20527928e+01  1.03834566e+00]</p>
+<p>[-5.25740795e+01  5.40775081e+01  3.78992731e-01]</p>
+<p>[ 1.22502568e+02  1.23624035e+02 -5.04726756e-02]</p>
+<p>[ 8.94568679e+01  1.22881979e+01  2.40356459e+01]]””</p>
+</div></blockquote>
+</div></blockquote>
+</dd>
+<dt>Returns:</dt><dd><p>orientedBounds (np.array([8x3])): 8 bounding coordinates of a geometric asset.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.literal_to_float">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">literal_to_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Literal</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#geomapi.utils.literal_to_float" title="Link to this definition"></a></dt>
+<dd><p>Returns float from rdflib.literal</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>literal (rdflib): literal containing value</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: ‘Conversion error’</p>
+</dd>
+<dt>Returns:</dt><dd><p>float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.literal_to_string">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">literal_to_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Literal</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.literal_to_string" title="Link to this definition"></a></dt>
+<dd><p>Returns string from rdflib.literal.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>literal (rdflib): literal containing value</p>
+</dd>
+<dt>Returns:</dt><dd><p>string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.literal_to_list">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">literal_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Literal</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#geomapi.utils.literal_to_list" title="Link to this definition"></a></dt>
+<dd><p>Returns list from rdflib.literal.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>literal (rdflib): literal containing value</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: ‘Conversion error’</p>
+</dd>
+<dt>Returns:</dt><dd><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.literal_to_int">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">literal_to_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Literal</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#geomapi.utils.literal_to_int" title="Link to this definition"></a></dt>
+<dd><p>Returns int from rdflib.literal.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>literal (rdflib): literal containing value</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: ‘Conversion error’</p>
+</dd>
+<dt>Returns:</dt><dd><p>int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.literal_to_uriref">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">literal_to_uriref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">literal</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Literal</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">rdflib.URIRef</span></span></span><a class="headerlink" href="#geomapi.utils.literal_to_uriref" title="Link to this definition"></a></dt>
+<dd><p>Returns rdflib.URIRef from rdflib.literal.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>literal (rdflib): literal containing value</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: ‘float causes errors’</p>
+</dd>
+<dt>Returns:</dt><dd><p>URIRef:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.check_if_subject_is_in_graph">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">check_if_subject_is_in_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.utils.check_if_subject_is_in_graph" title="Link to this definition"></a></dt>
+<dd><p>Returns True if a subject is present in the Graph.</p>
+<dl>
+<dt>Args:</dt><dd><p>graph (Graph): Graph to parse.</p>
+<p>subject (URIRef): subject to search. The function only uses the main body of the subject so no prefix mistakes can be made.</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if subject is present.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_graph_intersection">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_graph_intersection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graphs</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">rdflib.Graph</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">rdflib.Graph</span></span></span><a class="headerlink" href="#geomapi.utils.get_graph_intersection" title="Link to this definition"></a></dt>
+<dd><p>Returns the intersection of multiple graphs i.e. all triples of common subjects.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>graphs (List[Graph]):</p>
+</dd>
+<dt>Returns:</dt><dd><p>Graph of the intersection</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_graph_subject">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_graph_subject</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">rdflib.URIRef</span></span></span><a class="headerlink" href="#geomapi.utils.get_graph_subject" title="Link to this definition"></a></dt>
+<dd><p>Returns graph subject with its appropriate prefix given the main body of a subject. This function is mainly used for local file serializations that mud the graph subjects. You can then use this function to use the correct graph subject regardless of the prefix.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>graph (Graph): graph with subjects with prefix e.g. URIRef(D:DATASubject1)</p></li>
+<li><p>subject (URIRef): subject to search for. e.g. URIREF(Subject1)</p></li>
+</ol>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: ‘subject not in graph.’</p>
+</dd>
+<dt>Returns:</dt><dd><p>URIRef(subject): e.g.  URIRef(D:DATASubject1)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.literal_to_linked_subjects">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">literal_to_linked_subjects</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#geomapi.utils.literal_to_linked_subjects" title="Link to this definition"></a></dt>
+<dd><p>Returns list of URI subjects that were serialized as a string.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>string (str): e.g. ‘[ <a class="reference external" href="file:///Subject1">file:///Subject1</a>, <a class="reference external" href="http://Subject2">http://Subject2</a>]’</p>
+</dd>
+<dt>Returns:</dt><dd><p>list[items] e.g. [ <a class="reference external" href="file:///Subject1">file:///Subject1</a>, <a class="reference external" href="http://Subject2">http://Subject2</a>]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.string_to_list">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">string_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#geomapi.utils.string_to_list" title="Link to this definition"></a></dt>
+<dd><p>Convert string of items to a list of their respective types. Function deals with both np.array and list encodings of the stringed values.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>string (str): string to parse.</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[items in string]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.string_to_rotation_matrix">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">string_to_rotation_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.utils.string_to_rotation_matrix" title="Link to this definition"></a></dt>
+<dd><p>Returns rotation matrix (np.array(3x3)) from string.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>string (str): string cast list or np.array that contains the values of the rotation matrix.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: ‘array.size!=9’</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array (3x3)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.xml_to_float">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">xml_to_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xml</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#geomapi.utils.xml_to_float" title="Link to this definition"></a></dt>
+<dd><p>Cast XML string value to float if possible.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>xml value</p>
+</dd>
+<dt>Returns:</dt><dd><p>float of value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.xcr_to_lat">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">xcr_to_lat</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xcr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#geomapi.utils.xcr_to_lat" title="Link to this definition"></a></dt>
+<dd><p>Returns latitude from XCR serialization. This includes interpretation ‘N’ and ‘S’ geospatial values.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>xcr (str)</p>
+</dd>
+<dt>Returns:</dt><dd><p>float of value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.xcr_to_long">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">xcr_to_long</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xcr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#geomapi.utils.xcr_to_long" title="Link to this definition"></a></dt>
+<dd><p>Returns longitude from XCR serialization. This includes interpretation ‘E’ and ‘W’ geospatial values.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>xcr (str):</p>
+</dd>
+<dt>Returns:</dt><dd><p>float of value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.xcr_to_alt">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">xcr_to_alt</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xcr</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#geomapi.utils.xcr_to_alt" title="Link to this definition"></a></dt>
+<dd><p>Returns altitude from XCR serialized height value. This value is sometimes encoded as a fracture 10000/1600.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>xcr (str): value to process</p>
+</dd>
+<dt>Returns:</dt><dd><p>float of value</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cartesianTransform_to_literal">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">cartesianTransform_to_literal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">matrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.cartesianTransform_to_literal" title="Link to this definition"></a></dt>
+<dd><p>convert nparray [4x4] to str([16x1]).</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>nparray [4x4]</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[16]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.featured3d_to_literal">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">featured3d_to_literal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.featured3d_to_literal" title="Link to this definition"></a></dt>
+<dd><p>No feature implementation yet</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.featured2d_to_literal">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">featured2d_to_literal</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.featured2d_to_literal" title="Link to this definition"></a></dt>
+<dd><p>No feature implementation yet</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.item_to_list">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">item_to_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">item</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#geomapi.utils.item_to_list" title="Link to this definition"></a></dt>
+<dd><p>Returns [item] if item is not yet a list. This function protects functions that rely on list functionality.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>item (Python value)</p>
+</dd>
+<dt>Returns:</dt><dd><p>list[item]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.check_if_uri_exists">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">check_if_uri_exists</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">rdflib.URIRef</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.utils.check_if_uri_exists" title="Link to this definition"></a></dt>
+<dd><p>Returns True if a subject occurs in a list of URIRefs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>list (List[URIRef]): reference list
+subject (URIRef): subject to test</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if subject occurs in list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_subject_name">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_subject_name</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.get_subject_name" title="Link to this definition"></a></dt>
+<dd><p>Get the main body of a URIRef graph subject</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>subject (URIRef)</p>
+</dd>
+<dt>Returns:</dt><dd><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.validate_string">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">validate_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">string</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">replacement</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'_'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.validate_string" title="Link to this definition"></a></dt>
+<dd><p>Checks path validity. A string is considered invalid if it cannot be serialized by rdflib or is not Windows subscribable.</p>
+<p>If not valid, The function adjusts path naming to be Windows compatible.</p>
+<dl class="simple">
+<dt>Features (invalid characters):</dt><dd><p>“()^[^&lt;&gt;{}[] ~`],|*$ /:”</p>
+</dd>
+<dt>Args:</dt><dd><p>path (str): string to check
+replacement (character): characters to replace invalid charters in the string</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: cleansed string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.parse_path">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">parse_path</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.parse_path" title="Link to this definition"></a></dt>
+<dd><p>Reads a path and converts it to posix universal styling</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>path (str): the input path</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: the converted string</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.is_float">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">is_float</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.utils.is_float" title="Link to this definition"></a></dt>
+<dd><p>Returns True if Python value is a float.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>element (Python value)</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if Python value is a float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.is_int">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">is_int</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.utils.is_int" title="Link to this definition"></a></dt>
+<dd><p>Returns True if Python value is an int.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>element (Python value)</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if Python value is an int</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.is_string">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">is_string</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.utils.is_string" title="Link to this definition"></a></dt>
+<dd><p>Returns True if Python value is a str.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>element (Python value)</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if Python value is a str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.is_uriref">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">is_uriref</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.utils.is_uriref" title="Link to this definition"></a></dt>
+<dd><p>Returns True if Python value is a rdflib.URIRef.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>element (Python value)</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if Python value is a rdflib.URIRef</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_attribute_from_predicate">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_attribute_from_predicate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">predicate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Literal</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#geomapi.utils.get_attribute_from_predicate" title="Link to this definition"></a></dt>
+<dd><p>Returns the attribute witout the namespace.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>graph (Graph): The Graph containing the namespaces
+predicate (Literal): The Literal to convert</p>
+</dd>
+<dt>Returns:</dt><dd><p>str: The attribute name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.bind_ontologies">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">bind_ontologies</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">rdflib.Graph</span></span></span><a class="headerlink" href="#geomapi.utils.bind_ontologies" title="Link to this definition"></a></dt>
+<dd><p>Returns a graph that binds in its namespace the ontologies that GEMOMAPI uses and that are not in the rdflib.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Features (ontologies):</dt><dd><ol class="arabic simple">
+<li><p>exif = rdflib.Namespace(’<a class="reference external" href="http://www.w3.org/2003/12/exif">http://www.w3.org/2003/12/exif</a>/ns#’)</p></li>
+<li><p>geo=rdflib.Namespace(’<a class="reference external" href="http://www.opengis.net/ont">http://www.opengis.net/ont</a>/geosparql#’)</p></li>
+<li><p>gom=rdflib.Namespace(’<a class="reference external" href="https://w3id.org">https://w3id.org</a>/gom#’)</p></li>
+<li><p>omg=rdflib.Namespace(’<a class="reference external" href="https://w3id.org">https://w3id.org</a>/omg#’)</p></li>
+<li><p>fog=rdflib.Namespace(’<a class="reference external" href="https://w3id.org">https://w3id.org</a>/fog#’)</p></li>
+<li><p>v4d=rdflib.Namespace(’<a class="reference external" href="https://w3id.org/v4d">https://w3id.org/v4d</a>/core#’)</p></li>
+<li><p>openlabel=rdflib.Namespace(’<a class="reference external" href="https://www.asam.net/index.php">https://www.asam.net/index.php</a>?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#’)</p></li>
+<li><p>e57=rdflib.Namespace(’<a class="reference external" href="http://libe57">http://libe57</a>.org#’)</p></li>
+<li><p>xcr=rdflib.Namespace(’<a class="reference external" href="http://www.w3.org/1999/02/22-rdf-syntax">http://www.w3.org/1999/02/22-rdf-syntax</a>-ns#’)</p></li>
+<li><p>ifc=rdflib.Namespace(’<a class="reference external" href="http://ifcowl.openbimstandards.org">http://ifcowl.openbimstandards.org</a>/IFC2X3_Final#’)</p></li>
+</ol>
+</dd>
+</dl>
+</div></blockquote>
+<dl class="simple">
+<dt>Returns:</dt><dd><p>Graph with update namespace</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.clean_attributes_list">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">clean_attributes_list</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#geomapi.utils.clean_attributes_list" title="Link to this definition"></a></dt>
+<dd><p>Returns a ‘cleaned’ list of class attributes that are not to be serialized in the graph. This includes data attributes such as resources (point clouds, images), linkedNodes, etc.</p>
+<p><strong>NOTE</strong>: RDF Graphs are meant to store metadata, not actual GBs of data that should be contained in their native file formats.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>list (list): list of class attributes</p>
+</dd>
+<dt>Returns:</dt><dd><p>list (list): ‘cleaned’ list of class attributes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.check_if_path_is_valid">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">check_if_path_is_valid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.utils.check_if_path_is_valid" title="Link to this definition"></a></dt>
+<dd><p>Returns True if the given path is an existing folder.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>path (str): path to folder or file</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if exsists.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.validate_timestamp">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">validate_timestamp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">&lt;module</span> <span class="pre">'datetime'</span> <span class="pre">from</span> <span class="pre">'/opt/hostedtoolcache/Python/3.12.5/x64/lib/python3.12/datetime.py'&gt;</span></span></span><a class="headerlink" href="#geomapi.utils.validate_timestamp" title="Link to this definition"></a></dt>
+<dd><p>Format value as datetime (“%Y-%m-%dT%H:%M:%S”)</p>
+<dl>
+<dt>Args:</dt><dd><p>1.value (‘Tue Dec  7 09:38:13 2021’)</p>
+<p>2.value (“1648468136.033126”)</p>
+<p>3.value (“2022:03:13 13:55:30”)</p>
+<p>4.value (datetime)</p>
+<p>5.value (“2022-03-13 13:55:30”)</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: ‘timestamp formatting (“%Y-%m-%dT%H:%M:%S”) failed for tuple, datetime and string formats.’</p>
+</dd>
+<dt>Returns:</dt><dd><p>datetime</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_node_resource_extensions">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_node_resource_extensions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objectType</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#geomapi.utils.get_node_resource_extensions" title="Link to this definition"></a></dt>
+<dd><p>Returns the potential file formats for different types of Nodes’ resources (images, pcd, ortho, etc.).</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>objectType (str): Type of node class</p>
+</dd>
+<dt>Returns:</dt><dd><p>list with possible extensions e.g. .obj, .ply for MeshNodes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_node_type">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_node_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">objectType</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">rdflib.URIRef</span></span></span><a class="headerlink" href="#geomapi.utils.get_node_type" title="Link to this definition"></a></dt>
+<dd><p>Return the type of Node as an rdflib literal. By default, ‘Node’ is returned.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>MeshNode</p></li>
+<li><p>BIMNode</p></li>
+<li><p>PointCloudNode</p></li>
+<li><p>GeometryNode</p></li>
+<li><p>ImageNode</p></li>
+<li><p>OrthoNode</p></li>
+<li><p>SessionNode</p></li>
+<li><p>linesetNode</p></li>
+<li><p>Node</p></li>
+</ol>
+</dd>
+<dt>Args:</dt><dd><p>objectType (str): Type of node class.</p>
+</dd>
+<dt>Returns:</dt><dd><p>URIRef (nodeType)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.get_data_type">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">get_data_type</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">rdflib.XSD.ENTITY</span></span></span><a class="headerlink" href="#geomapi.utils.get_data_type" title="Link to this definition"></a></dt>
+<dd><p>Return XSD dataType of Python value. By default, string is returned as the XSD.entity.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>value (any): data of any Python value (boolean, int, float, dateTime, string)</p>
+</dd>
+<dt>Returns:</dt><dd><p>XSD.ENTITY</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.match_uri">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.</span></span><span class="sig-name descname"><span class="pre">match_uri</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">attribute</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">rdflib.URIRef</span></span></span><a class="headerlink" href="#geomapi.utils.match_uri" title="Link to this definition"></a></dt>
+<dd><p>Returns fitting predicate from class attribute given the following prefix ontologies.</p>
+<p>By default, the v4d ontology[attributeName] is returned.</p>
+<dl class="simple">
+<dt>Features (ontologies):</dt><dd><ol class="arabic simple">
+<li><p>exif = rdflib.Namespace(’<a class="reference external" href="http://www.w3.org/2003/12/exif">http://www.w3.org/2003/12/exif</a>/ns#’)</p></li>
+<li><p>geo=rdflib.Namespace(’<a class="reference external" href="http://www.opengis.net/ont">http://www.opengis.net/ont</a>/geosparql#’)</p></li>
+<li><p>gom=rdflib.Namespace(’<a class="reference external" href="https://w3id.org">https://w3id.org</a>/gom#’)</p></li>
+<li><p>omg=rdflib.Namespace(’<a class="reference external" href="https://w3id.org">https://w3id.org</a>/omg#’)</p></li>
+<li><p>fog=rdflib.Namespace(’<a class="reference external" href="https://w3id.org">https://w3id.org</a>/fog#’)</p></li>
+<li><p>v4d=rdflib.Namespace(’<a class="reference external" href="https://w3id.org/v4d">https://w3id.org/v4d</a>/core#’)</p></li>
+<li><p>openlabel=rdflib.Namespace(’<a class="reference external" href="https://www.asam.net/index.php">https://www.asam.net/index.php</a>?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#’)</p></li>
+<li><p>e57=rdflib.Namespace(’<a class="reference external" href="http://libe57">http://libe57</a>.org#’)</p></li>
+<li><p>xcr=rdflib.Namespace(’<a class="reference external" href="http://www.w3.org/1999/02/22-rdf-syntax">http://www.w3.org/1999/02/22-rdf-syntax</a>-ns#’)</p></li>
+<li><p>ifc=rdflib.Namespace(’<a class="reference external" href="http://ifcowl.openbimstandards.org">http://ifcowl.openbimstandards.org</a>/IFC2X3_Final#’)</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>URIRef: predicate</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.nodes.sessionnode.html" class="btn btn-neutral float-left" title="geomapi.nodes.sessionnode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.utils.cadutils.html" class="btn btn-neutral float-right" title="geomapi.utils.cadutils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

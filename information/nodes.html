@@ -1,0 +1,253 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Nodes &mdash; Geomapi 0.3.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8da8c241"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+        <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+        <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Functionality" href="functionality.html" />
+    <link rel="prev" title="Getting Started" href="getting%20started.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#node">Node</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#initilisation">Initilisation</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#geometrynode">GeometryNode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#imagenode">ImageNode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="functionality.html">Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_geometrynodes.html">GeometryNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_sessionnodes.html">SessionNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+<li class="toctree-l1"><a class="reference external" href="`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_">`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Nodes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/information/nodes.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="nodes">
+<h1>Nodes<a class="headerlink" href="#nodes" title="Link to this heading"></a></h1>
+<p>GEOMAPI manages geospatial data as linked data resources, represented as RDF Graphs. The framework inputs include various types of close-range sensing data, such as geolocated imagery, point clouds, polygonal meshes, as well as construction data comprising BIM and CAD geometries. From these inputs, a series of metadata is extracted and serialized into RDF Graphs, that are compatible with efficient retrieval functions.</p>
+<p>GEOMAPI currently defines a general Node type with 7 data classes governed by 3 supertypes: <strong>Node</strong> is the most general one, <strong>GeometryNode</strong> for geometric inputs and <strong>ImageNode</strong> for image inputs. Each data class inherits functionality from the supertypes and extracts the metadata of its respective resource.</p>
+<p><img alt="bg vertical right:50% h:80%" src="../_images/GEOMAPI_metadata3.png" /></p>
+<section id="node">
+<h2>Node<a class="headerlink" href="#node" title="Link to this heading"></a></h2>
+<p>The general <strong>Node</strong> class serves as a template and stores the metric information in accordance with the conceptual framework outlined in the <a class="reference external" href="https://www.asam.net/index.php?eID=dumpFile&amp;amp;t=f&amp;amp;f=3876&amp;amp;token=413e8c85031ae64cc35cf42d0768627514868b2f">OpenLabel Standard</a>, including:</p>
+<ul class="simple">
+<li><p>cartesianTransform: 4x4 transformation matrix with pose information T = [R t; 0^T 1]</p></li>
+<li><p>cartesianBounds: tupple with (xmin, xmax, ymin, ymax, zmin, zmax)</p></li>
+<li><p>Oriented Bounding Box:  9x1 matrix (x, y, z, Rx(θ), Ry(φ), Rz(ψ), sx, sy, sz) which includes:</p>
+<ul>
+<li><p>The location (x, y, z)</p></li>
+<li><p>The rotation around the three cardinal axes applied in the order <span class="math notranslate nohighlight">\(R_z\)</span> (yaw), <span class="math notranslate nohighlight">\(R_y\)</span> (pitch), <span class="math notranslate nohighlight">\(R_x\)</span> (roll)</p></li>
+<li><p>The size (sx, sy, sz) in each direction.</p></li>
+</ul>
+</li>
+<li><p>Convex Hull: Bounding volume stored by its bounding points as an nx3 matrix: [x1 y1 z1;x2 y2 z2; …]</p></li>
+</ul>
+<p>Non-metric information includes:</p>
+<ul class="simple">
+<li><p>The timestamp</p></li>
+<li><p>subject: RDF conform URI</p></li>
+<li><p>name: an rdfs label describing the resource. This can be any text i.e. ‘mynode&amp;)!’</p></li>
+<li><p>The type of coordinate system</p></li>
+<li><p>The path to the resource</p></li>
+<li><p>Additional resource-specific details such as image width.</p></li>
+</ul>
+<section id="initilisation">
+<h3>Initilisation<a class="headerlink" href="#initilisation" title="Link to this heading"></a></h3>
+<p>Nodes can be initialised from a range of inputs i.e. the name or a subject. This is only used when no more specific node class can be used e.g. when its a new sort of data.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+            <span class="n">cartesianTransform</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]]))</span> <span class="c1"># create an empty node with a subject</span>
+
+<span class="p">{</span><span class="s1">&#39;_subject&#39;</span><span class="p">:</span> <span class="n">rdflib</span><span class="o">.</span><span class="n">term</span><span class="o">.</span><span class="n">URIRef</span><span class="p">(</span><span class="s1">&#39;file:///myNode&#39;</span><span class="p">),</span> <span class="s1">&#39;_graph&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;_graphPath&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;_path&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;_name&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;_timestamp&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;_resource&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">,</span> <span class="s1">&#39;_cartesianTransform&#39;</span><span class="p">:</span> <span class="kc">None</span><span class="p">}</span>
+</pre></div>
+</div>
+<p>An important aspect of the Node system is its <strong>RDF Graph</strong> functionality. Each Node can be translated into a Graph and vice versa. This allows to store information about a resource in a database system, and efficiently retrieve information without having to load the actual resources.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="c1"># Create a node from a graph </span>
+<span class="n">node</span><span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">graph</span><span class="o">=</span><span class="n">rdflib</span><span class="o">.</span><span class="n">Graph</span><span class="p">())</span> 
+
+<span class="c1"># Create a series of nodes from a graph file</span>
+<span class="n">nodes</span><span class="o">=</span><span class="n">tl</span><span class="o">.</span><span class="n">graph_path_to_nodes</span><span class="p">(</span><span class="s1">&#39;../tests/testfiles/graphs/graph.ttl&#39;</span><span class="p">)</span> 
+
+<span class="c1"># Write a node to a Graph</span>
+<span class="n">graph</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>See the tutorial on <a class="reference internal" href="../tutorial/tutorial_nodes.html"><span class="std std-doc">Nodes</span></a> for more examples on how to create nodes.</p>
+</section>
+</section>
+<section id="geometrynode">
+<h2>GeometryNode<a class="headerlink" href="#geometrynode" title="Link to this heading"></a></h2>
+<p>The geometry classes in GEOMAPI specify data and metadata for resources characterized by exact geometric properties, i.e., those whose boundaries are precisely defined by their geometric resource. Currently, we include</p>
+<ol class="arabic simple">
+<li><p><strong>PointCloudNode</strong>: For point cloud data, capturing detailed spatial information from LiDAR and photogrammetry.</p></li>
+<li><p><strong>MeshNode</strong>: For polygonal meshes, representing 3D surfaces and structures.</p></li>
+<li><p><strong>BIMNode</strong>: For Building Information Models, linking to detailed architectural and structural data.</p></li>
+<li><p><strong>LineSetNode</strong>: For CAD geometries, representing lines and simple geometric shapes.</p></li>
+</ol>
+<p><img alt="geometrynode" src="../_images/geometrynode.png" /></p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span>  <span class="n">PointCloudNode</span><span class="p">,</span> <span class="n">MeshNode</span><span class="p">,</span> <span class="n">BIMNode</span>
+<span class="n">pcd</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_point_cloud</span><span class="p">(</span><span class="s1">&#39;../tests/testfiles/pcd/parking.pcd&#39;</span><span class="p">)</span>
+<span class="n">pcdNode</span> <span class="o">=</span> <span class="n">PointCloudNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">pcd</span><span class="p">)</span> <span class="c1"># built from resource or data</span>
+<span class="n">meshNode</span><span class="o">=</span> <span class="n">MeshNode</span> <span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;../tests/testfiles/mesh/parking.obj&#39;</span><span class="p">)</span> <span class="c1"># .stl and .obj are supported</span>
+<span class="n">bimNodes</span><span class="o">=</span><span class="n">tl</span><span class="o">.</span><span class="n">graph_path_to_nodes</span><span class="p">(</span><span class="s1">&#39;../tests/testfiles/graphs/graph.ttl&#39;</span><span class="p">)</span> <span class="c1">#loads nodes from a graph file representing an IFCfile with BIM objects.</span>
+</pre></div>
+</div>
+</section>
+<section id="imagenode">
+<h2>ImageNode<a class="headerlink" href="#imagenode" title="Link to this heading"></a></h2>
+<p>The image classes in GEOMAPI are designed to define data and metadata for geolocated image-based resources, such as those processed by Structure-from-Motion (SfM) pipelines or Mobile Mapping Systems (MMS).</p>
+<ol class="arabic simple">
+<li><p><strong>CameraNode</strong>: For conventional imagery, capturing images from standard cameras.</p></li>
+<li><p><strong>PanoNode</strong>: For panoramic imagery, capturing 360-degree views.</p></li>
+<li><p><strong>OrthoNode</strong>: For orthomosaic imagery, representing top-down images often used in mapping and surveying.</p></li>
+</ol>
+<p><img alt="alt text" src="../_images/imagenode.png" /></p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">ImageNode</span><span class="p">,</span> <span class="n">PointCloudNode</span><span class="p">,</span> <span class="n">MeshNode</span><span class="p">,</span> <span class="n">BIMNode</span><span class="p">,</span> <span class="n">Node</span>
+<span class="n">pcd</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_point_cloud</span><span class="p">(</span><span class="s1">&#39;../tests/testfiles/pcd/parking.pcd&#39;</span><span class="p">)</span>
+<span class="n">pcdNode</span> <span class="o">=</span> <span class="n">PointCloudNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">pcd</span><span class="p">)</span> <span class="c1"># built from resource or data</span>
+<span class="n">meshNode</span><span class="o">=</span> <span class="n">MeshNode</span> <span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="s1">&#39;../tests/testfiles/mesh/parking.obj&#39;</span><span class="p">)</span> <span class="c1"># .stl and .obj are supported</span>
+<span class="n">imgNode</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">xmpPath</span><span class="o">=</span><span class="s1">&#39;../tests/testfiles/img/DJI_0085.xmp&#39;</span><span class="p">)</span> <span class="c1"># .xmp contains pose information from CapturingReality software. MetaShape .xml is also supported.</span>
+<span class="n">bimNodes</span><span class="o">=</span><span class="n">tl</span><span class="o">.</span><span class="n">graph_path_to_nodes</span><span class="p">(</span><span class="s1">&#39;../tests/testfiles/graphs/graph.ttl&#39;</span><span class="p">)</span> <span class="c1">#loads nodes from a graph file representing an IFCfile with BIM objects.</span>
+</pre></div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="getting%20started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="functionality.html" class="btn btn-neutral float-right" title="Functionality" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

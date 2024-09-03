@@ -1,0 +1,697 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Node &mdash; Geomapi 0.3.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8da8c241"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="GeometryNode" href="tutorial_geometrynodes.html" />
+    <link rel="prev" title="geomapi.tools.validationtools" href="../geomapi/geomapi.tools.validationtools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/functionality.html">Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Node</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#without-a-graph">Without a Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#with-graph">With Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#node-types">Node Types</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-sessions">Working with Sessions</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-empty-node">Create empty Node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#create-node-with-properties">Create Node with properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#node-from-graph">Node from graph</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#a-graph-with-a-subject-only-retain-graph-snippet-of-that-subject">1. A graph with a subject -&gt; only retain graph snippet of that subject <br></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a-graph-without-a-subject-take-graph-snippet-of-first-subject">2. A graph without a subject -&gt; take graph snippet of first subject <br></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#a-graph-with-a-subject-that-is-not-in-the-graph-error">3. A graph with a subject that is not in the graph -&gt; error <br></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#node-from-graphpath">Node from graphPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#get-metadata-from-graph">Get Metadata from graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#node-to-graph">Node to Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#graph-ontologies">Graph ontologies</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#save-to-graph">Save to Graph</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_geometrynodes.html">GeometryNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_sessionnodes.html">SessionNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+<li class="toctree-l1"><a class="reference external" href="`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_">`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Node</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/tutorial_nodes.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="node">
+<h1>Node<a class="headerlink" href="#node" title="Link to this heading"></a></h1>
+<p>The Node class in Geomapi is the abstract metadata class from which all other classes inherit. While this node should not be frequently used (unless to govern unknown geospatial data), and has limited capabilities, it governs the basic properties and RDF Graph interaction.</p>
+<p><a class="reference external" href="https://rdflib.readthedocs.io/">https://rdflib.readthedocs.io/</a></p>
+<p>As such, the Node class incorporates all functionalities to read and write metadata to RDF Graphs, and format it approprietly to be used in geomatics analyses.</p>
+<p>The code below shows how to create a abstract Node class works and how it interacts with RDF Graphs.</p>
+<p>First the geomapi and external packages are imported</p>
+<p>A Node Can be initialised using a number of different parameters</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">geomapi.node</span> <span class="kn">import</span> <span class="n">Node</span>
+<span class="n">newNode</span> <span class="o">=</span> <span class="n">Node</span><span class="p">()</span>
+</pre></div>
+</div>
+<section id="without-a-graph">
+<h2>Without a Graph<a class="headerlink" href="#without-a-graph" title="Link to this heading"></a></h2>
+<p>If no Graph or -path is provided, You can create an empty node of any type with a (random) subject ID and no metadata.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">newNode</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">subject</span> <span class="o">=</span> <span class="s2">&quot;myNode&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="with-graph">
+<h2>With Graph<a class="headerlink" href="#with-graph" title="Link to this heading"></a></h2>
+<p>You can create a Node using a Graph or -Path, this will parse all the variables inside the Graph. If a subject is provided, it will use that specific subject for the Graph.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">newNode</span> <span class="o">=</span> <span class="n">Node</span><span class="p">(</span><span class="n">graphPath</span> <span class="o">=</span> <span class="s2">&quot;http://www.w3.org/People/Berners-Lee/card&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="node-types">
+<h2>Node Types<a class="headerlink" href="#node-types" title="Link to this heading"></a></h2>
+<p>Currently, the API supports 6 Specialised Nodes:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">ImageNode</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">GeometryNode</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">PointcloudNode</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">MeshNode</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">BIMNode</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">LinesetNode</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">OrthoNode</span><span class="p">()</span>
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">SessionNode</span><span class="p">()</span>
+</pre></div>
+</div>
+<p>Each Node Can be created just like a regular node, but it has extra inputs to assing variables.
+Check out the tutorial section for info about each specific node.</p>
+</section>
+<section id="working-with-sessions">
+<h2>Working with Sessions<a class="headerlink" href="#working-with-sessions" title="Link to this heading"></a></h2>
+<p>Since each node Only points to 1 resource, we use Sessions to group them.
+A Session is a collection of Resources that are taken in a single recording session. This means that all they are all in the same coordinate system and are documenting the same information.
+Check out the tutorial section about SessionNodes to get started.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#IMPORT PACKAGES</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">import</span> <span class="nn">open3d</span> <span class="k">as</span> <span class="nn">o3d</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1">#IMPORT MODULES</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span> 
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">geomapi.utils</span> <span class="k">as</span> <span class="nn">ut</span>
+<span class="kn">from</span> <span class="nn">geomapi.utils</span> <span class="kn">import</span> <span class="n">geometryutils</span> <span class="k">as</span> <span class="n">gmu</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools</span> <span class="k">as</span> <span class="nn">tl</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">autoreload</span> 2
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="create-empty-node">
+<h2>Create empty Node<a class="headerlink" href="#create-empty-node" title="Link to this heading"></a></h2>
+<p>Node classes can be initiliased without any inputs. In this case, a GUID subject and a name are asigned upon initialisation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">subject</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>file:///a20c8d41-1d57-11ed-8772-c8f75043ce59
+&lt;class &#39;rdflib.term.URIRef&#39;&gt;
+a20c8d41-1d57-11ed-8772-c8f75043ce59
+</pre></div>
+</div>
+</div>
+</div>
+<p>This <a class="reference external" href="https://rdflib.readthedocs.io/en/stable/rdf_terms.html">subject</a> serves as the key identifier for the Node with <a class="reference external" href="https://rdflib.readthedocs.io/en/stable/intro_to_graphs.html">RDF Graphs</a> and thus is restricted from using characters that can break its serialisation.
+In contrast, the <a class="reference external" href="https://geomatics.pages.gitlab.kuleuven.be/research-projects/geomapi/geomapi/geomapi.nodes.node.html">name</a> property is a string without any conditions.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;[this&lt;has$to^change]&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>file:///_this_has_to_change_
+</pre></div>
+</div>
+</div>
+</div>
+<p>The type of these subjects is a <a class="reference external" href="https://rdflib.readthedocs.io/en/stable/rdf_terms.html#uriref">URIRef</a> which is compatible with any standardised Graph Navigation. Notice that both online (http:///) and local (file:///) subjects can be used with Geomapi (although the focus is more in offline processing).</p>
+</section>
+<section id="create-node-with-properties">
+<h2>Create Node with properties<a class="headerlink" href="#create-node-with-properties" title="Link to this heading"></a></h2>
+<p>Node has the following standard concepts, which are input protected: <br><br>
+&gt; subject (URIRef) <br>
+&gt; name (str)<br>
+&gt; path (str, optional at this level)<br>
+&gt; graph (Graph)<br>
+&gt; graphPath (str)<br>
+&gt; timestamp(str,(yyyy-MM-ddTHH:mm:ss))<br>
+&gt; resource (geometry, abstract at this level)<br>
+&gt; cartesianTransform (np.array, abstract on this level)<br></p>
+<p>Each of these properties also has call() methods, which attempt to form values based on present instance variables in the Node.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># properties</span>
+<span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+          <span class="n">name</span><span class="o">=</span><span class="s1">&#39;myName&#39;</span><span class="p">,</span>
+          <span class="n">path</span><span class="o">=</span><span class="s1">&#39;mypathWithValidExtension.txt&#39;</span><span class="p">,</span>
+          <span class="n">graph</span><span class="o">=</span><span class="n">Graph</span><span class="p">(),</span>
+          <span class="n">graphPath</span><span class="o">=</span><span class="s1">&#39;somePathWithaGraph.ttl&#39;</span><span class="p">,</span>
+          <span class="n">cartesianTransform</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">diag</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">ones</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">)))),</span>
+          <span class="n">timestamp</span><span class="o">=</span><span class="s2">&quot;Tue Dec  7 09:38:13 2021&quot;</span><span class="p">,</span>
+          <span class="n">newAttribute1</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span>
+          <span class="n">newAttribute2</span><span class="o">=</span><span class="s1">&#39;attrib2&#39;</span><span class="p">,)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///myNode&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=N00a16e4e3610488190308520f358dd29 (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;somePathWithaGraph.ttl&#39;,
+ &#39;_path&#39;: &#39;mypathWithValidExtension.txt&#39;,
+ &#39;_name&#39;: &#39;mypathWithValidExtension&#39;,
+ &#39;_timestamp&#39;: &#39;2021-12-07T09:38:13&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None,
+ &#39;newAttribute1&#39;: 0.0,
+ &#39;newAttribute2&#39;: &#39;attrib2&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<p>Note that timestamp is formatted as “%Y-%m-%dT%H:%M:%S” and that any kwarg can be added to the class. cartesianTransform methods differs between ImageNode and other nodes so the abstractr Node class doesn’t incorporate functionality for this class.</p>
+<p>Every Node class also has call methods for the internal properties. If these instance variables are None, they are reconstructed from other information that is present in the Node.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#call methods</span>
+<span class="n">graphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;meshGraph.ttl&#39;</span><span class="p">)</span>
+
+<span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_name</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_cartesianTransform</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_path</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_graph</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_timestamp</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">get_resource</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Basic Wall_000_WA_DummyWall 20mm_1130411
+None
+d:\Scan-to-BIM repository\geomapi\test\testfiles\Basic Wall_000_WA_DummyWall 20mm_1130411.txt
+[a rdfg:Graph;rdflib:storage [a rdflib:Store;rdfs:label &#39;Memory&#39;]].
+2022-04-06T15:16:28
+None
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="node-from-graph">
+<h2>Node from graph<a class="headerlink" href="#node-from-graph" title="Link to this heading"></a></h2>
+<p>Every node class can be initiliased from a graph. There are three possibilities:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;bimGraph1.ttl&#39;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
+
+<span class="c1">#only print first node</span>
+<span class="n">newGraph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">newGraph</span><span class="o">+=</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">URIRef</span><span class="p">(</span><span class="s1">&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;</span><span class="p">),</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">newGraph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix ns1: &lt;http://ifcowl.openbimstandards.org/IFC2X3_Final#&gt; .
+@prefix ns2: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix ns3: &lt;http://libe57.org#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&gt; a ns2:BIMNode ;
+    ns1:className &quot;IfcWall&quot; ;
+    ns1:globalId &quot;0KysUSO6T3_gOJKtAiUE7d&quot; ;
+    ns1:ifcPath &quot;IFC\\Academiestraat_building_1.ifc&quot; ;
+    ns1:phase &quot;BIM-UF&quot; ;
+    ns3:cartesianBounds &quot;&quot;&quot;[ 31.3840053   37.25142541 100.31983802 100.57972895   7.49
+  10.48      ]&quot;&quot;&quot; ;
+    ns3:cartesianTransform &quot;&quot;&quot;[[  1.           0.           0.          34.91152793]
+ [  0.           1.           0.         100.43864519]
+ [  0.           0.           1.           9.31833333]
+ [  0.           0.           0.           1.        ]]&quot;&quot;&quot; ;
+    ns3:pointCount 24 ;
+    ns2:accuracy &quot;0.05&quot;^^xsd:float ;
+    ns2:faceCount 44 ;
+    ns2:lod 300 ;
+    ns2:name &quot;Basic Wall:211_WA_Ff1_Glued brickwork sandlime 150mm:1118860&quot; ;
+    ns2:orientedBounds &quot;&quot;&quot;[[ 31.38400511 100.42974533  10.48      ]
+ [ 37.24861442 100.31982342  10.48      ]
+ [ 31.38400511 100.42974533   7.49      ]
+ [ 31.38681629 100.57972895  10.48      ]
+ [ 37.2514256  100.46980704   7.49      ]
+ [ 31.38681629 100.57972895   7.49      ]
+ [ 37.2514256  100.46980704  10.48      ]
+ [ 37.24861442 100.31982342   7.49      ]]&quot;&quot;&quot; ;
+    ns2:path &quot;BIM\\Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d.ply&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+<section id="a-graph-with-a-subject-only-retain-graph-snippet-of-that-subject">
+<h3>1. A graph with a subject -&gt; only retain graph snippet of that subject <br><a class="headerlink" href="#a-graph-with-a-subject-only-retain-graph-snippet-of-that-subject" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">subject</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">subjects</span><span class="p">())</span>
+<span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span><span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>This is the base Node functionality, overwite for each childNode to retrieve the relevant cartesianTransform
+@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///Floor_232_FL_Wide_slab_50mm_1017640&gt; a v4d:MeshNode ;
+    e57:cartesianBounds &quot;[31.04750061 46.16619873 87.48919678 93.76270294 13.72000027 13.77000046]&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[ 1.          0.          0.         38.63791847]\r
+ [ 0.          1.          0.         91.44094992]\r
+ [ 0.          0.          1.         13.74500036]\r
+ [ 0.          0.          0.          1.        ]]&quot;&quot;&quot; ;
+    e57:pointCount 32 ;
+    v4d:accuracy &quot;0.05&quot;^^xsd:float ;
+    v4d:faceCount 64 ;
+    v4d:name &quot;Floor_232_FL_Wide slab 50mm_1017640&quot; ;
+    v4d:path &quot;MESH\\Floor_232_FL_Wide slab 50mm_1017640.obj&quot; ;
+    openlabel:sensor &quot;Hololens 2&quot; ;
+    openlabel:timestamp &quot;2022-04-06 15:16:27&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="a-graph-without-a-subject-take-graph-snippet-of-first-subject">
+<h3>2. A graph without a subject -&gt; take graph snippet of first subject <br><a class="headerlink" href="#a-graph-without-a-subject-take-graph-snippet-of-first-subject" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>This is the base Node functionality, overwite for each childNode to retrieve the relevant cartesianTransform
+@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///Basic_Wall_000_WA_DummyWall_20mm_1130411&gt; a v4d:MeshNode ;
+    e57:cartesianBounds &quot;&quot;&quot;[-14.01650047 -13.62110043  69.10179901  69.13130188  13.97000027\r
+  17.20999908]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[  1.           0.           0.         -13.81880021]\r
+ [  0.           1.           0.          69.11655045]\r
+ [  0.           0.           1.          15.58999968]\r
+ [  0.           0.           0.           1.        ]]&quot;&quot;&quot; ;
+    e57:pointCount 8 ;
+    v4d:accuracy &quot;0.05&quot;^^xsd:float ;
+    v4d:faceCount 12 ;
+    v4d:name &quot;Basic Wall_000_WA_DummyWall 20mm_1130411&quot; ;
+    v4d:path &quot;MESH\\Basic Wall_000_WA_DummyWall 20mm_1130411.obj&quot; ;
+    openlabel:sensor &quot;Hololens 2&quot; ;
+    openlabel:timestamp &quot;2022-04-06 15:16:28&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="a-graph-with-a-subject-that-is-not-in-the-graph-error">
+<h3>3. A graph with a subject that is not in the graph -&gt; error <br><a class="headerlink" href="#a-graph-with-a-subject-that-is-not-in-the-graph-error" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span><span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output traceback highlight-ipythontb notranslate"><div class="highlight"><pre><span></span><span class="gt">---------------------------------------------------------------------------</span>
+<span class="ne">ValueError</span><span class="g g-Whitespace">                                </span>Traceback (most recent call last)
+<span class="o">~</span>\<span class="n">AppData</span>\<span class="n">Local</span>\<span class="n">Temp</span><span class="o">/</span><span class="n">ipykernel_16704</span><span class="o">/</span><span class="mf">3265785765.</span><span class="n">py</span> <span class="ow">in</span> <span class="o">&lt;</span><span class="n">module</span><span class="o">&gt;</span>
+<span class="ne">----&gt; </span><span class="mi">1</span> <span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span><span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+
+<span class="nn">d:\Scan-to-BIM repository\geomapi\geomapi\nodes\node.py</span> in <span class="ni">__init__</span><span class="nt">(self, subject, graph, graphPath, name, path, timestamp, resource, cartesianTransform, **kwargs)</span>
+<span class="g g-Whitespace">     </span><span class="mi">89</span>                 <span class="bp">self</span><span class="o">.</span><span class="n">get_metadata_from_graph</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_graph</span><span class="p">,</span><span class="bp">self</span><span class="o">.</span><span class="n">_subject</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">90</span>             <span class="k">else</span><span class="p">:</span>
+<span class="ne">---&gt; </span><span class="mi">91</span>                 <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span> <span class="s1">&#39;Subject not in graph&#39;</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">92</span>         <span class="bp">self</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">kwargs</span><span class="p">)</span>
+<span class="g g-Whitespace">     </span><span class="mi">93</span> 
+
+<span class="ne">ValueError</span>: Subject not in graph
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="node-from-graphpath">
+<h2>Node from graphPath<a class="headerlink" href="#node-from-graphpath" title="Link to this heading"></a></h2>
+<p>Every node class can be initiliased from a graphPath. The same three possibilities apply here as well:</p>
+<ol class="arabic simple">
+<li><p>A graphPath with a subject -&gt; only retain graph snippet of that subject <br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">subject</span><span class="o">=</span><span class="nb">next</span><span class="p">(</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">subjects</span><span class="p">())</span>
+<span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">subject</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>A graphPath without a subject -&gt; take graph snippet of first subject <br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>A graphPath with a subject that is not in the graph -&gt; error <br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="get-metadata-from-graph">
+<h2>Get Metadata from graph<a class="headerlink" href="#get-metadata-from-graph" title="Link to this heading"></a></h2>
+<p>Upon initialisation from a graph or graphPath, the graph’s triples are assigned as instance variables.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>This is the base Node functionality, overwite for each childNode to retrieve the relevant cartesianTransform
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///1faada72-1493-11ed-8ec2-c8f75043ce59&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=Na23302d6b7a04f44851bb45d5e2dee8d (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: &#39;BIM\\1faada72-1493-11ed-8ec2-c8f75043ce59.ply&#39;,
+ &#39;_name&#39;: &#39;1faada72-1493-11ed-8ec2-c8f75043ce59&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None,
+ &#39;type&#39;: &#39;https://w3id.org/v4d/core#BIMNode&#39;,
+ &#39;className&#39;: &#39;IfcOpeningElement&#39;,
+ &#39;globalId&#39;: &#39;1sAc4Xyq99bfet1lGbGxNb&#39;,
+ &#39;ifcPath&#39;: &#39;IFC\\Academiestraat_building_1.ifc&#39;,
+ &#39;phase&#39;: &#39;BIM-UF&#39;,
+ &#39;cartesianBounds&#39;: array([-10.82253789,  -9.66331336,  72.20498616,  72.63245695,
+         16.99      ,  17.04      ]),
+ &#39;pointCount&#39;: 8,
+ &#39;accuracy&#39;: 0.05,
+ &#39;faceCount&#39;: 12,
+ &#39;lod&#39;: 300,
+ &#39;orientedBounds&#39;: array([[-10.8129766 ,  72.63260805,  17.04      ],
+        [ -9.66325013,  72.60493317,  17.04      ],
+        [-10.82260366,  72.23266104,  17.04      ],
+        [-10.8129766 ,  72.63260805,  16.99      ],
+        [ -9.67287719,  72.20498616,  16.99      ],
+        [-10.82260366,  72.23266104,  16.99      ],
+        [ -9.66325013,  72.60493317,  16.99      ],
+        [ -9.67287719,  72.20498616,  17.04      ]])}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: Paths are stored relative to the graphPath so graph files and files can be moved without breaking the serialization. Moreover, when a graphPath is present, it is used to reconstruct the absolute paths wihtin the node.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graph</span><span class="o">=</span><span class="n">graph</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">path</span><span class="p">)</span> <span class="c1"># -&gt; absolute path can not be reconstructed </span>
+
+<span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>This is the base Node functionality, overwite for each childNode to retrieve the relevant cartesianTransform
+BIM\1faada72-1493-11ed-8ec2-c8f75043ce59.ply
+This is the base Node functionality, overwite for each childNode to retrieve the relevant cartesianTransform
+d:\Scan-to-BIM repository\geomapi\test\testfiles\MESH\Basic Wall_000_WA_DummyWall 20mm_1130411.obj
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="node-to-graph">
+<h2>Node to Graph<a class="headerlink" href="#node-to-graph" title="Link to this heading"></a></h2>
+<p>Similarly, all instance variables are transferred to triples.</p>
+<p><strong>NOTE</strong>: Actual data is not serialized incl. resources (point clouds, meshes, etc.), the graphPath, etc. These would not fit with semantic web technology concepts and can be hundreds of gigabytes in filesize.  <br> <br>
+Instead, resources should be stored seperately in their respective file formats while the graphs govern their metadata.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+            <span class="n">myAttr</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">myAttr2</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
+            <span class="n">myAttr3</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]))</span>
+<span class="n">node</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///myNode&gt; a v4d:Node ;
+    v4d:myAttr &quot;0.5&quot;^^xsd:float ;
+    v4d:myAttr2 5 ;
+    v4d:myAttr3 &quot;[1 2 3]&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+<p><a class="reference external" href="https://rdflib.readthedocs.io/en/stable/rdf_terms.html#common-xsd-datatypes">XSD</a> datatypes are used to serialize the data. <strong>str</strong> is used if no type is recognized.</p>
+</section>
+<section id="graph-ontologies">
+<h2>Graph ontologies<a class="headerlink" href="#graph-ontologies" title="Link to this heading"></a></h2>
+<p>Geomapi currently uses the following ontologies. For unrecognised properties, [v4d] is used as the default Namespace.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">rdflib</span>
+<span class="n">exif</span> <span class="o">=</span> <span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;http://www.w3.org/2003/12/exif/ns#&#39;</span><span class="p">)</span> <span class="c1"># -&gt; image properties</span>
+<span class="n">geo</span><span class="o">=</span><span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;http://www.opengis.net/ont/geosparql#&#39;</span><span class="p">)</span> <span class="c1"># -&gt; coordinate system information</span>
+<span class="n">gom</span><span class="o">=</span><span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;https://w3id.org/gom#&#39;</span><span class="p">)</span> <span class="c1"># -&gt; geometry representations </span>
+<span class="n">omg</span><span class="o">=</span><span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;https://w3id.org/omg#&#39;</span><span class="p">)</span> <span class="c1"># -&gt; geometry relations</span>
+<span class="n">fog</span><span class="o">=</span><span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;https://w3id.org/fog#&#39;</span><span class="p">)</span>
+<span class="n">v4d</span><span class="o">=</span><span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;https://w3id.org/v4d/core#&#39;</span><span class="p">)</span> <span class="c1"># -&gt; Our project specific concepts</span>
+<span class="n">openlabel</span><span class="o">=</span><span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&#39;</span><span class="p">)</span> <span class="c1"># geometry and CV concepts</span>
+<span class="n">e57</span><span class="o">=</span><span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;http://libe57.org#&#39;</span><span class="p">)</span> <span class="c1"># -&gt; point cloud concepts</span>
+<span class="n">xcr</span><span class="o">=</span><span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;http://www.w3.org/1999/02/22-rdf-syntax-ns#&#39;</span><span class="p">)</span> <span class="c1"># -&gt; image concepts from RealityCapture</span>
+<span class="n">ifc</span><span class="o">=</span><span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;http://ifcowl.openbimstandards.org/IFC2X3_Final#&#39;</span><span class="p">)</span> <span class="c1"># -&gt; BIM concepts</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="save-to-graph">
+<h2>Save to Graph<a class="headerlink" href="#save-to-graph" title="Link to this heading"></a></h2>
+<p>Storing one or more nodes in a graph on drive is an extension of the to_graph() function.
+<br></p>
+<p>Just add a new graphPath or use the existing one, and set save==True</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+            <span class="n">myAttr</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+            <span class="n">myAttr2</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> 
+            <span class="n">myAttr3</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">]))</span>
+
+<span class="n">newGraphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s1">&#39;myGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">newGraphPath</span><span class="p">)</span>
+
+<span class="n">newNode</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">newGraphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///myNode&gt; a v4d:Node ;
+    v4d:myAttr &quot;0.5&quot;^^xsd:float ;
+    v4d:myAttr2 5 ;
+    v4d:myAttr3 &quot;[1 2 3]&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../geomapi/geomapi.tools.validationtools.html" class="btn btn-neutral float-left" title="geomapi.tools.validationtools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial_geometrynodes.html" class="btn btn-neutral float-right" title="GeometryNode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

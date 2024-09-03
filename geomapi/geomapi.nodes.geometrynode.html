@@ -1,0 +1,399 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.nodes.geometrynode &mdash; Geomapi 0.3.6 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=19f00094" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="../_static/jquery.js?v=5d32c60e"></script>
+        <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+        <script src="../_static/documentation_options.js?v=8da8c241"></script>
+        <script src="../_static/doctools.js?v=9a2dae69"></script>
+        <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.nodes.imagenode" href="geomapi.nodes.imagenode.html" />
+    <link rel="prev" title="geomapi.nodes.bimnode" href="geomapi.nodes.bimnode.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/functionality.html">Functionality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.bimnode.html">geomapi.nodes.bimnode</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.nodes.geometrynode</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode"><code class="docutils literal notranslate"><span class="pre">GeometryNode</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.__init__"><code class="docutils literal notranslate"><span class="pre">GeometryNode.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.cartesianBounds"><code class="docutils literal notranslate"><span class="pre">GeometryNode.cartesianBounds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.orientedBounds"><code class="docutils literal notranslate"><span class="pre">GeometryNode.orientedBounds</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.orientedBoundingBox"><code class="docutils literal notranslate"><span class="pre">GeometryNode.orientedBoundingBox</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.set_resource"><code class="docutils literal notranslate"><span class="pre">GeometryNode.set_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.get_resource"><code class="docutils literal notranslate"><span class="pre">GeometryNode.get_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.get_oriented_bounding_box"><code class="docutils literal notranslate"><span class="pre">GeometryNode.get_oriented_bounding_box()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.set_cartesian_transform"><code class="docutils literal notranslate"><span class="pre">GeometryNode.set_cartesian_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.get_cartesian_transform"><code class="docutils literal notranslate"><span class="pre">GeometryNode.get_cartesian_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.get_cartesian_bounds"><code class="docutils literal notranslate"><span class="pre">GeometryNode.get_cartesian_bounds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.get_oriented_bounds"><code class="docutils literal notranslate"><span class="pre">GeometryNode.get_oriented_bounds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.get_center"><code class="docutils literal notranslate"><span class="pre">GeometryNode.get_center()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.geometrynode.GeometryNode.visualize"><code class="docutils literal notranslate"><span class="pre">GeometryNode.visualize()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.imagenode.html">geomapi.nodes.imagenode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.linesetnode.html">geomapi.nodes.linesetnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.meshnode.html">geomapi.nodes.meshnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.node.html">geomapi.nodes.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.orthonode.html">geomapi.nodes.orthonode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html">geomapi.nodes.pointcloudnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.sessionnode.html">geomapi.nodes.sessionnode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_geometrynodes.html">GeometryNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_sessionnodes.html">SessionNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+<li class="toctree-l1"><a class="reference external" href="`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_">`GitHub &lt;https://github.com/KU-Leuven-Geomatics/geomapi&gt;`_</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.nodes.html">geomapi.nodes</a></li>
+      <li class="breadcrumb-item active">geomapi.nodes.geometrynode</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.nodes.geometrynode.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.nodes.geometrynode">
+<span id="geomapi-nodes-geometrynode"></span><h1>geomapi.nodes.geometrynode<a class="headerlink" href="#module-geomapi.nodes.geometrynode" title="Link to this heading"></a></h1>
+<p><strong>GeometryNode</strong> is an abstract Python geometry class to govern the data and metadata of geometric data (Mesh, BIM, PointClouds).
+It is the base class for the MeshNode, PointCloudNode and BIMNode classes. It contains the base concepts to manipulate cartesianBounds, orientedBounds, orientedBoundingBoxes, etc.</p>
+<p><strong>IMPORTANT</strong>: the GeometryNode class is an archytype class from which specific data classes (e.g. PointCloudNode) inherit.
+Do not use this class directly if you can use a child class with more functionality.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geomapi.nodes.geometrynode.</span></span><span class="sig-name descname"><span class="pre">GeometryNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesianBounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientedBounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientedBoundingBox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.OrientedBoundingBox</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node" title="geomapi.nodes.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.Graph</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">rdflib.URIRef</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesianBounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientedBounds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientedBoundingBox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.OrientedBoundingBox</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.__init__" title="Link to this definition"></a></dt>
+<dd><p>Creates a GeometryNode from one or more of the following inputs. If successful, it will set the following attributes.</p>
+<dl>
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>cartesianBounds(np.array [6x1]): [xMin,xMax,yMin,yMax,zMin,zMax]</p></li>
+<li><p>orientedBounds (np.ndarray [8x3]): bounding points of OrientedBoundingBox</p></li>
+<li><p>orientedBoundingBox (o3d.geometry.OrientedBoundingBox)</p></li>
+</ol>
+</dd>
+<dt>Args:</dt><dd><p>1.graph (Graph, optional): An RDF Graph to parse.</p>
+<p>2.graphPath (str, optional): The path of an RDF Graph to parse. If no subject is provided, the first subject of the graph is retained.</p>
+<p>3.path(str,optional): A filepath to a resource.</p>
+<p>4.subject (URIRef, optional): A subject to use as identifier for the Node. If a graph is also present, the subject should be part of the graph.</p>
+<p>5.name (str, optional): A name of the Node. This is not a unique identifier but serves as non-functional description.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.cartesianBounds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cartesianBounds</span></span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.cartesianBounds" title="Link to this definition"></a></dt>
+<dd><p>Get the cartesianBounds of the node from various inputs.</p>
+<dl>
+<dt>Args:</dt><dd><p>1.np.array(6x1), list (6 elements)</p>
+<p>2.Vector3dVector (n elements)</p>
+<p>3.orientedBounds (np.array(8x3))</p>
+<p>4.Open3D.geometry.OrientedBoundingBox</p>
+<p>5.Open3D geometry</p>
+</dd>
+<dt>Returns:</dt><dd><p>cartesianBounds (np.array [6x1]) [xMin,xMax,yMin,yMax,zMin,zMax]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.orientedBounds">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">orientedBounds</span></span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.orientedBounds" title="Link to this definition"></a></dt>
+<dd><p>Get the 8 bounding points of the Node from various inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>orientedBounds (np.array(nx3)), list (24 elements) or Vector3dVector (8 elements)</p></li>
+<li><p>Open3D.geometry.OrientedBoundingBox</p></li>
+<li><p>Open3D geometry</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>orientedBounds (np.ndarray [8x3])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.orientedBoundingBox">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">orientedBoundingBox</span></span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.orientedBoundingBox" title="Link to this definition"></a></dt>
+<dd><p>Get the orientedBoundingBox of the Node from various inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>Open3D.geometry.OrientedBoundingBox</p></li>
+<li><p>Open3D geometry</p></li>
+<li><p>orientedBounds (np.array(nx3)) or Vector3dVector</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>orientedBoundingBox (o3d.geometry.OrientedBoundingBox)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.set_resource">
+<span class="sig-name descname"><span class="pre">set_resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.set_resource" title="Link to this definition"></a></dt>
+<dd><p>Set the resource of the node.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>value (Open3D.geometry.PointCloud or Open3D.geometry.TriangleMesh)</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: Resource must be Open3D.geometry</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.get_resource">
+<span class="sig-name descname"><span class="pre">get_resource</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.get_resource" title="Link to this definition"></a></dt>
+<dd><p>Returns the geometry data in the node.</p>
+<p>If none is present, it will search for the data on drive from path, graphPath, name or subject.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>self (Geometry)</p></li>
+<li><p>percentage (float,optional): percentage of point cloud to load. Defaults to 1.0 (100%).</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.PointCloud or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.get_oriented_bounding_box">
+<span class="sig-name descname"><span class="pre">get_oriented_bounding_box</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.OrientedBoundingBox</span></span></span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.get_oriented_bounding_box" title="Link to this definition"></a></dt>
+<dd><p>Gets the Open3D OrientedBoundingBox of the node from various inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>cartesianBounds</p></li>
+<li><p>orientedBounds</p></li>
+<li><p>cartesianTransform</p></li>
+<li><p>Open3D geometry</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.orientedBoundingBox</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.set_cartesian_transform">
+<span class="sig-name descname"><span class="pre">set_cartesian_transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.set_cartesian_transform" title="Link to this definition"></a></dt>
+<dd><p>Set the cartesianTransform of the node from various inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>cartesianTransform(np.ndarray(4x4))</p></li>
+<li><p>np.ndarray or Vector3dVector (1x3)</p></li>
+<li><p>cartesianBounds (np.ndarray (6x1))</p></li>
+<li><p>np.ndarray or Vector3dVector (8x3 or nx3)</p></li>
+<li><p>Open3D.geometry</p></li>
+</ol>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.get_cartesian_transform">
+<span class="sig-name descname"><span class="pre">get_cartesian_transform</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.get_cartesian_transform" title="Link to this definition"></a></dt>
+<dd><p>Get the cartesianTransform of the node from various inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>cartesianBounds</p></li>
+<li><p>orientedBounds</p></li>
+<li><p>orientedBoundingBox</p></li>
+<li><p>Open3D geometry</p></li>
+<li><p>list of Vector3dVector objects</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>cartesianTransform(np.ndarray(4x4))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.get_cartesian_bounds">
+<span class="sig-name descname"><span class="pre">get_cartesian_bounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.get_cartesian_bounds" title="Link to this definition"></a></dt>
+<dd><p>Get the cartesianBounds of the node from various inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>orientedBounds</p></li>
+<li><p>orientedBoundingBox</p></li>
+<li><p>resource (Open3D.geometry)</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>cartesianBounds (np.array [6x1])</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.get_oriented_bounds">
+<span class="sig-name descname"><span class="pre">get_oriented_bounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.get_oriented_bounds" title="Link to this definition"></a></dt>
+<dd><p>Get the 8 bounding points of the node from various inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>cartesianBounds</p></li>
+<li><p>orientedBoundingBox</p></li>
+<li><p>resource (Open3D.geometry)</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>OrientedBounds (np.ndarray(8x3))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.get_center">
+<span class="sig-name descname"><span class="pre">get_center</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.get_center" title="Link to this definition"></a></dt>
+<dd><p>Returns the center of the node.</p>
+<p><strong>NOTE</strong> the result may vary based on the metadata in the node.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>cartesianBounds</p></li>
+<li><p>orientedBoundingBox</p></li>
+<li><p>resource (Open3D.geometry)</p></li>
+<li><p>cartesianTransform</p></li>
+<li><p>orientedBoundingBox</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>center (np.ndarray(3x1))</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.geometrynode.GeometryNode.visualize">
+<span class="sig-name descname"><span class="pre">visualize</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.geometrynode.GeometryNode.visualize" title="Link to this definition"></a></dt>
+<dd><p>Visualise the node’s geometry (PointCloud or TriangleMesh).</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.nodes.bimnode.html" class="btn btn-neutral float-left" title="geomapi.nodes.bimnode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.nodes.imagenode.html" class="btn btn-neutral float-right" title="geomapi.nodes.imagenode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2024, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
