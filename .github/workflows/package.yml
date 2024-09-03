@@ -1,4 +1,4 @@
-name: Upload Python Package
+name: Package creation and publishing
 
 on:
   push:
