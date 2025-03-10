@@ -7,7 +7,7 @@ import quaternion
 import cv2
 from typing import List
 
-from geomapi.nodes import SessionNode
+from geomapi.nodes import SetNode
 import geomapi.utils.geometryutils as gu
 import geomapi.tools.alignmenttools.params as params
 import geomapi.tools.alignmenttools.match as match
@@ -15,15 +15,15 @@ from geomapi.tools.alignmenttools.match import Match, Match2d, Match3d, PoseEsti
 
 
 # returns all sessions that are within the bounding volume
-def find_close_sessions(boundingVolume: np.array, referenceSessions: List[SessionNode]) ->  List[SessionNode]:
+def find_close_sessions(boundingVolume: np.array, referenceSessions: List[SetNode]) ->  List[SetNode]:
     """Determines the close ennoug sessions based on bounding volumes
 
     Args:
         boundingVolume (np.array 6x1): The test bounding volume
-        referenceSessions (list[SessionNode]): All the sessionNodes to check
+        referenceSessions (list[SetNode]): All the SetNodes to check
 
     Returns:
-        list[SessionNode]: All the close enough session nodes
+        list[SetNode]: All the close enough session nodes
     """
 
     boundingboxes = []
@@ -65,12 +65,12 @@ def get_weighted_pose(poses: PoseEstimation) -> np.array:
 
     return transformation
 
-def estimate_session_position(testSession : SessionNode, refSessions: List[SessionNode]) -> np.array:
+def estimate_session_position(testSession : SetNode, refSessions: List[SetNode]) -> np.array:
     """Estimates the global position of a session in relation to a list of reference sessions
 
     Args:
-        testSession (SessionNode): The Test Session where the positions needs to be determined from
-        refSessions (list[SessionNode]): The Reference sessions to help calculate the new position
+        testSession (SetNode): The Test Session where the positions needs to be determined from
+        refSessions (list[SetNode]): The Reference sessions to help calculate the new position
 
     Returns:
         np.array: The estimated transformation

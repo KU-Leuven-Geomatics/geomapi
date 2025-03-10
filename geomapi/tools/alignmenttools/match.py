@@ -7,7 +7,7 @@ import numpy as np
 from scipy import optimize
 
 import geomapi.tools.alignmenttools.params as params
-from geomapi.nodes import GeometryNode, ImageNode, Node, SessionNode
+from geomapi.nodes import GeometryNode, ImageNode, Node, SetNode
 import geomapi.utils.imageutils as iu
 
 class Match:
@@ -291,7 +291,7 @@ class PoseEstimation():
 
 
 # Match 2 sessions using the different matching methods
-def match_session(testSession : SessionNode, refSession : SessionNode):
+def match_session(testSession : SetNode, refSession : SetNode):
     estimations = []
     
     # loop over every test node in the session, and find compatible estimation methods
@@ -363,7 +363,7 @@ def match_raycast(testImage: Node , refImages: List[Node], geometry: Node) -> Po
 
 # Different 3D matching methods
 
-def match_fgr(testGeometry: GeometryNode, refSession : SessionNode) -> PoseEstimation:
+def match_fgr(testGeometry: GeometryNode, refSession : SetNode) -> PoseEstimation:
 
     estimations = []
 
@@ -374,7 +374,7 @@ def match_fgr(testGeometry: GeometryNode, refSession : SessionNode) -> PoseEstim
 
     pass
 
-def match_super4pcs(testGeometry: GeometryNode, refSession : SessionNode) -> PoseEstimation:
+def match_super4pcs(testGeometry: GeometryNode, refSession : SetNode) -> PoseEstimation:
     return None
 
 
