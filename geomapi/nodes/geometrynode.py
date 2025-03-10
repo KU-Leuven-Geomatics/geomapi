@@ -12,15 +12,16 @@ from geomapi.nodes import Node
 import geomapi.utils.geometryutils as gmu
 import open3d as o3d 
 from rdflib import Graph, URIRef
+from pathlib import Path
 
 class GeometryNode (Node):  
     def __init__(self,  graph: Graph = None, 
                         graphPath: str = None,
                         subject: URIRef = None,
                         path:str=None,
-                        cartesianBounds:np.array = None,
-                        orientedBounds:np.array = None,
-                        orientedBoundingBox:o3d.geometry.OrientedBoundingBox = None,
+                        # cartesianBounds:np.array = None,
+                        # orientedBounds:np.array = None,
+                        # orientedBoundingBox:o3d.geometry.OrientedBoundingBox = None,
                         **kwargs):
         """Creates a GeometryNode from one or more of the following inputs. If successful, it will set the following attributes.\n
 
@@ -38,9 +39,9 @@ class GeometryNode (Node):
 
         """
         #private attributes
-        self._cartesianBounds=None      
-        self._orientedBounds=None      
-        self._orientedBoundingBox=None 
+        # self._cartesianBounds=None      
+        # self._orientedBounds=None      
+        # self._orientedBoundingBox=None 
 
         super().__init__(   graph= graph,
                             graphPath= graphPath,
@@ -48,9 +49,9 @@ class GeometryNode (Node):
                             path=path,        
                             **kwargs) 
         #instance variables
-        self.cartesianBounds=cartesianBounds      
-        self.orientedBounds=orientedBounds      
-        self.orientedBoundingBox=orientedBoundingBox 
+        # self.cartesianBounds=cartesianBounds      
+        # self.orientedBounds=orientedBounds      
+        # self.orientedBoundingBox=orientedBoundingBox 
 
 #---------------------PROPERTIES----------------------------
 
@@ -205,37 +206,37 @@ class GeometryNode (Node):
                 self._resource = gmu.e57path_to_pcd(self.path) 
         return self._resource  
 
-    def get_oriented_bounding_box(self)->o3d.geometry.OrientedBoundingBox:
-        """Gets the Open3D OrientedBoundingBox of the node from various inputs.
+    # def get_oriented_bounding_box(self)->o3d.geometry.OrientedBoundingBox:
+    #     """Gets the Open3D OrientedBoundingBox of the node from various inputs.
 
-        Args:
-            1. cartesianBounds\n
-            2. orientedBounds\n
-            3. cartesianTransform\n
-            4. Open3D geometry\n
+    #     Args:
+    #         1. cartesianBounds\n
+    #         2. orientedBounds\n
+    #         3. cartesianTransform\n
+    #         4. Open3D geometry\n
 
-        Returns:
-            o3d.geometry.orientedBoundingBox
-        """
-        if self._orientedBoundingBox is not None:
-            pass
-        elif self._orientedBounds is not None:
-            self._orientedBoundingBox=gmu.get_oriented_bounding_box(self._orientedBounds)
-        elif self.cartesianBounds is not None:
-            self._orientedBoundingBox=gmu.get_oriented_bounding_box(self._cartesianBounds)   
-        elif self._cartesianTransform is not None:
-                box=o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
-                boundingbox= box.get_oriented_bounding_box()
-                translation=gmu.get_translation(self._cartesianTransform)
-                self._orientedBoundingBox= boundingbox.translate(translation)
-        elif self._resource is not None:
-            try:
-                self._orientedBoundingBox=self._resource.get_oriented_bounding_box()
-            except:
-                return None
-        else:
-            return None
-        return self._orientedBoundingBox
+    #     Returns:
+    #         o3d.geometry.orientedBoundingBox
+    #     """
+    #     if self._orientedBoundingBox is not None:
+    #         pass
+    #     elif self._orientedBounds is not None:
+    #         self._orientedBoundingBox=gmu.get_oriented_bounding_box(self._orientedBounds)
+    #     elif self.cartesianBounds is not None:
+    #         self._orientedBoundingBox=gmu.get_oriented_bounding_box(self._cartesianBounds)   
+    #     elif self._cartesianTransform is not None:
+    #             box=o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
+    #             boundingbox= box.get_oriented_bounding_box()
+    #             translation=gmu.get_translation(self._cartesianTransform)
+    #             self._orientedBoundingBox= boundingbox.translate(translation)
+    #     elif self._resource is not None:
+    #         try:
+    #             self._orientedBoundingBox=self._resource.get_oriented_bounding_box()
+    #         except:
+    #             return None
+    #     else:
+    #         return None
+    #     return self._orientedBoundingBox
 
     def set_cartesian_transform(self,value):
         """Set the cartesianTransform of the node from various inputs.\n

@@ -1,6 +1,10 @@
-[html]
-directory = coverage
+[run]
+source = geomapi
+omit =
+    */tests/*
+    */config-3.py
 
 [report]
 exclude_lines =
     if __name__ == .__main__.:
+    pragma: no cover

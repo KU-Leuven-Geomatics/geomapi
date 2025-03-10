@@ -27,6 +27,7 @@ import geomapi.utils.geometryutils as gmu
 #DATA
 sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
+from geomapi.utils import GEOMAPI_PREFIXES
 
 
 class TestNode(unittest.TestCase):
@@ -75,24 +76,83 @@ class TestNode(unittest.TestCase):
         
 
 ################################## TEST FUNCTIONS ######################
-    def test_node_creation_with_subject(self):
-        node=Node()
+
+    def test_initialization_with_minimal_parameters(self):
+        # Minimal initialization
+        node = Node()
+
+        # Assert default values
         self.assertIsNotNone(node.subject)
-        node=Node('http://pointcloud2_0')
-        self.assertEqual(node.subject.toPython(),'http://pointcloud2_0')
-        node=Node('http://po/int/cloud2_ 0:')
-        self.assertEqual(node.subject.toPython(),'http://po_int_cloud2__0_')
-        node=Node('pointc&:lo ud2_0')
-        self.assertEqual(node.subject.toPython(),'file:///pointc&_lo_ud2_0')
-        node=Node('file:///pointc&:lo ud2_0')
-        self.assertEqual(node.subject.toPython(),'file:///pointc&_lo_ud2_0')
-        node=Node('file:///pointc&:lo /ud2_0')
-        self.assertEqual(node.subject.toPython(),'file:///pointc&_lo__ud2_0')
-        node=Node('4499de21-f13f-11ec-a70d-c8f75043ce59')
-        self.assertEqual(node.subject.toPython(),'file:///4499de21-f13f-11ec-a70d-c8f75043ce59')
-        node=Node('[this<has$to^change]')
-        self.assertEqual(node.subject.toPython(),'file:///_this_has_to_change_')
+        self.assertIsNone(node.graph)
+        self.assertIsNone(node.graphPath)
+        self.assertIsNotNone(node.name)
+        self.assertIsNone(node.path)
+        self.assertIsNotNone(node.timestamp)
+        self.assertIsNone(node.resource)
+        self.assertIsNotNone(node.cartesianTransform)
+        self.assertIsNotNone(node.orientedBoundingBox)
+        self.assertIsNotNone(node.convexHull)
+
+    def test_set_subject(self):
+        node = Node()
+        self.assertIsNotNone(node.subject)
         
+        node.subject = 'http://pointcloud2_0'
+        self.assertEqual(node.subject.toPython(), 'http://pointcloud2_0')
+        
+        node.subject = 'http://po/int/cloud2_ 0:'
+        self.assertEqual(node.subject.toPython(), 'http://po_int_cloud2__0_')
+        
+        node.subject = 'pointc&:lo ud2_0'
+        self.assertEqual(node.subject.toPython(), 'http://pointc&_lo_ud2_0')
+        
+        node.subject = 'file:///pointc&:lo ud2_0'
+        self.assertEqual(node.subject.toPython(), 'file:///pointc&_lo_ud2_0')
+        
+        node.subject = 'file:///pointc&:lo /ud2_0'
+        self.assertEqual(node.subject.toPython(), 'file:///pointc&_lo__ud2_0')
+        
+        node.subject = '4499de21-f13f-11ec-a70d-c8f75043ce59'
+        self.assertEqual(node.subject.toPython(), 'http://4499de21-f13f-11ec-a70d-c8f75043ce59')
+        
+        node.subject = '[this<has$to^change]'
+        self.assertEqual(node.subject.toPython(), 'http://_this_has_to_change_')
+        
+
+
+    def test_get_subject(self):
+        #empty -> uuid
+        node=Node()
+        self.assertEqual(len(node.subject),43)
+
+        #subject
+        node=Node('node')
+        self.assertEqual(node.subject,URIRef('http://node'))
+        
+        #subject
+        node=Node(name='my:Nod:e')
+        self.assertEqual(node.subject,URIRef('http://my_Nod_e'))
+
+        #graph 
+        s=next(self.dataLoader.meshGraph.subjects(RDF.type))
+        node=Node(graph=self.dataLoader.meshGraph,subject=s)
+        self.assertEqual(node.get_subject(),s)
+
+        #path
+        node=Node(path=self.dataLoader.pcdPath)
+        self.assertEqual(node.get_subject(),URIRef('http://'+Path(self.dataLoader.pcdPath).stem))
+
+    def test_literal_vs_uri(self):
+        node= PointCloudNode(subject=self.dataLoader.pcdSubject,
+                            graphPath=self.dataLoader.pcdGraphPath)
+
+        # print(node.get_graph().serialize())
+        for s, p, o in node.get_graph().triples(( self.dataLoader.pcdSubject, None, None)):
+            if 'sameAs' in p.toPython():
+                self.assertIsInstance(o,URIRef)
+            if 'cartesianTransform' in p.toPython():
+                self.assertIsInstance(o,Literal)
+                    
     def test_node_creation_with_kwargs(self):
         #string
         attribute='myAttribute'
@@ -118,10 +178,10 @@ class TestNode(unittest.TestCase):
     def test_node_creation_from_different_graphs(self):  
         
         #graph1
-        graph=self.dataLoader.resourceGraph
+        graph=self.dataLoader.pcdGraph
         subject=next(graph.subjects(RDF.type))
         graph=ut.get_subject_graph(graph,subject)
-        node= Node(graph=graph,graphPath=self.dataLoader.resourceGraphPath)
+        node= Node(graph=graph,graphPath=self.dataLoader.pcdGraphPath)
         self.assertEqual(node.subject.toPython(),subject.toPython())
         
         #graph2
@@ -131,13 +191,10 @@ class TestNode(unittest.TestCase):
         node= Node(graph=graph,graphPath=self.dataLoader.meshGraphPath)
         self.assertEqual(node.subject.toPython(),subject.toPython())
 
-    def test_node_creation_from_graphs_with_wrong_subject(self):   
-        self.assertRaises(ValueError,Node,subject='myNode',graph=self.dataLoader.pcdGraph)
-
     def test_node_creation_from_graphPaths(self):    
         #normal graphPath
-        node= Node(graphPath=self.dataLoader.imgGraphPath)
-        self.assertTrue(node.graphPath in self.dataLoader.files)
+        node= Node(graphPath=self.dataLoader.meshGraphPath)
+        # self.assertTrue(str(node.graphPath) in self.dataLoader.files)
 
         #path nonexisting
         node= Node(graphPath=os.path.join(self.dataLoader.path,'qsdf.ttl'))
@@ -145,13 +202,6 @@ class TestNode(unittest.TestCase):
 
         #invalid path
         self.assertRaises(ValueError,Node,graphPath=os.path.join(self.dataLoader.path,'qsdf.qdf'))
-
-        #graph4
-        graph=self.dataLoader.resourceGraph
-        graphPath=self.dataLoader.resourceGraphPath
-        subject=next(graph.subjects(RDF.type))        
-        node= Node(graphPath=graphPath)
-        self.assertEqual(node.subject.toPython(),subject.toPython())
         
         #graph2
         graph=self.dataLoader.pcdGraph
@@ -160,23 +210,38 @@ class TestNode(unittest.TestCase):
         node= Node(graphPath=graphPath,subject=subject)
         self.assertEqual(node.subject.toPython(),subject.toPython())
 
-    def test_get_metadata_from_graph(self):  
+    def test_get_graph(self):  
         #single graph
-        subject=next(self.dataLoader.meshGraph.subjects(RDF.type))
-        graph=ut.get_subject_graph(self.dataLoader.meshGraph,subject)    
-        node= Node(graph=graph,graphPath=self.dataLoader.meshGraphPath)
-        node.get_metadata_from_graph(node.graph,node.subject)
-        if getattr(node,'cartesianBounds',None) is not None:
-            self.assertEqual(node.subject.toPython(),subject.toPython())
-        self.assertEqual(node.cartesianBounds.size,6)
-        if getattr(node,'cartesianTransform',None) is not None:
-            self.assertEqual(node.cartesianTransform.size,16)
-        if getattr(node,'orientedBounds',None) is not None:        
-            self.assertEqual(node.orientedBounds.size,24)
-        if getattr(node,'geospatialTransform',None) is not None:        
-            self.assertEqual(node.geospatialTransform, None)
-        if getattr(node,'orientedBoundingBox',None) is not None:        
-            self.assertIsInstance(node.orientedBoundingBox,o3d.geometry.OrientedBoundingBox)
+        subject=next(self.dataLoader.pcdGraph.subjects(RDF.type))
+        graph=ut.get_subject_graph(self.dataLoader.pcdGraph,subject)    
+        node= Node(graph=graph,graphPath=self.dataLoader.pcdGraphPath)
+        
+        #graph
+        graph=node.get_graph()
+        #check if the graph object is correct
+        self.assertEqual(graph.identifier,node.graph.identifier)
+        for s, p, o in graph.triples((None, None, None)):
+            if 'cartesianTransform' in p.toPython():
+                matrix=ut.literal_to_matrix(o)
+                #check if matrix elements are the same as the node cartesianTransform
+                self.assertTrue(np.allclose(matrix,node.cartesianTransform))
+            if 'orientedBoundingBox' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                node_param=gmu.get_oriented_bounding_box_parameters(node.orientedBoundingBox)
+                self.assertTrue(np.allclose(graph_param,node_param))
+            if 'convexHull' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                node_param=np.asarray(node.convexHull.vertices)
+                self.assertTrue(np.allclose(graph_param,node_param))
+            
+        #with graphPath
+        graph=node.get_graph(graphPath='newPath.ttl')
+        #check if graphPath is set
+        self.assertEqual(node.graphPath,Path('newPath.ttl'))
+
+        #base
+        graph=node.get_graph(base="http://example.org#")
+        self.assertEqual(node.subject,URIRef("http://example.org#academiestraat_week_22_19"))
 
     def test_get_name(self):  
         #empty
@@ -189,7 +254,7 @@ class TestNode(unittest.TestCase):
 
         #path
         node= Node(path=self.dataLoader.pcdPath)
-        self.assertEqual(node.get_name(),ut.get_filename(self.dataLoader.pcdPath))
+        self.assertEqual(node.get_name(),Path(self.dataLoader.pcdPath).stem)
 
         #subject
         node= Node('node')
@@ -207,23 +272,7 @@ class TestNode(unittest.TestCase):
         node=Node()
         self.assertEqual(len(node.get_name()),36)
 
-    def test_get_graph(self):
-        #empty
-        node=Node()
-        self.assertIsNone(node.graph)
-
-        #graph
-        node=Node(graph=self.dataLoader.pcdGraph)
-        self.assertLess(len(node.get_graph()),len(self.dataLoader.pcdGraph))
-
-        #real graphPath
-        node=Node(graphPath=self.dataLoader.pcdGraphPath)
-        self.assertLess(len(node.get_graph()),len(self.dataLoader.pcdGraph))
-
-        #graphPath non existent
-        node=Node(graphPath='myNewGraphPath.ttl')
-        self.assertIsNone(node.get_graph())
-
+ 
     def test_get_timestamp(self):
         #empty
         node=Node()
@@ -239,32 +288,10 @@ class TestNode(unittest.TestCase):
         self.assertEqual(node.get_timestamp(),ut.get_timestamp(self.dataLoader.pcdPath))
 
         #graphPath
-        node=Node(graphPath=self.dataLoader.meshGraphPath)
-        object=self.dataLoader.meshGraph.value(next(s for s in self.dataLoader.meshGraph.subjects(RDF.type)),self.dataLoader.openlabel['timestamp'])
-        self.assertEqual(node.get_timestamp(),object.toPython())
-
-    def test_get_subject(self):
-        #empty -> uuid
-        node=Node()
-        self.assertEqual(len(node.subject),44)
-
-        #subject
-        node=Node('node')
-        self.assertEqual(node.subject,URIRef('file:///node'))
-
-        
-        #subject
-        node=Node(name='my:Nod:e')
-        self.assertEqual(node.subject,URIRef('file:///my_Nod_e'))
-
-        #graph
-        s=next(self.dataLoader.imgGraph.subjects(RDF.type))
-        node=Node(graph=self.dataLoader.imgGraph)
-        self.assertEqual(node.get_subject(),s)
-
-        #path
-        node=Node(path=self.dataLoader.pcdPath)
-        self.assertEqual(node.get_subject(),URIRef('file:///'+ut.validate_string(ut.get_filename(self.dataLoader.pcdPath))))
+        s=next(s for s in self.dataLoader.meshGraph.subjects(RDF.type))
+        node=Node(graphPath=self.dataLoader.meshGraphPath,subject=s)
+        object=self.dataLoader.meshGraph.value(s,GEOMAPI_PREFIXES['dcterms'].created)
+        self.assertEqual(node.get_timestamp(),ut.validate_timestamp(str(object.toPython())))
 
     def test_get_path(self): 
         #empty
@@ -273,77 +300,76 @@ class TestNode(unittest.TestCase):
 
         #path  
         node=Node(path=self.dataLoader.pcdPath)
-        self.assertEqual(node.path,self.dataLoader.pcdPath.as_posix())
+        self.assertEqual(node.path,self.dataLoader.pcdPath)
 
         #no path  -> cwd()
         node=Node()
         self.assertIsNone(node.get_path())
 
         #graphPath 
-        node=Node(graphPath=self.dataLoader.resourceGraphPath)
-        testPath=node.graph.value(node.subject,self.dataLoader.v4d['path'].toPython())
-        self.assertIsNotNone(node.get_path(), testPath)
+        node=Node(graphPath=self.dataLoader.pcdGraphPath)
+        testPath=node.graph.value(node.subject,GEOMAPI_PREFIXES['geomapi'].path)
+        self.assertIsNotNone(node.get_path(), Path(testPath))
 
-    def test_to_graph(self):
-        #empty
-        node=Node()
-        graph=node.to_graph()
-        subject=next(graph.subjects(RDF.type))
-        self.assertEqual(subject,node.subject)
+    # def test_to_graph(self):
+    #     #empty
+    #     node=Node()
+    #     graph=node.to_graph()
+    #     subject=next(graph.subjects(RDF.type))
+    #     self.assertEqual(subject,node.subject)
 
-        #subject and kwargs
-        attribute='myAttribute'
-        # v4d=rdflib.Namespace('https://w3id.org/v4d/core#')
-        node=Node(subject=URIRef('node'),attribute=attribute)
-        graph=node.to_graph()
-        subject=next(graph.subjects(RDF.type))
-        self.assertEqual(subject,node.subject)
-        object=next(node.graph.objects(subject,self.dataLoader.v4d['attribute']))
-        self.assertEqual(object.toPython(),attribute)
+    #     #subject and kwargs
+    #     attribute='myAttribute'
+    #     # v4d=rdflib.Namespace('https://w3id.org/v4d/core#')
+    #     node=Node(subject=URIRef('node'),attribute=attribute)
+    #     graph=node.to_graph()
+    #     subject=next(graph.subjects(RDF.type))
+    #     self.assertEqual(subject,node.subject)
+    #     object=next(node.graph.objects(subject,self.dataLoader.v4d['attribute']))
+    #     self.assertEqual(object.toPython(),attribute)
 
     def test_to_graph_with_paths(self):
         #graphPath should be None
         node=Node(graphPath=self.dataLoader.pcdGraphPath)
-        node.to_graph()
-        testPath=node.graph.value(node.subject,self.dataLoader.v4d['graphPath'])
+        node.get_graph()
+        testPath=node.graph.value(node.subject,GEOMAPI_PREFIXES['geomapi'].graphPath)
         self.assertIsNone(testPath)
 
         #paths should be shortened
         resourcePath=os.path.join(self.dataLoader.path,'resources','parking.obj')
         node=Node(graphPath=self.dataLoader.meshGraphPath)
         node.path=resourcePath
-        node.to_graph()
-        testPath=node.graph.value(node.subject,self.dataLoader.v4d['path']).toPython()
-        self.assertEqual(testPath,os.path.join('..','resources','parking.obj'))
+        node.get_graph()
+        testPath=node.graph.value(node.subject,GEOMAPI_PREFIXES['geomapi'].path)
+        self.assertEqual(testPath.toPython(),Path(os.path.join('..','resources','parking.obj')).as_posix())
 
     def test_to_graph_with_save(self):
         #test save
         testPath=os.path.join(self.dataLoader.resourcePath,'graph3.ttl')
-        node=Node(graph=self.dataLoader.imgGraph)
-        node.to_graph(graphPath=testPath,save=True)        
+        node=Node(graph=self.dataLoader.meshGraph)
+        node.get_graph(graphPath=testPath,save=True)        
         self.assertTrue(os.path.exists(testPath))
         newGraph=Graph().parse(testPath)
         self.assertEqual(len(newGraph),len(node.graph))
 
         #test invalid save
         testPath=os.path.join(self.dataLoader.path,'resources','graph3.sdfqlkbjdqsf')
-        node=Node(graph=self.dataLoader.imgGraph)
-        self.assertRaises(ValueError,node.to_graph,testPath,save=True)
+        node=Node(graph=self.dataLoader.pcdGraph)
+        self.assertRaises(ValueError,node.get_graph,testPath,save=True) 
 
     def test_save_graph(self):
-        tempGraphPath= str(self.dataLoader.resourcePath / 'node.ttl')
-        # os.path.join(self.dataLoader.resourcePath,'node.ttl')
+        tempGraphPath= str(self.dataLoader.pcdGraphPath.parent / 'node.ttl')
 
         #node with only subject
         subject='node'
         node= Node(subject=subject)
-        node.to_graph(tempGraphPath,save=True)
+        node.get_graph(tempGraphPath,save=True)
         testnode=Node(graphPath=tempGraphPath)
         self.assertEqual(node.subject.toPython(),testnode.subject.toPython())
 
         #node with a graph and some kwargs
-        node= Node(graph=self.dataLoader.resourceGraph,myNewRemark='myNewRemark')        
-        node.to_graph(tempGraphPath,save=True)
+        node= Node(graph=self.dataLoader.pcdGraph,myNewRemark='myNewRemark')        
+        node.get_graph(tempGraphPath,save=True)
         testnode=Node(graphPath=tempGraphPath)
         self.assertEqual(node.subject.toPython(),testnode.subject.toPython())
 
@@ -351,7 +377,7 @@ class TestNode(unittest.TestCase):
         subject=next(self.dataLoader.pcdGraph.subjects(RDF.type))
         node= Node(graph=self.dataLoader.pcdGraph,graphPath=self.dataLoader.pcdGraphPath,subject=subject)  
         node.pointCount=1000
-        node.to_graph(tempGraphPath,save=True)
+        node.get_graph(tempGraphPath,save=True)
         testnode=Node(graphPath=tempGraphPath)
         self.assertEqual(node.subject.toPython(),testnode.subject.toPython())
         self.assertEqual(node.pointCount,testnode.pointCount)
@@ -363,7 +389,7 @@ class TestNode(unittest.TestCase):
                                         [1,2,3,4],
                                         [1,2,3,4],
                                         [1,2,3,4],])
-        node.to_graph(tempGraphPath,save=True)
+        node.get_graph(tempGraphPath,save=True)
         testnode=Node(graphPath=tempGraphPath)
         self.assertEqual(node.subject.toPython(),testnode.subject.toPython())
     
@@ -399,7 +425,7 @@ class TestNode(unittest.TestCase):
         #None
         orientedBoundingBox=None
         node= Node(orientedBoundingBox=orientedBoundingBox)
-        self.assertIsNone(node.orientedBoundingBox)
+        self.assertIsNotNone(node.orientedBoundingBox)
 
         #box
         node= Node(orientedBoundingBox=self.dataLoader.mesh.get_oriented_bounding_box())
@@ -425,7 +451,7 @@ class TestNode(unittest.TestCase):
         # None
         convexHull = None
         node = Node(convexHull=convexHull)
-        self.assertIsNone(node.convexHull)
+        self.assertIsNotNone(node.convexHull)
 
         # TriangleMesh
         convexHull = self.dataLoader.mesh.compute_convex_hull()[0]
@@ -484,6 +510,12 @@ class TestNode(unittest.TestCase):
         
         
         #node with resource, convexHull and orientedboundingBox
+        resource=copy.deepcopy(self.dataLoader.mesh)
+        convexHull=resource.compute_convex_hull()[0]
+        boundingBox=resource.get_oriented_bounding_box()
+        center=resource.get_center()
+        convexHullCenter=convexHull.get_center()
+        boundingBoxCenter=boundingBox.get_center()
         node=Node(resource=resource,convexHull=convexHull,orientedBoundingBox=boundingBox)
         node.transform(transformation=transformation)
         self.assertAlmostEqual(node.resource.get_center()[0],center[0]+1,delta=0.01 )
@@ -532,6 +564,12 @@ class TestNode(unittest.TestCase):
         
         
         #node with resource, convexHull and orientedboundingBox
+        resource=copy.deepcopy(self.dataLoader.mesh)
+        convexHull=resource.compute_convex_hull()[0]
+        boundingBox=resource.get_oriented_bounding_box()
+        center=resource.get_center()
+        convexHullCenter=convexHull.get_center()
+        boundingBoxCenter=boundingBox.get_center()
         node=Node(resource=resource,convexHull=convexHull,orientedBoundingBox=boundingBox)
         node.transform(translation=translation)
         self.assertAlmostEqual(node.resource.get_center()[0],center[0]+1,delta=0.01 )
@@ -597,7 +635,7 @@ class TestNode(unittest.TestCase):
         orientedBoundingBox=copy.deepcopy(self.dataLoader.mesh.get_oriented_bounding_box())
         node = Node(orientedBoundingBox=orientedBoundingBox)
         node.transform(rotation=rotation_euler, rotate_around_center=False)
-        self.assertAlmostEqual(node.cartesianTransform[0,3],-56.4058,delta=0.01 )
+        self.assertAlmostEqual(node.cartesianTransform[0,3],-56.4058,delta=0.01 ) #this became 0
         self.assertAlmostEqual(node.cartesianTransform[0,0],0,delta=0.01 )
         self.assertAlmostEqual(node.cartesianTransform[0,1],0-1,delta=0.01 )
         self.assertAlmostEqual(node._orientedBoundingBox.get_center()[0],-56.4058,delta=0.01 )

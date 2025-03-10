@@ -25,6 +25,7 @@ import geomapi.utils.geometryutils as gmu
 sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
 from data_loader_road import DATALOADERROADINSTANCE 
+from geomapi.utils import GEOMAPI_PREFIXES
 
 
 ################################## SETUP/TEARDOWN MODULE ######################
@@ -184,6 +185,32 @@ class TestGeometryutils(unittest.TestCase):
         for i in range(0,7):
             for j in range(0,2):
                 self.assertAlmostEqual(boxPointsGt[i][j],boxPoints[i][j],delta=0.01)
+                
+    def test_get_oriented_bounding_box(self):
+        center = [0, 0, 0]
+        extent = [1, 2, 3]
+        euler_angles = [45, 30, 60]
+
+        obb = gmu.get_oriented_bounding_box(center, extent, euler_angles)
+
+        np.testing.assert_array_almost_equal(obb.center, center, decimal=6)
+        np.testing.assert_array_almost_equal(obb.extent, extent, decimal=6)
+        
+        rotation_matrix_expected = o3d.geometry.OrientedBoundingBox(center, R.from_euler('xyz', euler_angles, degrees=True).as_matrix(), extent).R
+        np.testing.assert_array_almost_equal(obb.R, rotation_matrix_expected, decimal=6)
+
+    def test_get_parameters_from_oriented_bounding_box(self):
+        center = [0, 0, 0]
+        extent = [1, 2, 3]
+        euler_angles = [45, 30, 60]
+
+        obb = gmu.get_oriented_bounding_box(center, extent, euler_angles)
+        parameters = gmu.get_parameters_from_oriented_bounding_box(obb)
+
+        expected_parameters = np.hstack((center, extent, euler_angles))
+
+        np.testing.assert_array_almost_equal(parameters, expected_parameters, decimal=6)
+
 
     def test_create_visible_point_cloud_from_meshes(self):
         referenceMesh1= copy.deepcopy(self.dataLoaderParking.slabMesh)

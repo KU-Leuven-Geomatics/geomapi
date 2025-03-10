@@ -10,11 +10,12 @@ from typing import List, Tuple
 import pandas as pd
 import sys
 import itertools
-
+from pathlib import Path
 from sklearn.neighbors import NearestNeighbors # to compute nearest neighbors
 import laspy # this is to process las point clouds
 import cv2
 import geomapi.utils as ut
+from pathlib import Path 
 
 import geomapi.utils.imageutils as iu #! this might be a problem
 
@@ -28,6 +29,9 @@ import pye57
 import trimesh
 from scipy.spatial import Delaunay
 from scipy.spatial.transform import Rotation as R
+
+#fixed a problem with the pye57 library
+pye57.e57.SUPPORTED_POINT_FIELDS.update({'nor:normalX' : 'd','nor:normalY': 'd','nor:normalZ': 'd'})
 
 # NOTE I feel like there are too many similar cropping functions
 def create_visible_point_cloud_from_meshes (geometries: List[o3d.geometry.TriangleMesh], 
@@ -213,7 +217,7 @@ def sample_geometry(geometries:List[o3d.geometry.Geometry],resolution:float=0.1)
                   
         point_clouds.append(pcd)
         
-    return point_clouds
+    return point_clouds if len(point_clouds)>1 else point_clouds[0]
 
 
 def mesh_sample_points_uniformly(meshes:List[o3d.geometry.TriangleMesh],resolution:float=0.1)->List[o3d.geometry.PointCloud]:
@@ -491,22 +495,37 @@ def rays_to_points(rays:np.ndarray,distances:np.ndarray=np.array([1.0])) -> Tupl
     """Converts a set of rays to start-and endpoints.\n
 
     Args:
-        1.rays (np.array[n,6] or o3d.core.Tensor): ray consisting of a startpoint np.array[n,0:3] and a direction np.array[n,3:6].\n
-        2.distances (np.array[n], optional): scalar or array with distances of the ray. Defaults to 1.0m.\n
+        - rays (np.array[n,6] or o3d.core.Tensor): ray consisting of a startpoint np.array[n,0:3] and a direction np.array[n,3:6].\n
+        - distances (np.array[n], optional): scalar or array with distances of the ray. Defaults to 1.0m.\n
 
     Returns:
         Tuple[np.array,np.array]: startpoints, endpoints
     """
-    #validate inputs
+    
+    # Validate inputs
     if 'Tensor' in str(type(rays)):
-        rays=rays.numpy()
-    if 'array' in str(type(rays)):        
-        assert rays.shape[-1]==6, f'rays.shape[1] should be 6, got {rays.shape[1]}.'
-    if len(rays.shape)>2:
-        rays=np.reshape(rays,(-1, 6))
+        rays = rays.numpy()
+    
+    # Reshape rays if necessary
+    rays = np.asarray(rays) if not isinstance(rays,np.ndarray) else rays
+
+    if rays.ndim == 1:
+        assert rays.shape[0] == 6, f'rays.shape[0] should be 6, got {rays.shape[0]}.'
+        rays = np.reshape(rays, (1, 6))
+    elif rays.ndim == 2:
+        assert rays.shape[1] == 6, f'rays.shape[1] should be 6, got {rays.shape[1]}.'
+    else:
+        raise ValueError("Invalid rays shape. Expected shape (n, 6) or (6,).")
+    
         
-    if distances.size !=rays.shape[0]:
-        distances=np.full((rays.shape[0],1),distances[0])
+    # Ensure distances is a 1D array with the correct size
+    distances=np.asarray(distances)if not isinstance(distances,np.ndarray) else distances
+    if distances.size != rays.shape[0]:
+        if distances.size == 1:
+            distances = np.full((rays.shape[0],), distances[0])
+        else:
+            raise ValueError("The size of distances array must match the number of rays")
+
     
     #stack rays and distances
     rays=np.hstack((rays,np.reshape(distances,(rays.shape[0],1))))
@@ -607,10 +626,18 @@ def rays_to_lineset(rays:np.ndarray,distances=None)->o3d.geometry.LineSet:
     Returns:
         o3d.geometry.LineSet
     """
-    if distances is None:
-        distances=np.full((rays.shape[0],1),1)
-    elif type(distances)==float or type(distances)==int:
-        distances=np.full((rays.shape[0],1),distances)
+    # Reshape rays and distances if necessary
+    rays = np.asarray(rays) if not isinstance(rays,np.ndarray) else rays
+    
+    if rays.ndim == 1 and distances is None:
+        distances=np.full((1,), 1)
+    elif rays.ndim == 2 and distances is None:
+        distances=np.full((1,1), 1)
+    elif rays.ndim == 2 and distances is not None:
+        distances=np.full((1,1), 1)
+    elif distances is not None and distances.size != rays.shape[0]:
+        raise ValueError("The size of distances array must match the number of rays")
+
     distances[distances == np.inf] = 50
         
     #get start and endpoints
@@ -1049,6 +1076,54 @@ def dataframe_to_las(dataframe: pd.DataFrame,xyz:List[int]=[0,1,2],rgb:List[int]
     
     return las
 
+def pcd_to_las(pcd:o3d.geometry.PointCloud,**kwargs)->laspy.LasData:
+    """Convert a dataframe representing a point cloud to a las point cloud file.
+    View laspy dimension and type formatting at https://laspy.readthedocs.io/en/latest/lessbasic.html.\n
+    
+    E.g.: las=dataframe_to_las(dataframe,rgb=[3,4,5])    
+
+    Args:
+        1.dataframe (pd.DataFrame): data frame with a number of columns such as xyz, rgb and some scalar fields (conform numpy)
+        2.xyz (List[int], optional): Indices of the xyz coordinates in the dataframe. Defaults to [0,1,2].
+        3.rgb (List[int], optional): Indices of the color information in the dataframe e.g. [3,4,5]. Defaults to None.
+        4.dtypes (List[str], optional): types of the scalar fields that will be added e.g. ['float32','uint8']. Defaults to [float32] equal to the length of the scalar fields.
+
+    Returns:
+        laspy.lasdata: output las file 
+    """
+    #0.get xyz data
+    xyz=np.asarray(pcd.points)
+    
+    # 1. Create a new header
+    header = laspy.LasHeader(point_format=3, version="1.2")
+    header.offsets = np.min(xyz, axis=0)
+    header.scales = np.array([0.1, 0.1, 0.1])
+
+    # 2. Create a Las from xyz
+    las = laspy.LasData(header)
+
+    las.x = xyz[:, 0]
+    las.y = xyz[:, 1]
+    las.z = xyz[:, 2]
+    
+    # 3. add rgb if present
+    if pcd.has_colors():
+        rgb=np.asarray(pcd.colors)
+        las.red=rgb[:, 0]
+        las.green=rgb[:, 1]
+        las.blue=rgb[:, 2]
+        
+    # 4. Create extra dims for scalar fields
+    names = list(kwargs.keys())
+    dtypes = [np.asarray(kwargs[name]).dtype for name in names]        
+    extraBytesParams=[laspy.ExtraBytesParams(name=name, type=dtype) for name,dtype in zip(names,dtypes)]
+    las.add_extra_dims(extraBytesParams)   
+    
+    # 5. set data      
+    [setattr(las,name,np.asarray(kwargs[name])) for name in names]
+    
+    return las
+
 def las_add_extra_dimensions(las:laspy.LasData, recordData:np.array, names:List[str]=['newField'], dtypes:List[str]=["uint8"] )-> laspy.LasData:
     """Add one or more columns of data to an existing las point cloud file.\n
     View laspy dimension and type formatting at https://laspy.readthedocs.io/en/latest/lessbasic.html.\n
@@ -1200,26 +1275,71 @@ def dataframe_to_pcd(df:pd.DataFrame,xyz=[0,1,2],rgb=[3,4,5],n=None,transform:np
     
     return pcd
 
-def e57_to_pcd(e57:pye57.e57.E57,e57Index : int = 0,percentage:float=1.0)->o3d.geometry.PointCloud:
-    """Convert a scan from a pye57.e57.E57 file to o3d.geometry.PointCloud.\n
+def e57_dict_to_pcd(e57:dict,percentage:float=1.0)->o3d.geometry.PointCloud:
+    """Convert a scan from a e57 dictionary (raw scandata) to o3d.geometry.PointCloud.
 
     Args:
-        1. e57 (pye57.e57.E57)\n
-        2. e57Index (int,optional) \n
-        3. percentage (float,optional): downsampling ratio. defaults to 1.0 (100%) \n
+        1. e57 dict
+        2. e57Index (int,optional) 
+        3. percentage (float,optional): downsampling ratio. defaults to 1.0 (100%) 
+
+    Returns:
+        o3d.geometry.PointCloud
+    """
+    if all(elem in e57.keys()  for elem in ['cartesianX', 'cartesianY', 'cartesianZ']):   
+            pointArray=e57_get_xyz_from_raw_data(e57)
+    elif all(elem in e57.keys()  for elem in ['sphericalRange', 'sphericalAzimuth', 'sphericalElevation']):   
+        pointArray=e57_get_xyz_from_spherical_raw_data(e57)
+    else:
+        raise ValueError('e57 rawData parsing failed.')
+
+    #downnsample
+    if percentage <1.0:
+        indices=np.random.randint(0,len(pointArray)-1,int(len(pointArray)*percentage))
+        pointArray=pointArray[indices]
+
+    #create point cloud
+    points = o3d.utility.Vector3dVector(pointArray)
+    pcd=o3d.geometry.PointCloud(points)
+
+    #get color or intensity
+    if (all(elem in e57.keys()  for elem in ['colorRed', 'colorGreen', 'colorBlue'])
+        or 'intensity' in e57.keys() ): 
+        colors=e57_get_colors(e57)
+        if percentage <1.0:
+            colors=colors[indices]
+        pcd.colors=o3d.utility.Vector3dVector(colors) 
+
+    #get normals
+    if all(elem in e57.keys()  for elem in ['nor:normalX', 'nor:normalY', 'nor:normalZ']): 
+        normals=e57_get_normals(e57)
+        if percentage <1.0:
+            normals=normals[indices]
+        pcd.normals=o3d.utility.Vector3dVector(normals)
+
+    #return transformed data
+    return pcd
+
+
+def e57_to_pcd(e57:pye57.e57.E57 , e57Index : int = 0,percentage:float=1.0)->o3d.geometry.PointCloud:
+    """Convert a scan from a pye57.e57.E57 file to o3d.geometry.PointCloud.
+
+    Args:
+        1. e57 (pye57.e57.E57) 
+        2. e57Index (int,optional) 
+        3. percentage (float,optional): downsampling ratio. defaults to 1.0 (100%) 
 
     Returns:
         o3d.geometry.PointCloud
     """
     e57_update_point_field(e57)
     header = e57.get_header(e57Index)
-    
     #get transformation
     cartesianTransform=e57_get_cartesian_transform(header)
-    
-
     #get raw geometry (no transformation)
     rawData = e57.read_scan_raw(e57Index)    
+
+        
     if all(elem in header.point_fields  for elem in ['cartesianX', 'cartesianY', 'cartesianZ']):   
         pointArray=e57_get_xyz_from_raw_data(rawData)
     elif all(elem in header.point_fields  for elem in ['sphericalRange', 'sphericalAzimuth', 'sphericalElevation']):   
@@ -1455,7 +1575,7 @@ def e57_to_arrays(e57Path:str,e57Index : int = 0,percentage:float=1.0,tasknr:int
 
     return pointArray,colorArray,normalArray,cartesianTransform,tasknr
 
-def e57path_to_pcd(e57Path:str , e57Index : int = 0,percentage:float=1.0) ->o3d.geometry.PointCloud:
+def e57path_to_pcd(e57Path:Path|str , e57Index : int = 0,percentage:float=1.0) ->o3d.geometry.PointCloud:
     """Load an e57 file and convert the data to o3d.geometry.PointCloud.\n
 
     Args:
@@ -1599,27 +1719,7 @@ def ifc_to_mesh(ifcElement:ifcopenshell.entity_instance)-> o3d.geometry.Triangle
         print('Geometry production error')
         return None
 
-def get_oriented_bounding_box(data) ->o3d.geometry.OrientedBoundingBox:
-    """Get Open3DOrientedBoundingBox from cartesianBounds or orientedBounds.
 
-    Args:
-        1. cartesianBounds (np.array): [xMin,xMax,yMin,yMax,zMin,zMax]\n
-        2. orientedBounds (np.array): [8x3] bounding points\n
-
-    Returns:
-        o3d.geometry.OrientedBoundingBox
-    """
-    if type(data) is np.ndarray and len(data) ==6:
-        points=get_oriented_bounds(data)
-        box=o3d.geometry.OrientedBoundingBox.create_from_points(points)
-        return box
-    
-    elif type(data) is np.ndarray and data.shape[1] == 3 and data.shape[0] > 2:
-        points = o3d.utility.Vector3dVector(data)
-        box = o3d.geometry.OrientedBoundingBox.create_from_points(points)
-        return box
-    else:
-        raise ValueError("No valid data input (np.array [6x1] or [mx3])")
 #NOTE Cameras are visualised using frustrums, open3d has a draw_frustrum function 
 def generate_visual_cone_from_image(cartesianTransform : np.array, height : float=10.0, fov : float = math.pi/3) -> o3d.geometry.TriangleMesh:
     """Generate a conical mesh from the camera's center up to the height with a radius equal to the field of view.\n
@@ -1647,18 +1747,310 @@ def generate_visual_cone_from_image(cartesianTransform : np.array, height : floa
     else:
         raise ValueError("The given cartesianTransform is not a 4x4 np.array") 
 
+def are_points_collinear(points):
+    """
+    Determines whether a set of points in 2D is collinear.
+    
+    In terms of linear algebra, this corresponds to the points lying within a subspace of <2 dimensions. When appluing SVD ($A=UΣV^T$), the rank (indicating the dimensions) of the matrix $A$ is given by the number of non-zero singular values in $\Sigma$. If the rank is less than 2, the points are colinear.
+
+
+    Parameters:
+    - points (numpy.ndarray): An array of points with shape (n, 2) where n is the number of points.
+
+    Returns:
+    - bool: True if the points are collinear, False otherwise.
+    """
+    if points.shape[0] < 3:
+        # Less than three points are always collinear
+        return True
+    
+    if points.shape[0] > 100:
+        # Randomly select 100 rows
+        selected_row_indices = np.random.choice(points.shape[0], 100, replace=False)
+        # Fetch the rows based on the selected indices
+        points = points[selected_row_indices]
+
+
+    # Centralize points by subtracting the mean
+    mean = np.mean(points, axis=0)
+    centralized_points = points - mean
+
+    # Calculate the rank of the centralized matrix
+    rank = np.linalg.matrix_rank(centralized_points)
+
+    # If rank is less than 2, points are colinear
+    return rank < 2
+
+
+def are_points_coplanar(points):
+    """
+    Determines whether a set of points is coplanar.
+    
+    In terms of linear algebra, this corresponds to the points lying within a subspace of <3 dimensions. When appluing SVD ($A=UΣV^T$), the rank (indicating the dimensions) of the matrix $A$ is given by the number of non-zero singular values in $\Sigma$. If the rank is less than 3, the points are coplanar.
+  
+    Parameters:
+    - points (numpy.ndarray): An array of points with shape (n, 3) where n is the number of points.
+
+    Returns:
+    - bool: True if the points are coplanar, False otherwise.
+    """
+    points = np.array(points)
+    
+    if points.shape[0] < 4:
+        # Less than four points are always coplanar
+        return True
+    
+    if points.shape[0] > 100:
+            # Randomly select 100 rows
+            selected_row_indices = np.random.choice(points.shape[0], 100, replace=False)
+            # Fetch the rows based on the selected indices
+            points = points[selected_row_indices]
+        
+    # Centralize points by subtracting the mean
+    mean = np.mean(points, axis=0)
+    centralized_points = points - mean
+
+    # Calculate the rank of the centralized matrix
+    rank = np.linalg.matrix_rank(centralized_points)
+
+    # If rank is less than 3, points are coplanar
+    return rank < 3
+
+def get_convex_hull(value:np.ndarray |o3d.geometry.Geometry) ->  o3d.geometry.Geometry:
+    """Get a convex hull Open3D Triangle Mesh from various inputs.
+
+    Args:
+        - Open3D TriangleMesh
+        - Open3D PointCloud
+        - Open3D LineSet
+        - o3d.utility.Vector3dVector
+        - array of 3D points (np.array)
+
+    Returns:
+        o3d.geometry.TriangleMesh
+    """
+    def move_points(points):
+        new_points=copy.deepcopy(points)
+        new_points[:,0]=new_points[:,0]+np.random.uniform(-0.03,0.03)
+        new_points[:,1]=new_points[:,1]+np.random.uniform(-0.03,0.03)
+        new_points[:,2]=new_points[:,2]+np.random.uniform(-0.03,0.03)
+        points=np.vstack((points,new_points))
+        return points
+    
+    if isinstance(value,o3d.geometry.PointCloud):
+        points=np.asarray(value.points)            
+        if are_points_coplanar(points):
+            points=move_points(points)
+            hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
+        else:
+            hull=value.compute_convex_hull()[0]
+    elif isinstance(value,o3d.geometry.LineSet):
+        points=np.asarray(value.points)            
+        if are_points_coplanar(points):
+            points=move_points(points)
+            points=move_points(points)
+            hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
+        else:
+            try:
+                points=move_points(points)
+                hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]   
+            except: 
+                raise ValueError('Not enough points to create a convex hull')
+    elif isinstance(value,o3d.geometry.TriangleMesh):
+        points=np.asarray(value.vertices)
+        if are_points_coplanar(points):
+            points=move_points(points)
+            hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
+        else:
+            hull=value.compute_convex_hull()[0]
+    elif isinstance(value,o3d.geometry.OrientedBoundingBox):
+        points=np.asarray(value.get_box_points())
+        if are_points_coplanar(points):
+            points=move_points(points)
+            hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
+        else:
+            hull=o3d.geometry.PointCloud(value.get_box_points()).compute_convex_hull()[0]
+    elif isinstance(value,o3d.utility.Vector3dVector):        
+        points=np.asarray(value)
+        if are_points_coplanar(points):
+            points=move_points(points)
+            hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
+        else:
+            hull=o3d.geometry.PointCloud(value).compute_convex_hull()[0]
+    elif isinstance(value,np.ndarray):
+        value=np.reshape(value,(-1,3))
+        if are_points_coplanar(value):
+            points=move_points(value)
+        else:
+            points=value
+        hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
+    else:
+        raise ValueError('Invalid input type')
+    return hull
+
+
+def create_ellipsoid_mesh(radii: np.ndarray, transformation: np.ndarray, resolution: int = 30):
+    """
+    Create an Open3D TriangleMesh of an ellipsoid with a given set of radii and transformation matrix.
+
+    .. image:: ../../../docs/pics/ellipsoid.jpg
+
+    Args:
+        - radii: A numpy array [a,b,c] representing the radii of the ellipsoid along the primary, secondary and tertiary axes.
+        - transformation: A 4x4 transformation matrix (numpy array) to apply to the ellipsoid mesh.
+        - resolution: The resolution of the mesh (default 30).
+    
+    Returns
+        - An Open3D TriangleMesh object representing the ellipsoid.
+    """
+    # Create a parametric grid for the ellipsoid
+    u = np.linspace(0, 2 * np.pi, resolution)  # azimuth angle
+    v = np.linspace(0, np.pi, resolution)      # polar angle
+    u, v = np.meshgrid(u, v)
+
+    # Parametric equations of an ellipsoid
+    a = radii[0] * np.sin(v) * np.cos(u)
+    b = radii[1] * np.sin(v) * np.sin(u)
+    c = radii[2] * np.cos(v)
+
+    # Flatten the arrays and stack them into Nx3 shape for vertices
+    vertices = np.stack((a.flatten(), b.flatten(), c.flatten()), axis=-1)
+
+    # Create faces (triangles) using the mesh grid
+    faces = []
+    for i in range(resolution - 1):
+        for j in range(resolution - 1):
+            idx1 = i * resolution + j
+            idx2 = idx1 + resolution
+            faces.append([idx1, idx1 + 1, idx2])
+            faces.append([idx2, idx1 + 1, idx2 + 1])
+    faces = np.asarray(faces)
+
+    # Create the Open3D TriangleMesh object
+    mesh = o3d.geometry.TriangleMesh()
+
+    # Apply the transformation matrix to the vertices
+    vertices_homogeneous = np.hstack((vertices, np.ones((vertices.shape[0], 1))))
+    transformed_vertices = (transformation @ vertices_homogeneous.T).T[:, :3]  # Apply transformation
+
+    # Set the vertices and triangles (faces)
+    mesh.vertices = o3d.utility.Vector3dVector(transformed_vertices)
+    mesh.triangles = o3d.utility.Vector3iVector(faces)
+
+    # Compute the normals and update the mesh
+    mesh.compute_vertex_normals()
+
+    return mesh
+
+def get_oriented_bounding_box(value:np.ndarray |o3d.geometry.Geometry)->o3d.geometry.OrientedBoundingBox:
+    """Get an Open3D OrientedBoundingBox from various inputs.
+    
+    **NOTE**: This function tests 
+
+    Args:
+        - cartesianBounds (np.array): [xMin,xMax,yMin,yMax,zMin,zMax]
+        - orientedBounds (np.array): [8x3] bounding points
+        - parameters (np.array): [center,extent,euler_angles]
+        - Open3D TriangleMesh
+        - Open3D PointCloud
+        - Open3D LineSet
+        - array of 3D points (np.array)
+        - o3d.utility.Vector3dVector
+
+
+    Returns:
+        o3d.geometry.OrientedBoundingBox
+    """
+    def move_points(points): #this is to prevent the bounding box from being too sensitive to the input points
+        new_points=copy.deepcopy(points)
+        new_points[:,0]=new_points[:,0]+np.random.uniform(-0.03,0.03)
+        new_points[:,1]=new_points[:,1]+np.random.uniform(-0.03,0.03)
+        new_points[:,2]=new_points[:,2]+np.random.uniform(-0.03,0.03)
+        points=np.vstack((points,new_points))
+        return points
+
+    if isinstance(value,o3d.geometry.PointCloud):
+        points=np.asarray(value.points)
+        if are_points_coplanar(points):
+            points=move_points(points)
+            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
+        else:
+            box=value.get_oriented_bounding_box()
+    elif isinstance(value,o3d.geometry.LineSet):
+        points=np.asarray(value.points)
+        if are_points_coplanar(points):
+            points=move_points(points)
+            points=move_points(points)
+            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
+        else:
+            points=move_points(points) #its just to sensitive with linesets
+            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
+    elif isinstance(value,o3d.geometry.TriangleMesh):
+        points=np.asarray(value.vertices)
+        if are_points_coplanar(points):
+            points=move_points(points)
+            points=move_points(points)
+            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
+        else:
+            points=move_points(points)
+            box=value.get_oriented_bounding_box()
+    elif isinstance(value,o3d.utility.Vector3dVector):        
+        points=np.asarray(value)
+        if are_points_coplanar(points):
+            points=move_points(points)
+            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
+        else:
+            box=o3d.geometry.OrientedBoundingBox.create_from_points(value)
+    elif isinstance(value,np.ndarray):
+        if value.size==6:
+            points=get_oriented_bounds(value)
+            box=o3d.geometry.OrientedBoundingBox.create_from_points(points)
+        
+        elif value.size==9:    
+            value=value.flatten()
+            center=value[:3]
+            extent=value[3:6]
+            euler_angles=value[6:9]        
+            rotation_matrix = R.from_euler('xyz', euler_angles, degrees=True).as_matrix()
+            box = o3d.geometry.OrientedBoundingBox(center, rotation_matrix, extent)  
+        else:
+            value=np.reshape(value,(-1,3))
+            if are_points_coplanar(value):
+                points=move_points(value)
+            else:
+                points=value
+            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
+    else:
+        raise ValueError('Invalid input type')
+    return box
+
+def get_oriented_bounding_box_parameters(orientedBoundingBox: o3d.geometry.OrientedBoundingBox)->np.ndarray:
+    """
+    Extract the center, extent, and Euler angles from an Open3D oriented bounding box.
+
+    Parameters:
+    obb (o3d.geometry.OrientedBoundingBox): The oriented bounding box from which to extract parameters.
+
+    Returns:
+    tuple: A tuple containing the center (list), extent (list), and Euler angles (list in degrees).
+    """
+    center = orientedBoundingBox.center
+    extent = orientedBoundingBox.extent
+    rotation_matrix = copy.deepcopy(orientedBoundingBox.R)
+    euler_angles = R.from_matrix(rotation_matrix).as_euler('xyz', degrees=True)
+    return np.hstack((center, extent, euler_angles))
+
 def get_cartesian_transform(translation: np.array = None,
                             rotation: np.array = None                            
                             ) -> np.ndarray:
     """Return cartesianTransform from rotation, translation or cartesianBounds inputs.
 
     Args:
-        translation (Optional[np.ndarray]): A 3-element translation vector.
-        rotation (Optional[Union[np.ndarray, Tuple[float, float, float]]]): A 3x3 rotation matrix or Euler angles $(R_x,R_y,R_z)$ for rotation.
-        
+        - translation (Optional[np.ndarray]): A 3-element translation vector
+        - rotation (Optional[np.ndarray]): A 3x3 rotation matrix, Euler angles $(R_x,R_y,R_z)$ or a rotation quaternion $(q_x,q_y,q_z,q_w)$.
 
     Returns:
-        cartesianTransform (np.ndarray): A 4x4 transformation matrix.
+        cartesianTransform (np.ndarray): The 4x4 transformation matrix
     """   
     # Initialize identity rotation matrix and zero translation vector
     r = np.eye(3)
@@ -1667,10 +2059,12 @@ def get_cartesian_transform(translation: np.array = None,
     # Update rotation matrix if provided
     if rotation is not None:
         rotation=np.asarray(rotation)
-        if rotation.size == 3:
+        if rotation.size == 3: #Euler angles
             r = R.from_euler('xyz', rotation,degrees=True).as_matrix()
-        elif rotation.size == 9:
+        elif rotation.size == 9: #rotation matrix
             r = np.reshape(np.asarray(rotation), (3, 3))
+        elif rotation.size == 4: #quaternion
+            r = R.from_quat(rotation).as_matrix()
         else:
             raise ValueError("Rotation must be either a 3x3 matrix or a tuple/list of three Euler angles.")
 
@@ -1838,35 +2232,35 @@ def generate_virtual_images(geometries: List[o3d.geometry.Geometry],cartesianTra
         list.append(img)
     return list if len(list) !=0 else None
 
-def generate_virtual_image(geometries: List[o3d.geometry.Geometry],pinholeCamera: o3d.camera.PinholeCameraParameters)-> o3d.geometry.Image:
-    """Generate an Open3D Image from a set of geometries and an Open3D camera. \n
+# def generate_virtual_image(geometries: List[o3d.geometry.Geometry],pinholeCamera: o3d.camera.PinholeCameraParameters)-> o3d.geometry.Image:
+#     """Generate an Open3D Image from a set of geometries and an Open3D camera. \n
 
-    Args:
-        1. geometries (List[o3d.geometry]):o3d.geometry.PointCloud or o3d.geometry.TriangleMesh\n
-        2. pinholeCamera (o3d.camera.PinholeCameraParameters): extrinsic (cartesianTransform) and intrinsic (width,height,f,principal point U and V) camera parameters\n
+#     Args:
+#         1. geometries (List[o3d.geometry]):o3d.geometry.PointCloud or o3d.geometry.TriangleMesh\n
+#         2. pinholeCamera (o3d.camera.PinholeCameraParameters): extrinsic (cartesianTransform) and intrinsic (width,height,f,principal point U and V) camera parameters\n
 
-    Returns:
-        o3d.geometry.Image or None
-    """
-    #create renderer
-    width=pinholeCamera.intrinsic.width
-    height=pinholeCamera.intrinsic.height
-    render = o3d.visualization.rendering.OffscreenRenderer(width,height)
+#     Returns:
+#         o3d.geometry.Image or None
+#     """
+#     #create renderer
+#     width=pinholeCamera.intrinsic.width
+#     height=pinholeCamera.intrinsic.height
+#     render = o3d.visualization.rendering.OffscreenRenderer(width,height)
 
-    # Define a simple unlit Material. (The base color does not replace the geometry colors)
-    mtl=o3d.visualization.rendering.MaterialRecord()
-    mtl.base_color = [1.0, 1.0, 1.0, 1.0]  # RGBA
-    mtl.shader = "defaultUnlit"
+#     # Define a simple unlit Material. (The base color does not replace the geometry colors)
+#     mtl=o3d.visualization.rendering.MaterialRecord()
+#     mtl.base_color = [1.0, 1.0, 1.0, 1.0]  # RGBA
+#     mtl.shader = "defaultUnlit"
 
-    #set camera
-    render.setup_camera(pinholeCamera.intrinsic,pinholeCamera.extrinsic)
-    #add geometries
-    geometries=ut.item_to_list(geometries)
-    for idx,geometry in enumerate(geometries):
-        render.scene.add_geometry(str(idx),geometry,mtl) 
-    #render image
-    img = render.render_to_image()
-    return None
+#     #set camera
+#     render.setup_camera(pinholeCamera.intrinsic,pinholeCamera.extrinsic)
+#     #add geometries
+#     geometries=ut.item_to_list(geometries)
+#     for idx,geometry in enumerate(geometries):
+#         render.scene.add_geometry(str(idx),geometry,mtl) 
+#     #render image
+#     img = render.render_to_image()
+#     return None
 
 def e57_get_normals(rawData:dict)->np.ndarray:
     """Returns normal vectors from e57 rawData.\n
@@ -2101,34 +2495,50 @@ def divide_box_in_boxes(box: o3d.geometry.Geometry,size:List[float]=None, parts:
     return boxes,names
 
 def expand_box(box: o3d.geometry, u=5.0,v=5.0,w=5.0) -> o3d.geometry:
-    """expand an o3d.geometry.BoundingBox in u(x), v(y) and w(z) direction with a certain offset.\n
+    """expand an o3d.geometry.BoundingBox in u(x), v(y) and w(z) direction with a certain offset.
 
     Args:
-        1. box (o3d.geometry.OrientedBoundingBox or o3d.geometry.AxisAlignedBoundingBox)\n
-        2. u (float, optional): Offset in X. Defaults to 5.0m.\n
-        3. v (float, optional): Offset in Y. Defaults to 5.0m.\n
-        4. w (float, optional): Offset in Z. Defaults to 5.0m.\n
+        1. box (o3d.geometry.OrientedBoundingBox, o3d.geometry.AxisAlignedBoundingBox,o3d.geometry.TriangleMesh box)
+        2. u (float, optional): Offset in X. Defaults to 5.0m.
+        3. v (float, optional): Offset in Y. Defaults to 5.0m.
+        4. w (float, optional): Offset in Z. Defaults to 5.0m.
 
     Returns:
         o3d.geometry.OrientedBoundingBox or o3d.geometry.AxisAlignedBoundingBox
-    """    
-    # if 'OrientedBoundingBox' not in str(type(box)):
-    #     raise ValueError('Only OrientedBoundingBox allowed.' )
-    
-
-    if 'OrientedBoundingBox' in str(type(box)):
+    """        
+    if isinstance(box,o3d.geometry.TriangleMesh) and len(np.asarray(box.vertices))==8:
+        vertices=np.array(box.vertices)
+        #compute modifications
+        xmin=-u/2
+        xmax=u/2
+        ymin=-v/2
+        ymax=v/2
+        zmin=-w/2
+        zmax=w/2
+        vertices=np.array([vertices[0,:]+[xmin,ymin,zmin],
+                            vertices[0,:]+[xmax,ymin,zmin],
+                            vertices[0,:]+[xmin,ymax,zmin],
+                            vertices[0,:]+[xmax,ymax,zmin],
+                            vertices[0,:]+[xmin,ymin,zmax],
+                            vertices[0,:]+[xmax,ymin,zmax],
+                            vertices[0,:]+[xmin,ymax,zmax],
+                            vertices[0,:]+[xmax,ymax,zmax]])
+        box.vertices = o3d.utility.Vector3dVector(vertices)
+        return box
+    elif isinstance(box,o3d.geometry.OrientedBoundingBox):
         center = box.get_center()
         orientation = box.R 
         extent = box.extent + [u,v,w] 
         return o3d.geometry.OrientedBoundingBox(center,orientation,extent) 
-    elif 'AxisAlignedBoundingBox' in str(type(box)):
+    elif isinstance(box,o3d.geometry.AxisAlignedBoundingBox):
         # assert ((abs(u)<= box.get_extent()[0]) and (abs(v)<=box.get_extent()[1]) and (abs(w)<=box.get_extent()[2])), f'cannot schrink more than the extent of the box.'
         minBound=box.get_min_bound()
         maxBound=box.get_max_bound()
         new_minBound=minBound-np.array([u,v,w])/2
         new_maxBound=maxBound+np.array([u,v,w])/2        
         return o3d.geometry.AxisAlignedBoundingBox(new_minBound,new_maxBound) 
-
+    else:
+        raise ValueError('Invalid input type')
 # def join_geometries(geometries)->o3d.geometry:
 #     """Join a number of o3d.PointCloud or o3d.TriangleMesh instances.\n
 
@@ -2174,14 +2584,14 @@ def split_pcd_by_labels(point_cloud:o3d.geometry.PointCloud,labels:np.ndarray)->
     return pcdList,unique
 
 def join_geometries(geometries:List[o3d.geometry.Geometry])->List[o3d.geometry.Geometry]:
-    """Join together a number of o3d geometries e.g. LineSet, PointCloud or o3d.TriangleMesh instances.\n
+    """Join together a number of o3d geometries e.g. LineSet, PointCloud or o3d.TriangleMesh instances.
 
-    **NOTE**: Only members of the same geometryType can be merged.\n
+    **NOTE**: Only members of the same geometryType can be merged.
     
-    **NOTE**: np.arrays can also be processed (these are added to the point cloud)
+    **NOTE**: np.arrays can also be processed (these are processed as point clouds)
 
     Args:
-        geometries (List[o3d.geometry.Geometry]): LineSet, PointCloud or o3d.TriangleMesh or np.array[nx3]
+        - geometries (List[o3d.geometry.Geometry]) : LineSet, PointCloud, OrientedBoundingBox, TriangleMesh or np.array[nx3]
 
     Returns:
         merged o3d.geometries
@@ -2192,20 +2602,23 @@ def join_geometries(geometries:List[o3d.geometry.Geometry])->List[o3d.geometry.G
     line_set=o3d.geometry.LineSet()
     point_cloud=o3d.geometry.PointCloud()
     mesh=o3d.geometry.TriangleMesh()
+    box=o3d.utility.Vector3dVector()
     points=[]
     for g in geometries:
-        if 'TriangleMesh' in str(type(g)) and len(g.vertices) != 0:
+        if isinstance(g,o3d.geometry.TriangleMesh) and len(g.vertices) != 0:
             mesh+=g
-        elif 'PointCloud' in str(type(g)) and len(g.points) != 0: 
+        elif isinstance(g,o3d.geometry.PointCloud) and len(g.points) != 0: 
             point_cloud+=g
-        elif 'ndarray' in str(type(g)):
+        elif isinstance(g,np.ndarray) and g.shape[1]==3:
             [points.append(p) for p in g]
-        elif 'LineSet' in str(type(g)):    
+        elif isinstance(g,o3d.geometry.LineSet):
             line_set+=g
+        elif isinstance(g,o3d.geometry.OrientedBoundingBox):
+            box.extend(g.get_box_points())
     
     #add points to point_cloud
     points=np.array(points)
-    if points.shape[0]>0:
+    if points.ndim==2 and points.shape[0]>0 and points.shape[1]==3:
         pcd=o3d.geometry.PointCloud()
         pcd.points=o3d.utility.Vector3dVector(points)
         point_cloud+=pcd
@@ -2213,8 +2626,9 @@ def join_geometries(geometries:List[o3d.geometry.Geometry])->List[o3d.geometry.G
     #return geometries
     geometries=[]
     geometries.append(line_set) if np.asarray(line_set.points).shape[0]>0 else None
-    geometries.append(point_cloud) if np.asarray(point_cloud.points).shape[0]>0 else None
+    geometries.append(point_cloud) if points.shape[0]>0 else None
     geometries.append(mesh) if np.asarray(mesh.vertices).shape[0]>0 else None
+    geometries.append(o3d.geometry.OrientedBoundingBox.create_from_points(box)) if np.asarray(box).shape[0]>0 else None
     
     return geometries if len(geometries)!=1 else geometries[0]
         
@@ -3003,18 +3417,6 @@ def save_view_point(geometry: o3d.geometry, filename:str) -> None:
     o3d.io.write_pinhole_camera_parameters(filename, param)
     vis.destroy_window()
 
-# Converts a geometry to a covex hull
-def get_convex_hull(geometry : o3d.geometry.Geometry) ->  o3d.geometry.Geometry:
-    """Calculates a convex hull of a generic geometry
-
-    Args:
-        geometry (open3d.geometry): The geometry to be hulled
-
-    Returns:
-        open3d.geometry: The resulting hull
-    """
-    hull, _ = geometry.compute_convex_hull()
-    return hull
 
 
 # OPEN3D global registration

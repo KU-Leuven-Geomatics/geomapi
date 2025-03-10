@@ -1,21 +1,23 @@
-@prefix e57: <http://libe57.org#> .
-@prefix openlabel: <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#> .
-@prefix v4d: <https://w3id.org/v4d/core#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix geomapi: <https://w3id.org/geomapi#> .
+@prefix gom: <https://w3id.org/gom#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
-<file:///parking> a v4d:Node ;
-    e57:cartesianBounds "[10.45079231 79.55210876 27.31818581 74.1269989  -2.62377906 20.99546814]" ;
-    e57:pointCount 62143 ;
-    v4d:faceCount 49999 ;
-    v4d:name "parking" ;
-    v4d:orientedBounds """[[  1.91106719  40.84350475   1.85887215]
- [ 67.90585268  23.57467616  -7.72339247]
- [ 13.87308273  88.49223338  -1.62747261]
- [  5.24411682  41.58815304  23.47220674]
- [ 83.20091784  71.96805308  10.40359737]
- [ 17.20613235  89.23688167  19.98586199]
- [ 71.2389023   24.31932445  13.88994213]
- [ 79.86786822  71.22340479 -11.20973722]]""" ;
-    v4d:path "..\\mesh\\parking.obj" ;
-    openlabel:timestamp "2023-11-23T11:21:49" .
+<http://node> a geomapi:Node ;
+    rdfs:label "node"^^xsd:string ;
+    dcterms:created "2024-07-23T11:29:57"^^xsd:dateTime ;
+    geomapi:cartesianTransform """[[1. 0. 0. 0.]
+ [0. 1. 0. 0.]
+ [0. 0. 1. 0.]
+ [0. 0. 0. 1.]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[1. 1. 0.]
+ [0. 1. 0.]
+ [0. 0. 0.]
+ [1. 0. 0.]
+ [1. 0. 1.]
+ [0. 0. 1.]
+ [1. 1. 1.]
+ [0. 1. 1.]]"""^^gom:rowMajorArray ;
+    geomapi:orientedBoundingBox "[0.5 0.5 0.5 1.  1.  1.  0.  0.  0. ]"^^gom:rowMajorArray .
 

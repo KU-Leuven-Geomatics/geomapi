@@ -2,6 +2,7 @@
 
 #GENERAL
 @prefix : <https://w3id.org/geomapi#> .
+@prefix geomapi: <https://w3id.org/geomapi#> .
 @prefix dcterms: <http://purl.org/dc/terms/> . 			#this has source
 @prefix owl: <http://www.w3.org/2002/07/owl#> .
 @prefix rdf:      <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
@@ -62,22 +63,33 @@
 ###  https://w3id.org/geomapi#matrix
 :matrix 
 	rdf:type rdfs:Datatype ;
-	rdfs:comment "a python compatible matrix i.e. a 2 X 2 matrix M: \"[m11,m21,m12,m22]\"^^geomapi:matrix"@en ;
+	rdfs:comment "a python np.array i.e. a 2 X 2 matrix M: \"[[m11,m21],[m12,m22]]\"^^geomapi:matrix"@en ;
     rdfs:isDefinedBy : ;
     rdfs:seeAlso gom:rowMajorArray;
     :method "geomapi.utils.literal_to_matrix";
     rdfs:label "Matrix"@en .
 
+###  https://w3id.org/geomapi#list
+:list
+	rdf:type rdfs:Datatype ;
+	rdfs:comment "a python list i.e. a 2 X 2 matrix M: \"[m11,m21,m12,m22]\"^^geomapi:list"@en ;
+    rdfs:isDefinedBy : ;
+    :method "geomapi.utils.literal_to_list";
+    rdfs:label "List"@en .
+
+###  http://www.w3.org/2001/XMLSchema#dateTime
 xsd:dateTime
-	:method "geomapi.utils.validate_timestamp" .
-	
+	:method "geomapi.utils.validate_timestamp" . 
+
+###  http://www.w3.org/2001/XMLSchema#float
 xsd:float
 	:method "geomapi.utils.literal_to_float" .
 
-gom:rowMajorArray
-	:method "geomapi.utils.literal_to_matrix".
-
-#how do we deal with lists?
+###  https://w3id.org/gom#rowMajorArray
+#gom:rowMajorArray
+#	:method "geomapi.utils.literal_to_matrix". #this is not working
+	
+#how do we deal with dictionaries?
 
 #################################################################
 #    DATA FORMATS
@@ -157,7 +169,7 @@ gom:rowMajorArray
 	rdfs:seeAlso dcterms:source;		
 	rdfs:label "as image"@en ;
 	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
-	rdfs:domain :ImageNode;
+	rdfs:domain :Node;
 	rdfs:range xsd:string . 
 
 :asTexture 						#how is this different from an image, yes there is a parsing difference, but that should be tackled by the Node, not this property?
@@ -176,7 +188,7 @@ gom:rowMajorArray
 
 
 #################################################################
-#    PROPERTIES difference between AnnotationProperty (human info), DatatypeProperty (literals), ObjectProperty (classes)
+#    PROPERTIES differentiate between AnnotationProperty (human info), DatatypeProperty (literals), ObjectProperty (classes)
 ##################################################################
 #	omg:transformsGeometry ex:globalTransform_1 #is this for an offset?
 
@@ -187,7 +199,7 @@ gom:rowMajorArray
 	rdfs:label "Transformation matrix"@en ;
 	rdfs:seeAlso geo:hasBoundingBox;				# this is with lat,long e.g. "MINLAT:40.7644, MAXLAT:40.8005, MINLON:-73.9818, MAXLON:-73.9498"
 	rdfs:domain :Node ; 						# this properties applies to nodes
-	rdfs:range gom:rowMajorArray. 					# this property should be connected to a literal such as xsd:str
+	rdfs:range geomapi:matrix. 					# this property should be connected to a literal such as xsd:str
 
 :convexHull
 	rdf:type owl:DatatypeProperty ;
@@ -196,7 +208,7 @@ gom:rowMajorArray
 	rdfs:seeAlso <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#_bounding_boxes> ;
 	rdfs:label "Convex Hull"@en ;
 	rdfs:domain :Node; 			
-	rdfs:range gom:rowMajorArray. 
+	rdfs:range geomapi:matrix. 
 	
 :orientedBoundingBox
 	rdf:type owl:DatatypeProperty ;
@@ -206,7 +218,7 @@ gom:rowMajorArray
 	rdfs:label "Oriented Bounding Box"@en ;
 	rdfs:seeAlso geo:hasBoundingBox;		
 	rdfs:domain :Node; 			
-	rdfs:range gom:rowMajorArray. 		
+	rdfs:range geomapi:matrix. 		
 
 :path
 	rdf:type owl:DatatypeProperty ;
@@ -226,7 +238,7 @@ gom:rowMajorArray
 #	rdfs:label "Centroid"@en ;
 #	rdfs:seeAlso geo:hasCentroid	;	
 #	rdfs:domain :Node ; 			
-#	rdfs:range gom:rowMajorArray. 	
+#	rdfs:range geomapi:matrix. 	
 	
 #:cartesianBounds
 #	rdf:type owl:DatatypeProperty ;
@@ -236,7 +248,7 @@ gom:rowMajorArray
 #	rdfs:seeAlso geo:hasBoundingBox	;	
 #	rdfs:seeAlso geom:bbox;
 #	rdfs:domain :Node ; 			
-#	rdfs:range gom:rowMajorArray. 		
+#	rdfs:range geomapi:matrix. 		
 	
 #:orientedBounds # we are going to deprecate this
 #	rdf:type owl:DatatypeProperty ;
@@ -244,8 +256,8 @@ gom:rowMajorArray
 #	rdfs:comment """The 8x3 matrix with the 8 bounding points of the Oriented Bounding Box [[X_0,Y_0,Z_0],[X_1,Y_1,Z_1], ...]."""@en  ;
 #	rdfs:label "Oriented Boundaries"@en ;
 #	rdfs:seeAlso geo:hasBoundingBox;		
-#	rdfs:domain :GeometryNode; 			
-#	rdfs:range gom:rowMajorArray. 
+#	rdfs:domain :Node; 			
+#	rdfs:range geomapi:matrix. 
 
 #:2DBox 
 #	rdf:type owl:DatatypeProperty ;
@@ -254,8 +266,8 @@ gom:rowMajorArray
 #	rdfs:seeAlso <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#_bounding_boxes> ;
 #	rdfs:label "2DBox"@en ;
 #	rdfs:seeAlso geo:hasBoundingBox;		
-#	rdfs:domain :ImageNode; 			
-#	rdfs:range gom:rowMajorArray. 	
+#	rdfs:domain :Node; 			
+#	rdfs:range geomapi:matrix. 	
 	
 #:2DHull
 #	rdf:type owl:DatatypeProperty ;
@@ -263,15 +275,15 @@ gom:rowMajorArray
 #	rdfs:comment """The nx2 matrix with the location "[[u_1,v_1],....[u_i,v_i]]" of the 2D bounding points of the convex hull in the resource. Minumum 3 non-colinear points needed! """@en  ;
 #	rdfs:seeAlso <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#_bounding_boxes> ;
 #	rdfs:label "2DHull"@en ;
-#	rdfs:domain :ImageNode; 			
-#	rdfs:range gom:rowMajorArray. 	
+#	rdfs:domain :Node; 			
+#	rdfs:range geomapi:matrix. 	
 
 :pointCount
 	rdf:type owl:DatatypeProperty ;
 	rdf:type owl:FunctionalProperty ;
 	rdfs:comment """Number of points in a mesh or point cloud."""@en  ;
 	rdfs:label "Number of vertices"@en ;
-	rdfs:domain :GeometryNode;			
+	rdfs:domain :Node;			
 	rdfs:range xsd:integer. 	
 	
 :faceCount
@@ -281,7 +293,62 @@ gom:rowMajorArray
 	rdfs:label "Number of faces"@en ;
 	rdfs:domain :MeshNode,
 				:BIMNode;			
-	rdfs:range xsd:integer. 	
+	rdfs:range xsd:integer. 
+	
+:depth
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """Average depth of the image projection. Defaults to 50m."""@en  ;
+	rdfs:label "Depth"@en ;
+	rdfs:domain :ImageNode,
+				:PanoNode,
+				:OrthoNode;			
+	rdfs:range xsd:float. 
+
+:focalLength35mm
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """The 35 mm equivalent focal length is a measure of the angle of view for a particular combination of a camera lens and film or image sensor size. Calculated in pixels as f/36*imageWidth. """@en  ;
+	rdfs:label "focalLength35mm"@en ;
+	rdfs:domain :ImageNode,
+				:PanoNode;		
+	rdfs:seeAlso exif:focalLengthIn35mmFilm;				
+	rdfs:range xsd:float. 
+	
+:principalPointU
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """The deviation (in X) from the centerpoint on the image plane onto which the perspective center is projected. Defaults to 0."""@en  ;
+	rdfs:label "Principal Point U"@en ;
+	rdfs:domain :ImageNode;		
+	rdfs:range xsd:float. 
+
+:principalPointV
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """The deviation (in Y or vertical) from the centerpoint on the image plane onto which the perspective center is projected. Defaults to 0."""@en  ;
+	rdfs:label "Principal Point V"@en ;
+	rdfs:domain :ImageNode;		
+	rdfs:range xsd:float. 
+
+:intrinsicMatrix
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """Transformation matrix that converts points from the camera coordinate system to the pixel coordinate system. k=
+        [fx 0 cx]
+        [0 fy cy]
+        [0 0  1] """@en  ;
+	rdfs:label "Intrinsic Matrix "@en ;
+	rdfs:domain :ImageNode;			
+	rdfs:range :matrix. 
+
+:lineCount
+	rdf:type owl:DatatypeProperty ;
+	rdf:type owl:FunctionalProperty ;
+	rdfs:comment """Number of lines in an Open3D LineSet."""@en  ;
+	rdfs:label "Number of lines"@en ;
+	rdfs:domain :LineSetNode;			
+	rdfs:range xsd:integer. 
 	
 :e57Index
 	rdf:type owl:DatatypeProperty ;
@@ -291,7 +358,7 @@ gom:rowMajorArray
 	rdfs:domain :PointCloudNode;			
 	rdfs:range xsd:integer.
 
-:ifcGlobalId
+:ifcGlobalId # we currently add these as ifc:IfcGloballyUniqueId directly 
 	rdf:type owl:DatatypeProperty ;
 	rdf:type owl:FunctionalProperty ;
 	rdfs:comment """IFC (Industry Foundation Classes) GUID identifier."""@en  ;
@@ -300,7 +367,7 @@ gom:rowMajorArray
 	rdfs:range xsd:string; 	
 	rdfs:seeAlso fog:hasIfcId-guid,ifc:IfcGloballyUniqueId.	
 
-:ifcObjectType
+:ifcObjectType # we currently add these as ifc:objectType_IfcObject directly 
 	rdf:type owl:DatatypeProperty ;
 	rdf:type owl:FunctionalProperty ;
 	rdfs:comment """IFC Family type e.g. [Basic Roof:Warm Roof - Concrete, etc.]"""@en  ;
@@ -309,7 +376,7 @@ gom:rowMajorArray
 	rdfs:range xsd:string; 	
 	rdfs:seeAlso ifc:objectType_IfcObject.	
 	
-:ifcBuildingElement 
+:ifcBuildingElement # this is a URI, no definition needed
 	rdf:type owl:DatatypeProperty ;
 	rdf:type owl:FunctionalProperty ;
 	rdfs:comment """IFCOWL IfcBuildingElement class i.e. [IfcBeam,IfcColumn, etc.]."""@en  ;
@@ -501,83 +568,89 @@ gom:rowMajorArray
 	rdfs:label "Node"@en ;
 	rdfs:comment """Archetype of all geomapi resource classes. Defines a set of Geospatial metadata e.g. the cartesian transform of a geomatics resource e.g. a geolocated image or a point cloud. Each node definition is tied to specific GEOMAPI python functionality."""@en  ;
 	rdfs:isDefinedBy : .
-	
-:GeometryNode 
+
+:SetNode 
 	rdf:type owl:Class ;
 	rdfs:subClassOf :Node ;
-	rdfs:label "GeometryNode"@en ;
-	rdfs:comment """Archetype of geometry based nodes i.e. PointCloudNode, BIMNode, MeshNode and LineSetNode that share the following propertyset [orientedBoundingBox, cartesianBounds] and methods."""@en  ;
+	rdfs:label "SetNode"@en ;
+	rdfs:comment """setNode is a metadata collection of several data Nodes defined by a 3DBox, 3Dhull and cartesianTransform. It is used to easly select groups of resource Nodes and jointly transform them."""@en  ;	
 	rdfs:isDefinedBy : ;
-	rdfs:seeAlso omg:geometry ;
-	owl:disjointWith :ImageNode .
+	rdfs:seeAlso geo:GeometryCollection . 	#any spatial phenomenon
+	
+#:GeometryNode 
+#	rdf:type owl:Class ;
+#	rdfs:subClassOf :Node ;
+#	rdfs:label "GeometryNode"@en ;
+#	rdfs:comment """Archetype of geometry based nodes i.e. PointCloudNode, BIMNode, MeshNode and LineSetNode that share the following propertyset [orientedBoundingBox, cartesianBounds] and methods."""@en  ;
+#	rdfs:isDefinedBy : ;
+#	rdfs:seeAlso omg:geometry ;
+#	owl:disjointWith :Node .
 
 :PointCloudNode 
 	rdf:type owl:Class ;
-	rdfs:subClassOf :GeometryNode ;
+	rdfs:subClassOf :Node ;
 	rdfs:label "PointCloudNode"@en ;
 	rdfs:comment """PointCloudNode connecting the RDF graph, point cloud resource and metadata with geospatial methods."""@en  ;
 	rdfs:isDefinedBy : ;
-	owl:disjointWith :MeshNode, :LineSetNode, :BIMNode .
+	owl:disjointWith :MeshNode, :LineSetNode, :BIMNode, :ImageNode, :OrthoNode, :PanoNode  .
 
 :MeshNode
 	rdf:type owl:Class ;
-	rdfs:subClassOf :GeometryNode ;
+	rdfs:subClassOf :Node ;
 	rdfs:label "MeshNode"@en ;
 	rdfs:comment """MeshNode connecting the RDF graph, mesh resource and metadata with geospatial methods."""@en  ;
 	rdfs:isDefinedBy : ;
-	owl:disjointWith :PointCloudNode, :LineSetNode, :BIMNode .
+	owl:disjointWith :PointCloudNode, :LineSetNode, :BIMNode , :ImageNode, :OrthoNode, :PanoNode  .
 
 :LineSetNode 
 	rdf:type owl:Class ;
-	rdfs:subClassOf :GeometryNode ;
+	rdfs:subClassOf :Node ;
 	rdfs:label "LineSetNode"@en ;
 	rdfs:comment """LineSetNode connecting the RDF graph, lineset resources and metadata with geospatial methods."""@en  ;
 	rdfs:isDefinedBy : ;
-	owl:disjointWith :PointCloudNode, :MeshNode, :BIMNode .
+	owl:disjointWith :PointCloudNode, :MeshNode, :BIMNode , :ImageNode, :OrthoNode, :PanoNode  .
 
 :BIMNode 
 	rdf:type owl:Class ;
-	rdfs:subClassOf :GeometryNode ;
+	rdfs:subClassOf :Node ;
 	rdfs:label "BIMNode"@en ;
 	rdfs:comment """BIMNode connecting the RDF graph, ifc geometries and metadata with geospatial methods."""@en  ;
 	rdfs:isDefinedBy : ;
 	rdfs:seeAlso bot:Element;
-	owl:disjointWith :PointCloudNode, :MeshNode, :LineSetNode .
+	owl:disjointWith :PointCloudNode, :MeshNode, :LineSetNode , :ImageNode, :OrthoNode, :PanoNode  .
 
 :ImageNode 
 	rdf:type owl:Class ;
-	rdfs:subClassOf :Node ;
+	rdfs:subclassof :node ;
 	rdfs:label "ImageNode"@en ;
-	rdfs:comment """Archetype of image based nodes i.e. CameraNode, OrthoNode, PanoNode and LineSetNode that share the following propertyset [orientedBoundingBox, cartesianBounds] and methods."""@en  ;
-	rdfs:isDefinedBy : ;
-	owl:disjointWith :GeometryNode .
+	rdfs:comment """ImageNode connecting the RDF graph, pinhole camera parameters, image and metadata with geospatial methods."""@en  ;
+	rdfs:isdefinedby : ;
+	owl:disjointWith :PointCloudNode, :MeshNode, :BIMNode, :LineSetNode, :OrthoNode, :PanoNode .
 
-:CameraNode
-	rdf:type owl:Class ;
-	rdfs:subClassOf :ImageNode ;
-	rdfs:label "CameraNode"@en ;
-	rdfs:comment """RDF representation of pinhole cameras imagery. Has unique raytracing methods."""@en  ;
-	rdfs:isDefinedBy : ;
-	owl:disjointWith :OrthoNode, 
-					:PanoNode .
+#:CameraNode
+#	rdf:type owl:Class ;
+#	rdfs:subClassOf :Node ;
+#	rdfs:label "CameraNode"@en ;
+#	rdfs:comment """RDF representation of pinhole cameras imagery. Has unique raytracing methods."""@en  ;
+#	rdfs:isDefinedBy : ;
+#	owl:disjointWith :OrthoNode, 
+#					:PanoNode .
 
 :OrthoNode 
 	rdf:type owl:Class ;
-	rdfs:subClassOf :ImageNode ;
+	rdfs:subClassOf :Node ;
 	rdfs:label "OrthoNode"@en ;
-	rdfs:comment """RDF representation of orthomosaics imagery. Has unique raytracing methods."""@en  ;
+	rdfs:comment """OrthoNode connecting the RDF graph, orthomosaic image projection parameters, and metadata with geospatial methods."""@en  ;
 	rdfs:isDefinedBy : ;
-	owl:disjointWith :CameraNode, 
-							:PanoNode .
+	owl:disjointWith :PointCloudNode, :MeshNode, :BIMNode, :LineSetNode, :ImageNode, :PanoNode .
 
 :PanoNode 
 	rdf:type owl:Class ;
-	rdfs:subClassOf :ImageNode ;
+	rdfs:subClassOf :Node ;
 	rdfs:label "PanoNode"@en ;
-	rdfs:comment """RDF representation of panoramic imagery. Has unique raytracing methods."""@en  ;
+	rdfs:comment """PanoNode connecting the RDF graph, panoramic image projection parameters, and metadata with geospatial methods."""@en  ;
 	rdfs:isDefinedBy : ;
-	owl:disjointWith :CameraNode, 
-					:OrthoNode .
+	owl:disjointWith :PointCloudNode, :MeshNode, :BIMNode, :LineSetNode , :ImageNode, :OrthoNode .
 
 
 
@@ -599,14 +672,6 @@ gom:rowMajorArray
 	rdfs:isDefinedBy : ;
 	rdfs:seeAlso omg:isPartOfGeometry, 
 				geo:partOf. 				#aren't these relationships?
-
-:SetNode 
-	rdf:type owl:Class ;
-	rdfs:subClassOf :Node ;
-	rdfs:label "SetNode"@en ;
-	rdfs:comment """setNode is a metadata collection of several data Nodes defined by a 3DBox, 3Dhull and cartesianTransform. It is used to easly select groups of resource Nodes and jointly transform them."""@en  ;	
-	rdfs:isDefinedBy : ;
-	rdfs:seeAlso geo:GeometryCollection . 	#any spatial phenomenon
 
 #waar zijn de classes voor multi-modality -> je zou moeten kunnen switchen tussen classes
 

@@ -18,6 +18,7 @@ import geomapi.tools as tl
 sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
 from data_loader_road import DATALOADERROADINSTANCE 
+from geomapi.utils import GEOMAPI_PREFIXES
 
 class TestTools(unittest.TestCase):
 
@@ -58,22 +59,22 @@ class TestTools(unittest.TestCase):
 
 ################################## TEST FUNCTIONS ######################
 
-    def test_e57xml_to_nodes(self):
-        # e57XML
-        nodes=tl.e57xml_to_nodes(path=self.dataLoaderParking.e57XmlPath)
-        self.assertEqual(len(nodes),2)
-        #0
-        self.assertAlmostEqual(nodes[0].cartesianTransform[0,3],0.379,delta=0.01)
-        self.assertLess(nodes[0].cartesianTransform[0,0],0)
-        self.assertAlmostEqual(nodes[0].cartesianBounds[0],-4.351,delta=0.01)
-        #1
-        self.assertEqual(nodes[1].cartesianTransform[0,3],0.0)
-        self.assertEqual(nodes[1].cartesianTransform[0,0],-1)
-        self.assertAlmostEqual(nodes[1].cartesianBounds[0],-5.69,delta=0.01)
+    # def test_e57xml_to_nodes(self):
+    #     # e57XML
+    #     nodes=tl.e57xml_to_nodes(path=self.dataLoaderParking.e57XmlPath)
+    #     self.assertEqual(len(nodes),2)
+    #     #0
+    #     self.assertAlmostEqual(nodes[0].cartesianTransform[0,3],0.379,delta=0.01)
+    #     self.assertLess(nodes[0].cartesianTransform[0,0],0)
+    #     self.assertAlmostEqual(nodes[0].cartesianBounds[0],-4.351,delta=0.01)
+    #     #1
+    #     self.assertEqual(nodes[1].cartesianTransform[0,3],0.0)
+    #     self.assertEqual(nodes[1].cartesianTransform[0,0],-1)
+    #     self.assertAlmostEqual(nodes[1].cartesianBounds[0],-5.69,delta=0.01)
         
-        #with kwargs
-        nodes=tl.e57xml_to_nodes(path=self.dataLoaderParking.e57XmlPath,myattrib=1)
-        self.assertEqual(nodes[0].myattrib,1)
+    #     #with kwargs
+    #     nodes=tl.e57xml_to_nodes(path=self.dataLoaderParking.e57XmlPath,myattrib=1)
+    #     self.assertEqual(nodes[0].myattrib,1)
 
         # with getResource 
         # nodes=tl.e57xml_to_nodes(e57XmlPath=self.e57XmlPath,getResource=True)

@@ -14,11 +14,12 @@ import xml.etree.ElementTree as ET
 from typing import List,Tuple
 from pathlib import Path
 import uuid  
+import ezdxf
+from ezdxf.groupby import groupby
 
 # import APIs
 import rdflib
-from rdflib import Graph
-from rdflib import URIRef, Literal
+from rdflib import URIRef, Literal,Namespace,Graph
 from rdflib.namespace import CSVW, DC, DCAT, DCTERMS, DOAP, FOAF, ODRL2, ORG, OWL, \
                            PROF, PROV, RDF, RDFS, SDO, SH, SKOS, SOSA, SSN, TIME, \
                            VOID, XMLNS, XSD
@@ -32,9 +33,10 @@ import concurrent.futures
 
 #IMPORT MODULES 
 from geomapi.nodes import *
-from geomapi.nodes.sessionnode import create_node 
+from geomapi.nodes.sessionnode_old import create_node 
 import geomapi.utils as ut
 import geomapi.utils.geometryutils as gmu
+import geomapi.utils.cadutils as cadu
 from warnings import warn
 
 #ONTOLOGIES
@@ -95,11 +97,8 @@ def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs
 
     #get reference
     chunk=root.find('chunk')
-    globalTransform=gmu.get_cartesian_transform(rotation=ut.literal_to_array(chunk.find('transform').find('rotation').text),
-                                                translation= ut.literal_to_array(chunk.find('transform').find('translation').text))
-    # globalScale = np.identity(4)*float(chunk.find('transform').find('scale').text)
-    # globalScale[-1,-1]=1  
-    #! test
+    globalTransform=gmu.get_cartesian_transform(rotation=ut.literal_to_matrix(chunk.find('transform').find('rotation').text),
+                                                translation= ut.literal_to_matrix(chunk.find('transform').find('translation').text))
     globalScale=float(chunk.find('transform').find('scale').text)
 
     #get components -> in some xml files, there are no components.
@@ -108,17 +107,14 @@ def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs
         try:
             transform=component.find('transform')
             region=component.find('region')
-            # scale = np.identity(4)*float(transform.find('scale').text)
-            # scale[-1,-1]=1
-            #! test
             scale=float(transform.find('scale').text)
             components.append({'componentid':  int(component.get('id')),        
-                            'refTransform': gmu.get_cartesian_transform(rotation=ut.literal_to_array(transform.find('rotation').text),
-                                                translation= ut.literal_to_array(transform.find('translation').text)),
+                            'refTransform': gmu.get_cartesian_transform(rotation=ut.literal_to_matrix(transform.find('rotation').text),
+                                                translation= ut.literal_to_matrix(transform.find('translation').text)),
                             'scale': scale,
-                            'center': gmu.get_cartesian_transform( translation=ut.literal_to_array(region.find('center').text)),
-                            'size': ut.literal_to_array(region.find('size').text),
-                            'R': ut.literal_to_array(region.find('R').text)})     
+                            'center': gmu.get_cartesian_transform( translation=ut.literal_to_matrix(region.find('center').text)),
+                            'size': ut.literal_to_matrix(region.find('size').text),
+                            'R': ut.literal_to_matrix(region.find('R').text)})     
         except:
             components.append(None)
             continue
@@ -138,14 +134,16 @@ def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs
             continue
     
     #get image names in folder
-    files=ut.get_list_of_files(ut.get_folder(path))
+    files=ut.get_list_of_files(path.parent)
     # files=[f for f in files if (f.endswith('.JPG') or 
     #                             f.endswith('.PNG') or 
     #                             f.endswith('.jpg') or
     #                             f.endswith('.png'))] #! deprecated
-    files = [f for f in files if any(f.endswith(ext) for ext in ut.IMG_EXTENSIONS)]
+    # files = [f for f in files if any(f.endswith(ext).upper() for ext in ut.IMG_EXTENSIONS)]
+    files = [file for file in files if any(file.suffix.upper() == ext.upper() for ext in ut.IMG_EXTENSIONS)]
 
-    names=[ut.get_filename(file) for file in files]
+    names=[file.stem for file in files]
+
 
     #get cameras
     nodelist=[]   
@@ -165,34 +163,29 @@ def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs
                 scale=globalScale
                 
             #get transform
-            transform=np.reshape(ut.literal_to_array(cam.find('transform').text),(4,4))
+            transform=np.reshape(ut.literal_to_matrix(cam.find('transform').text),(4,4))
             #apply scale and reference transformation
-            
-            #! test
             transform=gmu.get_cartesian_transform(rotation=transform[0:3,0:3],
                                         translation=transform[0:3,3]*scale)
-            
-            
             transform=refTransform  @ transform
-            #transform=refTransform  @ scale  @ transform
 
             #get sensor information
             sensorid=int(cam.get('sensor_id'))      
             sensorInformation= next(s for s in sensors if s is not None and s.get('sensorid')==sensorid)
 
             #create image node 
-            node=ImageNode(subject='file:///'+str(uuid.uuid1()),
+            node=ImageNode(
                         name=name, 
                          cartesianTransform=transform,
                         imageWidth =  int(sensorInformation['imageWidth']),
                         imageHeight = int(sensorInformation['imageHeight'] ),
-                        focalLength35mm = sensorInformation['focalLength35mm'], 
+                        focalLength35mm = float(sensorInformation['focalLength35mm']), 
                         **kwargs)
             # node.xmlPath=xmlPath
             
             #assign node to nodelist depending on whether it's in the folder    
             try:
-                i=names.index(ut.get_filename(node.name))
+                i=names.index(Path(node.name).stem)
                 node.path=files[i]
                 nodelist.append(node)   
             except:
@@ -218,7 +211,7 @@ def e57path_to_nodes(path:str,percentage:float=1.0) ->List[PointCloudNode]:
     """    
     path=Path(path) if path else None
     
-    e57 = pye57.E57(path)
+    e57 = pye57.E57(str(path))
     gmu.e57_update_point_field(e57)
     nodes=[]
     for s in range(e57.scan_count):
@@ -230,7 +223,59 @@ def e57path_to_nodes(path:str,percentage:float=1.0) ->List[PointCloudNode]:
         node.pointCount=len(resource.points)
         nodes.append(node)
     return nodes
+
+def ezdxf_path_to_nodes(dxfPath:str |Path,
+                        **kwargs) -> List[LineSetNode]:
+    """Parse a dxf file to a list of LineSetNodes.
+
+    **NOTE**: be aware of the scale factor!
+
+    Args:
+        - dxfPath(str): absolute path to .dxf file
+        - **kwargs: additional arguments to pass to the Line
+
+    Returns:
+        List[LineSetNode]
+    """    
+    dxfPath=Path(dxfPath) 
+    print(f'Reading dxf file...')
+    dxf = ezdxf.readfile(str(dxfPath))
     
+    # check units
+    if dxf.header.get('$INSUNITS') is not None and dxf.header.get('$INSUNITS') !=6:
+        units=ezdxf.units.decode(dxf.header.get('$INSUNITS'))
+        print(f'Warning: dxf has {units} units while meters are expected!') 
+
+    #create entities
+    nodelist=[]
+    counter=0
+    for entity in dxf.modelspace():    
+        #get geometry
+        g=cadu.ezdxf_entity_to_o3d(entity)
+        #filter on linesets
+        if isinstance(g,o3d.geometry.LineSet): 
+            layer=entity.dxf.layer
+            color=np.array(cadu.get_rgb_from_aci(dxf.layers.get(layer).dxf.color))/255
+            g.paint_uniform_color(color)
+            handle=entity.dxf.handle
+            dxfType=entity.dxftype()
+            name=getattr(entity.dxf,'name',None)
+            node=LineSetNode(resource=g,
+                            dxfPath=dxfPath,
+                            layer=layer,
+                            color=color,
+                            handle=handle,
+                            dxfType=dxfType,
+                            name=name,
+                            **kwargs)
+            nodelist.append(node)
+        else:
+            counter+=1
+            continue
+    print(f'{counter} entities were not LineSets. Skipping for now...')
+    print(f'    loaded {len(nodelist)} lineSetNodes from dxf file')
+    return nodelist
+
 def e57path_to_nodes_mutiprocessing(path:str,percentage:float=1.0) ->List[PointCloudNode]:
     """Load an e57 file and convert all data to a list of PointCloudNodes.\n
 
@@ -651,15 +696,14 @@ def ifc_to_nodes_by_type(path:str, types:list=['IfcBuildingElement'],getResource
 
 
 def ifc_to_nodes_multiprocessing(path:str, **kwargs)-> List[BIMNode]:
-    """Returns the contents of geometry elements in an ifc file as BIMNodes.\n
-    This method is 3x faster than other parsing methods due to its multi-threading.\n
-    However, only the entire ifc can be parsed.\n
+    """Returns the contents of geometry elements in an ifc file as BIMNodes.
+    This method is 3x faster than other parsing methods due to its multi-threading.
+    However, only the entire ifc can be parsed.
 
     **WARNING**: IfcOpenShell strugles with some ifc serializations. In our experience, IFC4 serializations is more robust.
 
-
     Args:
-        ifcPath (str): path (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
+        ifcPath (str | Path): ifc file path e.g. "D:/myifc.ifc"
 
     Raises:
         ValueError: 'No valid ifcPath.'
@@ -701,19 +745,26 @@ def ifc_to_nodes_multiprocessing(path:str, **kwargs)-> List[BIMNode]:
 
                 #if mesh, create node
                 if len(mesh.triangles)>1:
-                    node=BIMNode(**kwargs)
-                    node.name=ifcElement.Name
-                    node.className=ifcElement.is_a()
-                    node.globalId=ifcElement.GlobalId
-                    if node.name and node.globalId:
-                        node.subject= node.name +'_'+node.globalId 
-                    node.resource=mesh
-                    node.get_metadata_from_resource()
-                    node.timestamp=timestamp
-                    node.ifcPath=path
-                    node.objectType =ifcElement.ObjectType
-                    nodelist.append(node)
-                    
+                    # node=BIMNode(**kwargs)
+                    name=ifcElement.Name
+                    className=ifcElement.is_a()
+                    globalId=ifcElement.GlobalId
+                    subject= name +'_'+globalId 
+                    resource=mesh
+                    timestamp=timestamp
+                    ifcPath=path
+                    objectType =ifcElement.ObjectType
+                    nodelist.append(BIMNode(name=name,
+                                            className=className,
+                                            globalId=globalId,
+                                            subject=subject,
+                                            resource=resource,
+                                            timestamp=timestamp,
+                                            ifcPath=ifcPath,
+                                            objectType=objectType,
+                                            faceCount=len(mesh.triangles),
+                                            pointCount=len(mesh.vertices),
+                                            **kwargs))
                 if not iterator.next():
                     break
         return nodelist
@@ -1013,14 +1064,14 @@ def get_mesh_representation(node: Node)->o3d.geometry.TriangleMesh:
     else:
         return resource
 
-def nodes_to_graph(nodelist : List[Node], path:str =None, overwrite: bool =False,save: bool =False) -> Graph:
-    """Convert list of nodes to an RDF graph.\n
+def nodes_to_graph(nodelist : List[Node], path:str =None, overwrite: bool =False,save: bool =False,base: URIRef = None) -> Graph:
+    """Convert list of nodes to an RDF graph.
 
     Args:
-        0. nodelist (List[Node])\n
-        1. graphPath (str, optional): path that serves as the basepath for all path information in the graph. This is also the storage location of the graph.\n
-        2. overwrite (bool, optional): Overwrite the existing graph triples. Defaults to False.\n
-        3. save (bool, optional): Save the Graph to file. Defaults to False.\n
+        - nodelist (List[Node])
+        - graphPath (str, optional): path that serves as the basepath for all path information in the graph. This is also the storage location of the graph.
+        - overwrite (bool, optional): Overwrite the existing graph triples. Defaults to False.
+        - save (bool, optional): Save the Graph to file. Defaults to False.
 
     Returns:
         Graph 
@@ -1028,8 +1079,15 @@ def nodes_to_graph(nodelist : List[Node], path:str =None, overwrite: bool =False
     path=Path(path) if path else None
     g=Graph()
     g=ut.bind_ontologies(g)
+    
+    #create graph scope
+    if base:
+        inst = Namespace(base)
+        g.bind("inst", inst)                
+        # subject = inst[subject.replace('#', '/').split('/')[-1]]
+                
     for node in nodelist:
-            node.to_graph(path,overwrite=overwrite)
+            node.get_graph(path,base=base)
             g+= node.graph
     if(path and save):
         g.serialize(path)     

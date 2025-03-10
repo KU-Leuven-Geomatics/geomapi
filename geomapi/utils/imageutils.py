@@ -12,7 +12,7 @@ from typing import Tuple
 import xml.etree.ElementTree as ET
 from typing import List, Tuple
 import math
-
+import copy
 import matplotlib.pyplot as plt
 import numpy as np
 import geomapi.utils as ut
@@ -341,33 +341,57 @@ def calibrate_camera(images, CheckerBoardPattern = (7,7), squareSize: float = 1,
 
     return ret, mtx, dist, rvecs, tvecs
     
-def get_features(img : np.array, featureType : str = "Orb", max : int = 1000):
+def get_features(img : np.array, featureType : str = "orb", max : int = 1000):
     """Compute the image features and descriptors
 
     Args:
-        img (np.array): The source image
-        method (str, optional): The type of features to detect, choose between: orb, sift or fast. Defaults to "Orb".
-        max (int, optional): The destection treshold. Defaults to 1000.
+        - img (np.array): The source image
+        - method (str, optional): The type of features to detect, choose between: orb, sift or fast. Defaults to "Orb".
+        - max (int, optional): The destection treshold. Defaults to 1000.
 
     Raises:
-        ValueError: If the provided method is incorrect
+        - ValueError: If the provided method is incorrect
 
     Returns:
-        Keypoints, descriptors: The detected keypoints and descritors of the source image
+        - Keypoints, descriptors: The detected keypoints and descritors of the source image
     """
 
     im1Gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     if(featureType.lower() == "orb"):
         detector = cv2.ORB_create(max)
-    if(featureType.lower() == "sift"):
+    elif(featureType.lower() == "sift"):
         detector = cv2.SIFT_create(max)
-    if(featureType.lower() == "fast"):
+    elif(featureType.lower() == "fast"):
         detector = cv2.FastFeatureDetector_create(max)
     else:
         raise ValueError("Invalid method name, please use one of the following: orb, sift, fast")
     
     return detector.detectAndCompute(im1Gray, None)
+
+def draw_keypoints_on_image(image: np.array, featureType: str = "orb", max_features: int = 1000,keypoint_size: int = 200, overwrite:bool=True):
+    """
+    Detect and show keypoints on the image.
+
+    Args:
+        img (np.array): The input image.
+        featureType (str): The type of features to detect ('orb', 'sift', 'fast').
+        max_features (int): The maximum number of features to detect.
+
+    Returns:
+        np.array: The image with keypoints drawn.
+    """
+    # Detect features
+    keypoints, _ = get_features(image, featureType, max_features)
+    
+    # Increase the size of keypoints
+    for kp in keypoints:
+        kp.size = keypoint_size
+    # Draw keypoints on the image
+    image=image if overwrite else copy.deepcopy(image)
+    img_with_keypoints = cv2.drawKeypoints(image, keypoints, None, color=(0, 255, 0),flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+    return img_with_keypoints
 
 def match_features(des1: np.array, des2: np.array, matchMethod: str = "bfm_orb", 
                     k: int = 2, goodPercent: float = 0.75, checks: int = 100, 

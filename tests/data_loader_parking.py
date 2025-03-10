@@ -10,6 +10,7 @@ import laspy
 import pye57 
 import time
 import ifcopenshell
+from rdflib import Graph, URIRef,Namespace, Literal, OWL,RDFS, RDF, XSD
 
 
 # import geomapi
@@ -19,36 +20,30 @@ sys.path.append(parent_dir)
 import geomapi.utils as ut
 import geomapi.tools as tl 
 import geomapi.utils.geometryutils as gmu
+from geomapi.utils import GEOMAPI_PREFIXES
 
+# path= os.path.join(parent_dir, 'geomapi','ontology', 'geomapi_ontology.ttl')
+# GEOMAPI=Graph().parse(path)
+# GEOMAPI_PREFIXES = {prefix: Namespace(namespace) for prefix, namespace in GEOMAPI.namespace_manager.namespaces()}
+# GEOMAPI_NAMESPACE = Namespace('https://w3id.org/geomapi#')
         
 class DataLoaderParking:
     def __init__(self,path=None):
         st = time.time()
         print(f'Creating Parking DataLoader:')     
           
-        #ONTOLOGIES
-        self.exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#')
-        self.geo=rdflib.Namespace('http://www.opengis.net/ont/geosparql#') 
-        self.gom=rdflib.Namespace('https://w3id.org/gom#') 
-        self.omg=rdflib.Namespace('https://w3id.org/omg#') 
-        self.fog=rdflib.Namespace('https://w3id.org/fog#')
-        self.v4d=rdflib.Namespace('https://w3id.org/v4d/core#')
-        self.openlabel=rdflib.Namespace('https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#')
-        self.e57=rdflib.Namespace('http://libe57.org#')
-        self.xcr=rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-        self.ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')
-        
         #PATH
         self.path= Path.cwd() / "tests" / "testfiles"  if not path else path
     
         #RESOURCES
-        self.resourceGraphPath=self.path /  'graphs' / 'parking_resource_graph.ttl'
+        self.resourceGraphPath=self.path /  'graphs' / 'resources_graph.ttl'
         self.resourceGraph=Graph().parse(str(self.resourceGraphPath))
         print(f'    loaded {self.resourceGraphPath}')
-        #SESSION
-        self.sessionGraphPath=self.path /  'graphs' / 'parking_session_graph.ttl'
-        self.sessionGraph=Graph().parse(str(self.sessionGraphPath))
-        print(f'    loaded {self.sessionGraphPath}')
+        
+        #SET
+        self.setGraphPath=self.path /  'graphs' / 'set_graph.ttl'
+        self.setGraph=Graph().parse(str(self.setGraphPath))
+        print(f'    loaded {self.setGraphPath}')
         
         #POINTCLOUD
         self.pcdPath=self.path / 'pcd'/"parking.pcd"
@@ -72,7 +67,7 @@ class DataLoaderParking:
         
         self.pcdGraphPath=self.path / 'graphs' /  'pcd_graph.ttl'
         self.pcdGraph=Graph().parse(self.pcdGraphPath)
-        self.pcdSubject=next(s for s in self.pcdGraph.subjects() if 'parking' in s.toPython() )
+        self.pcdSubject=next(s for s in self.pcdGraph.subjects(RDF.type) if 'parking' in s.toPython() )
         print(f'    loaded {self.pcdGraphPath}')           
 
         #MESH
@@ -82,16 +77,18 @@ class DataLoaderParking:
             
         self.meshGraphPath=self.path / 'graphs' /  'mesh_graph.ttl'
         self.meshGraph=Graph().parse(str(self.meshGraphPath))
-        self.meshSubject= next(s for s in self.meshGraph.subjects() if 'parking' in s.toPython() )
+        self.meshSubject= next(s for s in self.meshGraph.subjects(RDF.type) if 'parking' in s.toPython() )
         print(f'    loaded {self.meshGraphPath}')           
 
         # #IFC
         self.ifcPath=self.path / 'ifc' / "parking.ifc"
+        self.ifcWallPath=self.path / 'ifc' / "Basic_Wall_168_WA_f2_Soilmix_600mm_956569_06v1k9ENv8DhGMCvKUuLQV.ply"
         # self.bimNodes=tl.ifc_to_nodes_multiprocessing(str(self.ifcPath)) #! Note: this uses geomapi functionality
         # print(f'loaded {len(self.bimNodes)} bimNodes from ifc file')
         
         self.ifcGraphPath=self.path /  'graphs' / 'parking_ifc_graph.ttl'
         self.ifcGraph=Graph().parse(str(self.ifcGraphPath))
+        self.ifcSubject=next(s for s in self.ifcGraph.subjects(RDF.type))
         print(f'    loaded {self.ifcGraphPath}')      
         
         self.ifc = ifcopenshell.open(str(self.ifcPath))   
@@ -117,8 +114,8 @@ class DataLoaderParking:
 
 
         #IMG
-        self.csvPath=self.path / 'img' / 'parking.csv' #! we don't do anything with the csv
-        self.imgGraphPath=self.path /  'graphs' / 'parking_img_graph.ttl'
+        # self.csvPath=self.path / 'img' / 'parking.csv' #! we don't do anything with the csv
+        self.imgGraphPath=self.path /  'graphs' / 'img_graph.ttl'
         self.imgGraph=Graph().parse(str(self.imgGraphPath))
         print(f'    loaded {self.imgGraphPath}')    
 
@@ -129,17 +126,19 @@ class DataLoaderParking:
                                                 [ 9.96648497e-01,  4.97790854e-02, -6.49139139e-02 , 6.10007435e+01],
                                                 [-8.20972697e-03, -7.28664391e-01, -6.84821733e-01,  1.50408221e+01],
                                                 [ 0.00000000e+00 , 0.00000000e+00, 0.00000000e+00 , 1.00000000e+00]])
-        self.imageSubject1=next(s for s in self.imgGraph.subjects() if 'DJI_0085' in s.toPython() )
+        self.imageSubject1=next((s for s in self.imgGraph.subjects() if 'DJI_0085' in s.toPython()),None )
+        self.principalPointV=-0.00481084380622187
+        self.principalPointU=-0.00219347744418651
         print(f'    loaded {self.imagePath1}')           
 
         self.imageXmpPath2 = self.path / 'img' / 'IMG_8834.xmp'
         self.imagePath2=self.path / 'img' / "IMG_8834.JPG" 
-        self.image2=cv2.imread(str(self.imagePath2))
+        self.image2=o3d.io.read_image(str(self.imagePath2))
         self.imageCartesianTransform2= np.array([[ 4.12555151e-01,  4.12058430e-02 ,-9.10000179e-01, 6.68850552e+01],
                                                 [ 9.10841440e-01, -4.52553581e-03,  4.12731621e-01 , 4.52551195e+01],
                                                 [ 1.28887160e-02 ,-9.99140430e-01 ,-3.93990225e-02 , 5.45377093e+00],
                                                 [ 0.00000000e+00 , 0.00000000e+00  ,0.00000000e+00 , 1.00000000e+00]])
-        self.imageSubject2=next(s for s in self.imgGraph.subjects() if 'IMG_8834' in s.toPython() )
+        self.imageSubject2=next((s for s in self.imgGraph.subjects() if 'IMG_8834' in s.toPython()),None )
         print(f'    loaded {self.imagePath2}')    
 
         #RESOURCES temporary folder

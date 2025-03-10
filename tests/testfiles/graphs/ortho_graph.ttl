@@ -1,0 +1,128 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix exif: <http://www.w3.org/2003/12/exif/ns#> .
+@prefix geomapi: <https://w3id.org/geomapi#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix inst: <http://orthos#> .
+
+inst:railway-0-0 a geomapi:OrthoNode ;
+    rdfs:label "railway-0-0"^^xsd:string ;
+    dcterms:created "2024-08-08T12:08:53"^^xsd:dateTime ;
+    exif:imageLength 2048 ;
+    exif:imageWidth 2048 ;
+    geomapi:cartesianTransform """[[ 1.00000000e+00  0.00000000e+00  0.00000000e+00  2.63379519e+05]
+ [ 0.00000000e+00 -1.00000000e+00 -1.22464680e-16  1.51089167e+05]
+ [ 0.00000000e+00  1.22464680e-16 -1.00000000e+00  2.56000000e+02]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[2.63395500e+05 1.51073186e+05 2.56000000e+02]
+ [2.63363539e+05 1.51073186e+05 2.56000000e+02]
+ [2.63395500e+05 1.51105147e+05 2.56000000e+02]
+ [2.63363539e+05 1.51105147e+05 2.56000000e+02]
+ [2.63395500e+05 1.51073186e+05 2.06000000e+02]
+ [2.63363539e+05 1.51073186e+05 2.06000000e+02]
+ [2.63395500e+05 1.51105147e+05 2.06000000e+02]
+ [2.63363539e+05 1.51105147e+05 2.06000000e+02]]"""^^geomapi:matrix ;
+    geomapi:depth "50.0"^^xsd:float ;
+    geomapi:dxfPath "../ortho/railway-scheme.dxf"^^xsd:string ;
+    geomapi:gsd "0.015605890371091391"^^xsd:float ;
+    geomapi:height "256.0"^^xsd:float ;
+    geomapi:orientedBoundingBox """[2.63379519e+05 1.51089167e+05 2.31000000e+02 3.19608635e+01
+ 3.19608635e+01 5.00000000e+01 1.80000000e+02 0.00000000e+00
+ 0.00000000e+00]"""^^geomapi:matrix ;
+    geomapi:path "../ortho/railway-0-0.tif"^^xsd:string ;
+    geomapi:tfwPath "../ortho/railway-0-0.tfw"^^xsd:string ;
+	geomapi:adjacent inst:railway-0-1,
+					inst:railway-1-0,
+					inst:railway-1-1.
+	
+
+inst:railway-0-1 a geomapi:OrthoNode ;
+    rdfs:label "railway-0-1"^^xsd:string ;
+    dcterms:created "2024-08-08T12:08:54"^^xsd:dateTime ;
+    exif:imageLength 2048 ;
+    exif:imageWidth 2048 ;
+    geomapi:cartesianTransform """[[ 1.00000000e+00  0.00000000e+00  0.00000000e+00  2.63379519e+05]
+ [ 0.00000000e+00 -1.00000000e+00 -1.22464680e-16  1.51057206e+05]
+ [ 0.00000000e+00  1.22464680e-16 -1.00000000e+00  2.56000000e+02]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[2.63395500e+05 1.51041225e+05 2.56000000e+02]
+ [2.63363539e+05 1.51041225e+05 2.56000000e+02]
+ [2.63395500e+05 1.51073186e+05 2.56000000e+02]
+ [2.63363539e+05 1.51073186e+05 2.56000000e+02]
+ [2.63395500e+05 1.51041225e+05 2.06000000e+02]
+ [2.63363539e+05 1.51041225e+05 2.06000000e+02]
+ [2.63395500e+05 1.51073186e+05 2.06000000e+02]
+ [2.63363539e+05 1.51073186e+05 2.06000000e+02]]"""^^geomapi:matrix ;
+    geomapi:depth "50.0"^^xsd:float ;
+    geomapi:dxfPath "../ortho/railway-scheme.dxf"^^xsd:string ;
+    geomapi:gsd "0.015605890371091391"^^xsd:float ;
+    geomapi:height "256.0"^^xsd:float ;
+    geomapi:orientedBoundingBox """[2.63379519e+05 1.51057206e+05 2.31000000e+02 3.19608635e+01
+ 3.19608635e+01 5.00000000e+01 1.80000000e+02 0.00000000e+00
+ 0.00000000e+00]"""^^geomapi:matrix ;
+    geomapi:path "../ortho/railway-0-1.tif"^^xsd:string ;
+    geomapi:tfwPath "../ortho/railway-0-1.tfw"^^xsd:string ;
+	geomapi:adjacent inst:railway-0-0,
+					inst:railway-1-0,
+					inst:railway-1-1.
+					
+inst:railway-1-0 a geomapi:OrthoNode ;
+    rdfs:label "railway-1-0"^^xsd:string ;
+    dcterms:created "2024-08-08T12:08:54"^^xsd:dateTime ;
+    exif:imageLength 2048 ;
+    exif:imageWidth 2048 ;
+    geomapi:cartesianTransform """[[ 1.00000000e+00  0.00000000e+00  0.00000000e+00  2.63411480e+05]
+ [ 0.00000000e+00 -1.00000000e+00 -1.22464680e-16  1.51089167e+05]
+ [ 0.00000000e+00  1.22464680e-16 -1.00000000e+00  2.56000000e+02]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[2.63427461e+05 1.51073186e+05 2.56000000e+02]
+ [2.63395500e+05 1.51073186e+05 2.56000000e+02]
+ [2.63427461e+05 1.51105147e+05 2.56000000e+02]
+ [2.63395500e+05 1.51105147e+05 2.56000000e+02]
+ [2.63427461e+05 1.51073186e+05 2.06000000e+02]
+ [2.63395500e+05 1.51073186e+05 2.06000000e+02]
+ [2.63427461e+05 1.51105147e+05 2.06000000e+02]
+ [2.63395500e+05 1.51105147e+05 2.06000000e+02]]"""^^geomapi:matrix ;
+    geomapi:depth "50.0"^^xsd:float ;
+    geomapi:dxfPath "../ortho/railway-scheme.dxf"^^xsd:string ;
+    geomapi:gsd "0.015605890371091391"^^xsd:float ;
+    geomapi:height "256.0"^^xsd:float ;
+    geomapi:orientedBoundingBox """[2.63411480e+05 1.51089167e+05 2.31000000e+02 3.19608635e+01
+ 3.19608635e+01 5.00000000e+01 1.80000000e+02 0.00000000e+00
+ 0.00000000e+00]"""^^geomapi:matrix ;
+    geomapi:path "../ortho/railway-1-0.tif"^^xsd:string ;
+    geomapi:tfwPath "../ortho/railway-1-0.tfw"^^xsd:string ;
+	geomapi:adjacent inst:railway-0-0,
+					inst:railway-0-1,
+					inst:railway-1-1.
+					
+inst:railway-1-1 a geomapi:OrthoNode ;
+    rdfs:label "railway-1-1"^^xsd:string ;
+    dcterms:created "2024-08-08T12:08:55"^^xsd:dateTime ;
+    exif:imageLength 2048 ;
+    exif:imageWidth 2048 ;
+    geomapi:cartesianTransform """[[ 1.00000000e+00  0.00000000e+00  0.00000000e+00  2.63411480e+05]
+ [ 0.00000000e+00 -1.00000000e+00 -1.22464680e-16  1.51057206e+05]
+ [ 0.00000000e+00  1.22464680e-16 -1.00000000e+00  2.56000000e+02]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[2.63427461e+05 1.51041225e+05 2.56000000e+02]
+ [2.63395500e+05 1.51041225e+05 2.56000000e+02]
+ [2.63427461e+05 1.51073186e+05 2.56000000e+02]
+ [2.63395500e+05 1.51073186e+05 2.56000000e+02]
+ [2.63427461e+05 1.51041225e+05 2.06000000e+02]
+ [2.63395500e+05 1.51041225e+05 2.06000000e+02]
+ [2.63427461e+05 1.51073186e+05 2.06000000e+02]
+ [2.63395500e+05 1.51073186e+05 2.06000000e+02]]"""^^geomapi:matrix ;
+    geomapi:depth "50.0"^^xsd:float ;
+    geomapi:dxfPath "../ortho/railway-scheme.dxf"^^xsd:string ;
+    geomapi:gsd "0.015605890371091391"^^xsd:float ;
+    geomapi:height "256.0"^^xsd:float ;
+    geomapi:orientedBoundingBox """[2.63411480e+05 1.51057206e+05 2.31000000e+02 3.19608635e+01
+ 3.19608635e+01 5.00000000e+01 1.80000000e+02 0.00000000e+00
+ 0.00000000e+00]"""^^geomapi:matrix ;
+    geomapi:path "../ortho/railway-1-1.tif"^^xsd:string ;
+    geomapi:tfwPath "../ortho/railway-1-1.tfw"^^xsd:string ;
+	geomapi:adjacent inst:railway-0-0,
+					inst:railway-0-1,
+					inst:railway-1-0.

@@ -20,6 +20,7 @@ import geomapi.tools.progresstools as pt
 sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
 from data_loader_road import DATALOADERROADINSTANCE 
+from geomapi.utils import GEOMAPI_PREFIXES
 
 class TestProgressTools(unittest.TestCase):
 

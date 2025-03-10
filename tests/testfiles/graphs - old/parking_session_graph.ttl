@@ -1,0 +1,22 @@
+@prefix e57: <http://libe57.org#> .
+@prefix openlabel: <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#> .
+@prefix v4d: <https://w3id.org/v4d/core#> .
+
+<file:///c8c9c891-9454-11ee-8f1b-c8f75043ce59> a v4d:SessionNode ;
+    e57:cartesianBounds """[  1.91106719  83.20091785  23.57467616  89.23688167 -11.20973723
+  30.108778  ]""" ;
+    e57:cartesianTransform """[[ 1.          0.          0.         43.46215291]
+ [ 0.          1.          0.         53.18355995]
+ [ 0.          0.          1.          7.99068353]
+ [ 0.          0.          0.          1.        ]]""" ;
+    v4d:linkedSubjects "['file:///parking', 'file:///DJI_0085', 'file:///IMG_8834', 'file:///parking2', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_0_Z_Q8COz94wZzVDqlx6N0', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_160mm_915429_2f6I3M3B10PABG_fOUjFSb']" ;
+    v4d:orientedBounds """[[ 19.37807907  89.90021377  35.43105215]
+ [ 90.64709061  69.82481362  25.60686511]
+ [  5.24835494  39.80787362  35.28979876]
+ [ 14.60709746  91.35194443  -2.14632865]
+ [ 71.74638487  21.18420414 -12.11176907]
+ [  0.47737333  41.25960428  -2.28758204]
+ [ 85.876109    71.27654429 -11.97051569]
+ [ 76.51736648  19.73247347  25.46561173]]""" ;
+    openlabel:timestamp "2023-11-23T11:21:49" .
+

@@ -10,38 +10,50 @@ import time
 import math
 from typing import List
 import random
-
+import importlib
+from re import search
+import open3d as o3d
 import numpy as np
 import PIL.Image
 import rdflib
 from PIL.ExifTags import GPSTAGS, TAGS
-from rdflib import RDF, XSD, Graph, Literal, URIRef, FOAF
+from rdflib import RDF, XSD, Graph, Literal, URIRef, FOAF,Namespace,OWL,RDFS
 
 #### GLOBAL VARIABLES ####
 
-RDF_EXTENSIONS = [".ttl"]
-IMG_EXTENSIONS = [".jpg", ".png", ".JPG", ".PNG", ".JPEG"]
-MESH_EXTENSIONS = [".obj",".ply",".fbx" ]
-PCD_EXTENSIONS = [".pcd", ".e57",".pts", ".ply", '.xml','.csv']
-BIM_EXTENSIONS=[".ifc"]
-CAD_EXTENSIONS=[".dxf","dwg"]
+RDF_EXTENSIONS = [".TTL"]
+IMG_EXTENSIONS = [".JPG", ".PNG", ".JPEG",".TIF"]
+MESH_EXTENSIONS = [".OBJ",".PLY",".FBX" ]
+PCD_EXTENSIONS = [".PCD", ".E57",".PTS", ".PLY",'.LAS','.LAZ']
+BIM_EXTENSIONS=[".IFC"]
+CAD_EXTENSIONS=[".PLY",".DXF",".TFW"]
 
 
-INT_ATTRIBUTES = ['pointCount','faceCount','e57Index'] #'label'
-FLOAT_ATTRIBUTES = ['xResolution','yResolution','imageWidth','imageHeight','focalLength35mm','principalPointU','principalPointV','accuracy']
-LIST_ATTRIBUTES =  ['distortionCoeficients']
+# INT_ATTRIBUTES = ['pointCount','faceCount','e57Index'] #'label'
+# FLOAT_ATTRIBUTES = ['xResolution','yResolution','imageWidth','imageHeight','focalLength35mm','principalPointU','principalPointV','accuracy']
+# LIST_ATTRIBUTES =  ['distortionCoeficients']
 TIME_FORMAT = "%Y-%m-%d %H-%M-%S"
 
-exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#')
-geo=rdflib.Namespace('http://www.opengis.net/ont/geosparql#') #coordinate system information
-gom=rdflib.Namespace('https://w3id.org/gom#') # geometry representations => this is from mathias
-omg=rdflib.Namespace('https://w3id.org/omg#') # geometry relations
-fog=rdflib.Namespace('https://w3id.org/fog#')
-v4d=rdflib.Namespace('https://w3id.org/v4d/core#')
-openlabel=rdflib.Namespace('https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#')
-e57=rdflib.Namespace('http://libe57.org#')
-xcr=rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')
+current_dir = os.path.dirname(os.path.abspath(__file__))
+project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
+geomapi_ontology_path=os.path.join(project_root, 'geomapi', 'ontology', 'geomapi_ontology.ttl')
+
+GEOMAPI_GRAPH=Graph().parse(geomapi_ontology_path) if os.path.exists(geomapi_ontology_path) else Graph().parse('https://github.com/KU-Leuven-Geomatics/geomapi/blob/main/geomapi/ontology/geomapi_ontology.ttl')
+GEOMAPI_PREFIXES = {prefix: Namespace(namespace) for prefix, namespace in GEOMAPI_GRAPH.namespace_manager.namespaces()}
+GEOMAPI_NAMESPACE = Namespace('https://w3id.org/geomapi#')
+
+IFC_GRAPH=Graph().parse("https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL/ontology.ttl")
+IFC_NAMESPACE = Namespace("https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL#")
+
+# exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#')
+# geo=rdflib.Namespace('http://www.opengis.net/ont/geosparql#') #coordinate system information
+# gom=rdflib.Namespace('https://w3id.org/gom#') # geometry representations => this is from mathias
+# omg=rdflib.Namespace('https://w3id.org/omg#') # geometry relations
+# fog=rdflib.Namespace('https://w3id.org/fog#')
+# v4d=rdflib.Namespace('https://w3id.org/v4d/core#')
+# openlabel=rdflib.Namespace('https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#')
+# e57=rdflib.Namespace('http://libe57.org#')
+# xcr=rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 
 #### BASIC OPERATIONS ####
 
@@ -62,18 +74,18 @@ def time_funtion(func, *args):
     print("Completed function `" + func.__name__ + "()` in", np.round(end - start,3), "seconds")
     return result
 
-def get_extension(path:str) -> str:
-    """Returns the file extension.\n
-    E.g. D://myData//test.txt -> .txt
+# def get_extension(path:str) -> str:
+#     """Returns the file extension.\n
+#     E.g. D://myData//test.txt -> .txt
 
-    Args:
-        path (str): file path
+#     Args:
+#         path (str): file path
 
-    Returns:
-        extension (str) e.g. '.txt'
-    """
-    _,extension = os.path.splitext(path)
-    return extension
+#     Returns:
+#         extension (str) e.g. '.txt'
+#     """
+#     _,extension = os.path.splitext(path)
+#     return extension
 
 #NOTE why does this exist?
 def get_min_average_and_max_value(arrays:List[np.array],ignoreZero:bool=True,threshold:float=0.0)->List[float]:
@@ -103,6 +115,38 @@ def get_min_average_and_max_value(arrays:List[np.array],ignoreZero:bool=True,thr
                 meanarr[i]=np.nanmean(a)
                 maxarr[i]=np.nanmax(a) 
     return minarr  ,meanarr  ,maxarr
+
+def get_rotation_matrix_from_vector(vector:np.ndarray)->np.ndarray:
+    """Get the rotation matrix from a vector.
+
+    Args:
+        - vector (np.ndarray): 3x1 vector
+
+    Returns:
+        - np.ndarray: 3x3 rotation matrix
+    """
+    #check shape
+    np.reshape(vector, (3, 1))
+    #normalize vector
+    vector=vector/np.linalg.norm(vector)
+    #1.Determine the axis and angle
+    #Rotate from z-axis to the target vector
+    z_axis = np.array([0, 0, 1])
+    cross_product = np.cross(z_axis, vector)
+    dot_product = np.dot(z_axis, vector)
+    norm_cross_product = np.linalg.norm(cross_product)
+
+    if norm_cross_product != 0:
+        axis = cross_product / norm_cross_product
+        angle = np.arctan2(norm_cross_product, dot_product)
+    else:
+        # If the vector is already aligned with the z-axis, no rotation is needed.
+        axis = np.array([1, 0, 0])  # Arbitrary axis
+        angle = 0.0 if dot_product > 0 else np.pi  # 0 if aligned, pi if opposite
+
+    #2.Compute the rotation matrix using the axis and angle
+    rotation_matrix = o3d.geometry.get_rotation_matrix_from_axis_angle(axis * angle)
+    return rotation_matrix
 
 def replace_str_index(text:str,index:int,replacement:str='_'):
     """Replace a string character at the location of the index with the replacement.\n
@@ -137,6 +181,88 @@ def random_color(range:int=1)->np.array:
     else:
         raise ValueError('Range should be either 1 or 255.')
     return color
+
+def convert_to_homogeneous_3d_coordinates(input_data):
+    # Convert input to numpy array if it's a list
+    if isinstance(input_data, list):
+        input_data = np.array(input_data)
+
+    # Ensure input_data is at least 2D
+    if input_data.ndim == 1:
+        input_data = np.expand_dims(input_data, axis=0)
+
+    # Add the homogeneous coordinate if needed
+    if input_data.shape[1] == 3:
+        homogeneous_column = np.ones((input_data.shape[0], 1))
+        input_data = np.hstack((input_data, homogeneous_column))
+    elif input_data.shape[1] == 4:
+        # Ensure the last column is all ones
+        input_data[:, -1] = 1
+    else:
+        raise ValueError("Each coordinate should have either 3 or 4 elements")
+
+    return input_data
+
+def map_to_2d_array(input_data):
+    # Convert input to numpy array if it's a list
+    if isinstance(input_data, list):
+        input_data = np.array(input_data)
+
+    # Ensure input_data is at least 2D
+    if input_data.ndim == 1:
+        input_data = np.expand_dims(input_data, axis=0)
+    
+    return input_data
+
+def get_geomapi_classes() -> List[URIRef]:
+    query = '''
+    SELECT ?class
+    WHERE {
+        ?class a owl:Class.
+    }
+    '''
+    result = GEOMAPI_GRAPH.query(query)
+    return [row['class'] for row in result]
+
+def get_method_for_datatype(datatype):
+    query = '''
+    PREFIX geomapi: <https://w3id.org/geomapi#>
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    
+    SELECT ?method
+    WHERE {
+        ?datatype a rdfs:Datatype ;
+                  geomapi:method ?method .
+        FILTER (?datatype = <%s>)
+    }
+    ''' % datatype
+    result = GEOMAPI_GRAPH.query(query)
+    for row in result:
+        return str(row.method)
+    return None
+
+def apply_method_to_object(datatype, obj):
+    """
+    Dynamically run a function from a GEOMAPI datatype.
+    
+    Args:
+        - datatype (URIRef): the datatype of the object
+        - obj: the object to apply the method to
+
+    """
+    method_name = get_method_for_datatype(datatype)
+    if not method_name:
+        method_name = f"geomapi.utils.literal_to_python"
+
+    # Dynamically import the method
+    components = method_name.split('.')
+    module_path = '.'.join(components[:-1])
+    method = components[-1]    
+    mod = importlib.import_module(module_path)
+    func = getattr(mod, method)
+    
+    # Apply the method to the object
+    return func(obj)
 
 def split_list(list, n:int=None,l:int=None):
     """Split list into approximately equal chunks. Last list might have an unequal number of elements.
@@ -184,45 +310,72 @@ def get_variables_in_class(cls) -> List[str]:
     Returns:
         list of class attribute names
     """  
-    return [i.strip('_') for i in cls.__dict__.keys() ] 
+    return [i.strip('_') for i in cls.__dict__.keys() if getattr(cls,i) is not None] 
 
-def get_list_of_files(directoryPath:str) -> list:
-    """Get a list of all filepaths in the directory and subdirectories.\n
+# def get_list_of_files(directoryPath:str) -> list:
+#     """Get a list of all filepaths in the directory and subdirectories.\n
+
+#     Args:
+#         directoryPath: directory path e.g. \n
+#             "D:\\Data\\2018-06 Werfopvolging Academiestraat Gent\\week 22\\"
+            
+#     Returns:
+#         A list of filepaths
+#     """
+#     # names in the given directory 
+#     directoryPath = str(directoryPath)
+#     listOfFile = os.listdir(directoryPath)
+#     allFiles = list()
+#     # Iterate over all the entries
+#     for entry in listOfFile:
+#         # Create full path
+#         fullPath = Path(directoryPath) / entry
+#         # If entry is a directory then get the list of files in this directory 
+#         if fullPath.is_dir():
+#             allFiles = allFiles + get_list_of_files(fullPath)
+#         else:
+#             allFiles.append(fullPath.as_posix())                
+#     return allFiles
+
+
+def get_list_of_files(folder: Path | str , ext: str = None) -> list:
+    """
+    Get a list of all filepaths in the folder and subfolders that match the given file extension.
 
     Args:
-        directoryPath: directory path e.g. \n
-            "D:\\Data\\2018-06 Werfopvolging Academiestraat Gent\\week 22\\"
-            
+        folder: The path to the folder as a string or Path object
+        ext: Optional. The file extension to filter by, e.g., ".txt". If None, all files are returned.
+
     Returns:
-        A list of filepaths
+        A list of filepaths that match the given file extension.
     """
-    # names in the given directory 
-    directoryPath = str(directoryPath)
-    listOfFile = os.listdir(directoryPath)
-    allFiles = list()
-    # Iterate over all the entries
-    for entry in listOfFile:
+    folder = Path(folder)  # Ensure the folder is a Path object
+    allFiles = []
+    # Iterate over all the entries in the directory
+    for entry in folder.iterdir():
         # Create full path
-        fullPath = Path(directoryPath) / entry
+        fullPath = entry
         # If entry is a directory then get the list of files in this directory 
         if fullPath.is_dir():
-            allFiles = allFiles + get_list_of_files(fullPath)
+            allFiles += get_list_of_files(fullPath, ext=ext)
         else:
-            allFiles.append(fullPath.as_posix())                
+            # Check if file matches the extension
+            if ext is None or fullPath.suffix.lower() == ext.lower():
+                allFiles.append(fullPath)
     return allFiles
 
 def get_subject_graph(graph:Graph, subject:URIRef = None) -> Graph:
-        """Returns a subselection of the full Graph that only contains the triples of one subject.\n
+        """Returns a subselection of the full Graph that only contains the triples of one subject.
 
         Args:
-            1. graph (Graph) \n
-            2. subject (URIRef, optional): If no subject is provided, the first one is picked. Defaults to first subject in the graph.
+            - graph (Graph) 
+            - subject (URIRef, optional): If no subject is provided, the first one is picked. Defaults to first subject in the graph.
         
         Returns:
-            Graph with the triples of one subject
+            - Graph with the triples of one subject
         """
         #input validation       
-        if(subject and subject not in graph.subjects()): 
+        if(subject is not None and subject not in graph.subjects()): 
             raise ValueError('subject not in graph')
         elif (not subject): # No subject is defined yet, pick the first one
             subject=next(graph.subjects())        
@@ -248,157 +401,9 @@ def get_paths_in_class(cls) -> list:
     Rerturns:
         class atttributes that contain 'path' information e.g. cls.ifcPath, cls.path, etc.
     """  
-    from re import search
-    return [i.strip('_') for i in cls.__dict__.keys() if search('Path',i) or search('path',i)] 
+    return [i.strip('_') for i in cls.__dict__.keys() if search('path',i, re.IGNORECASE) and getattr(cls,i) is not None] 
 
-# NOTE just use get() function
-#def get_value_from_dict(dict:dict, key:str):
-#    """Return data of a certain key in a dictionary:
-#
-#    Args:
-#        1. data (dict): dictionay with data \n
-#        2. key (str): keyword attribute in dictionary e.g. data['myattribute'] \n
-#
-#    Returns:
-#        data (python values)
-#    """
-#    if key in dict:
-#        return dict[key]
-#    return None
-
-# NOTE use different word than filter, because you are just inverting the negative coordinates
-def parse_exif_gps_data(data, reference:str) -> float:
-    """Returns decimal degrees from world angles in exif data.\n
-
-    Args:
-        data (float or tuple): decimal degrees or (degrees, minutes, seconds) notation of world angles\n
-        reference (str): direction character i.e. 'S','W','s' or 'w'.\n
-
-    Returns:
-        decimal degrees (float)
-    """
-    if type(data) is float:
-        if reference in ['S','W','s','w']:
-            return data*-1
-        else:
-            return data
-    elif type(data) is tuple and len(data) == 3:
-        value=dms_to_dd(data[0],data[1],data[2],reference)
-        return value    
-     
-# NOTE use consistent naming sceme
-def dms_to_dd(degrees:float, minutes:float, seconds:float, direction:str) -> float:
-    """Convert world angles (degrees, minutes, seconds, direction) to decimal degrees.\n
-
-    Args:
-        1. degrees (float) \n
-        2. minutes (float) \n
-        3. seconds (float) \n
-        4. direction (str): 'N' and 'E' are positive, 'W' and 'S' are negative  \n
-
-    Returns:
-        decimal degrees (float)
-    """
-    dd = float(degrees) + float(minutes)/60 + float(seconds)/(60*60)
-    if direction == 'W' or direction == 'S':
-        dd *= -1
-    return dd
-
-def dd_to_dms(deg) -> List[float]:
-    """Convert decimal degrees to List[degrees, minutes, seconds] notation. \n
-
-    **NOTE**: Direction is not determined (should be easy based on sign).
-
-    Args:
-        decimal degrees (float)
-
-    Returns:
-        List[degrees(float),minutes(float),seconds(float)]
-    """
-    d = int(deg)
-    md = abs(deg - d) * 60
-    m = int(md)
-    sd = (md - m) * 60
-    return [d, m, sd]
-
-def parse_dms(dms) :
-    """Returns decimal degrees (float) notation of geospatial coordinates from various (degrees, minutes, seconds, direction) notations.\n
-
-    Args (degrees, minutes, seconds,direction):
-        1. dms (np.array): \n
-        2. dms (tuple[float,float,float,float])\n
-        3. dms (str): stringed list with values\n
-
-    Raises:
-        ValueError: 'dms.size!=4'
-
-    Returns:
-        decimal degrees (float)
-    """
-    try:
-        if type(dms) is np.ndarray and dms.size==4:
-            return dms_to_dd(dms[0],dms[1],dms[2], dms[3] )
-        elif type(dms) is tuple and len(dms)==4:
-            return dms_to_dd(dms[0],dms[1],dms[2], dms[3] )
-        elif type(dms) is str and 'None' not in dms:
-            temp=validate_string(dms, ' ')
-            temp=temp.replace("\n","")
-            temp=temp.replace("\r","")
-            temp=temp.split(' ')
-            temp=[x for x in temp if x]
-            if temp:
-                res=np.asarray(temp) 
-                return dms_to_dd(res[0],res[1],res[2], res[3] )
-        return None  
-    except:
-        raise ValueError ('dms.size!=4')
-
-def get_exif_data(img:PIL.Image)-> dict:
-    """Returns a dictionary from the exif data of an Image (PIL) item. Also
-    converts the GPS Tags.\n
-
-    https://pillow.readthedocs.io/en/stable/reference/Image.html
-    
-    Args:
-        Img (PIL.image)
-    
-    Returns:
-        exifData (dict): dictionary containing all meta data of the PIL Image.
-    """
-    exifData = {}
-    info = img._getexif()
-    if info:
-        for tag, value in info.items():
-            decoded = TAGS.get(tag, tag)
-            if decoded == "GPSInfo":
-                gps_data = {}
-                for t in value:
-                    sub_decoded = GPSTAGS.get(t, t)
-                    gps_data[sub_decoded] = value[t]
-
-                exifData[decoded] = gps_data
-            else:
-                exifData[decoded] = value        
-        return exifData      
-    else:
-        return None    
-
-# TODO fix the path shit, only windows works with backslashes for file paths but is also compatible with POSIX style, so we should just use the Pathlib as much as possible
-def get_filename(path :str,splitter:str='.') -> str:
-    """ Deconstruct filepath and return filename.
-    
-    Args:
-        path (str): filepath
-        
-    Returns:
-        filename (str)
-    """   
-    path=ntpath.basename(path)
-    _, tail = ntpath.split(path)
-    array=tail.split(splitter)
-    return array[0]
-
-def get_folder(path :str) -> str:
+def get_folder(path :Path) -> Path:
     """ Deconstruct path and return folder
     
     Args:
@@ -407,7 +412,7 @@ def get_folder(path :str) -> str:
     Returns:
         folderPath (str)
     """
-    return os.path.dirname(os.path.abspath(path))
+    return Path(path).parent #os.path.dirname(os.path.abspath(path))
 
 # TODO when do we want a timestamp based on the last modified time of the metafile?
 def get_timestamp(path : str) -> str:
@@ -419,88 +424,91 @@ def get_timestamp(path : str) -> str:
     Returns:
         dateTime (str): '%Y-%m-%dT%H:%M:%S'
     """
-    ctime=os.path.getctime(path)
+    ctime=os.path.getctime(path) if isinstance(path,str) or isinstance(path,Path) else path
     dtime=datetime.datetime.fromtimestamp(ctime).strftime('%Y-%m-%dT%H:%M:%S')
-    return dtime
+    return validate_timestamp(dtime)
 
 #### CONVERSIONS ####
 
-def literal_to_cartesianTransform(literal:Literal) -> np.array:
-    """Returns cartesianTransform from rdflib.literal. This function is used to convert a serialized (str) to a usable np.array. 
+# def literal_to_cartesianTransform(literal:Literal) -> np.array:
+#     """Returns cartesianTransform from rdflib.literal. This function is used to convert a serialized (str) to a usable np.array. 
 
-    Args:
-        literal (URIRef):  stringed list or np array of the cartesianTransform e.g. \n
-            e57:cartesianTransform ""[[ 3.48110207e-01  9.37407536e-01  9.29487057e-03  2.67476305e+01]
-                                    [-9.37341584e-01  3.48204779e-01 -1.20077869e-02  6.17326932e+01]
-                                    [-1.44927083e-02 -4.53243552e-03  9.99884703e-01  4.84636987e+00]
-                                    [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]""
+#     Args:
+#         literal (URIRef):  stringed list or np array of the cartesianTransform e.g. \n
+#             e57:cartesianTransform ""[[ 3.48110207e-01  9.37407536e-01  9.29487057e-03  2.67476305e+01]
+#                                     [-9.37341584e-01  3.48204779e-01 -1.20077869e-02  6.17326932e+01]
+#                                     [-1.44927083e-02 -4.53243552e-03  9.99884703e-01  4.84636987e+00]
+#                                     [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]""
+
+#     Returns:
+#         cartesianTransform (np.array([4x4])): geometric transform of a Node/Resource.   
+#     """   
+#     temp=str(literal)
+#     try:
+#         if 'None' not in temp:
+#             temp=validate_string(temp, ' ')
+#             temp=temp.replace("\n","")
+#             temp=temp.replace("\r","")
+#             temp=temp.split(' ')
+#             temp=[x for x in temp if x]
+#             if temp:
+#                 res = list(map(float, temp))   
+#                 res=np.reshape(res,(4,4))
+#                 return np.asarray(res)  
+#         return None  
+#     except:
+#         raise ValueError
+
+
+def literal_to_matrix(literal:Literal) -> np.array:
+    """
+    Parses a given string representation of a matrix into a NumPy array of floats,
+    while preserving the shape of the matrix.
+
+    The input string should be a well-formed matrix with rows of equal length.
+    It can handle different types of whitespace, including spaces, newlines, and carriage returns.
+
+    Parameters:
+    input_string (str): A string representation of a matrix. Example:
+                        "[[ 3.48110207e-01  9.37407536e-01  9.29487057e-03  2.67476305e+01]
+                        [-9.37341584e-01  3.48204779e-01 -1.20077869e-02  6.17326932e+01]
+                        [-1.44927083e-02 -4.53243552e-03  9.99884703e-01  4.84636987e+00]
+                        [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"
 
     Returns:
-        cartesianTransform (np.array([4x4])): geometric transform of a Node/Resource.   
-    """   
-    temp=str(literal)
-    try:
-        if 'None' not in temp:
-            temp=validate_string(temp, ' ')
-            temp=temp.replace("\n","")
-            temp=temp.replace("\r","")
-            temp=temp.split(' ')
-            temp=[x for x in temp if x]
-            if temp:
-                res = list(map(float, temp))   
-                res=np.reshape(res,(4,4))
-                return np.asarray(res)  
-        return None  
-    except:
-        raise ValueError
-
-def literal_to_array(literal: Literal) -> np.array:
-    """Returns array from rdflib.literal.\n
-
-    Args:
-        literal (rdflib): literal containing serialized list or array 
+    np.ndarray: A NumPy array representation of the matrix.
 
     Raises:
-        ValueError: 'Conversion error'
-
-    Returns:
-        np.array 
+    ValueError: If the input string does not represent a valid matrix or if the rows
+                do not have the same length.
     """
-    temp=str(literal)
-    return np.asarray(string_to_list(temp))
-
-def literal_to_orientedBounds(literal: Literal)-> np.array:
-    """Returns orientedBounds from rdflib.literal. This function is used to convert a serialized (str) to a usable np.array. 
-
-    Args:
-        literal (URIRef):  stringed list or np array of the orientedBounds e.g. \n
-            v4d:orientedBounds  ""[[-1.96025758e+01  1.65884155e+02  2.22874746e+01]\n
-                                [ 1.22465470e+02  1.23859440e+02  2.29468276e+01]\n
-                                [-5.26111779e+01  5.43129133e+01  2.33762930e+01]\n
-                                [-1.95654774e+01  1.65648750e+02 -7.09825603e-01]\n
-                                [ 8.94939663e+01  1.20527928e+01  1.03834566e+00]\n
-                                [-5.25740795e+01  5.40775081e+01  3.78992731e-01]\n
-                                [ 1.22502568e+02  1.23624035e+02 -5.04726756e-02]\n
-                                [ 8.94568679e+01  1.22881979e+01  2.40356459e+01]]""
-
-    Returns:
-        orientedBounds (np.array([8x3])): 8 bounding coordinates of a geometric asset.   
-    """   
-    temp=str(literal)
     try:
-        if 'None' not in temp:
-            temp=validate_string(temp, ' ')
-            temp=temp.replace("\n","")
-            temp=temp.replace("\r","")
-            temp=temp.split(' ')
-            temp=[x for x in temp if x]
-            if temp:
-                res = list(map(float, temp))   
-                res=np.reshape(res,(8,3))
-                return np.asarray(res)  
-        return None  
-    except:
-        raise ValueError
+        input_string=str(literal).replace(',', '')
+        
+        if input_string.lower() == "none":
+            return None
+        
+        # Remove leading/trailing whitespace, replace multiple spaces/newlines/carriage returns, remove brackets
+        cleaned_string = ' '.join(input_string.strip().split())
+        cleaned_string = cleaned_string.replace('[', '').replace(']', '')
+
+        # Convert the cleaned string directly to a NumPy array of floats
+        float_array = np.fromstring(cleaned_string, sep=' ')
+
+        # Calculate the number of columns (assume matrix shape is preserved)
+        rows = input_string.strip().split(']')
+        row_lengths = [len(row.replace('[', '').strip().split()) for row in rows if row.strip()]
+        if len(set(row_lengths)) != 1:
+            raise ValueError("The rows of the input matrix do not have the same length.")
+        
+        n_cols = row_lengths[0]
+
+        # Reshape the array to the correct matrix shape
+        float_array = float_array.reshape(-1, n_cols)
+        
+        return float_array
+    except Exception as e:
+        raise ValueError(f"Error parsing string to float array: {e}")
 
 def literal_to_float(literal: Literal) -> float:
     """Returns float from rdflib.literal 
@@ -521,7 +529,7 @@ def literal_to_float(literal: Literal) -> float:
     except:
         raise ValueError('Conversion error')
 
-def literal_to_string(literal: Literal)->str:
+def literal_to_string(literal: Literal)->str: #this is silly
     """Returns string from rdflib.literal.\n
 
     Args:
@@ -579,7 +587,7 @@ def literal_to_int(literal: Literal) -> int:
     except:
         raise ValueError ('Conversion error')
 
-def literal_to_uriref(literal: Literal)->URIRef:
+def literal_to_uriref(literal: Literal)->URIRef: #this is strange, why would you want to convert a literal to a URIRef?
     """Returns rdflib.URIRef from rdflib.literal.
 
     Args:
@@ -683,6 +691,26 @@ def literal_to_linked_subjects(string:str) -> list:
     temp=string.split(',')
     temp=[re.sub(r"[\[ \' \]]",'',s) for s in temp]
     return temp
+
+
+def literal_to_python(literal):
+    # Try to convert to float or int directly
+    try:
+        if '.' in literal:
+            return float(literal)
+        else:
+            return int(literal)
+    except ValueError:
+        pass
+
+    # Try to convert to matrix #this was too agressive
+    # try:
+    #     return literal_to_matrix(literal)    
+    # except (ValueError, SyntaxError):
+    #     pass
+
+    # If all conversions fail, return the literal as string
+    return literal
 
 # TODO fix deze warboel van een functie
 def string_to_list(string:str)->list:
@@ -837,8 +865,11 @@ def item_to_list(item)-> list:
     elif type(item) is np.array:
         item=item.flatten()
         return item.tolist()
-    elif type(item) is list:
+    elif type(item) is list:# and len(item)>1:
         return item
+    #why is this here? this function should always return a list!
+    # elif type(item) is list and len(item)==1:
+    #     return item[0]
     else:
         return [item]
 
@@ -867,15 +898,15 @@ def get_subject_name(subject:URIRef) -> str:
     """Get the main body of a URIRef graph subject
 
     Args:
-        subject (URIRef)
+        - subject (URIRef)
 
     Returns:
         str
     """
     string=subject.toPython()
-    return string.split('/')[-1]   
+    return string.split('/')[-1].split('#')[-1]
 
-def validate_string(string:str, replacement ='_') -> str:
+def validate_string(string:str|Path, replacement ='_') -> str:
     """Checks path validity. A string is considered invalid if it cannot be serialized by rdflib or is not Windows subscribable.\n
     If not valid, The function adjusts path naming to be Windows compatible.\n
 
@@ -889,6 +920,7 @@ def validate_string(string:str, replacement ='_') -> str:
     Returns:
         str: cleansed string
     """
+    string=str(string)
     prefix=''
     if 'file:///' in string:
         string=string.replace('file:///','')
@@ -984,7 +1016,7 @@ def is_uriref(element) -> bool:
 # #### RDF ####
 
 def get_attribute_from_predicate(graph: Graph, predicate : Literal) -> str:
-    """Returns the attribute witout the namespace.
+    """Returns the attribute without the namespace.
 
     Args:
         graph (Graph): The Graph containing the namespaces
@@ -1002,53 +1034,34 @@ def get_attribute_from_predicate(graph: Graph, predicate : Literal) -> str:
             break
     return predStr
 
-# TODO this should be generalised so it's easier to add new namespaces that are not hardcoded
-# example:
-# namespaces = [('exif','http://www.w3.org/2003/12/exif/ns#' ),...]
-# for namespace in namespaces:
-#     graph.bind(namespace[0],rdflib.Namespace(namespace[1]))
-def bind_ontologies(graph : Graph) -> Graph:
-    """Returns a graph that binds in its namespace the ontologies that GEMOMAPI uses and that are not in the rdflib.\n\n
+def bind_ontologies(graph : Graph=Graph()) -> Graph:
+    """Returns a graph that binds in its namespace the ontologies that GEMOMAPI uses and that are not in the rdflib.
 
      Features (ontologies):
-        1. exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#') \n
-        2. geo=rdflib.Namespace('http://www.opengis.net/ont/geosparql#') \n
-        3. gom=rdflib.Namespace('https://w3id.org/gom#') \n
-        4.  omg=rdflib.Namespace('https://w3id.org/omg#') \n
-        5. fog=rdflib.Namespace('https://w3id.org/fog#')\n
-        6. v4d=rdflib.Namespace('https://w3id.org/v4d/core#')\n
-        7. openlabel=rdflib.Namespace('https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#')\n
-        8. e57=rdflib.Namespace('http://libe57.org#')\n
-        9. xcr=rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')\n
-        10. ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')\n
+        - @prefix bot: <https://w3id.org/bot#> .
+        - @prefix dbp: <http://dbpedia.org/ontology/> .
+        - @prefix dcterms: <http://purl.org/dc/terms/> .
+        - @prefix dggs: <https://w3id.org/dggs/as> .
+        - @prefix fog: <https://w3id.org/fog#> .
+        - @prefix geo: <http://www.opengis.net/ont/geosparql#> .
+        - @prefix geomapi: <https://w3id.org/geomapi#> .
+        - @prefix gom: <https://w3id.org/gom#> .
+        - @prefix ifc: <http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#> .
+        - @prefix omg: <https://w3id.org/omg#> .
+        - @prefix owl: <http://www.w3.org/2002/07/owl#> .
+        - @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+        - @prefix vann: <http://purl.org/vocab/vann/> .
+        - @prefix voaf: <http://purl.org/vocommons/voaf#> .
+        - @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 
     Returns:
-        Graph with update namespace 
+        Graph with updated namespaces 
     """
-    exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#')
-    graph.bind('exif', exif)
-    geo=rdflib.Namespace('http://www.opengis.net/ont/geosparql#') #coordinate system information
-    graph.bind('geo', geo)
-    gom=rdflib.Namespace('https://w3id.org/gom#') # geometry representations => this is from mathias
-    graph.bind('gom', gom)
-    omg=rdflib.Namespace('https://w3id.org/omg#') # geometry relations
-    graph.bind('omg', omg)
-    fog=rdflib.Namespace('https://w3id.org/fog#')
-    graph.bind('fog', fog)
-    v4d=rdflib.Namespace('https://w3id.org/v4d/core#')
-    graph.bind('v4d', v4d)
-    v4d3D=rdflib.Namespace('https://w3id.org/v4d/3D#')
-    graph.bind('v4d3D', v4d3D)
-    openlabel=rdflib.Namespace('https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#')
-    graph.bind('openlabel', openlabel)
-    e57=rdflib.Namespace('http://libe57.org#')
-    graph.bind('e57', e57)
-    xcr=rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-    graph.bind('xcr', xcr)
-    ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')
-    graph.bind('ifc', ifc)
-    loa=rdflib.Namespace('https://docplayer.net/131921614-Usibd-level-of-accuracy-loa-specification-guide.html#')
-    graph.bind('loa', loa)    
+    # Iterate through all namespaces in the geomapi ontology 
+    for prefix, namespace in GEOMAPI_GRAPH.namespaces():
+        # Bind each namespace to the new graph
+        graph.bind(prefix, Namespace(namespace))
+    
     return graph
 
 # instead of cleaning the attributes, we should only serialise the rdf variables
@@ -1064,13 +1077,13 @@ def clean_attributes_list(list:list) -> list:
         list (list): 'cleaned' list of class attributes 
     """
     #NODE
-    excludedList=['graph','resource','graphPath','subject','resource','fullResourcePath','kwargs', 'orientedBoundingBox','type']
+    excludedList=['graph','resource','graphPath','subject','kwargs', 'type']
     #BIMNODE    
     excludedList.extend(['ifcElement'])
     #MESHNODE
     excludedList.extend(['mesh'])
-    #IMGNODE
-    excludedList.extend(['exifData','xmlData','image','features2d','pinholeCamera'])
+    #IMGNODES
+    excludedList.extend(['exifData','xmlData','image','features2d','pinholeCamera','depthMap'])
     #PCDNODE
     excludedList.extend(['pcd','e57Pointcloud','e57xmlNode','e57image','features3d'])
     #SESSIONNODE
@@ -1080,10 +1093,10 @@ def clean_attributes_list(list:list) -> list:
     return cleanedList
 
 def check_if_path_is_valid(path:str)-> bool:
-    """Returns True if the given path is an existing folder.\n
+    """Returns True if the given path is an existing folder.
 
     Args:
-        path (str): path to folder or file
+        - path (str): path to folder or file
 
     Returns:
         bool: True if exsists.
@@ -1100,11 +1113,12 @@ def validate_timestamp(value) -> datetime:
     """Format value as datetime ("%Y-%m-%dT%H:%M:%S")
 
     Args:
-        1.value ('Tue Dec  7 09:38:13 2021')\n
-        2.value ("1648468136.033126")\n
-        3.value ("2022:03:13 13:55:30")\n
-        4.value (datetime)\n
-        5.value ("2022-03-13 13:55:30")\n
+        - value ('Tue Dec  7 09:38:13 2021')
+        - value ("1648468136.033126")
+        - value ("2022:03:13 13:55:30")
+        - value (datetime)
+        - value ("2022-03-13 13:55:30")
+        - value (1654259243.4318562)
 
     Raises:
         ValueError: 'timestamp formatting ("%Y-%m-%dT%H:%M:%S") failed for tuple, datetime and string formats.'
@@ -1134,6 +1148,13 @@ def validate_timestamp(value) -> datetime:
     except:
         pass
     try:
+        # Convert both integer and fractional second timestamps
+        timestamp_value = float(string)
+        test= datetime.datetime.utcfromtimestamp(timestamp_value).strftime('%Y-%m-%dT%H:%M:%S.%f')
+        return 
+    except:
+        pass
+    try:
         return datetime.datetime.utcfromtimestamp(float(string)).strftime('%Y-%m-%dT%H:%M:%S')
     except:
         raise ValueError('no valid time formatting found e.g. 1.value (Tue Dec  7 09:38:13 2021) 2.value (1648468136.033126) 3.value (2022:03:13 13:55:30)')
@@ -1154,53 +1175,36 @@ def get_node_resource_extensions(objectType:str) -> list:
     elif 'BIMNode' in objectType:        
         return MESH_EXTENSIONS
     elif 'PointCloudNode' in objectType:        
-        return PCD_EXTENSIONS    
+        return PCD_EXTENSIONS  
+    elif 'LineSetNode' in objectType:        
+        return CAD_EXTENSIONS   
     elif 'ImageNode' in objectType:        
         return IMG_EXTENSIONS
     elif 'OrthoNode' in objectType:        
+        return IMG_EXTENSIONS
+    elif 'PanoNode' in objectType:        
         return IMG_EXTENSIONS
     else:
         return ['.txt']+MESH_EXTENSIONS+PCD_EXTENSIONS+IMG_EXTENSIONS+RDF_EXTENSIONS
 
-# This whole function can be replaced with: "return v4d[type(node).__name__]" where node is the node object
-def get_node_type(objectType:str) -> URIRef:
-    """Return the type of Node as an rdflib literal. By default, 'Node' is returned.
-
-    Features:
-        1. MeshNode\n
-        2. BIMNode\n
-        3. PointCloudNode\n
-        4. GeometryNode\n
-        5. ImageNode\n
-        6. OrthoNode\n
-        7. SessionNode\n
-        8. linesetNode\n
-        9. Node\n
-
-    Args:
-        objectType (str): Type of node class.\n
+def get_node_type(cls) -> URIRef:
+    """Return the type of Node as an rdflib literal. By default, URIRef(Node) is returned.
 
     Returns:
         URIRef (nodeType)
     """
-    if 'MeshNode' in objectType:        
-        return v4d['MeshNode']
-    elif 'BIMNode' in objectType:        
-        return v4d['BIMNode']
-    elif 'PointCloudNode' in objectType:        
-        return v4d['PointCloudNode']
-    elif 'GeometryNode' in objectType:        
-        return v4d['GeometryNode']
-    elif 'ImageNode' in objectType:        
-        return v4d['ImageNode']
-    elif 'OrthoNode' in objectType:        
-        return v4d['OrthoNode']
-    elif 'SessionNode' in objectType:        
-        return v4d['SessionNode']
-    elif 'linesetNode' in objectType:        
-        return v4d['linesetNode']
-    else:
-        return v4d['Node']
+    query = f"""
+        SELECT ?class
+        WHERE {{
+            ?class a owl:Class .
+            FILTER (CONTAINS(STR(?class), "{cls.__class__.__name__}"))
+        }}
+        """        
+    # Perform the query
+    result = GEOMAPI_GRAPH.query(query)
+
+    # Extract and return the class if found
+    return next((URIRef(row['class']) for row in result), None)
 
 def get_data_type(value) -> XSD.ENTITY:
     """Return XSD dataType of Python value. By default, string is returned as the XSD.entity.\n
@@ -1222,47 +1226,116 @@ def get_data_type(value) -> XSD.ENTITY:
     else:
         return XSD.string
 
-# NOTE maybe we should use decorators to define the attribute in the node itself to prevent double writing
-def match_uri(attribute :str) -> URIRef:
-    """ Returns fitting predicate from class attribute given the following prefix ontologies.\n
-    By default, the v4d ontology[attributeName] is returned.
+def get_geomapi_data_types():
+    query = f"""
+    SELECT ?datatypeProperty
+    WHERE {{
+        ?datatypeProperty a owl:DatatypeProperty.
+    }}
+    """        
+    # Perform the query
+    result = GEOMAPI_GRAPH.query(query)
 
-    Features (ontologies):
-        1. exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#') \n
-        2. geo=rdflib.Namespace('http://www.opengis.net/ont/geosparql#') \n
-        3. gom=rdflib.Namespace('https://w3id.org/gom#') \n
-        4.  omg=rdflib.Namespace('https://w3id.org/omg#') \n
-        5. fog=rdflib.Namespace('https://w3id.org/fog#')\n
-        6. v4d=rdflib.Namespace('https://w3id.org/v4d/core#')\n
-        7. openlabel=rdflib.Namespace('https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#')\n
-        8. e57=rdflib.Namespace('http://libe57.org#')\n
-        9. xcr=rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')\n
-        10. ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')\n
+    # Extract and return the class if found
+    return [row[0] for row in result]
+
+def get_xsd_datatypes() -> set:
+    xsd_types = {
+    XSD.string, XSD.boolean, XSD.decimal, XSD.float, XSD.double, XSD.duration,
+    XSD.dateTime, XSD.time, XSD.date, XSD.gYearMonth, XSD.gYear, XSD.gMonthDay,
+    XSD.gDay, XSD.gMonth, XSD.hexBinary, XSD.base64Binary, XSD.anyURI, XSD.QName,
+    XSD.NOTATION, XSD.normalizedString, XSD.token, XSD.language, XSD.NMTOKEN,
+    XSD.Name, XSD.NCName, XSD.ID, XSD.IDREF, XSD.ENTITY, XSD.integer,
+    XSD.nonPositiveInteger, XSD.negativeInteger, XSD.long, XSD.int, XSD.short,
+    XSD.byte, XSD.nonNegativeInteger, XSD.unsignedLong, XSD.unsignedInt,
+    XSD.unsignedShort, XSD.unsignedByte, XSD.positiveInteger}
+    
+    return xsd_types
+
+def get_ifcowl_uri(value:str=None) -> URIRef:
+    ifwOwlClasses=list(IFC_GRAPH.subjects(RDFS.subClassOf, IFC_NAMESPACE.IfcBuildingElement))
+    if value is None:
+        return IFC_NAMESPACE.IfcBuildingElement
+    else:
+        lower_value = value.lower()
+        return next((URIRef(row) for row in ifwOwlClasses if lower_value in row.toPython().lower()), IFC_NAMESPACE.IfcBuildingElement)
+
+def get_ifcopenshell_class_name(value:URIRef) -> str:
+    # Extract the class name from the URIRef
+    return value.split('#')[-1]
+
+# # NOTE maybe we should use decorators to define the attribute in the node itself to prevent double writing
+# def match_uri(attribute :str) -> URIRef:
+#     """ Returns fitting predicate from class attribute given the following prefix ontologies.\n
+#     By default, the v4d ontology[attributeName] is returned.
+
+#     Features (ontologies):
+#         1. exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#') \n
+#         2. geo=rdflib.Namespace('http://www.opengis.net/ont/geosparql#') \n
+#         3. gom=rdflib.Namespace('https://w3id.org/gom#') \n
+#         4.  omg=rdflib.Namespace('https://w3id.org/omg#') \n
+#         5. fog=rdflib.Namespace('https://w3id.org/fog#')\n
+#         6. v4d=rdflib.Namespace('https://w3id.org/v4d/core#')\n
+#         7. openlabel=rdflib.Namespace('https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#')\n
+#         8. e57=rdflib.Namespace('http://libe57.org#')\n
+#         9. xcr=rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')\n
+#         10. ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')\n
+
+#     Returns:
+#         URIRef: predicate 
+#     """
+#     #OPENLABEL
+#     if attribute in ['timestamp','sensor']:
+#         return openlabel[attribute]
+#     #E57
+#     elif attribute in ['cartesianBounds','cartesianTransform','geospatialTransform','pointCount','e57XmlPath','e57Path','e57Index','e57Image']:
+#         return  e57[attribute]
+#     #GOM
+#     elif attribute in ['coordinateSystem']:
+#         return  gom[attribute]
+#     #IFC
+#     elif attribute in ['ifcPath','className','globalId','phase','ifcName']:
+#         return  ifc[attribute]
+#     #EXIF
+#     elif attribute in ['xResolution','yResolution','resolutionUnit','imageWidth','imageHeight']:
+#         return  exif[attribute]
+#     #XCR
+#     elif attribute in ['focalLength35mm','principalPointU','principalPointV','distortionCoeficients','gsd']:
+#         return  xcr[attribute]
+#     #XCR
+#     elif attribute in ['isDerivedFromGeometry']:
+#         return  omg[attribute]
+#     #V4D
+#     else:
+#         return v4d[attribute]
+
+def get_predicate_and_datatype(attribute_name: str):
+    """
+    Retrieve the URIRef and datatype for a given attribute name from the GEOMAPI ontology.
+
+    Args:
+        attribute_name (str): The name of the attribute to search for.
 
     Returns:
-        URIRef: predicate 
+        tuple: A tuple containing the URIRef of the predicate, the URIRef of the datatype, and the namespace prefix.
+               If the attribute is not found, returns a default predicate URIRef, XSD.string as datatype, and None for the prefix.
     """
-    #OPENLABEL
-    if attribute in ['timestamp','sensor']:
-        return openlabel[attribute]
-    #E57
-    elif attribute in ['cartesianBounds','cartesianTransform','geospatialTransform','pointCount','e57XmlPath','e57Path','e57Index','e57Image']:
-        return  e57[attribute]
-    #GOM
-    elif attribute in ['coordinateSystem']:
-        return  gom[attribute]
-    #IFC
-    elif attribute in ['ifcPath','className','globalId','phase','ifcName']:
-        return  ifc[attribute]
-    #EXIF
-    elif attribute in ['xResolution','yResolution','resolutionUnit','imageWidth','imageHeight']:
-        return  exif[attribute]
-    #XCR
-    elif attribute in ['focalLength35mm','principalPointU','principalPointV','distortionCoeficients','gsd']:
-        return  xcr[attribute]
-    #XCR
-    elif attribute in ['isDerivedFromGeometry']:
-        return  omg[attribute]
-    #V4D
-    else:
-        return v4d[attribute]
+    # Construct a SPARQL query to find the predicate and its rdfs:range
+    query = f"""
+    PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+    SELECT ?predicate ?range
+    WHERE {{
+        ?predicate rdfs:range ?range .
+        FILTER (CONTAINS(STR(?predicate), "{attribute_name}"))
+    }}
+    """    
+    result = GEOMAPI_GRAPH.query(query)
+
+    # Extract and return the predicate and datatype if found
+    for row in result:
+        predicate = row.predicate
+        datatype = row.range
+        return URIRef(predicate), URIRef(datatype)
+    
+    # Return default predicate and None for datatype if no match is found
+    return GEOMAPI_NAMESPACE[attribute_name], None
