@@ -50,7 +50,10 @@ class TestUtils(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         #execute once after all tests
-        print('-----------------TearDown Class----------------------')   
+        if os.path.exists(cls.dataLoader.resourcePath):
+            shutil.rmtree(cls.dataLoader.resourcePath) 
+        print('-----------------TearDown Class----------------------')
+
         
         
         
