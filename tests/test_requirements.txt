@@ -17,6 +17,8 @@ python-fcl
 trimesh
 ifcopenshell
 laspy
+lazrs
+laszip
 scikit-learn
 colour
 ezdxf
