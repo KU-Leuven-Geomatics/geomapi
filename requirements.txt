@@ -8,7 +8,7 @@ numpy_quaternion==2023.0.4
 open3d
 opencv_python
 pandas==2.2.2
-Pillow==10.4.0
+pillow==10.4.0
 pye57==0.4.5
 pyvista==0.44.0
 rdflib==7.0.0

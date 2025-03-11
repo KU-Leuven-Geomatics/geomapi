@@ -709,7 +709,7 @@ class TestNode(unittest.TestCase):
         transform[:3, 3] = np.array([1, 1, 1])
         node = Node(cartesianTransform=transform)
         expected_box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
-        expected_box.transform(transform)
+        expected_box.translate([0.5,0.5,0.5])
         expected_box=expected_box.get_oriented_bounding_box()
         self.assertEqual(node.get_oriented_bounding_box().get_center().tolist(), expected_box.get_center().tolist())
 
@@ -736,7 +736,7 @@ class TestNode(unittest.TestCase):
         transform[:3, 3] = np.array([1, 1, 1])
         node = Node(cartesianTransform=transform)
         expected_hull = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
-        expected_hull.transform(transform)
+        expected_hull.translate([0.5,0.5,0.5])
         self.assertEqual(node.get_convex_hull().get_center().tolist(), expected_hull.get_center().tolist())
  
 if __name__ == '__main__':

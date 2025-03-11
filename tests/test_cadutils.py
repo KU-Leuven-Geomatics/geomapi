@@ -16,6 +16,7 @@ import open3d as o3d
 import pye57
 import ifcopenshell.util.selector
 
+
 #GEOMAPI
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)

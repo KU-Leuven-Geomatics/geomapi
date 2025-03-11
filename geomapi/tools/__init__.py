@@ -1131,7 +1131,7 @@ def graph_to_nodes(graph : Graph,**kwargs) -> List[Node]:
     return nodelist
 
 # def subject_to_node_type(graph: Graph , subject:URIRef, **kwargs)-> Node:
-#     # warn("This function is depricated use a SessionNode instead")
+#     # warn("This function is depricated use a SetNode instead")
 
 #     nodeType = ut.literal_to_string(graph.value(subject=subject,predicate=RDF.type))
 #     g = Graph()
@@ -1144,8 +1144,8 @@ def graph_to_nodes(graph : Graph,**kwargs) -> List[Node]:
 #         node=PointCloudNode(graph=g,**kwargs)
 #     elif 'ImageNode' in nodeType:
 #         node=ImageNode(graph=g,**kwargs)
-#     elif 'SessionNode' in nodeType:
-#         node=SessionNode(graph=g,**kwargs)  
+#     elif 'SetNode' in nodeType:
+#         node=SetNode(graph=g,**kwargs)  
 #     else:
 #         node=Node(graph=g,**kwargs) 
 #     return node
@@ -1193,8 +1193,8 @@ def create_node(graph: Graph = None, graphPath: str =None, subject: URIRef = Non
         node=PointCloudNode(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs)
     elif 'ImageNode' in nodeType:
         node=ImageNode(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs)
-    elif 'SessionNode' in nodeType:
-        node=SessionNode(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs)  
+    elif 'SetNode' in nodeType:
+        node=SetNode(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs)  
     else:
         node=Node(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs) 
     return node
@@ -1210,7 +1210,7 @@ def get_linked_nodes(node: Node ,graph:Graph, getResource=False, **kwargs) -> Li
     Returns:
         List[Node]
     """
-    warn("This function is depricated use a SessionNode instead")
+    warn("This function is depricated use a SetNode instead")
     nodelist=[]
     if getattr(node,'linkedNodes',None) is not None:  
         for subject in node.linkedNodes:
