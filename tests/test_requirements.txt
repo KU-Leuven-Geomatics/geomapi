@@ -9,7 +9,7 @@ opencv-python-headless
 typing_extensions
 matplotlib
 scipy
-Pillow
+pillow
 XlsxWriter
 trimesh
 shapely
