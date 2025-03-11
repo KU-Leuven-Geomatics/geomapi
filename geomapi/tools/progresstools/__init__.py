@@ -939,7 +939,7 @@ def get_mesh_intersection_with_grid(geometry: o3d.geometry.Geometry, grid: np.ar
         1. geometry (o3d.geometry.Geometry): The mesh to intersect with the rays.
         2. grid (np.array): A 2D numpy array representing the rays to cast. Each row should contain the origin and direction of a ray.
 
-    .. image:: ../../../docs/pics/2dGrid.PNG
+    .. image:: ../../../docs/pics/2dGrid.JPG
 
 
     Returns:
@@ -1066,7 +1066,9 @@ def determine_percentage_of_coverage(sources: List[o3d.geometry.TriangleMesh], r
     """Returns the Percentage-of-Coverage (PoC) of every source geometry when compared to a reference geometry. The PoC is defined as the ratio of points on the boundary surface of the source that lie within a Euclidean distance threshold hold of the reference geometry. sampled point cloud on the boundary surface of the sources with a resolution of e.g. 0.1m. \n
 
     .. math::
-        P_{i'} = \\{ p \mid \forall p \in P_i : p_i \cap N \backslash n_i \\}
+    
+        p_{i'} = \{ p \mid ∀ p \in p_i : p_i \cap n_i \}
+        
         c_i = \\frac{{|P_{i'}|}}{{|P_i|}}
 
     

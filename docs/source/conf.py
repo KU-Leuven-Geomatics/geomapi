@@ -120,5 +120,5 @@ html_theme_options = {
 # ./make html
 
 # 
-# sphinx-apidoc -o ./docs/source/geomapi ./geomapi/ -e -t ./docs/source/_templates
+# sphinx-apidoc -o . ../geomapi/
 # sphinx-build -b html docs/source/ docs/_build

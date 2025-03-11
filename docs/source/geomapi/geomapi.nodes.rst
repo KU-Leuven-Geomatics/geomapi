@@ -12,12 +12,13 @@ geomapi.nodes
    geomapi.nodes.meshnode
    geomapi.nodes.node
    geomapi.nodes.orthonode
+   geomapi.nodes.panonode
    geomapi.nodes.pointcloudnode
-   geomapi.nodes.sessionnode
+   geomapi.nodes.setnode
 
 
 .. automodule:: geomapi.nodes
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 

@@ -1,7 +1,7 @@
 """
 **MeshNode** is the Node class that governs the data and metadata of mesh data (Open3D, Trimesh). 
 
-.. image:: ../../../docs/pics/graph_meshes2.png
+.. image:: ../../../docs/pics/graph_meshes_2.png
 
 This node builds upon the Open3D and Trimesh API for the geometry definitions.
 

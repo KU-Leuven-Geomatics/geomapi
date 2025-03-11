@@ -48,11 +48,11 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
 
    tutorial/tutorial_geometrynodes
 
-   .. tutorial/tutorial_meshnodes
+   tutorial/tutorial_meshnodes
 
-   .. tutorial/tutorial_pointcloudnodes
+   tutorial/tutorial_pointcloudnodes
 
-   .. tutorial/tutorial_bimnodes
+   tutorial/tutorial_bimnodes
 
    tutorial/tutorial_imagenodes
 
