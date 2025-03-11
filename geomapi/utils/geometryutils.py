@@ -1816,7 +1816,7 @@ def are_points_coplanar(points):
     # If rank is less than 3, points are coplanar
     return rank < 3
 
-def get_convex_hull(value:np.ndarray |o3d.geometry.Geometry) ->  o3d.geometry.Geometry:
+def get_convex_hull(value:np.ndarray |type[o3d.geometry.Geometry]) ->  o3d.geometry.Geometry:
     """Get a convex hull Open3D Triangle Mesh from various inputs.
 
     Args:
@@ -1942,7 +1942,7 @@ def create_ellipsoid_mesh(radii: np.ndarray, transformation: np.ndarray, resolut
 
     return mesh
 
-def get_oriented_bounding_box(value:np.ndarray |o3d.geometry.Geometry)->o3d.geometry.OrientedBoundingBox:
+def get_oriented_bounding_box(value:np.ndarray |type[o3d.geometry.Geometry])->o3d.geometry.OrientedBoundingBox:
     """Get an Open3D OrientedBoundingBox from various inputs.
     
     **NOTE**: This function tests 
