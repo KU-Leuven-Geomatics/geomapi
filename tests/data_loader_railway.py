@@ -13,6 +13,7 @@ from rdflib import Graph, URIRef,Namespace, Literal, OWL,RDFS, RDF, XSD
 import ezdxf 
 from PIL import Image
 
+
 # import geomapi
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
@@ -63,7 +64,7 @@ class DataLoaderRailway:
         self.imgGraphPath=self.path /  'graphs' / 'img_graph.ttl'
         self.imgGraph=Graph().parse(str(self.imgGraphPath))      
         self.imageXmlPath = self.path / 'img' / 'railway.xml'            
-        self.imagePath1=self.path / 'img' / "P0024688.JPG" 
+        self.imagePath1=self.path / 'img' / "P0024688.jpg" 
         self.imageSubject1= next(s for s in self.imgGraph.subjects(RDF.type) if 'P0024688' in s.toPython() )
         self.image1=Image.open(self.imagePath1)
         self.imageCartesianTransform1= np.array([[ 5.83812227e-02, -9.98234429e-01,  1.09387827e-02, 2.63374319e+05],
