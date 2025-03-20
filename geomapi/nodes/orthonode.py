@@ -700,7 +700,7 @@ class OrthoNode(Node):
                 translation=center#-normal*self._depth
                 
                 #get rotation matrix from this normal to the z-axis
-                rotation_matrix=ut.get_rotation_matrix_from_vector(normal)
+                rotation_matrix=ut.get_rotation_matrix_from_forward_up(normal, vec2)
                 
                 cartesianTransform = gmu.get_cartesian_transform(translation=translation,rotation=rotation_matrix) 
                 self._cartesianTransform=cartesianTransform    

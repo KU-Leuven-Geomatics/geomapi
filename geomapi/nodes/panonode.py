@@ -567,10 +567,10 @@ class PanoNode(Node):
             self._cartesianTransform = gmu.get_cartesian_transform(translation=self._orientedBoundingBox.get_center())    
         if self._cartesianTransform is None:
             #you could initialize a pano in an upright position instead of forward to match a terrestrial vantage point
-            rotation_matrix_90_x=   np.array( [[ 1, 0 , 0.        ],
-                                        [ 0,  0,  -1        ],
-                                        [ 0.   ,       1    ,      0        ]])  
-            self._cartesianTransform = gmu.get_cartesian_transform(rotation=rotation_matrix_90_x)    
+            #rotation_matrix_90_x=   np.array( [[ 1, 0 , 0.        ],
+            #                            [ 0,  0,  -1        ],
+            #                            [ 0.   ,       1    ,      0        ]])  
+            self._cartesianTransform = gmu.get_cartesian_transform()#rotation=rotation_matrix_90_x)    
         return self._cartesianTransform    
     
     

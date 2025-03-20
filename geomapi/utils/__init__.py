@@ -7,6 +7,7 @@ import os
 from pathlib import Path, PureWindowsPath
 import re
 import time
+import dateutil.parser
 import math
 from typing import List
 import random
@@ -38,7 +39,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
 geomapi_ontology_path=os.path.join(project_root, 'geomapi', 'ontology', 'geomapi_ontology.ttl')
 
-GEOMAPI_GRAPH=Graph().parse(geomapi_ontology_path) if os.path.exists(geomapi_ontology_path) else Graph().parse('https://github.com/KU-Leuven-Geomatics/geomapi/blob/main/geomapi/ontology/geomapi_ontology.ttl')
+GEOMAPI_GRAPH=Graph().parse(geomapi_ontology_path) if os.path.exists(geomapi_ontology_path) else Graph().parse('https://w3id.org/geomapi')
 GEOMAPI_PREFIXES = {prefix: Namespace(namespace) for prefix, namespace in GEOMAPI_GRAPH.namespace_manager.namespaces()}
 GEOMAPI_NAMESPACE = Namespace('https://w3id.org/geomapi#')
 
@@ -57,12 +58,12 @@ IFC_NAMESPACE = Namespace("https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2
 
 #### BASIC OPERATIONS ####
 
-def time_funtion(func, *args):
+def time_function(func, *args):
     """Measures how long the functions takes to run and returns the result 
 
     Args:
-        func (function): The funtion to measure, write without ()
-        *args (Tuple) : The arguments for the funtion, pass as a tuple with a * in front to pass the arguments seperatly
+        func (function): The function to measure, write without ()
+        *args (Tuple) : The arguments for the function, pass as a tuple with a * in front to pass the arguments separately
 
     Returns:
         object: The result of the function
@@ -74,18 +75,6 @@ def time_funtion(func, *args):
     print("Completed function `" + func.__name__ + "()` in", np.round(end - start,3), "seconds")
     return result
 
-# def get_extension(path:str) -> str:
-#     """Returns the file extension.\n
-#     E.g. D://myData//test.txt -> .txt
-
-#     Args:
-#         path (str): file path
-
-#     Returns:
-#         extension (str) e.g. '.txt'
-#     """
-#     _,extension = os.path.splitext(path)
-#     return extension
 
 #NOTE why does this exist?
 def get_min_average_and_max_value(arrays:List[np.array],ignoreZero:bool=True,threshold:float=0.0)->List[float]:
@@ -116,49 +105,48 @@ def get_min_average_and_max_value(arrays:List[np.array],ignoreZero:bool=True,thr
                 maxarr[i]=np.nanmax(a) 
     return minarr  ,meanarr  ,maxarr
 
-def get_rotation_matrix_from_vector(vector:np.ndarray)->np.ndarray:
-    """Get the rotation matrix from a vector.
+def get_rotation_matrix_from_forward_up(forward: np.ndarray, up: np.ndarray) -> np.ndarray:
+    """
+    Compute a rotation matrix from a forward and an up vector. (right, up, forward)
 
     Args:
-        - vector (np.ndarray): 3x1 vector
+        forward (np.ndarray): A 3-element array representing the forward direction.
+        up (np.ndarray): A 3-element array representing the up direction.
 
     Returns:
-        - np.ndarray: 3x3 rotation matrix
+        np.ndarray: A 3x3 rotation matrix.
     """
-    #check shape
-    np.reshape(vector, (3, 1))
-    #normalize vector
-    vector=vector/np.linalg.norm(vector)
-    #1.Determine the axis and angle
-    #Rotate from z-axis to the target vector
-    z_axis = np.array([0, 0, 1])
-    cross_product = np.cross(z_axis, vector)
-    dot_product = np.dot(z_axis, vector)
-    norm_cross_product = np.linalg.norm(cross_product)
+    # Normalize the vectors
+    forward = forward / np.linalg.norm(forward)
 
-    if norm_cross_product != 0:
-        axis = cross_product / norm_cross_product
-        angle = np.arctan2(norm_cross_product, dot_product)
-    else:
-        # If the vector is already aligned with the z-axis, no rotation is needed.
-        axis = np.array([1, 0, 0])  # Arbitrary axis
-        angle = 0.0 if dot_product > 0 else np.pi  # 0 if aligned, pi if opposite
-
-    #2.Compute the rotation matrix using the axis and angle
-    rotation_matrix = o3d.geometry.get_rotation_matrix_from_axis_angle(axis * angle)
+    # Compute the right vector as the cross product of up and forward
+    right = np.cross(up, forward)
+    right /= np.linalg.norm(right)
+    
+    # Recompute the up vector to ensure orthogonality
+    up = np.cross(forward, right)
+    
+    # Construct the rotation matrix
+    rotation_matrix = np.column_stack((right, up, forward))
+    
     return rotation_matrix
 
 def replace_str_index(text:str,index:int,replacement:str='_'):
-    """Replace a string character at the location of the index with the replacement.\n
+    """Replace a string character at the location of the index with the replacement. index must be in the range of the string \n
 
     Args:
         1. text (str)\n
-        2. index (int): index to replace. \n
+        2. index (int): index to replace. -1 indicates the end of the string \n
         3. replacement (str, optional): replacement character. Defaults to '_'.\n
 
     Returns:
         text (str) with updated characters
     """
+    # If the index is -1, replace the last char
+    if(index == -1): index = len(text)-1
+    # raise an error if index is outside of the string
+    if index not in range(len(text)):
+        raise ValueError("index outside given string")
     return '%s%s%s'%(text[:index],replacement,text[index+1:])
 
 def random_color(range:int=1)->np.array:
@@ -182,29 +170,17 @@ def random_color(range:int=1)->np.array:
         raise ValueError('Range should be either 1 or 255.')
     return color
 
-def convert_to_homogeneous_3d_coordinates(input_data):
-    # Convert input to numpy array if it's a list
-    if isinstance(input_data, list):
-        input_data = np.array(input_data)
-
-    # Ensure input_data is at least 2D
-    if input_data.ndim == 1:
-        input_data = np.expand_dims(input_data, axis=0)
-
-    # Add the homogeneous coordinate if needed
-    if input_data.shape[1] == 3:
-        homogeneous_column = np.ones((input_data.shape[0], 1))
-        input_data = np.hstack((input_data, homogeneous_column))
-    elif input_data.shape[1] == 4:
-        # Ensure the last column is all ones
-        input_data[:, -1] = 1
-    else:
-        raise ValueError("Each coordinate should have either 3 or 4 elements")
-
-    return input_data
-
 def map_to_2d_array(input_data):
-    # Convert input to numpy array if it's a list
+    """
+    Converts the input data into a 2D NumPy array.
+
+    Args:
+        input_data (list or numpy.ndarray): The input data, which can be a list or a NumPy array.
+
+    Returns:
+        numpy.ndarray: A 2D NumPy array representation of the input data. If the input is a 1D array,
+                    it is expanded to a 2D array with a single row.
+    """
     if isinstance(input_data, list):
         input_data = np.array(input_data)
 
@@ -213,6 +189,39 @@ def map_to_2d_array(input_data):
         input_data = np.expand_dims(input_data, axis=0)
     
     return input_data
+
+def convert_to_homogeneous_3d_coordinates(input_data):
+    """
+    Converts 3D Cartesian coordinates into homogeneous coordinates or normalizes 
+    existing homogeneous coordinates.
+
+    Args:
+        input_data (list or numpy.ndarray): The input data representing 3D coordinates.
+                                            Each row should have either 3 (Cartesian) 
+                                            or 4 (homogeneous) elements.
+
+    Returns:
+        numpy.ndarray: A 2D NumPy array where:
+            - If input has 3 columns, a fourth column of ones is added.
+            - If input has 4 columns, all elements are normalized by the last column.
+            - Otherwise, a ValueError is raised.
+    """
+    # Convert to 2D array
+    input_data = map_to_2d_array(input_data)
+
+    # Convert Cartesian coordinates to homogeneous
+    if input_data.shape[1] == 3:
+        homogeneous_column = np.ones((input_data.shape[0], 1))
+        input_data = np.hstack((input_data, homogeneous_column))
+    elif input_data.shape[1] == 4:
+        # Normalize by the last coordinate
+        input_data = input_data / input_data[:, -1][:, np.newaxis]
+    else:
+        raise ValueError("Each coordinate should have either 3 or 4 elements.")
+
+    return input_data
+
+
 
 def get_geomapi_classes() -> List[URIRef]:
     query = '''
@@ -284,22 +293,16 @@ def split_list(list, n:int=None,l:int=None):
     else:
         raise ValueError('No input provided. Enter n or l.')
 
-def get_folder_path(path :str) -> str:
-    """Returns the folderPath.
-
+def get_folder(path :Path) -> Path:
+    """ Deconstruct path and return folder
+    
     Args:
-        path(str): file path
-
-    Raises:
-        FileNotFoundError: If the given graphPath or sessionPath does not lead to a valid systempath
-
+        path (str): filepath
+        
     Returns:
-        The path (str) to the folder
+        folderPath (str)
     """
-    folderPath= os.path.dirname(path)
-    if not os.path.isdir(folderPath):
-        print("The given path is not a valid folder on this system.")    
-    return folderPath
+    return Path(path).parent
 
 def get_variables_in_class(cls) -> List[str]: 
     """Returns a list of class attributes in the class.\n
@@ -311,32 +314,6 @@ def get_variables_in_class(cls) -> List[str]:
         list of class attribute names
     """  
     return [i.strip('_') for i in cls.__dict__.keys() if getattr(cls,i) is not None] 
-
-# def get_list_of_files(directoryPath:str) -> list:
-#     """Get a list of all filepaths in the directory and subdirectories.\n
-
-#     Args:
-#         directoryPath: directory path e.g. \n
-#             "D:\\Data\\2018-06 Werfopvolging Academiestraat Gent\\week 22\\"
-            
-#     Returns:
-#         A list of filepaths
-#     """
-#     # names in the given directory 
-#     directoryPath = str(directoryPath)
-#     listOfFile = os.listdir(directoryPath)
-#     allFiles = list()
-#     # Iterate over all the entries
-#     for entry in listOfFile:
-#         # Create full path
-#         fullPath = Path(directoryPath) / entry
-#         # If entry is a directory then get the list of files in this directory 
-#         if fullPath.is_dir():
-#             allFiles = allFiles + get_list_of_files(fullPath)
-#         else:
-#             allFiles.append(fullPath.as_posix())                
-#     return allFiles
-
 
 def get_list_of_files(folder: Path | str , ext: str = None) -> list:
     """
@@ -403,16 +380,6 @@ def get_paths_in_class(cls) -> list:
     """  
     return [i.strip('_') for i in cls.__dict__.keys() if search('path',i, re.IGNORECASE) and getattr(cls,i) is not None] 
 
-def get_folder(path :Path) -> Path:
-    """ Deconstruct path and return folder
-    
-    Args:
-        path (str): filepath
-        
-    Returns:
-        folderPath (str)
-    """
-    return Path(path).parent #os.path.dirname(os.path.abspath(path))
 
 # TODO when do we want a timestamp based on the last modified time of the metafile?
 def get_timestamp(path : str) -> str:
@@ -422,45 +389,17 @@ def get_timestamp(path : str) -> str:
         path (str): filepath
 
     Returns:
-        dateTime (str): '%Y-%m-%dT%H:%M:%S'
+        dateTime (str): '%Y-%m-%dT%H:%M:%S' The creation date (Windows) or the last modified date (Linux)
     """
-    ctime=os.path.getctime(path) if isinstance(path,str) or isinstance(path,Path) else path
-    dtime=datetime.datetime.fromtimestamp(ctime).strftime('%Y-%m-%dT%H:%M:%S')
-    return validate_timestamp(dtime)
+    if(os.path.exists(path)):
+        ctime=os.path.getctime(path)
+        dtime=datetime.datetime.fromtimestamp(ctime)
+        return validate_timestamp(dtime)
+    raise ValueError("Path does not exist")
 
 #### CONVERSIONS ####
 
-# def literal_to_cartesianTransform(literal:Literal) -> np.array:
-#     """Returns cartesianTransform from rdflib.literal. This function is used to convert a serialized (str) to a usable np.array. 
-
-#     Args:
-#         literal (URIRef):  stringed list or np array of the cartesianTransform e.g. \n
-#             e57:cartesianTransform ""[[ 3.48110207e-01  9.37407536e-01  9.29487057e-03  2.67476305e+01]
-#                                     [-9.37341584e-01  3.48204779e-01 -1.20077869e-02  6.17326932e+01]
-#                                     [-1.44927083e-02 -4.53243552e-03  9.99884703e-01  4.84636987e+00]
-#                                     [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]""
-
-#     Returns:
-#         cartesianTransform (np.array([4x4])): geometric transform of a Node/Resource.   
-#     """   
-#     temp=str(literal)
-#     try:
-#         if 'None' not in temp:
-#             temp=validate_string(temp, ' ')
-#             temp=temp.replace("\n","")
-#             temp=temp.replace("\r","")
-#             temp=temp.split(' ')
-#             temp=[x for x in temp if x]
-#             if temp:
-#                 res = list(map(float, temp))   
-#                 res=np.reshape(res,(4,4))
-#                 return np.asarray(res)  
-#         return None  
-#     except:
-#         raise ValueError
-
-
-def literal_to_matrix(literal:Literal) -> np.array:
+def literal_to_matrix(input:  str | Literal) -> np.array:
     """
     Parses a given string representation of a matrix into a NumPy array of floats,
     while preserving the shape of the matrix.
@@ -468,7 +407,7 @@ def literal_to_matrix(literal:Literal) -> np.array:
     The input string should be a well-formed matrix with rows of equal length.
     It can handle different types of whitespace, including spaces, newlines, and carriage returns.
 
-    Parameters:
+    Parameters:z
     input_string (str): A string representation of a matrix. Example:
                         "[[ 3.48110207e-01  9.37407536e-01  9.29487057e-03  2.67476305e+01]
                         [-9.37341584e-01  3.48204779e-01 -1.20077869e-02  6.17326932e+01]
@@ -483,17 +422,23 @@ def literal_to_matrix(literal:Literal) -> np.array:
                 do not have the same length.
     """
     try:
-        input_string=str(literal).replace(',', '')
+        input_string=str(input).replace(',', ' ')
         
         if input_string.lower() == "none":
             return None
         
+        
+        # add newlines in between adjacent double carets incase they are missing
+        cleaned_string = input_string.replace('][', ']\n[')
         # Remove leading/trailing whitespace, replace multiple spaces/newlines/carriage returns, remove brackets
-        cleaned_string = ' '.join(input_string.strip().split())
+        cleaned_string = ' '.join(cleaned_string.strip().split())
         cleaned_string = cleaned_string.replace('[', '').replace(']', '')
 
         # Convert the cleaned string directly to a NumPy array of floats
         float_array = np.fromstring(cleaned_string, sep=' ')
+        # if only one element in the array, return it
+        #if(len(float_array) == 1):
+        #    return  np.squeeze(float_array)
 
         # Calculate the number of columns (assume matrix shape is preserved)
         rows = input_string.strip().split(']')
@@ -506,11 +451,11 @@ def literal_to_matrix(literal:Literal) -> np.array:
         # Reshape the array to the correct matrix shape
         float_array = float_array.reshape(-1, n_cols)
         
-        return float_array
+        return np.squeeze(float_array) #remove redundant dimensions
     except Exception as e:
         raise ValueError(f"Error parsing string to float array: {e}")
 
-def literal_to_float(literal: Literal) -> float:
+def literal_to_float(literal:  str | Literal) -> float:
     """Returns float from rdflib.literal 
 
     Args:
@@ -529,7 +474,7 @@ def literal_to_float(literal: Literal) -> float:
     except:
         raise ValueError('Conversion error')
 
-def literal_to_string(literal: Literal)->str: #this is silly
+def literal_to_string(literal:  str | Literal)->str:
     """Returns string from rdflib.literal.\n
 
     Args:
@@ -545,9 +490,9 @@ def literal_to_string(literal: Literal)->str: #this is silly
         else:
             return string
     except:
-        raise ValueError
+        raise ValueError('Conversion error')
 
-def literal_to_list(literal: Literal)->list:
+def literal_to_list(literal:  str | Literal)->list:
     """Returns list from rdflib.literal.
 
     Args:
@@ -568,7 +513,7 @@ def literal_to_list(literal: Literal)->list:
     except:
         raise ValueError
 
-def literal_to_int(literal: Literal) -> int:
+def literal_to_int(literal: str | Literal) -> int:
     """Returns int from rdflib.literal.
 
     Args:
@@ -585,29 +530,329 @@ def literal_to_int(literal: Literal) -> int:
             return None
         return int(literal.toPython())
     except:
-        raise ValueError ('Conversion error')
+        raise ValueError('Conversion error')
 
-def literal_to_uriref(literal: Literal)->URIRef: #this is strange, why would you want to convert a literal to a URIRef?
-    """Returns rdflib.URIRef from rdflib.literal.
+def literal_to_python(literal:  str | Literal):
+    """Tries to convert the string to a number
 
     Args:
-        literal (rdflib): literal containing value
-
-    Raises:
-        ValueError: 'float causes errors'
+        literal (str | Literal): the input literal
 
     Returns:
-        URIRef: 
+        int, float, str: the converted value
     """
     try:
-        temp=literal.toPython()
-        if type(temp) is float or type(temp) is int:
-            raise ValueError('float causes errors')
-        elif 'None' not in literal:            
-            return URIRef(literal.toPython())      
-        return None
+        if '.' in literal:
+            return float(literal)
+        else:
+            return int(literal)
+    except ValueError:
+        pass
+
+    # If all conversions fail, return the literal as string
+    return literal
+
+def literal_to_linked_subjects(string: str | Literal) -> list:
+    """Returns list of URI subjects that were serialized as a string.\n
+
+    Args:
+        string (str): e.g. '[ file:///Subject1, http://Subject2]'
+
+    Returns:
+        list[items] e.g. [ file:///Subject1, http://Subject2]
+    """
+    temp=string.split(',')
+    temp=[re.sub(r"[\[ \' \]]",'',s) for s in temp]
+    return temp
+
+# TODO combineer met literal
+def string_to_list(string:str)->list:
+    """Convert string of items to a list of their respective types. Function deals with both np.array and list encodings of the stringed values.\n
+
+    Args:
+        string (str): string to parse. 
+
+    Returns:
+        List[items in string]
+    """
+    try:
+        if 'None' not in string:
+            temp=validate_string(string, ' ')
+            temp=temp.replace("\n","")
+            temp=temp.replace("\r","")
+            temp=temp.split(' ')
+            temp=[x for x in temp if x]
+            # res = list(map(float, temp))  
+            if temp:
+                res=[]
+                for item in temp:      
+                    try: 
+                        res.append(int(item))
+                        continue
+                    except: pass
+                    try:
+                        res.append(float(item))
+                        continue
+                    except: pass
+                    try:
+                        res.append(str(item))
+                        continue
+                    except: pass
+                    try:
+                        res.append(URIRef(item))
+                        continue
+                    except:
+                        pass
+                return res
+        return None  
     except:
         raise ValueError
+
+def string_to_rotation_matrix(string :str) -> np.array:
+    """Returns rotation matrix (np.array(3x3)) from string.
+
+    Args:
+        string (str): string cast list or np.array that contains the values of the rotation matrix.\n
+
+    Raises:
+        ValueError: 'array.size!=9'
+
+    Returns:
+        np.array (3x3)
+    """
+    array=literal_to_matrix(string)
+    if len(np.ravel(array))==9:
+        return np.reshape(array,(3,3))
+    else:
+        raise ValueError('array.size!=9')
+
+
+def xml_to_float(xml) -> float:
+    """Cast XML string value to float if possible.
+
+    Args:
+        xml value
+
+    Returns:
+        float of value
+    """
+    if xml is None:
+        return None
+    else:
+        return float(xml)
+
+def xcr_to_lat(xcr:str) -> float:
+    """Returns latitude from XCR serialization. This includes interpretation 'N' and 'S' geospatial values.
+
+    Args:
+        xcr (str)
+
+    Returns:
+        float of value
+    """
+    if 'None' in xcr:
+        return None
+    else:
+        list=list=re.findall(r'[A-Za-z]+|\d+(?:\.\d+)?', xcr)
+        if 'N' in list[-1]:
+            return float(list[0])
+        elif 'S' in list[-1]:
+            return - float(list[0])
+
+def xcr_to_long(xcr:str) -> float:
+    """Returns longitude from XCR serialization. This includes interpretation 'E' and 'W' geospatial values.
+
+    Args:
+        xcr (str): 
+
+    Returns:
+        float of value
+    """
+    if 'None' in xcr:
+        return None
+    else:        
+        list=list=re.findall(r'[A-Za-z]+|\d+(?:\.\d+)?', xcr)
+        if 'E' in list[-1]:
+            return float(list[0])
+        elif 'W' in list[-1]:
+            return - float(list[0])
+
+def xcr_to_alt(xcr:str) -> float:
+    """Returns altitude from XCR serialized height value. This value is sometimes encoded as a fracture 10000/1600.\n
+
+    Args:
+        xcr (str): value to process
+
+    Returns:
+        float of value
+    """
+    if 'None' in xcr:
+        return None
+    else:
+        list=list=re.findall(r'[A-Za-z]+|\d+(?:\.\d+)?', xcr)
+        if list:
+            return float(list[0])/float(list[-1])       
+
+# TODO can be deleted just do array to literal
+def cartesianTransform_to_literal(matrix : np.array) -> str:
+    """ convert nparray [4x4] to str([16x1]).
+
+    Args:
+        nparray [4x4]
+
+    Returns:
+        List[16]
+    """
+    if matrix.size == 16: 
+        return str(matrix.reshape(16,1))
+    else:
+        Exception("wrong array size!")
+#TODO 
+def featured3d_to_literal(value) -> str:
+    "No feature implementation yet"
+    print("Not implemented yet")
+#TODO
+def featured2d_to_literal(value) -> str:
+    "No feature implementation yet"
+    print("Not implemented yet")
+
+def item_to_list(item)-> list:
+    """Returns [item] if item is not yet a list. This function protects functions that rely on list functionality. 
+
+    Args:
+        item (Python value) 
+
+    Returns:
+        list[item]
+    """
+    if type(item) is np.ndarray:
+        item=item.flatten()
+        return item.tolist()
+    elif type(item) is np.array:
+        item=item.flatten()
+        return item.tolist()
+    elif type(item) is list:# and len(item)>1:
+        return item
+    #why is this here? this function should always return a list!
+    # elif type(item) is list and len(item)==1:
+    #     return item[0]
+    else:
+        return [item]
+
+#### VALIDATION ####
+
+def check_if_uri_exists(list:List[URIRef], subject:URIRef) ->bool:
+    """Returns True if a subject occurs in a list of URIRefs.
+
+    Args:
+        list (List[URIRef]): reference list
+        subject (URIRef): subject to test
+
+    Returns:
+        bool: True if subject occurs in list
+    """
+    list=item_to_list(list)
+    list=[item.toPython() for item in list]
+    subject=subject.toPython()
+      
+    if any(subject in s for s in list):
+        return True
+    else: 
+        return False
+
+def get_subject_name(subject:URIRef) -> str:
+    """Get the main body of a URIRef graph subject
+
+    Args:
+        - subject (URIRef)
+
+    Returns:
+        str
+    """
+    string=subject.toPython()
+    return string.split('/')[-1].split('#')[-1]
+
+def validate_string(string:str|Path, replacement ='_') -> str:
+    """Checks path validity. A string is considered invalid if it cannot be serialized by rdflib or is not Windows subscribable.\n
+    If not valid, The function adjusts path naming to be Windows compatible.
+
+    Features (invalid characters):
+        "()^[^<>{}[] ~`],|*$ /\:"
+
+    Args:
+        path (str): string to check
+        replacement (character): characters to replace invalid charters in the string 
+
+    Returns:
+        str: cleansed string
+    """
+    string=str(string)
+    prefix=''
+    if 'file:///' in string:
+        string=string.replace('file:///','')
+        prefix='file:///'
+    elif 'http://' in string:
+        string=string.replace('http://','')
+        prefix='http://'
+    for idx,element in enumerate(string):
+        if element in r"()^[^<>{}[] ~`],|*$ /\:": #
+            string=replace_str_index(string,index=idx,replacement=replacement)
+    string=prefix+string
+    return string
+
+def validate_timestamp(value, asStr: bool = True, millies: bool = False) -> datetime.datetime | str:
+    """
+    Validates and converts various timestamp formats into a standardized datetime format.
+
+    Parameters:
+    value (str | int | float): The input timestamp, which can be a string, integer, or float.
+    asStr (bool, optional): If True, returns the timestamp as a formatted string. Defaults to True.
+    millies (bool, optional): If True and asStr is True, includes milliseconds in the output. Defaults to False.
+
+    Returns:
+    datetime.datetime | str: A datetime object or a formatted string depending on `asStr`.
+
+    Raises:
+    ValueError: If the input cannot be parsed into a valid timestamp.
+    """
+
+    def return_as(val: datetime.datetime, asStr: bool, millies: bool):
+        if asStr:
+            return val.strftime('%Y-%m-%dT%H:%M:%S.%f' if millies else '%Y-%m-%dT%H:%M:%S')
+        return val
+
+    string = str(value)
+
+    # Special case: Handle timestamps formatted as "YYYY:MM:DD HH:MM:SS"
+    try:
+        dt = datetime.datetime.strptime(string, "%Y:%m:%d %H:%M:%S")
+        return return_as(dt, asStr, millies)
+    except ValueError:
+        pass
+
+    # General date parser (handles ISO formats, standard datetime strings, etc.)
+    try:
+        dt = dateutil.parser.parse(string)
+        return return_as(dt, asStr, millies)
+    except (ValueError, TypeError):
+        pass
+
+    # Handle float or integer Unix timestamps
+    try:
+        dt = datetime.datetime.fromtimestamp(float(string), tz=datetime.timezone.utc)
+        return return_as(dt, asStr, millies)
+    except (ValueError, TypeError, OSError):
+        pass
+
+    # If no valid format is found, raise an error
+    raise ValueError(
+        "No valid time formatting found. Expected formats include:\n"
+        "  1. Tue Dec  7 09:38:13 2021\n"
+        "  2. 1648468136.033126 (Unix timestamp)\n"
+        "  3. 2022:03:13 13:55:30"
+    )
+
+# #### RDF ####
 
 def check_if_subject_is_in_graph(graph:Graph,subject:URIRef) ->bool:
     """Returns True if a subject is present in the Graph. 
@@ -679,341 +924,6 @@ def get_graph_subject(graph:Graph,subject:URIRef) ->URIRef:
             return s
     raise ValueError ('subject not in graph.')
 
-def literal_to_linked_subjects(string:str) -> list:
-    """Returns list of URI subjects that were serialized as a string.\n
-
-    Args:
-        string (str): e.g. '[ file:///Subject1, http://Subject2]'
-
-    Returns:
-        list[items] e.g. [ file:///Subject1, http://Subject2]
-    """
-    temp=string.split(',')
-    temp=[re.sub(r"[\[ \' \]]",'',s) for s in temp]
-    return temp
-
-
-def literal_to_python(literal):
-    # Try to convert to float or int directly
-    try:
-        if '.' in literal:
-            return float(literal)
-        else:
-            return int(literal)
-    except ValueError:
-        pass
-
-    # Try to convert to matrix #this was too agressive
-    # try:
-    #     return literal_to_matrix(literal)    
-    # except (ValueError, SyntaxError):
-    #     pass
-
-    # If all conversions fail, return the literal as string
-    return literal
-
-# TODO fix deze warboel van een functie
-def string_to_list(string:str)->list:
-    """Convert string of items to a list of their respective types. Function deals with both np.array and list encodings of the stringed values.\n
-
-    Args:
-        string (str): string to parse. 
-
-    Returns:
-        List[items in string]
-    """
-    try:
-        if 'None' not in string:
-            temp=validate_string(string, ' ')
-            temp=temp.replace("\n","")
-            temp=temp.replace("\r","")
-            temp=temp.split(' ')
-            temp=[x for x in temp if x]
-            # res = list(map(float, temp))  
-            if temp:
-                res=[]
-                for item in temp:      
-                    if is_float(item): 
-                        res.append(float(item))
-                    elif is_int(item): 
-                        res.append(int(item))
-                    elif is_string(item): 
-                        res.append(str(item))
-                    elif is_uriref(item): 
-                        res.append(URIRef(item)) 
-                return res
-        return None  
-    except:
-        raise ValueError
-
-def string_to_rotation_matrix(string :str) -> np.array:
-    """Returns rotation matrix (np.array(3x3)) from string.
-
-    Args:
-        string (str): string cast list or np.array that contains the values of the rotation matrix.\n
-
-    Raises:
-        ValueError: 'array.size!=9'
-
-    Returns:
-        np.array (3x3)
-    """
-    array=np.asarray(string_to_list(string))
-    if array.size==9:
-        return np.reshape(array,(3,3))
-    else:
-        raise ValueError('array.size!=9')
-
-def xml_to_float(xml) -> float:
-    """Cast XML string value to float if possible.
-
-    Args:
-        xml value
-
-    Returns:
-        float of value
-    """
-    if xml is None:
-        return None
-    else:
-        return float(xml)
-
-def xcr_to_lat(xcr:str) -> float:
-    """Returns latitude from XCR serialization. This includes interpretation 'N' and 'S' geospatial values.
-
-    Args:
-        xcr (str)
-
-    Returns:
-        float of value
-    """
-    if 'None' in xcr:
-        return None
-    else:
-        list=list=re.findall(r'[A-Za-z]+|\d+(?:\.\d+)?', xcr)
-        if 'N' in list[-1]:
-            return float(list[0])
-        elif 'S' in list[-1]:
-            return - float(list[0])
-
-def xcr_to_long(xcr:str) -> float:
-    """Returns longitude from XCR serialization. This includes interpretation 'E' and 'W' geospatial values.
-
-    Args:
-        xcr (str): 
-
-    Returns:
-        float of value
-    """
-    if 'None' in xcr:
-        return None
-    else:        
-        list=list=re.findall(r'[A-Za-z]+|\d+(?:\.\d+)?', xcr)
-        if 'E' in list[-1]:
-            return float(list[0])
-        elif 'W' in list[-1]:
-            return - float(list[0])
-
-def xcr_to_alt(xcr:str) -> float:
-    """Returns altitude from XCR serialized height value. This value is sometimes encoded as a fracture 10000/1600.\n
-
-    Args:
-        xcr (str): value to process
-
-    Returns:
-        float of value
-    """
-    if 'None' in xcr:
-        return None
-    else:
-        list=list=re.findall(r'[A-Za-z]+|\d+(?:\.\d+)?', xcr)
-        if list:
-            return float(list[0])/float(list[-1])       
-
-def cartesianTransform_to_literal(matrix : np.array) -> str:
-    """ convert nparray [4x4] to str([16x1]).
-
-    Args:
-        nparray [4x4]
-
-    Returns:
-        List[16]
-    """
-    if matrix.size == 16: 
-        return str(matrix.reshape(16,1))
-    else:
-        Exception("wrong array size!")    
-#TODO 
-def featured3d_to_literal(value) -> str:
-    "No feature implementation yet"
-#TODO
-def featured2d_to_literal(value) -> str:
-    "No feature implementation yet"
-
-def item_to_list(item)-> list:
-    """Returns [item] if item is not yet a list. This function protects functions that rely on list functionality. 
-
-    Args:
-        item (Python value) 
-
-    Returns:
-        list[item]
-    """
-    if type(item) is np.ndarray:
-        item=item.flatten()
-        return item.tolist()
-    elif type(item) is np.array:
-        item=item.flatten()
-        return item.tolist()
-    elif type(item) is list:# and len(item)>1:
-        return item
-    #why is this here? this function should always return a list!
-    # elif type(item) is list and len(item)==1:
-    #     return item[0]
-    else:
-        return [item]
-
-#### VALIDATION ####
-
-def check_if_uri_exists(list:List[URIRef], subject:URIRef) ->bool:
-    """Returns True if a subject occurs in a list of URIRefs.
-
-    Args:
-        list (List[URIRef]): reference list
-        subject (URIRef): subject to test
-
-    Returns:
-        bool: True if subject occurs in list
-    """
-    list=item_to_list(list)
-    list=[item.toPython() for item in list]
-    subject=subject.toPython()
-      
-    if any(subject in s for s in list):
-        return True
-    else: 
-        return False
-
-def get_subject_name(subject:URIRef) -> str:
-    """Get the main body of a URIRef graph subject
-
-    Args:
-        - subject (URIRef)
-
-    Returns:
-        str
-    """
-    string=subject.toPython()
-    return string.split('/')[-1].split('#')[-1]
-
-def validate_string(string:str|Path, replacement ='_') -> str:
-    """Checks path validity. A string is considered invalid if it cannot be serialized by rdflib or is not Windows subscribable.\n
-    If not valid, The function adjusts path naming to be Windows compatible.\n
-
-    Features (invalid characters):
-        "()^[^<>{}[] ~`],|*$ /\:"\n
-
-    Args:
-        path (str): string to check
-        replacement (character): characters to replace invalid charters in the string 
-
-    Returns:
-        str: cleansed string
-    """
-    string=str(string)
-    prefix=''
-    if 'file:///' in string:
-        string=string.replace('file:///','')
-        prefix='file:///'
-    elif 'http://' in string:
-        string=string.replace('http://','')
-        prefix='http://'
-    for idx,element in enumerate(string):
-        if element in "()^[^<>{}[] ~`],|*$ /\:": #
-            string=replace_str_index(string,index=idx,replacement=replacement)
-    string=prefix+string
-    return string
-
-def parse_path(path : str)-> str:
-    """Reads a path and converts it to posix universal styling
-
-    Args:
-        path (str): the input path
-
-    Returns:
-        str: the converted string
-    """
-    if(path):
-        return PureWindowsPath(path).as_posix()
-    return None
-
-#NOTE this returns true if the argument can be cast to a float, so int work here to.
-def is_float(element) -> bool:
-    """Returns True if Python value is a float.
-
-    Args:
-        element (Python value)
-
-    Returns:
-        bool: True if Python value is a float
-    """
-    try:
-        float(element)
-        return True
-    except ValueError:
-        return False
-
-def is_int(element) -> bool:
-    """Returns True if Python value is an int.
-
-    Args:
-        element (Python value)
-
-    Returns:
-        bool: True if Python value is an int
-    """
-    try:
-        int(element)
-        return True
-    except ValueError:
-        return False
-
-def is_string(element) -> bool:
-    """Returns True if Python value is a str.
-
-    Args:
-        element (Python value)
-
-    Returns:
-        bool: True if Python value is a str
-    """
-    #special_characters = "[!@#$%^&*()-+?_= ,<>/]'"
-    try:
-        str(element)
-        return True
-    except ValueError:
-        return False
-
-# NOTE this function does not confirm it is an URI ref
-def is_uriref(element) -> bool:
-    """Returns True if Python value is a rdflib.URIRef.
-
-    Args:
-        element (Python value)
-
-    Returns:
-        bool: True if Python value is a rdflib.URIRef
-    """
-    try:
-        if type(element) is float:
-            return False
-        else:
-            URIRef(element)
-            return True
-    except ValueError:
-        return False
-
-# #### RDF ####
 
 def get_attribute_from_predicate(graph: Graph, predicate : Literal) -> str:
     """Returns the attribute without the namespace.
@@ -1109,55 +1019,6 @@ def check_if_path_is_valid(path:str)-> bool:
     else:
         return False
 
-def validate_timestamp(value) -> datetime:
-    """Format value as datetime ("%Y-%m-%dT%H:%M:%S")
-
-    Args:
-        - value ('Tue Dec  7 09:38:13 2021')
-        - value ("1648468136.033126")
-        - value ("2022:03:13 13:55:30")
-        - value (datetime)
-        - value ("2022-03-13 13:55:30")
-        - value (1654259243.4318562)
-
-    Raises:
-        ValueError: 'timestamp formatting ("%Y-%m-%dT%H:%M:%S") failed for tuple, datetime and string formats.'
-
-    Returns:
-        datetime
-    """
-    string=str(value)
-  
-    try:
-        return datetime.datetime.strptime(string, "%Y-%m-%dT%H:%M:%S").strftime("%Y-%m-%dT%H:%M:%S") 
-    except:
-        pass
-    try:         
-        test=datetime.datetime.strptime(string, "%Y:%m:%d %H:%M:%S").strftime("%Y-%m-%dT%H:%M:%S") 
-        return test
-    except:
-        pass
-    try:         
-        test=datetime.datetime.strptime(string, "%Y-%m-%d %H:%M:%S").strftime("%Y-%m-%dT%H:%M:%S") 
-        return test
-    except:
-        pass
-    try:         
-        test=datetime.datetime.strptime(string, "%a %b %d %H:%M:%S %Y").strftime("%Y-%m-%dT%H:%M:%S") 
-        return test
-    except:
-        pass
-    try:
-        # Convert both integer and fractional second timestamps
-        timestamp_value = float(string)
-        test= datetime.datetime.utcfromtimestamp(timestamp_value).strftime('%Y-%m-%dT%H:%M:%S.%f')
-        return 
-    except:
-        pass
-    try:
-        return datetime.datetime.utcfromtimestamp(float(string)).strftime('%Y-%m-%dT%H:%M:%S')
-    except:
-        raise ValueError('no valid time formatting found e.g. 1.value (Tue Dec  7 09:38:13 2021) 2.value (1648468136.033126) 3.value (2022:03:13 13:55:30)')
 
 def get_node_resource_extensions(objectType:str) -> list:
     """Returns the potential file formats for different types of Nodes' resources (images, pcd, ortho, etc.).\n
@@ -1170,7 +1031,7 @@ def get_node_resource_extensions(objectType:str) -> list:
     """    
     if 'MeshNode' in objectType:        
         return MESH_EXTENSIONS
-    if 'SessionNode' in objectType:        
+    elif 'SetNode' in objectType:        
         return MESH_EXTENSIONS
     elif 'BIMNode' in objectType:        
         return MESH_EXTENSIONS
@@ -1206,7 +1067,7 @@ def get_node_type(cls) -> URIRef:
     # Extract and return the class if found
     return next((URIRef(row['class']) for row in result), None)
 
-def get_data_type(value) -> XSD.ENTITY:
+def get_data_type(value) -> "XSD.ENTITY":
     """Return XSD dataType of Python value. By default, string is returned as the XSD.entity.\n
 
     Args:
@@ -1264,50 +1125,6 @@ def get_ifcopenshell_class_name(value:URIRef) -> str:
     # Extract the class name from the URIRef
     return value.split('#')[-1]
 
-# # NOTE maybe we should use decorators to define the attribute in the node itself to prevent double writing
-# def match_uri(attribute :str) -> URIRef:
-#     """ Returns fitting predicate from class attribute given the following prefix ontologies.\n
-#     By default, the v4d ontology[attributeName] is returned.
-
-#     Features (ontologies):
-#         1. exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#') \n
-#         2. geo=rdflib.Namespace('http://www.opengis.net/ont/geosparql#') \n
-#         3. gom=rdflib.Namespace('https://w3id.org/gom#') \n
-#         4.  omg=rdflib.Namespace('https://w3id.org/omg#') \n
-#         5. fog=rdflib.Namespace('https://w3id.org/fog#')\n
-#         6. v4d=rdflib.Namespace('https://w3id.org/v4d/core#')\n
-#         7. openlabel=rdflib.Namespace('https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#')\n
-#         8. e57=rdflib.Namespace('http://libe57.org#')\n
-#         9. xcr=rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')\n
-#         10. ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')\n
-
-#     Returns:
-#         URIRef: predicate 
-#     """
-#     #OPENLABEL
-#     if attribute in ['timestamp','sensor']:
-#         return openlabel[attribute]
-#     #E57
-#     elif attribute in ['cartesianBounds','cartesianTransform','geospatialTransform','pointCount','e57XmlPath','e57Path','e57Index','e57Image']:
-#         return  e57[attribute]
-#     #GOM
-#     elif attribute in ['coordinateSystem']:
-#         return  gom[attribute]
-#     #IFC
-#     elif attribute in ['ifcPath','className','globalId','phase','ifcName']:
-#         return  ifc[attribute]
-#     #EXIF
-#     elif attribute in ['xResolution','yResolution','resolutionUnit','imageWidth','imageHeight']:
-#         return  exif[attribute]
-#     #XCR
-#     elif attribute in ['focalLength35mm','principalPointU','principalPointV','distortionCoeficients','gsd']:
-#         return  xcr[attribute]
-#     #XCR
-#     elif attribute in ['isDerivedFromGeometry']:
-#         return  omg[attribute]
-#     #V4D
-#     else:
-#         return v4d[attribute]
 
 def get_predicate_and_datatype(attribute_name: str):
     """

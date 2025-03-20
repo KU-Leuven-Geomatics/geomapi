@@ -201,7 +201,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(node.subject.toPython(),self.dataLoaderRoad.pcdSubject.toPython() )
         node.get_graph()
         object=node.graph.value(node.subject,GEOMAPI_PREFIXES['geomapi'].path)
-        self.assertEqual(Path(ut.parse_path(object.toPython()) ),Path(self.dataLoaderRoad.pcdPath) )
+        self.assertEqual(Path(object.toPython()),Path(self.dataLoaderRoad.pcdPath) )
 
     def test_node_creation_with_get_resource(self):
         #pcd

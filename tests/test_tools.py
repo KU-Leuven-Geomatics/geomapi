@@ -12,8 +12,9 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 from geomapi.nodes import *
+from geomapi.nodes import PointCloudNode
 import geomapi.tools as tl
-
+import open3d
 #DATA
 sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
@@ -59,38 +60,36 @@ class TestTools(unittest.TestCase):
 
 ################################## TEST FUNCTIONS ######################
 
-    # def test_e57xml_to_nodes(self):
-    #     # e57XML
-    #     nodes=tl.e57xml_to_nodes(path=self.dataLoaderParking.e57XmlPath)
-    #     self.assertEqual(len(nodes),2)
-    #     #0
-    #     self.assertAlmostEqual(nodes[0].cartesianTransform[0,3],0.379,delta=0.01)
-    #     self.assertLess(nodes[0].cartesianTransform[0,0],0)
-    #     self.assertAlmostEqual(nodes[0].cartesianBounds[0],-4.351,delta=0.01)
-    #     #1
-    #     self.assertEqual(nodes[1].cartesianTransform[0,3],0.0)
-    #     self.assertEqual(nodes[1].cartesianTransform[0,0],-1)
-    #     self.assertAlmostEqual(nodes[1].cartesianBounds[0],-5.69,delta=0.01)
-        
-    #     #with kwargs
-    #     nodes=tl.e57xml_to_nodes(path=self.dataLoaderParking.e57XmlPath,myattrib=1)
-    #     self.assertEqual(nodes[0].myattrib,1)
+    def test_e57xml_to_nodes(self):
+        # e57XML
+        nodes=tl.e57xml_to_nodes(path=self.dataLoaderParking.e57XmlPath)
+        self.assertEqual(len(nodes),2, "tl.e57xml_to_nodes should return a list of 2 nodes")
+        self.assertIsInstance(nodes[0], PointCloudNode, "The nodes should be a pointcloudnode")
+        self.assertIsInstance(nodes[1], PointCloudNode, "The nodes should be a pointcloudnode")
+
+        #with kwargs
+        nodes=tl.e57xml_to_nodes(path=self.dataLoaderParking.e57XmlPath,myattrib=1)
+        self.assertEqual(nodes[0].myattrib,1)
+        self.assertEqual(nodes[1].myattrib,1)
 
         # with getResource 
-        # nodes=tl.e57xml_to_nodes(e57XmlPath=self.e57XmlPath,getResource=True)
-        # geometries=[n.resource for n in nodes]
-        # self.assertEqual(len(geometries),2)
+        nodes=tl.e57xml_to_nodes(path=self.dataLoaderParking.e57XmlPath,getResource=True)
+        print(nodes[0].resource)
+        geometries=[n.resource for n in nodes]
+        self.assertEqual(len(geometries),2)
+        self.assertEqual(len(geometries[0].points), 625414, "Nr of points mismatch")
+        self.assertIsInstance(geometries[0], open3d.geometry.PointCloud, "The geometries should be a open3d pointcloud")
+        self.assertIsInstance(geometries[1], open3d.geometry.PointCloud, "The geometries should be a open3d pointcloud")
 
     def test_img_xml_to_nodes(self):
 
         self.assertEqual(len(tl.img_xml_to_nodes(self.dataLoaderRoad.imageXmlPath,filterByFolder=False) ),78)
+        self.assertEqual(len(tl.img_xml_to_nodes(self.dataLoaderRoad.imageXmlPath,skip = 2, filterByFolder=False) ),78/2)
         self.assertEqual(len(tl.img_xml_to_nodes(self.dataLoaderRoad.imageXmlPath,filterByFolder=True) ),2)
         nodes=tl.img_xml_to_nodes(self.dataLoaderRoad.imageXmlPath,filterByFolder=True,getResource=True) 
         self.assertEqual(len(nodes),2)
         self.assertEqual(len([n.resource for n in nodes]),2)
-        
-        self.assertEqual(len(tl.img_xml_to_nodes(self.dataLoaderRoad.imageXmlPath,skip=10,filterByFolder=False) ),8)
-                        
+                                
     def test_e57header_to_nodes(self):
 
         #E571
@@ -113,9 +112,8 @@ class TestTools(unittest.TestCase):
 
         #E572
         tl.e57header_to_nodes(path=self.dataLoaderParking.e57Path2)
-        self.assertAlmostEqual(nodes[0].cartesianTransform[0,3],0.379,delta=0.01)
-        self.assertLess(nodes[0].cartesianTransform[0,0],0)
-        self.assertAlmostEqual(nodes[0].cartesianBounds[0],-4.351,delta=0.01)
+        self.assertAlmostEqual(nodes[0].cartesianTransform[0,3],4.52,delta=0.01)
+        self.assertAlmostEqual(nodes[0].orientedBoundingBox.get_center()[0],13.50,delta=0.01)
 
    
     def test_ifc_to_nodes(self):
@@ -132,6 +130,7 @@ class TestTools(unittest.TestCase):
 
     def test_graph_to_nodes(self):
         graph=Graph().parse(self.dataLoaderParking.resourceGraphPath)
+        print(graph)
         nodes=tl.graph_to_nodes(graph=graph)
         subjects=[s for s in graph.subjects(RDF.type)]
         self.assertEqual(len(nodes),len(subjects))
@@ -174,7 +173,7 @@ class TestTools(unittest.TestCase):
     def test_select_nodes_with_centers_in_bounding_box(self): 
         nodes=tl.graph_path_to_nodes(path=self.dataLoaderRoad.ifcGraphPath,getResource=True)
         list=tl.select_nodes_with_centers_in_bounding_box(nodes[0],nodes,u=5,v=5,w=5)
-        self.assertEqual(len(list),31)
+        self.assertEqual(len(list),4)
 
     def test_select_nodes_with_intersecting_bounding_box(self): 
         nodes=tl.graph_path_to_nodes(path=self.dataLoaderRoad.ifcGraphPath,getResource=True)

@@ -927,13 +927,13 @@ class ImageNode(Node):
             positionnode=child.find('{http://www.capturingreality.com/ns/xcr/1.1#}Position')
             translation=None
             if positionnode is not None:
-                translation=np.asarray(ut.string_to_list(positionnode.text))
+                translation=np.asarray(ut.literal_to_list(positionnode.text))
               
             self.cartesianTransform=gmu.get_cartesian_transform(translation=translation,rotation=rotation)
             
             coeficientnode=child.find('{http://www.capturingreality.com/ns/xcr/1.1#}DistortionCoeficients')
             if coeficientnode is not None:
-                self.distortionCoeficients=ut.string_to_list(coeficientnode.text)  
+                self.distortionCoeficients=ut.literal_to_list(coeficientnode.text)  
         return True   
     
     # def get_metadata_from_csv_path(self) ->bool:

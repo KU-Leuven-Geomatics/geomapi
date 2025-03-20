@@ -6,6 +6,7 @@ from pathlib import Path
 import time
 import shutil
 import unittest
+import pytest
 from multiprocessing.sharedctypes import Value
 import numpy as np
 import open3d as o3d
@@ -50,8 +51,8 @@ class TestUtils(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         #execute once after all tests
-        if os.path.exists(cls.dataLoader.resourcePath):
-            shutil.rmtree(cls.dataLoader.resourcePath) 
+        #if os.path.exists(cls.dataLoader.resourcePath):
+        #    shutil.rmtree(cls.dataLoader.resourcePath) 
         print('-----------------TearDown Class----------------------')
 
         
@@ -75,20 +76,130 @@ class TestUtils(unittest.TestCase):
 
 
 ################################## TEST FUNCTIONS ######################
-    def test_bind_ontologies(self):
-        graph=Graph()
-        graph=ut.bind_ontologies(graph) 
-        test=False
-        for n in graph.namespaces():
-            if 'geomapi' in n:
-                test=True
-        self.assertTrue(test)
+    def test_time_function(self):
+        self.assertEqual(ut.time_function(max, 5,6), 6)
 
-    def test_cartesianTransform_to_literal(self):
-        literal=ut.cartesianTransform_to_literal(self.dataLoaderParking.imageCartesianTransform1)
-        self.assertTrue('-8.13902571e-02' in literal)
+    def test_get_rotation_matrix_from_forward_up(self):
+        forward = np.array([0,0,1])
+        up = np.array([0,1,0])
+        rot_matrix = np.array([[ 1.,  0.,  0.],[ 0.,  1.,  0.],[0.,  0.,  1.]])
+        rotated_vector = np.around(ut.get_rotation_matrix_from_forward_up(forward, up),0)
+        np.testing.assert_array_equal(rot_matrix,rotated_vector)
+
+    def test_replace_str_index(self):
+        item="rrrr"
+        test=ut.replace_str_index(item,index=0,replacement='_')
+        self.assertEqual(test,'_rrr')
+        test=ut.replace_str_index(item,index=-1,replacement='_')
+        self.assertEqual(test,'rrr_')
+        with pytest.raises(ValueError):
+            ut.replace_str_index(item,index=10,replacement='_')
+
+    def test_random_color(self):
+        self.assertLessEqual(np.max(ut.random_color()), 1)
+        self.assertLessEqual(np.max(ut.random_color(255)), 255)
+
+    def test_map_to_2d_array(self):
+        # Regular 3d vector
+        vector = [1,0,0]
+        vector2d = [[1,0,0]]
+        vector3d = [[[1,0,0]]]
+        np.testing.assert_array_equal(ut.map_to_2d_array(vector),vector2d)
+        np.testing.assert_array_equal(ut.map_to_2d_array(np.array(vector)),vector2d)
+        np.testing.assert_array_equal(ut.map_to_2d_array(vector2d),vector2d)
+        np.testing.assert_array_equal(ut.map_to_2d_array(vector3d),vector3d)
+
+    def test_convert_to_homogeneous_3d_coordinates(self):
+        # Regular 3d vector
+        vector = [1,0,0]
+        homo_vector = [[1,0,0,1]]
+        np.testing.assert_array_equal(ut.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
+        # Homogeneous 3d vector
+        vector = [1,0,0,1]
+        homo_vector = [[1,0,0,1]]
+        np.testing.assert_array_equal(ut.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
+        # Scaled Homogeneous 3d vector
+        vector = [1,0,0,2]
+        homo_vector = [[0.5,0,0,1]]
+        np.testing.assert_array_equal(ut.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
+        # N-d Homogeneous 3d vector
+        vector = [[1,0,0], [0,1,0],[0,0,1]]
+        homo_vector = [[1,0,0,1], [0,1,0,1],[0,0,1,1]]
+        np.testing.assert_array_equal(ut.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
+
+    def test_get_geomapi_classes(self):
+        classes = ut.get_geomapi_classes()
+        self.assertIsNotNone(classes)
+
+    def test_get_method_for_datatype(self):
+        self.assertEqual(str(ut.get_method_for_datatype("https://w3id.org/geomapi#matrix")), "geomapi.utils.literal_to_matrix")
+
+    def test_apply_method_to_object(self):
+        matrix = np.array(([[1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4], [1, 2, 3, 4]]))
+        matrixString = """[[1 2 3 4]
+        [1 2 3 4]
+        [1 2 3 4]
+        [1 2 3 4]]"""
+        np.testing.assert_array_equal(matrix, ut.apply_method_to_object("https://w3id.org/geomapi#matrix", matrixString))
+
+    def test_split_list(self):
+        list  = np.arange(100)
+
+        splitList = ut.split_list(list, 10)
+        self.assertEqual(len(splitList), 10)
+        splitList = ut.split_list(list, 9) # not cleanly divisable
+        self.assertEqual(len(splitList), 9)
+        splitList = ut.split_list(list,l = 11)
+        self.assertEqual(len(splitList), 10)
+        self.assertEqual(len(splitList[0]), 11)
+        self.assertEqual(len(splitList[-1]), 1) #check last element
+
+    def test_get_folder(self):
+        string=ut.get_folder(self.dataLoaderRoad.imagePath2)
+        self.assertEqual(str(string),os.path.join(self.dataLoaderRoad.path,'img'))
+
+    def test_get_variables_in_class(self):
+        class tinyClass:
+            def __init__(self,**kwargs):
+                self.__dict__.update(kwargs)  
+
+        test=tinyClass(path=1,myPath=2,thisisnotapat=3,resolution=4)
+        variables=ut.get_variables_in_class(test)
+        self.assertEqual(len(variables),4)
+
+    def test_get_list_of_files(self):
+        files=ut.get_list_of_files(self.dataLoaderParking.path)
+        self.assertGreater(len(files),1)
+
+    def test_get_subject_graph(self):
+        subject=URIRef('file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339')
+
+        #subject
+        subject=next(s for s in self.dataLoaderParking.resourceGraph.subjects())
+        newGraph=ut.get_subject_graph(graph=self.dataLoaderParking.resourceGraph,subject=subject)
+        self.assertEqual(len(newGraph),len([t for t in self.dataLoaderParking.resourceGraph.triples((subject,None,None))]))
+
+        #no subject        
+        newGraph=ut.get_subject_graph(graph=self.dataLoaderParking.resourceGraph)
+        self.assertIsNotNone(next(newGraph.subjects(RDF.type)))
+
+        #wrong subject
+        self.assertRaises(ValueError,ut.get_subject_graph,graph=self.dataLoaderParking.imgGraph,subject=URIRef('blabla'))
+
+    def test_get_paths_in_class(self):
+        class tinyClass:
+            def __init__(self,**kwargs):
+                self.__dict__.update(kwargs)  
+
+        test=tinyClass(path=1,myPath=2,thisisnotapat=3,resolution=4)
+        paths=ut.get_paths_in_class(test)
+        self.assertEqual(len(paths),2)
+
+    def test_get_timestamp(self):
+        timeStamp=ut.get_timestamp(self.dataLoaderParking.pcdGraphPath) 
+        self.assertEqual(type(timeStamp),str)
         
-    def test_literal_to_matrix(self):
+    def test_literal_to_matrix_complex(self):
         test_cases = [
             {
                 "input": """[[ 3.48110207e-01  9.37407536e-01  9.29487057e-03  2.67476305e+01]
@@ -130,30 +241,27 @@ class TestUtils(unittest.TestCase):
                 "should_raise": False
             },
             {
-                "input": """[[ 3.48110207e-01  9.37407536e-01  9.29487057e-03 ]
-                            [-9.37341584e-01  3.48204779e-01 -1.20077869e-02 ]
-                            [-1.44927083e-02 -4.53243552e-03  9.99884703e-01 ]
-                            [ 0.00000000e+00  0.00000000e+00  0.00000000e+00 ]]""",
-                "expected": np.array([[ 3.48110207e-01,  9.37407536e-01 , 9.29487057e-03 ],
-                            [-9.37341584e-01,  3.48204779e-01 ,-1.20077869e-02 ],
-                            [-1.44927083e-02 ,-4.53243552e-03 , 9.99884703e-01 ],
-                            [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00 ]]),
+                "input": """[[1 2 3]
+                            [4 5 6]
+                            [7 8 9]
+                            [10 11 12]]""",
+                "expected": np.array(  [[1, 2, 3],
+                                        [4, 5, 6],
+                                        [7, 8, 9],
+                                        [10, 11, 12]]),
                 "should_raise": False
             },
             {
-                "input": """[[ 3.48110207e-01  9.37407536e-01  9.29487057e-03 ]\n
-                            [-9.37341584e-01  3.48204779e-01 -1.20077869e-02 ]\n
-                            [-1.44927083e-02 -4.53243552e-03  9.99884703e-01 ]\n
-                            [ 0.00000000e+00  0.00000000e+00  0.00000000e+00 ]]""",
-                "expected": np.array([[ 3.48110207e-01,  9.37407536e-01 , 9.29487057e-03 ],
-                            [-9.37341584e-01,  3.48204779e-01 ,-1.20077869e-02 ],
-                            [-1.44927083e-02 ,-4.53243552e-03 , 9.99884703e-01 ],
-                            [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00 ]]),
+                "input": """[[1 2 3][4 5 6][7 8 9][10 11 12]]""",
+                "expected": np.array(  [[1, 2, 3],
+                                        [4, 5, 6],
+                                        [7, 8, 9],
+                                        [10, 11, 12]]),
                 "should_raise": False
             },
             {
-                "input": """[ 3.48110207e-01  9.37407536e-01  9.29487057e-03 ]""",
-                "expected": np.array([[3.48110207e-01 , 9.37407536e-01 , 9.29487057e-03]]),
+                "input": """[1  2  3]""",
+                "expected": np.array([1, 2, 3]),
                 "should_raise": False
             }
         ]
@@ -165,202 +273,6 @@ class TestUtils(unittest.TestCase):
             else:
                 result = ut.literal_to_matrix(case["input"])
                 np.testing.assert_array_almost_equal(result, case["expected"], err_msg=f"Test case {i} failed")
-
-       
-    def test_check_if_uri_exists(self):
-        list=[URIRef('4499de21-f13f-11ec-a70d-c8f75043ce59'),URIRef('http://IMG_2173'),URIRef('http://000_GM_Opening_Rectangular_Opening_Rectangular_1101520'),URIRef('43be9b1c-f13f-11ec-8e65-c8f75043ce59')]
-        subject=URIRef('43be9b1c-f13f-11ec-8e65-c8f75043ce59')
-        test=ut.check_if_uri_exists(list, subject)
-        self.assertTrue(test)
-
-        #incorrect one
-        subject=URIRef('blablabla')
-        test=ut.check_if_uri_exists(list, subject)
-        self.assertFalse(test)
-       
-    def test_validate_timestamp(self):
-
-        #string
-        self.assertEqual(str(ut.validate_timestamp("2022:03:13 13:55:26")),"2022-03-13T13:55:26")
-
-        #string
-        self.assertEqual(str(ut.validate_timestamp('Tue Dec  7 09:38:13 2021')),"2021-12-07T09:38:13")
-
-         #string
-        self.assertEqual(str(ut.validate_timestamp("1648468136.033126")),"2022-03-28T11:48:56")
-
-        #tuple
-        self.assertEqual(str(ut.validate_timestamp(datetime(2022,3,13,13,55,26))),"2022-03-13T13:55:26")
-
-        # invalid
-        self.assertRaises(ValueError,ut.validate_timestamp,'qsdfqsdf')
-
-    def test_validate_string(self):
-        
-        test=ut.validate_string('http://pointcloud2_0')
-        self.assertEqual(test,'http://pointcloud2_0')
-        test=ut.validate_string('http://po/int/cloud2_ 0:')
-        self.assertEqual(test,'http://po_int_cloud2__0_')
-        test=ut.validate_string('pointc&:lo ud2_0_')
-        self.assertEqual(test,'pointc&_lo_ud2_0_')
-        test=ut.validate_string('file:///pointc&:lo ud2_0')
-        self.assertEqual(test,'file:///pointc&_lo_ud2_0')
-        test=ut.validate_string('file:///pointc&:lo /ud2_0')
-        self.assertEqual(test,'file:///pointc&_lo__ud2_0')
-        test=ut.validate_string('4499de21-f13f-11ec-a70d-c8f75043ce59')
-        self.assertEqual(test,'4499de21-f13f-11ec-a70d-c8f75043ce59')
-        test=ut.validate_string('[this<has$to^change]')
-        self.assertEqual(test,'_this_has_to_change_')
-
-    def test_clean_attributes_list(self):
-        list=['blablabla',
-            'graph','graphPath','subject','fullResourcePath','kwargs', 'orientedBoundingBox',
-            'ifcElement',
-            'mesh',
-            'exifData','xmlData','image','features2d','pinholeCamera',
-            'pcd','e57Pointcloud','e57xmlNode','e57image','features3d',
-            'linkedNodes']
-        newList=ut.clean_attributes_list(list)
-        self.assertEqual(len(newList),3)
-      
-    def test_get_attribute_from_predicate(self):
-        graph=Graph()
-        graph=ut.bind_ontologies(graph)
-        string=ut.get_attribute_from_predicate(graph, predicate =Literal('https://w3id.org/geomapi#cartesianTransform')) 
-        self.assertEqual(string,'cartesianTransform')
-        string=ut.get_attribute_from_predicate(graph, predicate =Literal('http://purl.org/dc/terms/created')) 
-        self.assertEqual(string,'created')
-        string=ut.get_attribute_from_predicate(graph, predicate =Literal('http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#className')) 
-        self.assertEqual(string,'className')
-        string=ut.get_attribute_from_predicate(graph, predicate =Literal('http://www.w3.org/2003/12/exif/ns#xResolution')) 
-        self.assertEqual(string,'xResolution')
-        string=ut.get_attribute_from_predicate(graph, predicate =Literal('https://w3id.org/gom#coordinateSystem')) 
-        self.assertEqual(string,'coordinateSystem')
-    
-       
-    # def test_get_extension(self):
-    #     string=ut.get_extension(self.dataLoaderRoad.imagePath1)
-    #     self.assertEqual(string,'.JPG')
-
-    # def test_get_filename(self):
-    #     string=ut.get_filename(self.dataLoaderRoad.imagePath1)
-    #     self.assertEqual(string,'101_0367_0007')
-
-    # def test_get_folder(self):
-    #     string=ut.get_folder(self.dataLoaderRoad.imagePath2)
-    #     self.assertEqual(string,os.path.join(self.dataLoaderRoad.path,'img'))
-
-    def test_get_folder_path(self):
-        string=ut.get_folder_path(self.dataLoaderRoad.imagePath2)
-        self.assertEqual(string,os.path.join(self.dataLoaderRoad.path,'img'))
-
-    def test_get_list_of_files(self):
-        files=ut.get_list_of_files(self.dataLoaderParking.path)
-        self.assertGreater(len(files),1)
-
-    def test_get_paths_in_class(self):
-        class tinyClass:
-            def __init__(self,**kwargs):
-                self.__dict__.update(kwargs)  
-
-        test=tinyClass(path=1,myPath=2,thisisnotapat=3,resolution=4)
-        paths=ut.get_paths_in_class(test)
-        self.assertEqual(len(paths),2)
-
-    def test_get_subject_graph(self):
-        
-        subject=URIRef('file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339')
-
-        #subject
-        subject=next(s for s in self.dataLoaderParking.resourceGraph.subjects())
-        newGraph=ut.get_subject_graph(graph=self.dataLoaderParking.resourceGraph,subject=subject)
-        self.assertEqual(len(newGraph),len([t for t in self.dataLoaderParking.resourceGraph.triples((subject,None,None))]))
-
-        #no subject        
-        newGraph=ut.get_subject_graph(graph=self.dataLoaderParking.resourceGraph)
-        self.assertIsNotNone(next(newGraph.subjects(RDF.type)))
-
-        #wrong subject
-        self.assertRaises(ValueError,ut.get_subject_graph,graph=self.dataLoaderParking.imgGraph,subject=URIRef('blabla'))
-
-    def test_get_timestamp(self):
-        timeStamp=ut.get_timestamp(self.dataLoaderParking.pcdGraphPath) 
-        self.assertEqual(type(timeStamp),str)
-
-    def test_get_variables_in_class(self):
-        class tinyClass:
-            def __init__(self,**kwargs):
-                self.__dict__.update(kwargs)  
-
-        test=tinyClass(path=1,myPath=2,thisisnotapat=3,resolution=4)
-        variables=ut.get_variables_in_class(test)
-        self.assertEqual(len(variables),4)
-
-    def test_is_float(self):
-        test=ut.is_float(0.5) 
-        self.assertTrue(test)
-
-        test=ut.is_float('0.5') 
-        self.assertTrue(test)
-
-        test=ut.is_float(1) 
-        self.assertTrue(test)
-
-        test=ut.is_float('1') 
-        self.assertTrue(test)
-
-        test=ut.is_float('qsfdsdf') 
-        self.assertFalse(test)
-
-    def test_is_int(self):
-        test=ut.is_int(1) 
-        self.assertTrue(test)
-
-        test=ut.is_int('1') 
-        self.assertTrue(test)
-
-        test=ut.is_int('qsfdsdf') 
-        self.assertFalse(test)
-
-        test=ut.is_int(0.5) 
-        self.assertTrue(test)
-        
-    def test_is_string(self):
-        test=ut.is_string(1) 
-        self.assertTrue(test)
-
-        test=ut.is_string('1') 
-        self.assertTrue(test)
-
-        test=ut.is_string('qsfdsdf') 
-        self.assertTrue(test)
-
-        test=ut.is_string(0.5) 
-        self.assertTrue(test)
-            
-    def test_is_uriref(self):
-        test=ut.is_uriref(Literal(1)) 
-        self.assertTrue(test)
-
-        test=ut.is_uriref('1') 
-        self.assertTrue(test)
-
-        test=ut.is_uriref('qsfdsdf') 
-        self.assertTrue(test)
-
-        test=ut.is_uriref(0.5) 
-        self.assertFalse(test)
-
-    def test_item_to_list(self):
-        item=5
-        test=ut.item_to_list(item)
-        self.assertEqual(len(test),1)
-        item=['qsdf']
-        test=ut.item_to_list(item)
-        self.assertEqual(len(test),1)
-        item=['qsdf',1]
-        test=ut.item_to_list(item)
-        self.assertEqual(len(test),2)
 
     def test_literal_to_matrix(self):
         #cartesianBounds
@@ -409,101 +321,12 @@ class TestUtils(unittest.TestCase):
         #orientedBoundingBox
         literal=self.dataLoaderParking.imgGraph.value(subject=next(s for s in self.dataLoaderParking.imgGraph.subjects(RDF.type)),predicate=URIRef('https://w3id.org/geomapi#orientedBoundingBox'))
         test=ut.literal_to_matrix(literal)
-        self.assertEqual(test.shape,(1,9))
+        self.assertEqual(test.size,9)
         
         #convexHull
         literal=self.dataLoaderParking.imgGraph.value(subject=next(s for s in self.dataLoaderParking.imgGraph.subjects(RDF.type)),predicate=URIRef('https://w3id.org/geomapi#convexHull'))
         test=ut.literal_to_matrix(literal)
         self.assertEqual(test.shape,(5,3))
-        
-
-    def test_literal_to_linked_subjects(self):
-        string="['file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904659_0_Z_Q8COz94wZzVDqlx5_s', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904099_0_Z_Q8COz94wZzVDqlx5c6', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_903697_0_Z_Q8COz94wZzVDqlx5Wq', 'file:///DJI_0085', 'file:///IMG_8834', 'file:///parking', 'file:///parking']"
-
-        list=ut.literal_to_linked_subjects(string)
-        gtlist=['file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904659_0_Z_Q8COz94wZzVDqlx5_s', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904099_0_Z_Q8COz94wZzVDqlx5c6', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_903697_0_Z_Q8COz94wZzVDqlx5Wq', 'file:///DJI_0085', 'file:///IMG_8834', 'file:///parking', 'file:///parking']
-
-        (self.assertTrue(list[i]==gtlist[i]) for i in range(len(list)) )
-
-    def test_check_if_subject_is_in_graph(self):
-        #http
-        self.assertTrue(ut.check_if_subject_is_in_graph(self.dataLoaderRoad.imgGraph,next(s for s in self.dataLoaderRoad.imgGraph.subjects(RDF.type))))
-
-        #random
-        graph=Graph()
-        graph.add((URIRef('mySubject'),RDFS.label,Literal('label')))
-        self.assertTrue(ut.check_if_subject_is_in_graph(graph,URIRef('mySubject')))
-
-        #not in graph
-        self.assertFalse(ut.check_if_subject_is_in_graph(self.dataLoaderRoad.meshGraph,URIRef('ikjuhygfds')))
-
-    def test_get_graph_subject(self):
-        #http
-        self.assertIsNotNone(ut.get_graph_subject(self.dataLoaderParking.meshGraph,next(s for s in self.dataLoaderParking.meshGraph.subjects(RDF.type))))
-        
-        #file
-        self.assertIsNotNone(ut.get_graph_subject(self.dataLoaderParking.pcdGraph,next(s for s in self.dataLoaderParking.pcdGraph.subjects(RDF.type))))
-
-        #random
-        graph=Graph()
-        graph.add((URIRef('mySubject'),RDFS.label,Literal('label')))
-        self.assertIsNotNone(ut.get_graph_subject(graph,URIRef('mySubject')))
-
-        #not in graph
-        self.assertRaises(ValueError,ut.get_graph_subject,self.dataLoaderParking.imgGraph,URIRef('kjhgfd'))
-
-    def test_get_data_type(self):
-        value=1
-        dataType=ut.get_data_type(value)
-        self.assertAlmostEqual(dataType,XSD.integer)
-        
-        value=0.1
-        dataType=ut.get_data_type(value)
-        self.assertAlmostEqual(dataType,XSD.float)
-
-        value=[1,2,3]
-        dataType=ut.get_data_type(value)
-        self.assertAlmostEqual(dataType,XSD.string)
-
-        value=datetime(1991,5,12,10,10,10)
-        dataType=ut.get_data_type(value)
-        self.assertAlmostEqual(dataType,XSD.dateTime)
-        
-        value=np.array([1,2,3])
-        dataType=ut.get_data_type(value)
-        self.assertAlmostEqual(dataType,XSD.string)
-
-        value=(1,2,3)
-        dataType=ut.get_data_type(value)
-        self.assertAlmostEqual(dataType,XSD.string)
-
-    # def test_literal_to_cartesianTransform(self):
-    #     item=Literal("[[-0.05442451  0.08978218  0.99447329 -8.94782375] [-0.78368672 -0.62101649  0.01317728 11.25314019] [ 0.6187674  -0.77863835  0.10415962  6.54284524] [ 0.          0.          0.          1.        ]]")
-    #     test=ut.literal_to_cartesianTransform(item)
-    #     self.assertEqual(test.size,16)
-
-    #     item=Literal('[[-0.05442451  0.08978218  0.99447329 -8.94782375]\r\n [-0.78368672 -0.62101649  0.01317728 11.25314019]\r\n [ 0.6187674  -0.77863835  0.10415962  6.54284524]\r\n [ 0.          0.          0.          1.        ]]')
-    #     test=ut.literal_to_cartesianTransform(item)
-    #     self.assertEqual(test.size,16)
-        
-    #     item=Literal([-0.05442451,  0.08978218 , 0.99447329 ,-8.94782375,-0.78368672, -0.62101649 , 0.01317728, 11.25314019, 0.6187674 , -0.77863835 , 0.10415962 , 6.54284524, 0.  ,        0.    ,      0.     ,     1.        ])
-    #     test=ut.literal_to_cartesianTransform(item)
-    #     self.assertEqual(test.size,16)
-
-    #     item=Literal(np.array([[-0.05442451,  0.08978218 , 0.99447329 ,-8.94782375],
-    #                              [-0.78368672, -0.62101649 , 0.01317728, 11.25314019],
-    #                               [ 0.6187674 , -0.77863835 , 0.10415962 , 6.54284524] ,
-    #                               [ 0.  ,        0.    ,      0.     ,     1.        ]]))
-    #     test=ut.literal_to_cartesianTransform(item)
-    #     self.assertEqual(test.size,16)
-
-    #     item=Literal("[[-0.05442451 , 0.08978218 , 0.99447329 ,-8.94782375] [-0.78368672, -0.62101649,  0.01317728, 11.25314019] [ 0.6187674  ,-0.77863835 , 0.10415962 , 6.54284524] [ 0.  ,        0.    ,      0.       ,   1.        ]]")
-    #     test=ut.literal_to_cartesianTransform(item)
-    #     self.assertEqual(test.size,16)
-
-    #     item=Literal("None")
-    #     test=ut.literal_to_cartesianTransform(item)
-    #     self.assertIsNone(test)
 
     def test_literal_to_float(self):
         item=Literal(0.5)
@@ -518,70 +341,13 @@ class TestUtils(unittest.TestCase):
         test=ut.literal_to_float(item)
         self.assertIsInstance(test,float)
 
-        item=Literal('blabla')
-        self.assertRaises(ValueError,ut.literal_to_float,item)
-
-    def test_literal_to_int(self):
-        item=Literal(0.5)
-        test=ut.literal_to_int(item)
-        self.assertIsInstance(test,int)
-
-        item=Literal(5)
-        test=ut.literal_to_int(item)
-        self.assertIsInstance(test,int)
-
-        item=Literal('5')
-        test=ut.literal_to_int(item)
-        self.assertIsInstance(test,int)
-
-        item=Literal('blabla')
-        self.assertRaises(ValueError,ut.literal_to_int,item)
-
-    def test_literal_to_list(self):
-        item=Literal(0.5)
-        test=ut.literal_to_list(item)
-        self.assertIsInstance(test,list)
-
-        item=Literal('[-0.126115439984335, 0.0981832072267781, 0.0312044509604729]')
-        test=ut.literal_to_list(item)
-        self.assertEqual(len(test),3)
-
-        item=Literal('[-0.126115439984335 0.0981832072267781 0.0312044509604729]')
-        test=ut.literal_to_list(item)
-        self.assertEqual(len(test),3)
-
-        item=Literal('[None None ]')
-        test=ut.literal_to_list(item)
+        item=Literal("None")
+        test=ut.literal_to_float(item)
         self.assertIsNone(test)
 
-    # def test_literal_to_orientedBounds(self):
-    #     item=Literal("[[-0.05442451  0.08978218  0.99447329 ] [-0.78368672 -0.62101649  0.01317728 ] [ 0.6187674  -0.77863835    6.54284524] [ 0.          0.                    1.        ] [-0.05442451   0.99447329 -8.94782375] [-0.78368672  0.01317728 11.25314019] [   -0.77863835  0.10415962  6.54284524] [ 0.                    0.          1.        ]]")
-    #     test=ut.literal_to_orientedBounds(item)
-    #     self.assertEqual(test.size,24)
-
-    #     item=Literal([-0.05442451,  0.08978218 , 0.99447329 ,-8.94782375,-0.78368672, -0.62101649 , 0.01317728, 11.25314019, 0.6187674 , -0.77863835 , 0.10415962 , 6.54284524, 0.  ,        0.    ,      0.  , -0.77863835 , 0.10415962 , 6.54284524, -0.77863835 , 0.10415962 , 6.54284524, -0.77863835 , 0.10415962 , 6.54284524        ])
-    #     test=ut.literal_to_orientedBounds(item)
-    #     self.assertEqual(test.size,24)
-
-    #     item=Literal(np.array([[-0.05442451,  0.08978218 , 0.99447329 ],
-    #                              [-0.78368672, -0.62101649 , 0.01317728],
-    #                               [ 0.6187674 , -0.77863835 , 0.10415962 ] ,
-    #                               [ 0.  ,        0.    ,      0.     ,          ],
-    #                               [-0.05442451,  0.08978218 , 0.99447329 ],
-    #                              [-0.78368672, -0.62101649 , 0.01317728],
-    #                               [ 0.6187674 , -0.77863835 , 0.10415962 ] ,
-    #                               [ 0.  ,        0.    ,      0.     ,          ]]))
-    #     test=ut.literal_to_orientedBounds(item)
-    #     self.assertEqual(test.size,24)
-
-    #     item=Literal("[[-0.05442451 , 0.08978218 , 0.99447329 ] [-0.78368672, -0.62101649 , 0.01317728 ] [ 0.6187674  ,-0.77863835  ,  6.54284524] [ 0.    ,      0.          ,          1.        ] [-0.05442451  , 0.99447329 ,-8.94782375] [-0.78368672 , 0.01317728, 11.25314019] [   -0.77863835,  0.10415962 , 6.54284524] [ 0.       ,             0.   ,       1.        ]]")
-    #     test=ut.literal_to_orientedBounds(item)
-    #     self.assertEqual(test.size,24)
-
-    #     item=Literal("None")
-    #     test=ut.literal_to_orientedBounds(item)
-    #     self.assertIsNone(test)
-
+        item=Literal('blabla')
+        self.assertRaises(ValueError,ut.literal_to_float,item)
+    
     def test_literal_to_string(self):
         item=Literal(0.5)
         test=ut.literal_to_string(item)
@@ -599,39 +365,84 @@ class TestUtils(unittest.TestCase):
         test=ut.literal_to_string(item)
         self.assertIsNone(test)
 
-    def test_literal_to_uriref(self):
-        item=Literal('blabla')
-        test=ut.literal_to_uriref(item).toPython()
-        self.assertEqual(test,'blabla')
+    def test_literal_to_list(self):
+        item=Literal(0.5)
+        test=ut.literal_to_list(item)
+        self.assertIsInstance(test,list)
+        self.assertEqual(test[0], 0.5)
 
-        item=Literal('None')
-        test=ut.literal_to_uriref(item)
+        item=Literal('[-0.126115439984335, 0.0981832072267781, 0.0312044509604729]')
+        test=ut.literal_to_list(item)
+        self.assertEqual(len(test),3)
+
+        item=Literal('[-0.126115439984335,0.0981832072267781,0.0312044509604729]')
+        test=ut.literal_to_list(item)
+        self.assertEqual(len(test),3)
+
+        item=Literal('[-0.126115439984335 0.0981832072267781 0.0312044509604729]')
+        test=ut.literal_to_list(item)
+        self.assertEqual(len(test),3)
+
+        item=Literal('[None None ]')
+        test=ut.literal_to_list(item)
         self.assertIsNone(test)
 
-        self.assertRaises(ValueError,ut.literal_to_uriref,5)
+        item="[kip ei hond]"
+        test=ut.literal_to_list(item)
+        self.assertEqual(len(test),3)
 
-        self.assertRaises(ValueError,ut.literal_to_uriref,0.5)
+        item="[kip, ei, hond]"
+        test=ut.literal_to_list(item)
+        self.assertEqual(len(test),3)
 
-    # def test_match_uri(self):
-    #     test=ut.match_uri('timestamp').toPython()
-    #     self.assertEqual(test,'https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#timestamp')
-    #     test=ut.match_uri('cartesianBounds').toPython()
-    #     self.assertEqual(test,'http://libe57.org#cartesianBounds')
-    #     test=ut.match_uri('coordinateSystem').toPython()
-    #     self.assertEqual(test,'https://w3id.org/gom#coordinateSystem')
-    #     test=ut.match_uri('ifcPath').toPython()
-    #     self.assertEqual(test,'http://ifcowl.openbimstandards.org/IFC2X3_Final#ifcPath')
-    #     test=ut.match_uri('xResolution').toPython()
-    #     self.assertEqual(test,'http://www.w3.org/2003/12/exif/ns#xResolution')
-    #     test=ut.match_uri('focalLength35mm').toPython()
-    #     self.assertEqual(test,'http://www.w3.org/1999/02/22-rdf-syntax-ns#focalLength35mm')
-    #     test=ut.match_uri('qfdsfqsf').toPython()
-    #     self.assertEqual(test,'https://w3id.org/v4d/core#qfdsfqsf')
+        item="None"
+        test=ut.literal_to_list(item)
+        self.assertIsNone(test)
+        
+        item="[None, kip, 0.5]" 
+        test=ut.literal_to_list(item)
+        self.assertIsNone(test)
 
-    def test_replace_str_index(self):
-        item="rrrr"
-        test=ut.replace_str_index(item,index=0,replacement='_')
-        self.assertEqual(test[0],'_')
+    def test_literal_to_int(self):
+        item=Literal(0.5)
+        test=ut.literal_to_int(item)
+        self.assertIsInstance(test,int)
+
+        item=Literal(5)
+        test=ut.literal_to_int(item)
+        self.assertIsInstance(test,int)
+
+        item=Literal('5')
+        test=ut.literal_to_int(item)
+        self.assertIsInstance(test,int)
+
+        item=Literal('blabla')
+        self.assertRaises(ValueError,ut.literal_to_int,item)
+
+    def test_literal_to_python(self):
+        item=Literal(0.5)
+        test=ut.literal_to_python(item)
+        self.assertIsInstance(test,float)
+
+        item=Literal(5)
+        test=ut.literal_to_python(item)
+        self.assertIsInstance(test,int)
+
+        item=Literal('5')
+        test=ut.literal_to_python(item)
+        self.assertIsInstance(test,int)
+
+        item=Literal('blabla')
+        test=ut.literal_to_python(item)
+        self.assertIsInstance(test,str)
+
+    def test_literal_to_linked_subjects(self):
+        string="['file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904659_0_Z_Q8COz94wZzVDqlx5_s', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904099_0_Z_Q8COz94wZzVDqlx5c6', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_903697_0_Z_Q8COz94wZzVDqlx5Wq', 'file:///DJI_0085', 'file:///IMG_8834', 'file:///parking', 'file:///parking']"
+
+        list=ut.literal_to_linked_subjects(string)
+        gtlist=['file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904659_0_Z_Q8COz94wZzVDqlx5_s', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904099_0_Z_Q8COz94wZzVDqlx5c6', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_903697_0_Z_Q8COz94wZzVDqlx5Wq', 'file:///DJI_0085', 'file:///IMG_8834', 'file:///parking', 'file:///parking']
+
+        (self.assertTrue(list[i]==gtlist[i]) for i in range(len(list)) )
 
     def test_string_to_list(self):
         #cartesianBounds
@@ -655,21 +466,32 @@ class TestUtils(unittest.TestCase):
         #cartesianBounds
         item="[-12.33742784 -10.91544131  73.8353109   73.96926636   8.642    9.462 -12.33742784 -10.91544131  73.8353109    ]"
         test=ut.string_to_rotation_matrix(item)
-        self.assertEqual(test.size,9)
+        self.assertEqual(test.shape,(3,3))
 
         item="[-12.33742784, -10.91544131,  73.8353109  , 73.96926636  , 8.642   , 9.462  ,-12.33742784, -10.91544131,  73.8353109   ]"
         test=ut.string_to_rotation_matrix(item)
-        self.assertEqual(test.size,9)
+        self.assertEqual(test.shape,(3,3))
 
         item="[[-12.33742784, -10.91544131,  73.8353109 ] ,   [ 73.96926636  , 8.642   , 9.462  ] ,  [-12.33742784, -10.91544131,  73.8353109   ]]"
         test=ut.string_to_rotation_matrix(item)
-        self.assertEqual(test.size,9)
+        self.assertEqual(test.shape,(3,3))
+
+        item="[-12.33742784, -10.91544131,  73.8353109  , 73.96926636  , 8.642   , 9.462  ,-12.33742784, -10.91544131   ]"
+        self.assertRaises(ValueError,ut.string_to_rotation_matrix,item)
 
         item="None"
         self.assertRaises(ValueError,ut.string_to_rotation_matrix,item)
         
         item="[[None, None, None],[None, None, None],[None, None, None]]"     
         self.assertRaises(ValueError,ut.string_to_rotation_matrix,item)
+
+    def test_xml_to_float(self):
+        item="10"
+        test=ut.xml_to_float(item)
+        self.assertEqual(test,10.0)
+
+        item="None"
+        self.assertRaises(ValueError,ut.xml_to_float,item)
 
     def test_xcr_to_alt(self):
         item="642069440/10000"
@@ -705,6 +527,190 @@ class TestUtils(unittest.TestCase):
         item="None"
         test=ut.xcr_to_long(item)
         self.assertIsNone(test)
+
+    def test_featured3d_to_literal(self):
+        self.assertEqual(ut.featured3d_to_literal(), np.array(1))
+
+    def test_featured2d_to_literal(self):
+        self.assertEqual(ut.featured3d_to_literal(), np.array(1))
+
+    def test_item_to_list(self):
+        item=5
+        test=ut.item_to_list(item)
+        self.assertEqual(len(test),1)
+        item=['qsdf']
+        test=ut.item_to_list(item)
+        self.assertEqual(len(test),1)
+        item=['qsdf',1]
+        test=ut.item_to_list(item)
+        self.assertEqual(len(test),2)
+
+        self.assertRaises(ValueError,ut.get_graph_subject,self.dataLoaderParking.imgGraph,URIRef('kjhgfd'))
+
+#### VALIDATION ####
+
+    def test_check_if_uri_exists(self):
+        list=[URIRef('4499de21-f13f-11ec-a70d-c8f75043ce59'),URIRef('http://IMG_2173'),URIRef('http://000_GM_Opening_Rectangular_Opening_Rectangular_1101520'),URIRef('43be9b1c-f13f-11ec-8e65-c8f75043ce59')]
+        subject=URIRef('43be9b1c-f13f-11ec-8e65-c8f75043ce59')
+        test=ut.check_if_uri_exists(list, subject)
+        self.assertTrue(test)
+
+        #incorrect one
+        subject=URIRef('blablabla')
+        test=ut.check_if_uri_exists(list, subject)
+        self.assertFalse(test)
+
+    def test_get_subject_name(self):
+        self.assertEqual(ut.get_subject_name(URIRef("http://images#P0024688")),"P0024688")
+
+    def test_validate_string(self):
+        
+        test=ut.validate_string('http://pointcloud2_0')
+        self.assertEqual(test,'http://pointcloud2_0')
+        test=ut.validate_string('http://po/int/cloud2_ 0:')
+        self.assertEqual(test,'http://po_int_cloud2__0_')
+        test=ut.validate_string('pointc&:lo ud2_0_')
+        self.assertEqual(test,'pointc&_lo_ud2_0_')
+        test=ut.validate_string('file:///pointc&:lo ud2_0')
+        self.assertEqual(test,'file:///pointc&_lo_ud2_0')
+        test=ut.validate_string('file:///pointc&:lo /ud2_0')
+        self.assertEqual(test,'file:///pointc&_lo__ud2_0')
+        test=ut.validate_string('4499de21-f13f-11ec-a70d-c8f75043ce59')
+        self.assertEqual(test,'4499de21-f13f-11ec-a70d-c8f75043ce59')
+        test=ut.validate_string('[this<has$to^change]')
+        self.assertEqual(test,'_this_has_to_change_')
+
+    def test_validate_timestamp(self):
+
+        #string
+        self.assertEqual(str(ut.validate_timestamp("2022:03:13 13:55:26")),"2022-03-13T13:55:26")
+        #string
+        self.assertEqual(str(ut.validate_timestamp('Tue Dec  7 09:38:13 2021')),"2021-12-07T09:38:13")
+        #string
+        self.assertEqual(str(ut.validate_timestamp("1648468136.033126", millies=True)),"2022-03-28T11:48:56.033126")
+        #datetime object
+        self.assertEqual(str(ut.validate_timestamp(datetime(2022,3,13,13,55,26))),"2022-03-13T13:55:26")
+        # invalid
+        self.assertRaises(ValueError,ut.validate_timestamp,'qsdfqsdf')
+
+    def test_check_if_subject_is_in_graph(self):
+        #http
+        self.assertTrue(ut.check_if_subject_is_in_graph(self.dataLoaderRoad.imgGraph,next(s for s in self.dataLoaderRoad.imgGraph.subjects(RDF.type))))
+        self.assertTrue(ut.check_if_subject_is_in_graph(self.dataLoaderParking.imgGraph,URIRef("images#IMG_8834")))
+
+        #random
+        graph=Graph()
+        graph.add((URIRef('mySubject'),RDFS.label,Literal('label')))
+        self.assertTrue(ut.check_if_subject_is_in_graph(graph,URIRef('mySubject')))
+
+        #not in graph
+        self.assertFalse(ut.check_if_subject_is_in_graph(self.dataLoaderRoad.meshGraph,URIRef('ikjuhygfds')))
+
+    def test_get_graph_intersection(self):
+        intersectionGraph = ut.get_graph_intersection([self.dataLoaderRoad.imgGraph,self.dataLoaderRoad.imgGraph])
+        self.assertEqual(len(list(intersectionGraph.subjects())),len(list(self.dataLoaderRoad.imgGraph.subjects())))
+
+    def test_get_graph_subject(self):
+        #http
+        self.assertIsNotNone(ut.get_graph_subject(self.dataLoaderParking.meshGraph,next(s for s in self.dataLoaderParking.meshGraph.subjects(RDF.type))))
+        
+        #file
+        self.assertIsNotNone(ut.get_graph_subject(self.dataLoaderParking.pcdGraph,next(s for s in self.dataLoaderParking.pcdGraph.subjects(RDF.type))))
+
+        #random
+        graph=Graph()
+        graph.add((URIRef('mySubject'),RDFS.label,Literal('label')))
+        self.assertIsNotNone(ut.get_graph_subject(graph,URIRef('mySubject')))
+
+        #not in graph
+
+    def test_get_attribute_from_predicate(self):
+        graph=Graph()
+        graph=ut.bind_ontologies(graph)
+        string=ut.get_attribute_from_predicate(graph, predicate =Literal('https://w3id.org/geomapi#cartesianTransform')) 
+        self.assertEqual(string,'cartesianTransform')
+        string=ut.get_attribute_from_predicate(graph, predicate =Literal('http://purl.org/dc/terms/created')) 
+        self.assertEqual(string,'created')
+        string=ut.get_attribute_from_predicate(graph, predicate =Literal('http://standards.buildingsmart.org/IFC/DEV/IFC2x3/TC1/OWL#className')) 
+        self.assertEqual(string,'className')
+        string=ut.get_attribute_from_predicate(graph, predicate =Literal('http://www.w3.org/2003/12/exif/ns#xResolution')) 
+        self.assertEqual(string,'xResolution')
+        string=ut.get_attribute_from_predicate(graph, predicate =Literal('https://w3id.org/gom#coordinateSystem')) 
+        self.assertEqual(string,'coordinateSystem')
+
+    def test_bind_ontologies(self):
+        graph=Graph()
+        graph=ut.bind_ontologies(graph) 
+        test=False
+        for n in graph.namespaces():
+            if 'geomapi' in n:
+                test=True
+        self.assertTrue(test)
+
+    def test_clean_attributes_list(self):
+        list=['blablabla',
+            'graph','graphPath','subject','fullResourcePath','kwargs', 'orientedBoundingBox',
+            'ifcElement',
+            'mesh',
+            'exifData','xmlData','image','features2d','pinholeCamera',
+            'pcd','e57Pointcloud','e57xmlNode','e57image','features3d',
+            'linkedNodes']
+        newList=ut.clean_attributes_list(list)
+        self.assertEqual(len(newList),3)
+      
+    def test_get_node_resource_extensions(self):
+        
+        self.assertEqual(ut.get_node_resource_extensions("geomapi.nodes.MeshNode"), ut.MESH_EXTENSIONS)
+        self.assertEqual(ut.get_node_resource_extensions("geomapi.nodes.PanoNode"), ut.IMG_EXTENSIONS)
+
+    def test_get_node_type(self):
+        class ImageNode():
+            def __init__(self):
+                pass
+        node = ImageNode()
+        self.assertEqual(ut.get_node_type(node), URIRef("https://w3id.org/geomapi#ImageNode"))
+
+    def test_get_data_type(self):
+        value=1
+        dataType=ut.get_data_type(value)
+        self.assertAlmostEqual(dataType,XSD.integer)
+        
+        value=0.1
+        dataType=ut.get_data_type(value)
+        self.assertAlmostEqual(dataType,XSD.float)
+
+        value=[1,2,3]
+        dataType=ut.get_data_type(value)
+        self.assertAlmostEqual(dataType,XSD.string)
+
+        value=datetime(1991,5,12,10,10,10)
+        dataType=ut.get_data_type(value)
+        self.assertAlmostEqual(dataType,XSD.dateTime)
+        
+        value=np.array([1,2,3])
+        dataType=ut.get_data_type(value)
+        self.assertAlmostEqual(dataType,XSD.string)
+
+        value=(1,2,3)
+        dataType=ut.get_data_type(value)
+        self.assertAlmostEqual(dataType,XSD.string)
+
+    def test_cartesianTransform_to_literal(self):
+        literal=ut.cartesianTransform_to_literal(self.dataLoaderParking.imageCartesianTransform1)
+        self.assertTrue('-8.13902571e-02' in literal)
+
+    def test_get_geomapi_data_types(self):
+        self.assertGreater(len(ut.get_geomapi_data_types()),0)
+
+    def test_get_ifcowl_uri(self):
+        self.assertEqual(ut.get_ifcowl_uri(), ut.IFC_NAMESPACE.IfcBuildingElement)
+
+    def test_get_ifcopenshell_class_name(self):
+        self.assertEqual(ut.get_ifcopenshell_class_name("ifc#balk"), "balk")
+
+    def test_get_predicate_and_datatype(self):
+        self.assertEqual(ut.get_predicate_and_datatype("cartesianTransform"), 
+                         (URIRef('https://w3id.org/geomapi#cartesianTransform'),URIRef("https://w3id.org/geomapi#matrix")))
 
 if __name__ == '__main__':
     unittest.main()

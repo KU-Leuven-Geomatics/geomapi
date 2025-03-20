@@ -86,9 +86,9 @@ class TestPanoNode(unittest.TestCase):
         # self.assertEqual(node.imageWidth,640)
         # self.assertEqual(node.imageHeight,480)
         self.assertIsNotNone(node.timestamp)
-        self.assertTrue(np.allclose(node.cartesianTransform,np.eye(4),atol=0.001))
-        self.assertTrue(np.allclose(node.orientedBoundingBox.extent,np.array([1,1,1]),atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),np.array([0,0,0]),atol=0.001))    
+        np.testing.assert_array_almost_equal(node.cartesianTransform,np.eye(4),3)
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.extent,np.array([1,1,1]),3)
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),np.array([0,0,0]),3)
         
         
     def test_imageWidth(self):

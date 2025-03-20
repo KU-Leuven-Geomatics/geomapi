@@ -141,7 +141,21 @@ Documentation Update
  
 ### Fixed
 
+## [2.0.0] - 2024-03-11
+ 
+Test fixes
+ 
+### Added
 
+### Removed
+- Removed the public folder, source is now in `docs/`
+ 
+### Changed
+- PointcloudNode carthesian check
+- the location of the pics folder is now `docs/pics/`
+- `.gitlab-ci.yml` refactored to build to public folder
+ 
+### Fixed
 
 <!-------EXTRA NOTES-------->
 

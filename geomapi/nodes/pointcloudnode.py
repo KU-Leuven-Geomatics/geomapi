@@ -76,7 +76,8 @@ class PointCloudNode (Node):
         #initialisation
         #  self.set_metadata_from_e57xml() if self.e57XmlPath else None
         self.get_point_count()
-        self.set_metadata_from_e57_header() if self.path and self.path.suffix =='.e57' else None
+        if (self.path and self.path.suffix =='.e57'):
+            self.set_metadata_from_e57_header()
         
 
 #---------------------PROPERTIES----------------------------
@@ -285,12 +286,15 @@ class PointCloudNode (Node):
 
         Returns:
             bool: True if meta data is successfully parsed
-        """  
-        if self._graph:
-            return True
+        """ 
+
+        #TODO dit zorgt voor conflicten aagezien deze waarden altijd een standaardwaarde krijgen in de Node class 
+        #if self._graph:
+        #    print("Graph is already defined, no need to parse values")
+        #    return True
         
-        if self.cartesianTransform is not None and self.convexHull is not None and self.orientedBoundingBox is not None:
-            return True
+        #if self.cartesianTransform is not None and self.convexHull is not None and self.orientedBoundingBox is not None:
+        #    return True
 
         # try:
         e57 = pye57.E57(str(self.path))   

@@ -1,10 +1,7 @@
 """Different tools to Manage RDF data."""
 
 #IMPORT PACKAGES
-from dis import dis
-from lib2to3.pytree import Node
 import numpy as np 
-import cv2 
 import open3d as o3d 
 import os 
 import re
@@ -13,19 +10,14 @@ import pandas as pd
 import xml.etree.ElementTree as ET 
 from typing import List,Tuple
 from pathlib import Path
-import uuid  
 import ezdxf
-from ezdxf.groupby import groupby
 
 # import APIs
 import rdflib
 from rdflib import URIRef, Literal,Namespace,Graph
-from rdflib.namespace import CSVW, DC, DCAT, DCTERMS, DOAP, FOAF, ODRL2, ORG, OWL, \
-                           PROF, PROV, RDF, RDFS, SDO, SH, SKOS, SOSA, SSN, TIME, \
-                           VOID, XMLNS, XSD
+from rdflib.namespace import RDF
 import ifcopenshell
 import ifcopenshell.util
-import ifcopenshell.geom as geom
 import ifcopenshell.util.selector
 
 import multiprocessing
@@ -33,7 +25,6 @@ import concurrent.futures
 
 #IMPORT MODULES 
 from geomapi.nodes import *
-from geomapi.nodes.sessionnode_old import create_node 
 import geomapi.utils as ut
 import geomapi.utils.geometryutils as gmu
 import geomapi.utils.cadutils as cadu
@@ -46,31 +37,32 @@ ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')
 #### NODE CREATION ####
 def e57xml_to_nodes(path :str, **kwargs) -> List[PointCloudNode]:
     """Parse XML file that is created with E57lib e57xmldump.exe.
+        E57 XML file structure
+        e57Root
+           >data3D
+               >vectorChild
+                   >pose
+                       >rotation
+                       >translation
+                   >cartesianBounds
+                   >guid
+                   >name
+                   >points recordCount
+           >images2D
 
     Args:
         path (string):  e57 xml file path e.g. "D:\\Data\\2018-06 Werfopvolging Academiestraat Gent\\week 22\\PCD\\week 22 lidar_CC.xml"
+        **kwargs: All extra arguments are applied to all nodes
             
     Returns:
         A list of pointcloudnodes with the xml metadata 
     """
-    path=Path(path) if path else None
     
-    #E57 XML file structure
-    #e57Root
-    #   >data3D
-    #       >vectorChild
-    #           >pose
-    #               >rotation
-    #               >translation
-    #           >cartesianBounds
-    #           >guid
-    #           >name
-    #           >points recordCount
-    #   >images2D
+    path=Path(path)
     mytree = ET.parse(path)
-    root = mytree.getroot()  
-    nodelist=[]   
-    e57Path=path.with_suffix('.e57')       
+    root = mytree.getroot()
+    nodelist=[]
+    e57Path=path.with_suffix('.e57')
 
     for idx,_ in enumerate(root.iter('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}vectorChild')):
         nodelist.append(PointCloudNode(e57XmlPath=path,e57Index=idx,path=e57Path,**kwargs))
@@ -1057,10 +1049,10 @@ def get_mesh_representation(node: Node)->o3d.geometry.TriangleMesh:
         hull, _ =resource.compute_convex_hull()
         return hull
     elif 'ImageNode' in nodeType:
-        return node.get_mesh_geometry()
+        return node.convexHull
     elif 'OrthoNode' in nodeType:
-        print('not implemented')
-        return None
+        #print('not implemented')
+        return node.convexHull
     else:
         return resource
 

@@ -1942,25 +1942,26 @@ def create_ellipsoid_mesh(radii: np.ndarray, transformation: np.ndarray, resolut
 
     return mesh
 
-def get_oriented_bounding_box(value:np.ndarray |type[o3d.geometry.Geometry])->o3d.geometry.OrientedBoundingBox:
-    """Get an Open3D OrientedBoundingBox from various inputs.
-    
-    **NOTE**: This function tests 
+def get_oriented_bounding_box(value:np.ndarray |type[o3d.geometry.Geometry], degrees = False)->o3d.geometry.OrientedBoundingBox:
+    """Get an Open3D OrientedBoundingBox from various inputs. 
 
     Args:
-        - cartesianBounds (np.array): [xMin,xMax,yMin,yMax,zMin,zMax]
-        - orientedBounds (np.array): [8x3] bounding points
-        - parameters (np.array): [center,extent,euler_angles]
-        - Open3D TriangleMesh
-        - Open3D PointCloud
-        - Open3D LineSet
-        - array of 3D points (np.array)
-        - o3d.utility.Vector3dVector
+        value: One of the following inputs:
+            - cartesianBounds (np.array): [xMin,xMax,yMin,yMax,zMin,zMax]
+            - orientedBounds (np.array): [8x3] bounding points
+            - parameters (np.array): [center,extent,euler_angles] (in radians)
+            - Open3D TriangleMesh
+            - Open3D PointCloud
+            - Open3D LineSet
+            - array of 3D points (np.array): [nx3] n>3 else confused by parameter array
+            - o3d.utility.Vector3dVector
+        degrees (False): Are the parameters in radians(default) or degrees 
 
 
     Returns:
         o3d.geometry.OrientedBoundingBox
     """
+    
     def move_points(points): #this is to prevent the bounding box from being too sensitive to the input points
         new_points=copy.deepcopy(points)
         new_points[:,0]=new_points[:,0]+np.random.uniform(-0.03,0.03)
@@ -2038,6 +2039,7 @@ def get_oriented_bounding_box_parameters(orientedBoundingBox: o3d.geometry.Orien
     extent = orientedBoundingBox.extent
     rotation_matrix = copy.deepcopy(orientedBoundingBox.R)
     euler_angles = R.from_matrix(rotation_matrix).as_euler('xyz', degrees=True)
+    print("The euler angles are derived from the rotation matrix, please note that this representation has a number of disadvantages")
     return np.hstack((center, extent, euler_angles))
 
 def get_cartesian_transform(translation: np.array = None,
@@ -2583,7 +2585,7 @@ def split_pcd_by_labels(point_cloud:o3d.geometry.PointCloud,labels:np.ndarray)->
         pcdList.append(point_cloud.select_by_index(ind))
     return pcdList,unique
 
-def join_geometries(geometries:List[o3d.geometry.Geometry])->List[o3d.geometry.Geometry]:
+def join_geometries(geometries:List[o3d.geometry.Geometry])->o3d.geometry.Geometry:
     """Join together a number of o3d geometries e.g. LineSet, PointCloud or o3d.TriangleMesh instances.
 
     **NOTE**: Only members of the same geometryType can be merged.
@@ -2596,41 +2598,37 @@ def join_geometries(geometries:List[o3d.geometry.Geometry])->List[o3d.geometry.G
     Returns:
         merged o3d.geometries
     """
-    geometries=ut.item_to_list(geometries)
+    if not geometries:
+        raise ValueError("The geometries list is empty.")
     
-    #group per geometrytype
-    line_set=o3d.geometry.LineSet()
-    point_cloud=o3d.geometry.PointCloud()
-    mesh=o3d.geometry.TriangleMesh()
-    box=o3d.utility.Vector3dVector()
-    points=[]
-    for g in geometries:
-        if isinstance(g,o3d.geometry.TriangleMesh) and len(g.vertices) != 0:
-            mesh+=g
-        elif isinstance(g,o3d.geometry.PointCloud) and len(g.points) != 0: 
-            point_cloud+=g
-        elif isinstance(g,np.ndarray) and g.shape[1]==3:
-            [points.append(p) for p in g]
-        elif isinstance(g,o3d.geometry.LineSet):
-            line_set+=g
-        elif isinstance(g,o3d.geometry.OrientedBoundingBox):
-            box.extend(g.get_box_points())
+    geom_type = type(geometries[0])
+    if not all(isinstance(g, geom_type) for g in geometries):
+        raise TypeError("All geometries must be of the same type.")
     
-    #add points to point_cloud
-    points=np.array(points)
-    if points.ndim==2 and points.shape[0]>0 and points.shape[1]==3:
-        pcd=o3d.geometry.PointCloud()
-        pcd.points=o3d.utility.Vector3dVector(points)
-        point_cloud+=pcd
+    if geom_type == o3d.geometry.PointCloud:
+        merged = o3d.geometry.PointCloud()
+        for g in geometries:
+            merged += g
+        return merged
     
-    #return geometries
-    geometries=[]
-    geometries.append(line_set) if np.asarray(line_set.points).shape[0]>0 else None
-    geometries.append(point_cloud) if points.shape[0]>0 else None
-    geometries.append(mesh) if np.asarray(mesh.vertices).shape[0]>0 else None
-    geometries.append(o3d.geometry.OrientedBoundingBox.create_from_points(box)) if np.asarray(box).shape[0]>0 else None
+    elif geom_type == o3d.geometry.LineSet:
+        merged = o3d.geometry.LineSet()
+        for g in geometries:
+            merged += g
+        return merged
     
-    return geometries if len(geometries)!=1 else geometries[0]
+    elif geom_type == o3d.geometry.TriangleMesh:
+        merged = o3d.geometry.TriangleMesh()
+        for g in geometries:
+            merged += g
+        return merged
+    
+    elif isinstance(geometries[0], np.ndarray):
+        merged = np.vstack(geometries)
+        return o3d.geometry.PointCloud(o3d.utility.Vector3dVector(merged))
+    
+    else:
+        raise TypeError("Unsupported geometry type for merging.")
         
 def crop_dataframe_from_meshes(df: pd.DataFrame,meshes:List[o3d.geometry.TriangleMesh]) -> List[pd.DataFrame]:
     """Crop point cloud and divide the inliers per waterthight mesh. \n

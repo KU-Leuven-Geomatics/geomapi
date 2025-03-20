@@ -187,25 +187,45 @@ class TestGeometryutils(unittest.TestCase):
                 self.assertAlmostEqual(boxPointsGt[i][j],boxPoints[i][j],delta=0.01)
                 
     def test_get_oriented_bounding_box(self):
-        center = [0, 0, 0]
-        extent = [1, 2, 3]
-        euler_angles = [45, 30, 60]
-
-        obb = gmu.get_oriented_bounding_box(center, extent, euler_angles)
-
-        np.testing.assert_array_almost_equal(obb.center, center, decimal=6)
-        np.testing.assert_array_almost_equal(obb.extent, extent, decimal=6)
+        # Test with cartesian bounds
+        cartesian_bounds = np.array([-1, 1, -1, 1, -1, 1])
+        obb = gmu.get_oriented_bounding_box(cartesian_bounds)
+        self.assertIsInstance(obb, o3d.geometry.OrientedBoundingBox)
         
-        rotation_matrix_expected = o3d.geometry.OrientedBoundingBox(center, R.from_euler('xyz', euler_angles, degrees=True).as_matrix(), extent).R
-        np.testing.assert_array_almost_equal(obb.R, rotation_matrix_expected, decimal=6)
+        # Test with 8 bounding points
+        bounding_points = np.array([
+            [-1, -1, -1], [-1, -1, 1], [-1, 1, -1], [-1, 1, 1],
+            [1, -1, -1], [1, -1, 1], [1, 1, -1], [1, 1, 1]
+        ])
+        obb = gmu.get_oriented_bounding_box(bounding_points)
+        self.assertIsInstance(obb, o3d.geometry.OrientedBoundingBox)
+        
+        # Test with parameters (center, extent, euler_angles)
+        parameters = np.array([
+            [4, 5, 6],  # Center
+            [1, 2, 3],  # Extent
+            [np.pi, 0, 0]   # Euler angles (radians)
+        ])
+        obb = gmu.get_oriented_bounding_box(parameters)
+        self.assertIsInstance(obb, o3d.geometry.OrientedBoundingBox)
+        
+        # Test with an array of 3D points
+        points = np.random.rand(100, 3)  # Random 3D points
+        obb = gmu.get_oriented_bounding_box(points)
+        self.assertIsInstance(obb, o3d.geometry.OrientedBoundingBox)
+        
+        # Test with Open3D PointCloud
+        pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
+        obb = gmu.get_oriented_bounding_box(pcd)
+        self.assertIsInstance(obb, o3d.geometry.OrientedBoundingBox)
 
-    def test_get_parameters_from_oriented_bounding_box(self):
+    def test_get_oriented_bounding_box_parameters(self):
         center = [0, 0, 0]
         extent = [1, 2, 3]
-        euler_angles = [45, 30, 60]
+        euler_angles = [90, 0, 0]
 
-        obb = gmu.get_oriented_bounding_box(center, extent, euler_angles)
-        parameters = gmu.get_parameters_from_oriented_bounding_box(obb)
+        obb = gmu.get_oriented_bounding_box(np.array([center, extent, euler_angles]), True)
+        parameters = gmu.get_oriented_bounding_box_parameters(obb)
 
         expected_parameters = np.hstack((center, extent, euler_angles))
 

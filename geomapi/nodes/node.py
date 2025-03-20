@@ -830,7 +830,7 @@ class Node:
                 #handle Path elements          
                 elif attribute in pathlist:
                     if self._graphPath:
-                        folderPath = ut.get_folder_path(self._graphPath)
+                        folderPath = ut.get_folder(self._graphPath)
                         value = Path(os.path.relpath(value, folderPath))
                     self._graph.add((self._subject, predicate,  Literal(value.as_posix(), datatype=dataType)))
                 else:

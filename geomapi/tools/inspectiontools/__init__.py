@@ -10,6 +10,7 @@ from colour import Color
 from geomapi.nodes import ImageNode
 import copy 
 import os
+import math
 
 
 def calculate_distance_between_images(image1, image2):
@@ -87,7 +88,7 @@ def filter_images_by_overlap(bimNodes,imgNodes,overlap):
 
         while j < len(images_copy):
             image2 = images_copy[j]
-            distance = calculate_distance(image1, image2)
+            distance = calculate_distance_between_images(image1, image2)
             if distance > ((image1.coverage - omean) / 2):
                 # If the distance exceeds the threshold, add the previous image to the filtered list
                 if j > i + 1:

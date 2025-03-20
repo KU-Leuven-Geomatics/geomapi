@@ -10,16 +10,13 @@ from typing import List,Tuple
 from colour import Color
 from geomapi.nodes import ImageNode
 import copy 
-import os
-import laspy
 import pandas as pd
 
 import pyvista as pv
-from vtk.util.numpy_support import numpy_to_vtk, vtk_to_numpy
 from vtk import vtkCellArray, vtkPoints, vtkPolyData, vtkTriangle
 
 def create_voxel_block_grid_and_raytrace(pcd,imageNode):
-    """THIS CURRENTLY DOESNT WORK BUT IS A PLACEHOLDER.
+    """THIS CURRENTLY DOESN'T WORK BUT IS A PLACEHOLDER.
 
     Args:
         pcd (_type_): _description_

@@ -109,21 +109,17 @@ class TestImageNode(unittest.TestCase):
         #raise error when text
         self.assertRaises(ValueError,ImageNode,imageHeight='qsdf')
     def test_depth(self):
-        node= ImageNode(depth=100)
-        self.assertEqual(node.depth,100)
-        self.assertTrue(np.allclose(node.cartesianTransform[:3,3],np.array([0,0,0]),atol=0.001))
+        node= ImageNode(depthMap=100)
+        self.assertEqual(node.depthMap,100)
+        np.testing.assert_array_equal(node.cartesianTransform[:3,3],np.array([0,0,0]))
         #check oriented bounding box
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),np.array([0,0,50]),atol=0.001))
-        #check convex hull -> not that convexhull is mean of all the vertices. because its a pyramid, the center is more towards the base
-        self.assertTrue(np.allclose(node.convexHull.get_center(),np.array([0,0,79.06973582]),atol=0.001))
+        np.testing.assert_array_equal(node.orientedBoundingBox.get_center(),np.array([0,0,50]))
+        #check convex hull -> note that convexhull is mean of all the vertices. because its a pyramid, the center is more towards the base
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),np.array([0,0,79.06973581]))
     
     def test_cartesianTransform(self):
         #create a convex hull in the shape of a pyramid
-        box = o3d.geometry.TriangleMesh.create_box(width=1, height=1, depth=1) #this gets Obox with x,y,z and no rotation
         points=np.array([[0,0,0], #top pyramid
-                         [0,0,0],
-                         [0,0,0],
-                         [0,0,0], 
                          [-10,-10,50], #base pyramid
                          [10,-10,50],
                          [-10,10,50],
@@ -137,7 +133,7 @@ class TestImageNode(unittest.TestCase):
         expectedCartesianTransform=np.eye(4)
         self.assertTrue(np.allclose(node.cartesianTransform,expectedCartesianTransform,atol=0.001))
         self.assertTrue(np.allclose(node.convexHull.get_center(),base_hull_center,atol=0.001))
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),base_hull_box_center,atol=0.001))
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.get_center(),base_hull_box_center)
         
         #translation
         translated_hull=copy.deepcopy(base_hull)

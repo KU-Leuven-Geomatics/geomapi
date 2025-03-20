@@ -196,7 +196,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(node.subject,self.dataLoaderRoad.meshSubject)
         node.get_graph()
         object=node.graph.value(node.subject,GEOMAPI_PREFIXES['geomapi'].path)
-        self.assertEqual(Path(ut.parse_path(object.toPython())),self.dataLoaderRoad.meshPath)
+        self.assertEqual(Path(object.toPython()),Path(self.dataLoaderRoad.meshPath))
 
     def test_node_creation_with_get_resource(self):
         #mesh

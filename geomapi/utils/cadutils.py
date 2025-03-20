@@ -103,7 +103,13 @@ def ezdxf_to_o3d(dxf,
             geometries=gmu.join_geometries(geometries)    if join_geometries else geometries
             #find the color of the layer
             color=np.array(get_rgb_from_aci(dxf.layers.get(layer).dxf.color))/255
-            [g.paint_uniform_color(color) for g in geometries if len(geometries)>0]
+            if len(geometries)>0:
+                for g in geometries:
+                    try:
+                        g.paint_uniform_color(color)
+                    except: 
+                        print("geometry type:",type(g) ,"cannot be given colors.")
+                        pass
             # [g.paint_uniform_color(layerColors[layers.index(layer)]) for g in geometries if len(geometries)>0 and layer in layers]
             geometries=ut.item_to_list(geometries)
             geometry_groups.append(geometries) if len(geometries)>0 else None
