@@ -30,7 +30,7 @@ from geomapi.utils import GEOMAPI_PREFIXES
 
 
 
-class TestCompletionTools(unittest.TestCase):
+class TestImageUtils(unittest.TestCase):
     
     
 
@@ -71,20 +71,18 @@ class TestCompletionTools(unittest.TestCase):
 
     # Testing the Utils
 
-    def test_create_transformation_matrix(self):
-        R = np.array([[1,2,3],[4,5,6],[7,8,9]])
-        t = np.array([10,11,12])
-        T = iu.create_transformation_matrix(R,t)
-        test_T = np.array([[1,2,3,10],[4,5,6,11],[7,8,9,12],[0,0,0,1]])
-        self.assertEqual (T.all(),test_T.all())
+    def test_fill_black_pixels(self):
+        iu.fill_black_pixels(self.dataLoaderParking.image1)
 
-    def test_split_transformation_matrix(self):
-        T = np.array([[1,2,3,4],[5,6,7,8],[9,10,11,12],[13,14,15,16]])
-        test_R = np.array([[1,2,3],[5,6,7],[9,10,11]])
-        test_t = np.array([4,8,12])
-        R,t = iu.split_transformation_matrix(T)
-        self.assertEqual (test_R.all(),R.all())
-        self.assertEqual (test_t.all(),t.all())
+    def test_subdivide_image(self):
+        iu.subdivide_image(self.dataLoaderParking.image1, 2, 2)
+
+    def test_calibrate_camera(self):
+        iu.calibrate_camera(self.dataLoaderParking.image1)
+
+    def test_match_images(self):
+        iu.match_images(self.dataLoaderParking.image1, self.dataLoaderParking.image2)
+
     
     
 

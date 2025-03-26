@@ -14,6 +14,7 @@ import numpy as np
 import open3d as o3d
 import pye57
 import ifcopenshell.util.selector
+import trimesh
 
 #GEOMAPI
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -111,13 +112,98 @@ class TestGeometryutils(unittest.TestCase):
 
 ################################## TEST FUNCTIONS ######################
 
+    def test_create_visible_point_cloud_from_meshes(self):
+        referenceMesh1= copy.deepcopy(self.dataLoaderParking.slabMesh)
+        referenceMesh1.translate([1,0,0])
+        referenceMesh2= copy.deepcopy(self.dataLoaderParking.slabMesh)
+        referenceMesh2.translate([0,1,0])
+        
+        # 1 geometry
+        identityPointClouds1, percentages1=gmu.create_visible_point_cloud_from_meshes(geometries=self.dataLoaderParking.slabMesh,
+                                                references=referenceMesh1)
+        self.assertEqual(len(identityPointClouds1),1)
+        self.assertGreater(len(identityPointClouds1[0].points),10)
+        self.assertEqual(len(percentages1),1)        
+        self.assertLess(percentages1[0],0.2)
+
+        # multiple geometries 
+        list=[self.dataLoaderParking.slabMesh,self.dataLoaderParking.wallMesh]
+        references=[referenceMesh1,referenceMesh2]
+        identityPointClouds2, percentages2=gmu.create_visible_point_cloud_from_meshes(geometries=list,
+                                                references=references)
+        self.assertEqual(len(identityPointClouds2),2)
+        self.assertLess(len(identityPointClouds2[0].points),len(identityPointClouds1[0].points))
+        self.assertEqual(len(percentages2),2)        
+        self.assertLess(percentages2[0],percentages1[0])
+
+    def test_mesh_to_trimesh(self):
+        triMesh=gmu.mesh_to_trimesh(self.dataLoaderParking.slabMesh)
+        mesh2=triMesh.as_open3d
+        self.assertEqual(len(self.dataLoaderParking.slabMesh.triangles),len(mesh2.triangles))
+
+    def test_crop_mesh_by_convex_hull(self):
+        """Test cropping inside a convex hull"""
+        source_mesh = trimesh.creation.box(extents=[2, 2, 2])
+        cutter_mesh = trimesh.creation.icosphere(subdivisions=2, radius=1.5)
+
+        cropped_meshes = gmu.crop_mesh_by_convex_hull(source_mesh, [cutter_mesh], inside=True)
+
+        assert isinstance(cropped_meshes, list)
+        assert len(cropped_meshes) > 0
+        for cropped in cropped_meshes:
+            assert isinstance(cropped, trimesh.Trimesh)
+            assert len(cropped.vertices) > 0  # Should retain some part of the mesh
+
+    def test_sample_geometry(self):
+        """Test sampling a TriangleMesh"""
+        mesh = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
+        resolution = 0.1
+        sampled_pcd = gmu.sample_geometry([mesh], resolution)
+
+        assert isinstance(sampled_pcd, list)
+        assert isinstance(sampled_pcd[0], o3d.geometry.PointCloud)
+        assert len(sampled_pcd[0].points) > 0  # Should contain points
+
+    def test_get_points_and_normals(self):
+        gmu.get_points_and_normals()
+
+    def test_compute_nearest_neighbors(self):
+        # Create some reference and query points
+        reference_points = np.array([[0, 0, 0], [1, 1, 1], [2, 2, 2], [3, 3, 3]])
+        query_points = np.array([[0.1, 0.1, 0.1], [2.1, 2.1, 2.1]])
+
+        # Expected nearest neighbors for each query point
+        expected_indices = np.array([0, 2])  # Closest reference point indices
+        expected_distances = np.linalg.norm(reference_points[expected_indices] - query_points, axis=1)
+
+        indices, distances = gmu.compute_nearest_neighbors(query_points, reference_points, n=1)
+
+        # Check if the returned values match expectations
+        np.testing.assert_array_equal(indices, expected_indices)
+        np.testing.assert_allclose(distances, expected_distances, atol=1e-5)
+
+    def test_filter_pcd_by_distance(self):
+        gmu.filter_pcd_by_distance()
+
+
+
+
+
+
+
+
+
+
+
+
+
     def test_arrays_to_mesh_and_mesh_to_arrays(self):
         #mesh_to_arrays
         tuple=gmu.mesh_to_arrays(self.dataLoaderParking.meshPath)
         self.assertEqual(len(tuple[0]),len(self.dataLoaderParking.mesh.vertices))
         self.assertEqual(len(tuple[1]),len(self.dataLoaderParking.mesh.triangles))
         self.assertEqual(len(tuple[2]),len(self.dataLoaderParking.mesh.vertex_colors))
-        self.assertEqual(len(tuple[2]),len(self.dataLoaderParking.mesh.vertex_normals))
+        self.assertEqual(len(tuple[3]),len(self.dataLoaderParking.mesh.vertex_normals))
         self.assertEqual(tuple[4],0)
 
         #arrays_to_mesh
@@ -125,6 +211,8 @@ class TestGeometryutils(unittest.TestCase):
         self.assertEqual(len(mesh.vertices),len(self.dataLoaderParking.mesh.vertices))
         self.assertEqual(len(mesh.triangles),len(self.dataLoaderParking.mesh.triangles))
         self.assertEqual(len(mesh.vertex_colors),len(self.dataLoaderParking.mesh.vertex_colors))
+
+        mesh=gmu.arrays_to_mesh(tuple[:2])
 
     def test_arrays_to_pcd(self):
         #pcd_to_arrays
@@ -230,31 +318,6 @@ class TestGeometryutils(unittest.TestCase):
         expected_parameters = np.hstack((center, extent, euler_angles))
 
         np.testing.assert_array_almost_equal(parameters, expected_parameters, decimal=6)
-
-
-    def test_create_visible_point_cloud_from_meshes(self):
-        referenceMesh1= copy.deepcopy(self.dataLoaderParking.slabMesh)
-        referenceMesh1.translate([1,0,0])
-        referenceMesh2= copy.deepcopy(self.dataLoaderParking.slabMesh)
-        referenceMesh2.translate([0,1,0])
-        
-        # 1 geometry
-        identityPointClouds1, percentages1=gmu.create_visible_point_cloud_from_meshes(geometries=self.dataLoaderParking.slabMesh,
-                                                references=referenceMesh1)
-        self.assertEqual(len(identityPointClouds1),1)
-        self.assertGreater(len(identityPointClouds1[0].points),10)
-        self.assertEqual(len(percentages1),1)        
-        self.assertLess(percentages1[0],0.2)
-
-        # multiple geometries 
-        list=[self.dataLoaderParking.slabMesh,self.dataLoaderParking.wallMesh]
-        references=[referenceMesh1,referenceMesh2]
-        identityPointClouds2, percentages2=gmu.create_visible_point_cloud_from_meshes(geometries=list,
-                                                references=references)
-        self.assertEqual(len(identityPointClouds2),2)
-        self.assertLess(len(identityPointClouds2[0].points),len(identityPointClouds1[0].points))
-        self.assertEqual(len(percentages2),2)        
-        self.assertLess(percentages2[0],percentages1[0])
     
     def test_generate_visual_cone_from_image(self):
         cartesianTransform=np.array([[-4.65090312e-02,  4.85391010e-02,  9.97737874e-01, -8.63657982e+00],
@@ -618,10 +681,7 @@ class TestGeometryutils(unittest.TestCase):
         # r4=gmu.get_rotation_matrix(np.asarray(box.get_box_points()))
         # self.assertAlmostEqual(r4[0][0],rotationGt[0][0], delta=0.01)
 
-    def test_mesh_to_trimesh(self):
-        triMesh=gmu.mesh_to_trimesh(self.dataLoaderParking.slabMesh)
-        mesh2=triMesh.as_open3d
-        self.assertEqual(len(self.dataLoaderParking.slabMesh.triangles),len(mesh2.triangles))
+    
 
 if __name__ == '__main__':
     unittest.main()

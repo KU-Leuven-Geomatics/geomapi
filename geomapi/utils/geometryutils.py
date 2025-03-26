@@ -16,6 +16,7 @@ import laspy # this is to process las point clouds
 import cv2
 import geomapi.utils as ut
 from pathlib import Path 
+from PIL import Image
 
 import geomapi.utils.imageutils as iu #! this might be a problem
 
@@ -38,7 +39,7 @@ def create_visible_point_cloud_from_meshes (geometries: List[o3d.geometry.Triang
                                             references:List[o3d.geometry.TriangleMesh], 
                                             resolution:float = 0.1,
                                             getNormals:bool=False)-> Tuple[List[o3d.geometry.PointCloud], List[float]]:
-    """Returns a set of point clouds sampled on the geometries. Each point cloud has its points filtered to not lie wihtin or collide with any of the reference geometries. As such, this method returns the **visible** parts of a set of sampled point clouds. \n
+    """Returns a set of point clouds sampled on the geometries. Each point cloud has its points filtered to not lie within or collide with any of the reference geometries. As such, this method returns the **visible** parts of a set of sampled point clouds. \n
     
     For every point cloud, the percentage of visibility is also reported. This method takes about 50s for 1000 geometries. \n
     \n
@@ -117,11 +118,27 @@ def mesh_to_trimesh(geometry: o3d.geometry.Geometry) -> trimesh.Trimesh:
     face_normals=geometry.triangle_normals if geometry.has_triangle_normals() else None
     vertex_normals=geometry.vertex_normals if geometry.has_vertex_normals() else None
     vertex_colors=(np.asarray(geometry.vertex_colors)*255).astype(int) if geometry.has_vertex_colors() else None
+    
+    # Extract UV coordinates (if available)
+    uvs = None
+    if geometry.triangle_uvs is not None and len(geometry.triangle_uvs) > 0:
+        uvs = np.asarray(geometry.triangle_uvs)  # Flattened list of UVs
+
+    # Load the texture image if available
+    texture_image = None
+    if geometry.textures:
+        # Open3D stores textures as Open3D images, convert to numpy
+        o3d_texture = geometry.textures[0]
+        texture_image = np.asarray(o3d_texture)  # Convert Open3D image to numpy
+        # Convert to a PIL image for easier handling
+        texture_pil = Image.fromarray(texture_image)
+
     return trimesh.Trimesh(vertices=geometry.vertices, 
                             faces=geometry.triangles, 
                             face_normals=face_normals,
                             vertex_normals=vertex_normals, 
-                            vertex_colors=vertex_colors) 
+                            vertex_colors=vertex_colors,
+                            visual=trimesh.visual.TextureVisuals(uv=uvs, image=texture_pil)) 
     
 def crop_mesh_by_convex_hull(source:trimesh.Trimesh, cutters: List[trimesh.Trimesh], inside : bool = True ) -> trimesh.Trimesh:
     """Cut a portion of a mesh that lies within the convex hull of another mesh.
@@ -219,27 +236,6 @@ def sample_geometry(geometries:List[o3d.geometry.Geometry],resolution:float=0.1)
         
     return point_clouds if len(point_clouds)>1 else point_clouds[0]
 
-
-def mesh_sample_points_uniformly(meshes:List[o3d.geometry.TriangleMesh],resolution:float=0.1)->List[o3d.geometry.PointCloud]:
-    """Sample the surface of a open3d mesh with a fixed resolution.\n
-
-    **NOTE** DEPRECIATED, use sample_geometry instead
-    
-    Args:
-        1.meshes (List[o3d.geometry.TriangleMesh])\n
-        2.resolution (float, optional): spatial resolution of the generated point cloud. Defaults to 0.1m.\n
-
-    Returns:
-        o3d.geometry.PointCloud
-    """
-    meshes=ut.item_to_list(meshes)
-    meshList=[]
-    for m in meshes:
-        area=m.get_surface_area()
-        count=int(area/(resolution*resolution))
-        meshList.append(m.sample_points_uniformly(number_of_points=count))
-    return meshList
-
 def pcd_get_normals(pcd:o3d.geometry.PointCloud)->np.ndarray:
     """Compute open3d point cloud normals if not already present.\n
 
@@ -280,13 +276,14 @@ def get_points_and_normals(pcd,transform:np.ndarray=None,getNormals=False)-> Tup
         raise ValueError('type(pcd) == o3d.geometry.PointCloud, laspy point cloud or pandas dataframe')
     return points,normals
 
-def compute_nearest_neighbor_with_normal_filtering(query_points:np.ndarray,
-                                                    query_normals:np.ndarray, 
-                                                    reference_points:np.ndarray,
-                                                    reference_normals:np.ndarray, 
-                                                    n:int=5,
-                                                    distanceThreshold=None)->Tuple[np.ndarray,np.ndarray]:
+def compute_nearest_neighbors(query_points:np.ndarray,
+                              reference_points:np.ndarray,
+                              query_normals:np.ndarray = None, 
+                              reference_normals:np.ndarray = None, 
+                              n:int=5,
+                              distanceThreshold=None)->Tuple[np.ndarray,np.ndarray]:
     """Compute index and distance to nearest neighboring point in the reference dataset.\n
+    if the normals are given, it uses them to apply a normal filtering
     For the normal filtering, the n closest neighbors are considered of which the correspondence with the best matching normal is retained. \n
 
     **NOTE**:  The index of outliers is set to -1 if distanceTreshold is not None.\n
@@ -303,40 +300,25 @@ def compute_nearest_neighbor_with_normal_filtering(query_points:np.ndarray,
         Tuple[np.array,np.array]: indices, distances 
     """
     #compute nearest neighbors 
-    indices,distances=compute_nearest_neighbors(query_points,reference_points,n=n)
-
-    #compute dotproduct
-    dotproducts=np.empty((indices.shape))
-    for i,ind in enumerate(np.hsplit(indices,indices.shape[1])):
-        dotproducts[:, i]= np.einsum('ij,ij->i', np.take(reference_normals, ind.flatten().T, axis=0), query_normals)
-    #select index with highest dotproduct
-    ind=np.argmax(np.absolute(dotproducts), axis=1)
-    indices = indices[np.arange(indices.shape[0]), ind]
-    distances = distances[np.arange(distances.shape[0]), ind]        
-    
-    #filter distances   
-    if distanceThreshold is not None:
-        assert distanceThreshold>0 ,f'distanceTreshold should be positive, got {distanceThreshold}'
-        indices=np.where(distances>distanceThreshold,-1,indices)
-        distances=np.where(distances>distanceThreshold,-1,distances)  
-        
-    return indices,distances
-
-def compute_nearest_neighbors(query_points:np.ndarray,reference_points:np.ndarray, n:int=1)->Tuple[np.ndarray,np.ndarray]:
-    """Compute nearest neighbors (indices and distances) from querry to reference points.
-
-    Args:
-        
-        1. query_points (np.arrayn): points to calculate the distance from.\n 
-        2. reference_points (np.array): points used as a reference.\n        
-        3. n (int, optional): number of neighbors. Defaults to 1.\n
-        4. maxDist (float, optional): max distance to search. \n
-
-    Returns:
-        np.array[n,2]: indices, distances
-    """    
     nbrs = NearestNeighbors(n_neighbors=n, algorithm='kd_tree').fit(reference_points)
     distances,indices, = nbrs.kneighbors(query_points)
+    # apply normal filtering if the normals are given
+    if(query_normals is not None and reference_normals is not None):
+        #compute dotproduct
+        dotproducts=np.empty((indices.shape))
+        for i,ind in enumerate(np.hsplit(indices,indices.shape[1])):
+            dotproducts[:, i]= np.einsum('ij,ij->i', np.take(reference_normals, ind.flatten().T, axis=0), query_normals)
+        #select index with highest dotproduct
+        ind=np.argmax(np.absolute(dotproducts), axis=1)
+        indices = indices[np.arange(indices.shape[0]), ind]
+        distances = distances[np.arange(distances.shape[0]), ind]        
+        
+        #filter distances   
+        if distanceThreshold is not None:
+            assert distanceThreshold>0 ,f'distanceTreshold should be positive, got {distanceThreshold}'
+            indices=np.where(distances>distanceThreshold,-1,indices)
+            distances=np.where(distances>distanceThreshold,-1,distances)  
+        
     return indices,distances
 
 def filter_pcd_by_distance(sourcePcd : o3d.geometry.PointCloud, testPcd: o3d.geometry.PointCloud, maxDistance : float) -> Tuple[o3d.geometry.PointCloud,o3d.geometry.PointCloud]:
@@ -688,24 +670,6 @@ def get_mesh_collisions_trimesh(sourceMesh: o3d.geometry.TriangleMesh, geometrie
     else:
         raise ValueError('condition not met: type(sourceMesh) is o3d.geometry.TriangleMesh and len(sourceMesh.triangles) >0')
 
-# #NOTE find nearest what?
-# def find_nearest(array:np.ndarray,value:float)->float:
-#     """Find value closest to the input value.    
-    
-#     **NOTE**: This function will be depreciated 
-    
-#     Args:
-#         array (np.ndarray): array to evaluate
-#         value (float): value to match
-
-#     Returns:
-#         float: closest value to input vatlue
-#     """
-#     idx = np.searchsorted(array, value, side="left")
-#     if idx > 0 and (idx == len(array) or math.fabs(value - array[idx-1]) < math.fabs(value - array[idx])):
-#         return array[idx-1]
-#     else:
-#         return array[idx]
 
 def divide_pcd_per_height(heights:List[float], pointCloud:o3d.geometry.PointCloud)->List[o3d.geometry.PointCloud]:
     """Devides a point cloud based on a set of heights.\n
@@ -1320,7 +1284,6 @@ def e57_dict_to_pcd(e57:dict,percentage:float=1.0)->o3d.geometry.PointCloud:
     #return transformed data
     return pcd
 
-
 def e57_to_pcd(e57:pye57.e57.E57 , e57Index : int = 0,percentage:float=1.0)->o3d.geometry.PointCloud:
     """Convert a scan from a pye57.e57.E57 file to o3d.geometry.PointCloud.
 
@@ -1382,19 +1345,21 @@ def arrays_to_mesh(tuple) -> o3d.geometry.TriangleMesh:
         tuple (Tuple): \n
             1. vertexArray:np.array \n
             2. triangleArray:np.array \n
-            3. colorArray:np.array \n
-            4. normalArray:np.array \n
+            3. (optional) colorArray:np.array \n
+            4. (optional) normalArray:np.array \n
 
     Returns:
         o3d.geometry.PointCloud
     """ 
+    if (len(tuple) < 2):
+        raise ValueError("The tuple should contain at least verteces and triangles")
     mesh = o3d.geometry.TriangleMesh()
     mesh.vertices = o3d.utility.Vector3dVector(tuple[0])
     mesh.triangles = o3d.utility.Vector3iVector(tuple[1])
 
-    if tuple[2] is not None:
+    if len(tuple) > 2:
         mesh.vertex_colors = o3d.utility.Vector3dVector(tuple[2])
-    if tuple[3] is not None:
+    if len(tuple) > 3:
         mesh.vertex_normals = o3d.utility.Vector3dVector(tuple[3])
     return mesh
 
@@ -1719,7 +1684,6 @@ def ifc_to_mesh(ifcElement:ifcopenshell.entity_instance)-> o3d.geometry.Triangle
         print('Geometry production error')
         return None
 
-
 #NOTE Cameras are visualised using frustrums, open3d has a draw_frustrum function 
 def generate_visual_cone_from_image(cartesianTransform : np.array, height : float=10.0, fov : float = math.pi/3) -> o3d.geometry.TriangleMesh:
     """Generate a conical mesh from the camera's center up to the height with a radius equal to the field of view.\n
@@ -1780,7 +1744,6 @@ def are_points_collinear(points):
 
     # If rank is less than 2, points are colinear
     return rank < 2
-
 
 def are_points_coplanar(points):
     """
@@ -1888,7 +1851,6 @@ def get_convex_hull(value:np.ndarray |type[o3d.geometry.Geometry]) ->  o3d.geome
         raise ValueError('Invalid input type')
     return hull
 
-
 def create_ellipsoid_mesh(radii: np.ndarray, transformation: np.ndarray, resolution: int = 30):
     """
     Create an Open3D TriangleMesh of an ellipsoid with a given set of radii and transformation matrix.
@@ -1952,7 +1914,7 @@ def get_oriented_bounding_box(value:np.ndarray |type[o3d.geometry.Geometry], deg
             - parameters (np.array): [center,extent,euler_angles] (in radians)
             - Open3D TriangleMesh
             - Open3D PointCloud
-            - Open3D LineSet
+            - Open3D LineSet 
             - array of 3D points (np.array): [nx3] n>3 else confused by parameter array
             - o3d.utility.Vector3dVector
         degrees (False): Are the parameters in radians(default) or degrees 
@@ -2234,36 +2196,6 @@ def generate_virtual_images(geometries: List[o3d.geometry.Geometry],cartesianTra
         list.append(img)
     return list if len(list) !=0 else None
 
-# def generate_virtual_image(geometries: List[o3d.geometry.Geometry],pinholeCamera: o3d.camera.PinholeCameraParameters)-> o3d.geometry.Image:
-#     """Generate an Open3D Image from a set of geometries and an Open3D camera. \n
-
-#     Args:
-#         1. geometries (List[o3d.geometry]):o3d.geometry.PointCloud or o3d.geometry.TriangleMesh\n
-#         2. pinholeCamera (o3d.camera.PinholeCameraParameters): extrinsic (cartesianTransform) and intrinsic (width,height,f,principal point U and V) camera parameters\n
-
-#     Returns:
-#         o3d.geometry.Image or None
-#     """
-#     #create renderer
-#     width=pinholeCamera.intrinsic.width
-#     height=pinholeCamera.intrinsic.height
-#     render = o3d.visualization.rendering.OffscreenRenderer(width,height)
-
-#     # Define a simple unlit Material. (The base color does not replace the geometry colors)
-#     mtl=o3d.visualization.rendering.MaterialRecord()
-#     mtl.base_color = [1.0, 1.0, 1.0, 1.0]  # RGBA
-#     mtl.shader = "defaultUnlit"
-
-#     #set camera
-#     render.setup_camera(pinholeCamera.intrinsic,pinholeCamera.extrinsic)
-#     #add geometries
-#     geometries=ut.item_to_list(geometries)
-#     for idx,geometry in enumerate(geometries):
-#         render.scene.add_geometry(str(idx),geometry,mtl) 
-#     #render image
-#     img = render.render_to_image()
-#     return None
-
 def e57_get_normals(rawData:dict)->np.ndarray:
     """Returns normal vectors from e57 rawData.\n
 
@@ -2346,7 +2278,6 @@ def e57_get_colors(rawData: dict)->np.ndarray:
             i=(i - np.min(i))/np.ptp(i)
             colors=np.c_[i , i,i ]  
         return np.reshape(colors.flatten('F'),(len(i),3))
-
 
 def e57_fix_rotation_order(rotation_matrix:np.array) -> np.array:
     """Switch the rotation from clockwise to counter-clockwise in e57 rotation matrix. See following url for more information:\n
@@ -2541,32 +2472,6 @@ def expand_box(box: o3d.geometry, u=5.0,v=5.0,w=5.0) -> o3d.geometry:
         return o3d.geometry.AxisAlignedBoundingBox(new_minBound,new_maxBound) 
     else:
         raise ValueError('Invalid input type')
-# def join_geometries(geometries)->o3d.geometry:
-#     """Join a number of o3d.PointCloud or o3d.TriangleMesh instances.\n
-
-#     **NOTE**: Only members of the same geometryType can be merged.\n
-
-#     Args:
-#         geometries (o3d.PointCloud or TriangleMesh)
-
-#     Returns:
-#         merged o3d.geometry (o3d.PointCloud or TriangleMesh)
-#     """
-#     geometries=ut.item_to_list(geometries)
-#     if any('TriangleMesh' in str(type(g)) for g in geometries ):
-#         joined=o3d.geometry.TriangleMesh()
-#         for geometry in geometries:
-#             if geometry is not None and len(geometry.vertices) != 0:
-#                 joined +=geometry
-#         return joined
-#     if any('PointCloud' in str(type(g)) for g in geometries ):
-#         joined=o3d.geometry.PointCloud()
-#         for geometry in geometries:
-#             if geometry is not None and len(geometry.points) != 0:
-#                 joined +=geometry
-#         return joined
-#     else:
-#         raise ValueError('Only submit o3d.geometry.TriangleMesh or o3d.geometry.PointCloud objects') 
 
 def split_pcd_by_labels(point_cloud:o3d.geometry.PointCloud,labels:np.ndarray)-> Tuple[List[o3d.geometry.PointCloud],np.ndarray]:
     """Split a point cloud in parts to match a list of labels. The result is a set of point clouds, one for each unique label.
@@ -2899,7 +2804,6 @@ def create_xyz_grid(bounds:List[float], resolutions:List[float])->np.ndarray:
         values.append( np.arange(bounds[2*i], bounds[2*i+1], res )) 
     grid  = np.meshgrid(values[0],values[1],values[2])
     return np.stack(grid)
-
 
 def crop_geometry_by_distance(source: o3d.geometry.Geometry, reference:List[o3d.geometry.Geometry], threshold : float =0.1) -> o3d.geometry.PointCloud:
     """Returns the portion of a pointcloud that lies within a range of another mesh/point cloud.\n
@@ -3415,8 +3319,6 @@ def save_view_point(geometry: o3d.geometry, filename:str) -> None:
     o3d.io.write_pinhole_camera_parameters(filename, param)
     vis.destroy_window()
 
-
-
 # OPEN3D global registration
 # TODO add optional features
 def execute_global_registration(source_down : o3d.geometry.Geometry, target_down : o3d.geometry.Geometry, source_fpfh : np.array,target_fpfh : np.array, voxel_size : float):
@@ -3500,3 +3402,33 @@ def weighted_average_quaternions(Q : np.array, w: np.array):
     eigenVectors = eigenVectors[:,eigenValues.argsort()[::-1]]
     # return the real part of the largest eigenvector (has only real part)
     return np.real(eigenVectors[:,0].A1)
+
+# def generate_virtual_image(geometries: List[o3d.geometry.Geometry],pinholeCamera: o3d.camera.PinholeCameraParameters)-> o3d.geometry.Image:
+#     """Generate an Open3D Image from a set of geometries and an Open3D camera. \n
+
+#     Args:
+#         1. geometries (List[o3d.geometry]):o3d.geometry.PointCloud or o3d.geometry.TriangleMesh\n
+#         2. pinholeCamera (o3d.camera.PinholeCameraParameters): extrinsic (cartesianTransform) and intrinsic (width,height,f,principal point U and V) camera parameters\n
+
+#     Returns:
+#         o3d.geometry.Image or None
+#     """
+#     #create renderer
+#     width=pinholeCamera.intrinsic.width
+#     height=pinholeCamera.intrinsic.height
+#     render = o3d.visualization.rendering.OffscreenRenderer(width,height)
+
+#     # Define a simple unlit Material. (The base color does not replace the geometry colors)
+#     mtl=o3d.visualization.rendering.MaterialRecord()
+#     mtl.base_color = [1.0, 1.0, 1.0, 1.0]  # RGBA
+#     mtl.shader = "defaultUnlit"
+
+#     #set camera
+#     render.setup_camera(pinholeCamera.intrinsic,pinholeCamera.extrinsic)
+#     #add geometries
+#     geometries=ut.item_to_list(geometries)
+#     for idx,geometry in enumerate(geometries):
+#         render.scene.add_geometry(str(idx),geometry,mtl) 
+#     #render image
+#     img = render.render_to_image()
+#     return None

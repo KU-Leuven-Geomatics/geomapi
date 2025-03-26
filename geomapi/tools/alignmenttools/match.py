@@ -9,6 +9,7 @@ from scipy import optimize
 import geomapi.tools.alignmenttools.params as params
 from geomapi.nodes import GeometryNode, ImageNode, Node, SetNode
 import geomapi.utils.imageutils as iu
+import geomapi.utils.geometryutils as gmu
 
 class Match:
     """The generic match object to determine the relation between 2 geomapi.Node objects"""
@@ -115,7 +116,7 @@ class Match2d (Match):
             cameraMatrix2= self.intrinsic2,
             distCoeffs2= None)
 
-        self.transformation = iu.create_transformation_matrix(self.R,self.t)
+        self.transformation = gmu.get_cartesian_transform(self.t, self.R) #iu.create_transformation_matrix(self.R,self.t)
         return self.transformation    
 
     def get_pnp_pose(self, OtherMatch):
@@ -151,12 +152,12 @@ class Match2d (Match):
                                         confidence=0.99, reprojectionError=8.0, flags=cv2.SOLVEPNP_DLS, useExtrinsicGuess=True)
         R, _ = cv2.Rodrigues(R)
         self.points3d = points_3D
-        return iu.create_transformation_matrix(R.T, -R.T @ t)
+        return gmu.get_cartesian_transform(-R.T @ t, R.T)# iu.create_transformation_matrix(R.T, -R.T @ t)
     
     def get_reference_scaling_factor(self):
         """Uses the real world distance to scale the translationvector"""
-        _, t1 = iu.split_transformation_matrix(self.image1.get_cartesian_transform())
-        _, t2 = iu.split_transformation_matrix(self.image2.get_cartesian_transform())
+        t1 = gmu.get_translation(self.image1.get_cartesian_transform()) #iu.split_transformation_matrix(self.image1.get_cartesian_transform())
+        t2 = gmu.get_translation(self.image2.get_cartesian_transform()) #iu.split_transformation_matrix(self.image2.get_cartesian_transform())
         scalingFactor = np.linalg.norm(t2 - t1)
         self.t = self.t * scalingFactor / np.linalg.norm(self.t)
         return scalingFactor
@@ -172,7 +173,8 @@ class Match2d (Match):
         if(local):
             return self.R, self.t
         else:
-            R_local, t_local = iu.split_transformation_matrix(self.image1.get_cartesian_transform())
+            R_local = gmu.get_rotation_matrix(self.image1.get_cartesian_transform()) 
+            t_local = gmu.get_translation(self.image1.get_cartesian_transform())   #iu.split_transformation_matrix(self.image1.get_cartesian_transform())
             R = R_local @ self.R.T
             t = t_local - np.reshape(R @ self.t,(3,1))
             return R,t
@@ -355,7 +357,7 @@ def match_crossref(testImage: Node , refImages: List[Node]):
     t =(pos1 + pos2)/2 #return the average of the 2 positions
     R,_ = match1.get_image2_pos()
     # return a transformation matrix and the matches
-    return PoseEstimation(iu.create_transformation_matrix(R,t), bestMatches, "crossref")
+    return PoseEstimation(gmu.get_cartesian_transform(t,R), bestMatches, "crossref")# iu.create_transformation_matrix(R,t), bestMatches, "crossref")
 
 def match_raycast(testImage: Node , refImages: List[Node], geometry: Node) -> PoseEstimation:
     pass

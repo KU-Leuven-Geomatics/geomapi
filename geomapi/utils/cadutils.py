@@ -117,60 +117,6 @@ def ezdxf_to_o3d(dxf,
 
     print(f'Produced {len(list(itertools.chain(*geometry_groups)))} open3d geometries in {len(layer_groups)} layers.')  
     return geometry_groups,layer_groups
-    
-# def ezdxf_entities_to_o3d(entities:List[ezdxf.entities.DXFEntity]) -> Tuple[List[o3d.geometry.Geometry],List[str],List[str]]:
-#     """Convert ezdxf entities to a set of o3d.geometry.LineSet/TriangleMesh objects with their corresponding layers.
-
-#     Args:
-#         - entities (List[ezdxf.entities.DXFEntity]): a list of ezdxf entities.
-
-#     Returns:
-#         Tuple[List[o3d.geometry.Geometry],List[str],List[str]]: geometries, uris, layers
-#     """
-#     entities=ut.item_to_list(entities)     
-#     geometries=[]
-#     layers=[]      
-#     uris=[]  
-#     g,l,u=None,None,None
-#     for entity in entities:
-#         if entity.dxftype() == 'LINE':
-#             g,l,u=lines_to_o3d(entity)            
-#         elif entity.dxftype() == 'ARC':
-#             g,l,u=arcs_to_o3d(entity)
-#         elif entity.dxftype() == 'CIRCLE':
-#             g,l,u=circles_to_o3d(entity)
-#         elif entity.dxftype() == 'POINT':
-#             g,l,u=points_to_o3d(entity)
-#         elif entity.dxftype() == 'SPLINE':
-#             g,l,u=splines_to_o3d(entity)
-#         elif entity.dxftype() == 'POLYLINE':
-#             g,l,u=polylines_to_o3d(entity)
-#         elif entity.dxftype() == 'LWPOLYLINE':
-#             g,l,u=lwpolylines_to_o3d(entity)
-#         elif entity.dxftype() == 'MESH':
-#             g,l,u=meshes_to_o3d(entity)
-#         elif entity.dxftype() == 'ELLIPSE':
-#             g,l,u=ellipses_to_o3d(entity)
-#         # elif entity.dxftype() == 'HATCH':
-#         #     o3d_geometries.append(hatch_to_o3d(entity))
-#         elif entity.dxftype() == 'SOLID':
-#             print('not supported')
-#         elif entity.dxftype() =='3DSOLID':
-#             print('not supported')
-#         elif entity.dxftype() =='3DFACE':
-#             g,l,u=solids_to_o3d(entity)
-#         elif isinstance(entity,ezdxf.entities.insert.Insert):
-#             g,l,u=insert_to_o3d(entity)
-#         else:
-#             continue
-#         if g and l and u:
-#             geometries.append(g[0])
-#             layers.append(l[0])
-#             uris.append(u[0])
-#     geometries=ut.item_to_list(geometries)
-#     layers=ut.item_to_list(layers)
-#     uris=ut.item_to_list(uris)
-#     return geometries,uris,layers
 
 def ezdxf_entity_to_o3d(entity:ezdxf.entities.DXFEntity) -> o3d.geometry.Geometry:
     """
@@ -308,106 +254,6 @@ def calculate_perpendicular_distance(line1, line2):
     distance2 = math.dist((intersection_x, intersection_y), line2[0])
 
     return min(distance1, distance2)
-
-
-# def ezdxf_entities_sample_point_cloud(entities:List[ezdxf.entities.DXFEntity]) -> Tuple[o3d.geometry.PointCloud,np.ndarray]:
-    
-    
-#     # point_clouds=o3d.geometry.PointCloud()
-#     # ilist=[]
-#     # jlist=[]
-    
-#     # #convert 
-#     # geometries,_=ezdxf_entities_to_o3d(entities)
-    
-#     # for entity in entities:
-        
-        
-
-#     #     # Get line segments from the LineSet
-#     #     pointArray=np.asarray(lineset.points)
-#     #     points = []
-
-#     #     for j,line in enumerate(np.asarray(lineset.lines)):
-#     #         #get start and end
-#     #         start_point = pointArray[line[0]]
-#     #         end_point = pointArray[line[1]]
-#     #         #get direction and length
-#     #         direction = end_point - start_point
-#     #         length = np.linalg.norm(direction)
-#     #         #compute number of points
-#     #         num_points = int(length / step_size)
-#     #         if num_points > 0:
-#     #             step = direction / num_points
-#     #             p=[start_point + r * step for r in range(num_points + 1)]
-#     #             points.extend(p)
-                
-#     #             #keep track of identity of the points
-#     #             ilist.extend(np.full((len(p), 1), i))
-#     #             jlist.extend(np.full((len(p), 1), j))
-                
-#     #     # Convert the sampled points to an o3d PointCloud
-#     #     point_cloud = o3d.geometry.PointCloud()
-#     #     point_cloud.points = o3d.utility.Vector3dVector(points)
-#     #     color=lineset.colors[0]
-#     #     point_cloud.paint_uniform_color(color)
-#     #     point_clouds+=point_cloud
-        
-#     # #compile identidyarray & point cloud
-#     # indentityArray=np.column_stack((np.array(ilist),np.array(jlist)))
-
-#     return point_clouds,indentityArray
-
- 
-# def ezdxf_to_o3d_grouped_per_layer(dxf,layers:List[str]=None,explode_blocks:bool=True, join_geometries:bool=True) -> Tuple[List[o3d.geometry.Geometry],List[str]]:
-#     """Convert ezdxf entity groups to a set of o3d.geometry.LineSet/TriangleMesh objects with their corresponding layers.
-
-#     Args:
-#         dxf (str or ): path to dxf file or the already read dxf
-#         layers (List[str],optional): list of layer names to query. If None, all layers are considered
-#         explode_blocks(bool,optional): deconstruct blocks and add them to the geometries. Defaults to True.
-
-#     Returns:
-#         Tuple[List[o3d.geometry.Geometry],List[str]]: geometries,layers
-#     """
-#     #open dxf file if not ezdxf entitiy
-#     if str(type(dxf)) ==str:
-#         print(f'Reading dxf file...')
-#         dxf = ezdxf.readfile(dxf)
-    
-#     # check units
-#     if dxf.header['$INSUNITS'] !=6:
-#         units=ezdxf.units.decode(dxf.header['$INSUNITS'])
-#         print(f'Warning: dxf has {units} units while meters are expected!') 
-
-#     #select layout: Modelspace,Paperspace,Blocklayout
-#     msp = dxf.modelspace()    
-
-#     #explode blocks into seperate geometries    
-#     if explode_blocks:
-#         print(f'Exploding blocks...')        
-#         [e.explode() for e in msp if e.dxftype()=='INSERT']
-     
-#     #gather layers
-#     layers=[key.casefold() for key in dxf.layers.entries.keys()] if layers is None else layers
-#     print(f'{len(layers)} layers found.')  
-     
-#     #gather entities   
-#     group = groupby(entities=msp, dxfattrib="layer")
-
-#     #convert entities
-#     print(f'Converting entities to open3d geometries...')     
-#     geometry_groups=[]    
-#     counter=0
-#     for layer, entities in group.items():
-#         if layer.casefold() in layers:
-#             counter+=len(entities)
-#             geometries,_=ezdxf_entities_to_o3d(entities)
-#             geometries=gmu.join_geometries(geometries)    if join_geometries else geometries
-#             geometries=ut.item_to_list(geometries)
-#             geometry_groups.append(geometries) if len(geometries)>0 else geometry_groups.append(None)
-#     print(f'Converted {counter} entities in {len(layers)}.')  
-#     return geometry_groups,layers
 
 def insert_to_o3d(entity:ezdxf.entities.insert.Insert)-> o3d.geometry.LineSet:       
     """Convert ezdxf entity to o3d.geometry.LineSet.
@@ -748,7 +594,7 @@ def sample_pcd_from_linesets(linesets:List[o3d.geometry.LineSet],step_size:float
                 step = direction / num_points
                 p=[start_point + r * step for r in range(num_points + 1)]
                 points.extend(p)
-                
+                print(p)
                 #keep track of identity of the points
                 ilist.extend(np.full((len(p), 1), i))
                 jlist.extend(np.full((len(p), 1), j))
@@ -756,8 +602,9 @@ def sample_pcd_from_linesets(linesets:List[o3d.geometry.LineSet],step_size:float
         # Convert the sampled points to an o3d PointCloud
         point_cloud = o3d.geometry.PointCloud()
         point_cloud.points = o3d.utility.Vector3dVector(points)
-        color=lineset.colors[0]
-        point_cloud.paint_uniform_color(color)
+        if(lineset.has_colors()):
+            color=lineset.colors[0]
+            point_cloud.paint_uniform_color(color)
         point_clouds+=point_cloud
         
     #compile identidyarray & point cloud
@@ -765,124 +612,10 @@ def sample_pcd_from_linesets(linesets:List[o3d.geometry.LineSet],step_size:float
 
     return point_clouds,indentityArray
 
-# def select_lineset_inliers(linesets,points)->o3d.geometry.LineSet:
-#     linesetselection=np.empty((points.shape[0],2))
-
-#     #iterate through linesets
-#     for i,p in enumerate(points):
-        
-#         for linesetidx,lineset in enumerate(sublinesets):
-            
-#             #iterate through line
-#             for lineidx,line in enumerate(lineset.lines):
-#                 # # get p0 and p1 in the size of the input points
-#                 # p0=np.tile(lineset.points[line[0]], (points.shape[0], 1)) 
-#                 # p1=np.tile(lineset.points[line[1]], (points.shape[0], 1))
-#                 p0=lineset.points[line[0]]
-#                 p1=lineset.points[line[1]]
-                
-#                 #test if any point is on the line  -> # 0.0 <= dot(p1-p0,p-p0)/|p-p0| <= 1.0
-#                 # print(np.sum((p-p0)**2))
-#                 dot=np.dot(p1-p0,p-p0)/np.sum((p-p0)**2)
-                
-#                 if (dot>=0) & (dot <=1 ):
-#                     linesetselection[i,0]=linesetidx
-#                     linesetselection[i,1]=lineidx
-#     return(linesetselection)               
-#             # print('line')
-#             # dot=np.sum(np.dot(p1-p0,(points-p0).T),axis=1) /np.sum((points-p0)**2,axis=1)
-        
-# #         # create tuple 
-# #         np.where((dot>=0) & (dot <=1 ),
-# #                  (linesetidx,lineidx,dot),
-# #                  (np.nan,np.nan,dot))
-            
-        
-# # return linesetselection.append((linesetidx,lineidx,distance))
-        
-# # return True if (dot>=0 or dot <=1 ) else False
-
-
-# def create_unique_mapping(array:np.ndarray)->Tuple[np.ndarray,np.ndarray]:
-#     """Create a unique mapping of an array
-
-#     Args:
-#         array (np.ndarray): first column of the array will be used for the sorting.
-
-#     Returns:
-#         Tuple[np.ndarray,np.ndarray]: unique_values, mapping (shape of input array)
-#     """
-#     #get first array #! this is a bit flawed and supposes that every x-value is unique
-#     a=array[:,0]
-#     unique_values=np.unique(array,axis=0)
-    
-#     # build dictionary
-#     fwd = np.argsort(a)
-#     asorted = a[fwd]
-#     keys = np.unique(asorted) 
-#     lower = np.searchsorted(asorted, keys)
-#     higher = np.append(lower[1:], len(asorted))
-
-#     inv = {key: fwd[lower_i:higher_i]
-#             for key, lower_i, higher_i
-#             in zip(keys, lower, higher)}
-    
-#     # remap values to 0,1,2,....
-#     mapping=np.zeros(array.shape[0])
-#     i=0
-#     for _,value in inv.items():
-#             for v in value:
-#                     mapping[v]=i
-#             i+=1
-    
-#     return unique_values,mapping
-
-# def ezdxf_lines_to_open3d_linesets(ezdxf_lines:List[Tuple[ezdxf.math.vector.Vector,ezdxf.math.vector.Vector,int,str,float]]) -> List[o3d.geometry.LineSet]: #
-#     """Convert ezdxf lines to open3D linesets. Create 1 lineset per layer.
-
-#     Args:
-#         ezdxf_lines (List[Tuple[ezdxf.math.vector.Vector,ezdxf.math.vector.Vector,int,str,float]]): (start, end, color, layer, thickness)
-
-#     Returns:
-#         List[o3d.geometry.LineSet]
-#     """  
-#     # get layers (str)
-#     layers=list(set([line[3] for line in ezdxf_lines]))
-
-#     #Convert linesets
-#     linesets = []  
-#     for layer in layers:
-
-#         # get lines in layer
-#         lines=[line for line in ezdxf_lines if line[3]==layer]
-        
-#         # get start and endpoints       
-#         array=np.empty((len(lines)*2,3))
-#         for i,line in enumerate(lines): 
-#             array[2*i,:]= np.array(line[0])
-#             array[2*i+1,:]= np.array(line[1])
-        
-#         #get mapping    
-#         # unique_values,mapping = create_unique_mapping(array) #! this is faulty
-#         unique_rows, index_mapping = np.unique(array, axis=0, return_inverse=True)
-
-#         #get points and lines and create lineset
-#         line_set = o3d.geometry.LineSet() 
-#         lineArray=np.reshape(index_mapping,(len(lines),2))
-#         line_set.points = o3d.utility.Vector3dVector(unique_rows)  
-#         line_set.lines = o3d.utility.Vector2iVector(lineArray)
-        
-#         #colorize per color 
-#         color=next(line[2] for line in ezdxf_lines if line[3]==layer)/256
-#         line_set.paint_uniform_color(np.repeat(color,3))
-#         linesets.append(line_set)
-
-#     return linesets
-
 def get_linesets_inliers_in_box(linesets:List[o3d.geometry.LineSet],box:o3d.geometry.OrientedBoundingBox,point_cloud:o3d.geometry.PointCloud,identityArray:np.ndarray) -> List[o3d.geometry.LineSet]:
     """Returns the segments of the linesets that have sampled pointcloud points falling within a certain bounding box.
     This function should be used together with:\\
-        1. vt.sample_pcd_from_linesets(linesets,step_size=0.1)\\
+        1. cu.sample_pcd_from_linesets(linesets,step_size=0.1)\\
         2.vt.create_selection_box_from_image_boundary_points(n,roi,meshNode.resource,z=5) \\
 
     Args:
@@ -926,93 +659,6 @@ def get_linesets_inliers_in_box(linesets:List[o3d.geometry.LineSet],box:o3d.geom
         line_set.lines = o3d.utility.Vector2iVector(linesegments)
         sublinesets.append(line_set)
     return sublinesets
-
-
-# def cad_show_lines(entities:List[ezdxf.entities.DXFEntity]):
-
-#     # Extract all line entities from the DXF file
-#     lines=[e for e in entities if e.dxftype()== 'LINE']
-
-#     # Plot all the lines using Matplotlib
-#     for line in lines:
-#         x1, y1, _ = line.dxf.start
-#         x2, y2, _ = line.dxf.end
-#         plt.plot([x1, x2], [y1, y2])
-
-#     plt.show()
-
-
-# def create_selection_box_from_image_boundary_points(n:ImageNode,roi:Tuple[int,int,int,int],mesh:o3d.geometry.TriangleMesh,z:float=5)->o3d.geometry.OrientedBoundingBox:
-#     """Create a selection box from an ImageNode, a region of interest (roi) and a mesh to raycast.
-#     A o3d.geometry.OrientedBoundingBox will be created on the location of the intersection of the rays with the mesh.
-#     The height of the box is determined by the offset of z in both positive and negative Z-direction
-
-#     Args:
-#         n (ImageNode): Imagenode used for the raycasting (internal and external camera paramters)
-#         roi (Tuple[int,int,int,int]): region of interest (rowMin,rowMax,columnMin,columnMax)
-#         mesh (o3d.geometry.TriangleMesh): mesh used for the raycasting
-#         z (float, optional): offset in height of the bounding box. Defaults to [-5m:5m].
-
-#     Returns:
-#         o3d.geometry.OrientedBoundingBox or None (if not all rays hit the mesh)
-#     """
-#     box=None
-    
-#     #create rays for boundaries
-#     uvCoordinates=np.array([[roi[0],roi[2]], # top left
-#                             [roi[0],roi[3]], # top right
-#                             [roi[1],roi[2]], # bottom left
-#                             [roi[1],roi[3]] # bottom right
-#                             ])
-#     # transform uvcoordinates  to world coordinates to rays   
-#     rays=n.create_rays(uvCoordinates)
-    
-#     # cast rays to 3D mesh 
-#     distances,_=gmu.compute_raycasting_collisions(mesh,rays)
-    
-#     if all(np.isnan(distances)==False): #if all rays hit
-#         #compute endpoints 
-#         _,endpoints=gmu.rays_to_points(rays,distances)
-        
-#         #create box of projected points
-#         points=np.vstack((gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,z],[0,0,0,1]])),
-#                         gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,-z],[0,0,0,1]]))))
-#         box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.cpu.pybind.utility.Vector3dVector(points))
-#         box.color=[1,0,0]     
-#     return box 
-
-
-# def dxf_extract_lines(dxf_path:str) -> List[Tuple[ezdxf.math.vector.Vector,ezdxf.math.vector.Vector,int,str,float]]:
-#     """Import a DXF and extract all line assets in the modelspace.  
-    
-#     Args:
-#         dxf_path (str): path to dxf
-
-#     Returns:
-#         List[Tuple[ezdxf.math.vector.Vector,ezdxf.math.vector.Vector,int,str,float]]: (start, end, color, layer, thickness)
-
-#     """
-#     #open dxf file
-#     dwg = ezdxf.readfile(dxf_path)
-    
-#     #select layout: Modelspace,Paperspace,Blocklayout
-#     modelspace = dwg.modelspace()
-    
-#     #parse lines
-    
-    
-#     lines = []
-#     for entity in modelspace:
-#         if entity.dxftype() == 'LINE': #! make bigger linesets
-      
-#             start = entity.dxf.start
-#             end = entity.dxf.end
-#             color = entity.dxf.color
-#             layer = entity.dxf.layer
-#             thickness = entity.dxf.lineweight
-#             lines.append((start, end, color, layer, thickness))
-    
-#     return lines
 
 def get_rgb_from_aci(aci:int=7):
     """Return RGB from AutoCAD Color Index (ACI) RGB equivalents https://gohtx.com/acadcolors.php
@@ -1282,3 +928,359 @@ def get_rgb_from_aci(aci:int=7):
         255: (255, 255, 255)
     }
     return aci_to_rgb_map.get(aci, (0, 0, 0))  # Default to black if ACI is not found
+
+
+# def ezdxf_entities_to_o3d(entities:List[ezdxf.entities.DXFEntity]) -> Tuple[List[o3d.geometry.Geometry],List[str],List[str]]:
+#     """Convert ezdxf entities to a set of o3d.geometry.LineSet/TriangleMesh objects with their corresponding layers.
+
+#     Args:
+#         - entities (List[ezdxf.entities.DXFEntity]): a list of ezdxf entities.
+
+#     Returns:
+#         Tuple[List[o3d.geometry.Geometry],List[str],List[str]]: geometries, uris, layers
+#     """
+#     entities=ut.item_to_list(entities)     
+#     geometries=[]
+#     layers=[]      
+#     uris=[]  
+#     g,l,u=None,None,None
+#     for entity in entities:
+#         if entity.dxftype() == 'LINE':
+#             g,l,u=lines_to_o3d(entity)            
+#         elif entity.dxftype() == 'ARC':
+#             g,l,u=arcs_to_o3d(entity)
+#         elif entity.dxftype() == 'CIRCLE':
+#             g,l,u=circles_to_o3d(entity)
+#         elif entity.dxftype() == 'POINT':
+#             g,l,u=points_to_o3d(entity)
+#         elif entity.dxftype() == 'SPLINE':
+#             g,l,u=splines_to_o3d(entity)
+#         elif entity.dxftype() == 'POLYLINE':
+#             g,l,u=polylines_to_o3d(entity)
+#         elif entity.dxftype() == 'LWPOLYLINE':
+#             g,l,u=lwpolylines_to_o3d(entity)
+#         elif entity.dxftype() == 'MESH':
+#             g,l,u=meshes_to_o3d(entity)
+#         elif entity.dxftype() == 'ELLIPSE':
+#             g,l,u=ellipses_to_o3d(entity)
+#         # elif entity.dxftype() == 'HATCH':
+#         #     o3d_geometries.append(hatch_to_o3d(entity))
+#         elif entity.dxftype() == 'SOLID':
+#             print('not supported')
+#         elif entity.dxftype() =='3DSOLID':
+#             print('not supported')
+#         elif entity.dxftype() =='3DFACE':
+#             g,l,u=solids_to_o3d(entity)
+#         elif isinstance(entity,ezdxf.entities.insert.Insert):
+#             g,l,u=insert_to_o3d(entity)
+#         else:
+#             continue
+#         if g and l and u:
+#             geometries.append(g[0])
+#             layers.append(l[0])
+#             uris.append(u[0])
+#     geometries=ut.item_to_list(geometries)
+#     layers=ut.item_to_list(layers)
+#     uris=ut.item_to_list(uris)
+#     return geometries,uris,layers
+
+# def ezdxf_entities_sample_point_cloud(entities:List[ezdxf.entities.DXFEntity]) -> Tuple[o3d.geometry.PointCloud,np.ndarray]:
+    
+    
+#     # point_clouds=o3d.geometry.PointCloud()
+#     # ilist=[]
+#     # jlist=[]
+    
+#     # #convert 
+#     # geometries,_=ezdxf_entities_to_o3d(entities)
+    
+#     # for entity in entities:
+        
+        
+
+#     #     # Get line segments from the LineSet
+#     #     pointArray=np.asarray(lineset.points)
+#     #     points = []
+
+#     #     for j,line in enumerate(np.asarray(lineset.lines)):
+#     #         #get start and end
+#     #         start_point = pointArray[line[0]]
+#     #         end_point = pointArray[line[1]]
+#     #         #get direction and length
+#     #         direction = end_point - start_point
+#     #         length = np.linalg.norm(direction)
+#     #         #compute number of points
+#     #         num_points = int(length / step_size)
+#     #         if num_points > 0:
+#     #             step = direction / num_points
+#     #             p=[start_point + r * step for r in range(num_points + 1)]
+#     #             points.extend(p)
+                
+#     #             #keep track of identity of the points
+#     #             ilist.extend(np.full((len(p), 1), i))
+#     #             jlist.extend(np.full((len(p), 1), j))
+                
+#     #     # Convert the sampled points to an o3d PointCloud
+#     #     point_cloud = o3d.geometry.PointCloud()
+#     #     point_cloud.points = o3d.utility.Vector3dVector(points)
+#     #     color=lineset.colors[0]
+#     #     point_cloud.paint_uniform_color(color)
+#     #     point_clouds+=point_cloud
+        
+#     # #compile identidyarray & point cloud
+#     # indentityArray=np.column_stack((np.array(ilist),np.array(jlist)))
+
+#     return point_clouds,indentityArray
+
+ 
+# def ezdxf_to_o3d_grouped_per_layer(dxf,layers:List[str]=None,explode_blocks:bool=True, join_geometries:bool=True) -> Tuple[List[o3d.geometry.Geometry],List[str]]:
+#     """Convert ezdxf entity groups to a set of o3d.geometry.LineSet/TriangleMesh objects with their corresponding layers.
+
+#     Args:
+#         dxf (str or ): path to dxf file or the already read dxf
+#         layers (List[str],optional): list of layer names to query. If None, all layers are considered
+#         explode_blocks(bool,optional): deconstruct blocks and add them to the geometries. Defaults to True.
+
+#     Returns:
+#         Tuple[List[o3d.geometry.Geometry],List[str]]: geometries,layers
+#     """
+#     #open dxf file if not ezdxf entitiy
+#     if str(type(dxf)) ==str:
+#         print(f'Reading dxf file...')
+#         dxf = ezdxf.readfile(dxf)
+    
+#     # check units
+#     if dxf.header['$INSUNITS'] !=6:
+#         units=ezdxf.units.decode(dxf.header['$INSUNITS'])
+#         print(f'Warning: dxf has {units} units while meters are expected!') 
+
+#     #select layout: Modelspace,Paperspace,Blocklayout
+#     msp = dxf.modelspace()    
+
+#     #explode blocks into seperate geometries    
+#     if explode_blocks:
+#         print(f'Exploding blocks...')        
+#         [e.explode() for e in msp if e.dxftype()=='INSERT']
+     
+#     #gather layers
+#     layers=[key.casefold() for key in dxf.layers.entries.keys()] if layers is None else layers
+#     print(f'{len(layers)} layers found.')  
+     
+#     #gather entities   
+#     group = groupby(entities=msp, dxfattrib="layer")
+
+#     #convert entities
+#     print(f'Converting entities to open3d geometries...')     
+#     geometry_groups=[]    
+#     counter=0
+#     for layer, entities in group.items():
+#         if layer.casefold() in layers:
+#             counter+=len(entities)
+#             geometries,_=ezdxf_entities_to_o3d(entities)
+#             geometries=gmu.join_geometries(geometries)    if join_geometries else geometries
+#             geometries=ut.item_to_list(geometries)
+#             geometry_groups.append(geometries) if len(geometries)>0 else geometry_groups.append(None)
+#     print(f'Converted {counter} entities in {len(layers)}.')  
+#     return geometry_groups,layers
+
+# def select_lineset_inliers(linesets,points)->o3d.geometry.LineSet:
+#     linesetselection=np.empty((points.shape[0],2))
+
+#     #iterate through linesets
+#     for i,p in enumerate(points):
+        
+#         for linesetidx,lineset in enumerate(sublinesets):
+            
+#             #iterate through line
+#             for lineidx,line in enumerate(lineset.lines):
+#                 # # get p0 and p1 in the size of the input points
+#                 # p0=np.tile(lineset.points[line[0]], (points.shape[0], 1)) 
+#                 # p1=np.tile(lineset.points[line[1]], (points.shape[0], 1))
+#                 p0=lineset.points[line[0]]
+#                 p1=lineset.points[line[1]]
+                
+#                 #test if any point is on the line  -> # 0.0 <= dot(p1-p0,p-p0)/|p-p0| <= 1.0
+#                 # print(np.sum((p-p0)**2))
+#                 dot=np.dot(p1-p0,p-p0)/np.sum((p-p0)**2)
+                
+#                 if (dot>=0) & (dot <=1 ):
+#                     linesetselection[i,0]=linesetidx
+#                     linesetselection[i,1]=lineidx
+#     return(linesetselection)               
+#             # print('line')
+#             # dot=np.sum(np.dot(p1-p0,(points-p0).T),axis=1) /np.sum((points-p0)**2,axis=1)
+        
+# #         # create tuple 
+# #         np.where((dot>=0) & (dot <=1 ),
+# #                  (linesetidx,lineidx,dot),
+# #                  (np.nan,np.nan,dot))
+            
+        
+# # return linesetselection.append((linesetidx,lineidx,distance))
+        
+# # return True if (dot>=0 or dot <=1 ) else False
+
+
+# def create_unique_mapping(array:np.ndarray)->Tuple[np.ndarray,np.ndarray]:
+#     """Create a unique mapping of an array
+
+#     Args:
+#         array (np.ndarray): first column of the array will be used for the sorting.
+
+#     Returns:
+#         Tuple[np.ndarray,np.ndarray]: unique_values, mapping (shape of input array)
+#     """
+#     #get first array #! this is a bit flawed and supposes that every x-value is unique
+#     a=array[:,0]
+#     unique_values=np.unique(array,axis=0)
+    
+#     # build dictionary
+#     fwd = np.argsort(a)
+#     asorted = a[fwd]
+#     keys = np.unique(asorted) 
+#     lower = np.searchsorted(asorted, keys)
+#     higher = np.append(lower[1:], len(asorted))
+
+#     inv = {key: fwd[lower_i:higher_i]
+#             for key, lower_i, higher_i
+#             in zip(keys, lower, higher)}
+    
+#     # remap values to 0,1,2,....
+#     mapping=np.zeros(array.shape[0])
+#     i=0
+#     for _,value in inv.items():
+#             for v in value:
+#                     mapping[v]=i
+#             i+=1
+    
+#     return unique_values,mapping
+
+# def ezdxf_lines_to_open3d_linesets(ezdxf_lines:List[Tuple[ezdxf.math.vector.Vector,ezdxf.math.vector.Vector,int,str,float]]) -> List[o3d.geometry.LineSet]: #
+#     """Convert ezdxf lines to open3D linesets. Create 1 lineset per layer.
+
+#     Args:
+#         ezdxf_lines (List[Tuple[ezdxf.math.vector.Vector,ezdxf.math.vector.Vector,int,str,float]]): (start, end, color, layer, thickness)
+
+#     Returns:
+#         List[o3d.geometry.LineSet]
+#     """  
+#     # get layers (str)
+#     layers=list(set([line[3] for line in ezdxf_lines]))
+
+#     #Convert linesets
+#     linesets = []  
+#     for layer in layers:
+
+#         # get lines in layer
+#         lines=[line for line in ezdxf_lines if line[3]==layer]
+        
+#         # get start and endpoints       
+#         array=np.empty((len(lines)*2,3))
+#         for i,line in enumerate(lines): 
+#             array[2*i,:]= np.array(line[0])
+#             array[2*i+1,:]= np.array(line[1])
+        
+#         #get mapping    
+#         # unique_values,mapping = create_unique_mapping(array) #! this is faulty
+#         unique_rows, index_mapping = np.unique(array, axis=0, return_inverse=True)
+
+#         #get points and lines and create lineset
+#         line_set = o3d.geometry.LineSet() 
+#         lineArray=np.reshape(index_mapping,(len(lines),2))
+#         line_set.points = o3d.utility.Vector3dVector(unique_rows)  
+#         line_set.lines = o3d.utility.Vector2iVector(lineArray)
+        
+#         #colorize per color 
+#         color=next(line[2] for line in ezdxf_lines if line[3]==layer)/256
+#         line_set.paint_uniform_color(np.repeat(color,3))
+#         linesets.append(line_set)
+
+#     return linesets
+
+
+
+# def cad_show_lines(entities:List[ezdxf.entities.DXFEntity]):
+
+#     # Extract all line entities from the DXF file
+#     lines=[e for e in entities if e.dxftype()== 'LINE']
+
+#     # Plot all the lines using Matplotlib
+#     for line in lines:
+#         x1, y1, _ = line.dxf.start
+#         x2, y2, _ = line.dxf.end
+#         plt.plot([x1, x2], [y1, y2])
+
+#     plt.show()
+
+
+# def create_selection_box_from_image_boundary_points(n:ImageNode,roi:Tuple[int,int,int,int],mesh:o3d.geometry.TriangleMesh,z:float=5)->o3d.geometry.OrientedBoundingBox:
+#     """Create a selection box from an ImageNode, a region of interest (roi) and a mesh to raycast.
+#     A o3d.geometry.OrientedBoundingBox will be created on the location of the intersection of the rays with the mesh.
+#     The height of the box is determined by the offset of z in both positive and negative Z-direction
+
+#     Args:
+#         n (ImageNode): Imagenode used for the raycasting (internal and external camera paramters)
+#         roi (Tuple[int,int,int,int]): region of interest (rowMin,rowMax,columnMin,columnMax)
+#         mesh (o3d.geometry.TriangleMesh): mesh used for the raycasting
+#         z (float, optional): offset in height of the bounding box. Defaults to [-5m:5m].
+
+#     Returns:
+#         o3d.geometry.OrientedBoundingBox or None (if not all rays hit the mesh)
+#     """
+#     box=None
+    
+#     #create rays for boundaries
+#     uvCoordinates=np.array([[roi[0],roi[2]], # top left
+#                             [roi[0],roi[3]], # top right
+#                             [roi[1],roi[2]], # bottom left
+#                             [roi[1],roi[3]] # bottom right
+#                             ])
+#     # transform uvcoordinates  to world coordinates to rays   
+#     rays=n.create_rays(uvCoordinates)
+    
+#     # cast rays to 3D mesh 
+#     distances,_=gmu.compute_raycasting_collisions(mesh,rays)
+    
+#     if all(np.isnan(distances)==False): #if all rays hit
+#         #compute endpoints 
+#         _,endpoints=gmu.rays_to_points(rays,distances)
+        
+#         #create box of projected points
+#         points=np.vstack((gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,z],[0,0,0,1]])),
+#                         gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,-z],[0,0,0,1]]))))
+#         box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.cpu.pybind.utility.Vector3dVector(points))
+#         box.color=[1,0,0]     
+#     return box 
+
+
+# def dxf_extract_lines(dxf_path:str) -> List[Tuple[ezdxf.math.vector.Vector,ezdxf.math.vector.Vector,int,str,float]]:
+#     """Import a DXF and extract all line assets in the modelspace.  
+    
+#     Args:
+#         dxf_path (str): path to dxf
+
+#     Returns:
+#         List[Tuple[ezdxf.math.vector.Vector,ezdxf.math.vector.Vector,int,str,float]]: (start, end, color, layer, thickness)
+
+#     """
+#     #open dxf file
+#     dwg = ezdxf.readfile(dxf_path)
+    
+#     #select layout: Modelspace,Paperspace,Blocklayout
+#     modelspace = dwg.modelspace()
+    
+#     #parse lines
+    
+    
+#     lines = []
+#     for entity in modelspace:
+#         if entity.dxftype() == 'LINE': #! make bigger linesets
+      
+#             start = entity.dxf.start
+#             end = entity.dxf.end
+#             color = entity.dxf.color
+#             layer = entity.dxf.layer
+#             thickness = entity.dxf.lineweight
+#             lines.append((start, end, color, layer, thickness))
+    
+#     return lines
