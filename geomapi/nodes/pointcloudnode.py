@@ -417,3 +417,7 @@ class PointCloudNode (Node):
             return True
         except:
             raise ValueError("Parsing e57 header failed (maybe some missing metadata?)!")
+
+    def show(self):
+        super().show()
+        gmu.show_geometries([self.resource])

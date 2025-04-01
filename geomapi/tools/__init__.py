@@ -11,6 +11,7 @@ import xml.etree.ElementTree as ET
 from typing import List,Tuple
 from pathlib import Path
 import ezdxf
+from scipy.spatial.transform import Rotation as R
 
 # import APIs
 import rdflib
@@ -325,6 +326,7 @@ def e57header_to_nodes(path:str, **kwargs) -> List[PointCloudNode]:
         nodelist.append(PointCloudNode(path=path,e57Index=idx, **kwargs))
     return nodelist
 
+#### IFC ########
 
 def get_loaclasses_from_ifcclass(ifcClass:str)->URIRef:
     """ Return the matching LOA class given a ifcClass e.g. IfcWall -> URIRef('https://B2010_EXTERIOR_WALLS').
@@ -761,7 +763,80 @@ def ifc_to_nodes_multiprocessing(path:str, **kwargs)-> List[BIMNode]:
                     break
         return nodelist
 
-
+def navvis_csv_to_nodes(csvPath :Path, 
+                        directory : Path = None, 
+                        includeDepth : bool = True, 
+                        depthPath : Path = None, 
+                        skip:int=None, **kwargs) -> List[PanoNode]:
+    """Parse Navvis csv file and return a list of PanoNodes with the csv metadata.
+    
+    Args:
+        - csvPath (Path): csv file path e.g. "D:/Data/pano/pano-poses.csv"
+        - skip (int, Optional): select every nth image from the xml. Defaults to None.
+        - Path (Path, Optional): path to the pano directory. Defaults to None.
+        - includeDepth (bool, Optional): include depth images. Defaults to True.
+        - depthPath (Path, Optional): path to the depth images. Defaults to None.
+        - kwargs: additional keyword arguments for the PanoNode instances
+                
+    Returns:
+        - A list of PanoNodes with the csv metadata
+        
+    """
+    assert skip == None or skip >0, f'skip == None or skip '
+    assert os.path.exists(csvPath), f'File does not exist.'
+    assert csvPath.endswith('.csv'), f'File does not end with csv.'
+    
+    #open csv
+    pano_csv_file = open(csvPath, mode = 'r')
+    pano_csv_data = list(pd.reader(pano_csv_file))
+    
+    #get pano information
+    pano_data = []
+    for sublist in pano_csv_data[1:]:
+        pano_data.append(sublist[0].split('; '))
+        
+    pano_filenames = []
+    for sublist in pano_data:
+        pano_filenames.append(sublist[1])
+        
+    pano_timestamps = []
+    for sublist in pano_data:
+        pano_timestamps.append(ut.get_timestamp(sublist[2]))
+        
+    pano_cartesianTransforms = []
+    for sublist in pano_data:
+        r = R.from_quat((float(sublist[7]),float(sublist[8]), float(sublist[9]), float(sublist[6]))).as_matrix()
+        T = np.pad(r, ((0, 1), (0, 1)), mode='constant', constant_values=0)
+        T[0,3] = float(sublist[3])
+        T[1,3] = float(sublist[4])
+        T[2,3] = float(sublist[5])
+        T[3,3] = float(1)
+        pano_cartesianTransforms.append(T)
+        
+    #get pano path
+    directory = csvPath.parent if not directory else directory
+        
+    if includeDepth:
+        depth_filenames = []
+        for pano_filename in pano_filenames:
+            depth_filename  = pano_filename.replace(".jpg","_depth.png") #navvis depth images are png
+            depth_filenames.append(depth_filename)
+        if not depthPath:
+            depthPath = directory.replace("pano", "pano_depth")
+    
+    #create nodes     
+    nodelist=[]
+    for i,pano in enumerate(pano_filenames):
+        if os.path.exists(os.path.join(directory, pano)):
+            if includeDepth:
+                node=PanoNode(name= pano.split(".")[0],
+                            cartesianTransform=pano_cartesianTransforms[i],
+                            timestamp = pano_timestamps[i],
+                            path = directory / pano,
+                            depthPath = depthPath / depth_filenames[i],
+                            **kwargs)
+            nodelist.append(node)
+    return nodelist
 
 ##### NODE SELECTION #####
 
@@ -1031,6 +1106,7 @@ def select_nodes_with_intersecting_resources(node:Node,nodelist:List[Node]) -> L
             return selectedNodeList
     return None
 
+# TODO fix function
 def get_mesh_representation(node: Node)->o3d.geometry.TriangleMesh:
     """Returns the mesh representation of a node resource\n
     Returns the convex hull if it is a PointCloudNode.\n

@@ -29,7 +29,7 @@ from geomapi.utils import GEOMAPI_PREFIXES
 
 
 
-class TestNode(unittest.TestCase):
+class TestMeshNode(unittest.TestCase):
 
 
 

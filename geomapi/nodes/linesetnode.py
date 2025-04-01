@@ -296,9 +296,9 @@ class LineSetNode (Node):
         if (directory):
             pass    
         elif self.path is not None:    
-            directory=ut.get_folder(self.path)            
+            directory=Path(self.path).parent            
         elif(self.graphPath): 
-            dir=ut.get_folder(self.graphPath)
+            dir=Path(self.graphPath).parent
             directory=os.path.join(dir,'CAD')   
         else:
             directory=os.path.join(os.getcwd(),'CAD')
@@ -360,4 +360,12 @@ class LineSetNode (Node):
             return True
         else:
             return False   
+        
+    def show(self, inline = False):
+        super().show()
+        if(inline):
+            from IPython.display import display
+            display(gmu.mesh_to_trimesh(self.resource).show())
+        else:
+            gmu.show_geometries([self.resource])
     

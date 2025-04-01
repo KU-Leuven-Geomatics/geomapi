@@ -79,7 +79,7 @@
 
 ###  http://www.w3.org/2001/XMLSchema#dateTime
 xsd:dateTime
-	:method "geomapi.utils.validate_timestamp" . 
+	:method "geomapi.utils.literal_to_datetime" . 
 
 ###  http://www.w3.org/2001/XMLSchema#float
 xsd:float
@@ -164,12 +164,13 @@ xsd:float
 	dbp:extension ".jpeg" ;
 	dbp:extension ".jpg" ;
 	dbp:extension ".png" ;
+	dbp:extension ".tif" ;
 	rdfs:comment "Path to an image file that can be parsed by Python PIL or OpenCV."@en ;
 	rdfs:isDefinedBy : ;
 	rdfs:seeAlso dcterms:source;		
 	rdfs:label "as image"@en ;
 	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
-	rdfs:domain :Node;
+	rdfs:domain :ImageNode;
 	rdfs:range xsd:string . 
 
 :asTexture 						#how is this different from an image, yes there is a parsing difference, but that should be tackled by the Node, not this property?

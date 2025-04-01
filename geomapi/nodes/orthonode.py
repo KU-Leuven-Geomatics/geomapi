@@ -13,6 +13,7 @@ Be sure to check the properties defined in those abstract classes to initialise 
 import cv2
 import PIL
 from PIL import Image
+from matplotlib import pyplot as plt
 import numpy as np
 import os
 import open3d as o3d
@@ -904,4 +905,22 @@ class OrthoNode(Node):
                 0 <= pt2[0] < self.imageWidth and 0 <= pt2[1] < self.imageHeight:
                     cv2.line(image, pt1, pt2,color, thickness=thickness)
         return image
+    
+    def show(self):
+        super().show()
+        # Converts from one colour space to the other. this is needed as RGB
+        # is not the default colour space for OpenCV
+        image = cv2.cvtColor(self.resource, cv2.COLOR_BGR2RGB)
+
+        # Show the image
+        plt.imshow(image)
+
+        # remove the axis / ticks for a clean looking image
+        plt.xticks([])
+        plt.yticks([])
+
+        # if a title is provided, show it
+        plt.title(self.name)
+
+        plt.show()
    

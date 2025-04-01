@@ -140,9 +140,9 @@ class MeshNode (Node):
         if (directory):
             pass    
         elif self.path is not None:    
-            directory=ut.get_folder(self.path)            
+            directory=Path(self.path).parent            
         elif(self.graphPath): 
-            dir=ut.get_folder(self.graphPath)
+            dir=Path(self.graphPath).parent
             directory=os.path.join(dir,'MESH')   
         else:
             directory=os.path.join(os.getcwd(),'MESH')
@@ -167,51 +167,12 @@ class MeshNode (Node):
         return self.pointCount, self.faceCount
     
     
-    # def get_metadata_from_resource(self) -> bool:
-    #     """Returns the metadata from a resource. \n
-
-    #     Args:
-    #         - PointCount
-    #         - faceCount 
-    #         - orientedBoundingBox
-    #         - cartesianTransform
-    #         - cartesianBounds
-    #         - orientedBounds 
-
-    #     Returns:
-    #         bool: True if exif data is successfully parsed
-    #     """
-    #     if (not self.resource or
-    #         len(self.resource.triangles) <2):
-    #         return False    
-
-    #     if getattr(self,'pointCount',None) is None:
-    #         self.pointCount=len(self.resource.vertices)
-
-    #     if getattr(self,'faceCount',None) is None:
-    #         self.faceCount=len(self.resource.triangles)
-
-    #     if  getattr(self,'cartesianTransform',None) is None:
-    #         center=self.resource.get_center()  
-    #         self.cartesianTransform= np.array([[1,0,0,center[0]],
-    #                                             [0,1,0,center[1]],
-    #                                             [0,0,1,center[2]],
-    #                                             [0,0,0,1]])
-
-    #     if getattr(self,'cartesianBounds',None) is None:
-    #         self.cartesianBounds=gmu.get_cartesian_bounds(self.resource)
-    #     if getattr(self,'orientedBoundingBox',None) is  None:
-    #         try:
-    #             self.orientedBoundingBox=self.resource.get_oriented_bounding_box()
-    #         except:
-    #             pass
-    #     if getattr(self,'orientedBounds',None) is None:
-    #         try:
-    #             box=self.resource.get_oriented_bounding_box()
-    #             self.orientedBounds= np.asarray(box.get_box_points())
-    #         except:
-    #             pass
-            
-
+    def show(self, inline = False):
+        super().show()
+        if(inline):
+            from IPython.display import display
+            display(gmu.mesh_to_trimesh(self.resource).show())
+        else:
+            gmu.show_geometries([self.resource])
        
     

@@ -29,7 +29,7 @@ from data_loader_railway import DATALOADERRAILWAYINSTANCE
 
 from geomapi.utils import GEOMAPI_PREFIXES
 
-class TestNode(unittest.TestCase):
+class TestLinesetNode(unittest.TestCase):
 
 
 

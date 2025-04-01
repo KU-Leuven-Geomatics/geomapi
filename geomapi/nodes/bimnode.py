@@ -166,7 +166,7 @@ class BIMNode (Node):
 #---------------------METHODS----------------------------
 
     def get_subject(self) -> str:
-        """Get the subject of the node. If no subject is present, it is gathered from the folowing parameters or given a unique GUID.
+        """Get the subject of the node. If no subject is present, it is gathered from the following parameters or given a unique GUID.
         
         Args:
             - self._graph
@@ -319,9 +319,9 @@ class BIMNode (Node):
         if (directory):
             pass    
         elif self.path is not None:    
-            directory=ut.get_folder(self.path)            
+            directory= Path(self.path).parent          
         elif(self.graphPath): 
-            dir=ut.get_folder(self.graphPath)
+            dir= Path(self.graphPath).parent
             directory=os.path.join(dir,'BIM')   
         else:
             directory=os.path.join(os.getcwd(),'BIM')
@@ -376,45 +376,7 @@ class BIMNode (Node):
         else:
             return False
      
-    # def get_metadata_from_resource(self) -> bool:
-    #     """Returns the metadata from a resource. \n
-
-    #     Args:
-    #         1. PointCount
-    #         2. faceCount 
-    #         3. cartesianTransform
-    #         4. cartesianBounds\n
-    #         5. orientedBounds \n
-
-    #     Returns:
-    #         bool: True if exif data is successfully parsed
-    #     """
-    #     if (not self.resource or
-    #         len(self.resource.triangles) <2):
-    #         return False    
-
-    #     try:
-    #         if getattr(self,'pointCount',None) is None:
-    #             self.pointCount=len(self.resource.vertices)
-
-    #         if getattr(self,'faceCount',None) is None:
-    #             self.faceCount=len(self.resource.triangles)
-
-    #         if  getattr(self,'cartesianTransform',None) is None:
-    #             center=self.resource.get_center()  
-    #             self.cartesianTransform= np.array([[1,0,0,center[0]],
-    #                                                 [0,1,0,center[1]],
-    #                                                 [0,0,1,center[2]],
-    #                                                 [0,0,0,1]])
-
-    #         if getattr(self,'cartesianBounds',None) is  None:
-    #             self.cartesianBounds=gmu.get_cartesian_bounds(self.resource)
-    #         if getattr(self,'orientedBoundingBox',None) is  None:
-    #             self.orientedBoundingBox=self.resource.get_oriented_bounding_box()
-    #         if getattr(self,'orientedBounds',None) is  None:
-    #             box=self.resource.get_oriented_bounding_box()
-    #             self.orientedBounds= np.asarray(box.get_box_points())
-    #         return True
-    #     except:
-    #         raise ValueError('Metadata extraction from resource failed')
+    def show(self):
+        super().show()
+        gmu.show_geometries([self.resource])
        

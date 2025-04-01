@@ -178,7 +178,7 @@ def navvis_csv_to_nodes(csvPath :str,
         cartesianTransform[2,3] = float(sublist[5])
         cartesianTransform[3,3] = float(1)
 
-        panoPath = ut.get_folder(csvPath) if not panoPath else None
+        panoPath = Path(csvPath).parent if not panoPath else None
         depthFilename  = fileName.replace(".jpg","_depth.png")
         
         nodes.append(PanoNode(name= fileName.split(".")[0],

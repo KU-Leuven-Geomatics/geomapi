@@ -22,7 +22,7 @@ import json
 import pandas as pd
 
 
-from scipy.spatial.transform import Rotation as R
+
 import matplotlib.pyplot as plt
 import copy
 from typing import List, Optional,Tuple,Union
@@ -883,128 +883,21 @@ class PanoNode(Node):
         return pcd
     
     
-    # def crop_pano(pano,project_node,crop_size, crop_output_folder):
-    #     tile_count = 0
-    #     if pano.resource is not None or pano.path is not None and pano.use and pano.depth is not None:
-    #             pano.linkedNodes = []
-    #             small_images = geomapi.utils.imageutils.subdivide_image(pano.resource, width = crop_size[0], height=crop_size[1], includeLast= True)
-    #             for i, small_image in enumerate(small_images[0]):
-    #                 tile_count += 1
-    #                 name = "%s_%s_%s_%s_%s_%s" %(project_node.name, pano.name.split(".")[0], int(small_images[1][i][0]),int(small_images[1][i][1]),int(small_images[1][i][2]),int(small_images[1][i][3]))
-    #                 row = int(small_images[1][i][0]/8)
-    #                 depth = np.zeros(shape=(int(crop_size[0]/8),int(crop_size[1]/8)))
-    #                 while row <= int(small_images[1][i][1]/8):
-    #                     column = int(small_images[1][i][2]/8)
-    #                     while column <= int(small_images[1][i][3]/8):
-    #                         depth[row-int(small_images[1][i][0]/8),column-int(small_images[1][i][2]/8)] = pano.depth[row,column]/1000
-    #                         column +=1
-    #                     row +=1
-    #                 depth = np.asarray(depth)
-    #                 average_depth = np.average(depth)
-    #                 gray_image = np.dot(small_image, [0.2989, 0.5870, 0.1140])
-    #                 small_image_node = panonode.PanoNode(_name = name,
-    #                                                     path = os.path.join(os.path.join(crop_output_folder), "%s.png" %(name)),
-    #                                                     roi = small_images[1][i],
-    #                                                     resource = small_image,
-    #                                                     source = pano.subject,
-    #                                                     imageWidth = crop_size[0],
-    #                                                     imageHeight = crop_size[1],
-    #                                                     use = "TRUE",
-    #                                                     average_depth = average_depth,
-    #                                                     contrast = int(np.max(gray_image)) - int(np.min(gray_image))
-    #                                                     )
-    #                 small_image_node.save_resource()
-    #                 pano.linkedNodes.append(small_image_node)
-    #     return tile_count
+    def show(self):
+        super().show()
+        # Converts from one colour space to the other. this is needed as RGB
+        # is not the default colour space for OpenCV
+        image = cv2.cvtColor(self.resource, cv2.COLOR_BGR2RGB)
 
-    # def pano_localization(pano):
-    #     points = []
-    #     for object in pano.objecten:
-    #         points.append(object.poi)
-    #     points = np.array(points)
-    #     points.reshape(int(points.size/3),3)
-    #     pcd = o3d.geometry.PointCloud()
-    #     pcd.points = o3d.utility.Vector3dVector(np.asarray(points))
-    #     r = Rotation.from_euler('z', 90, degrees=True).as_matrix()
-    #     pcd_rotated3 = copy.deepcopy(pcd)#pcd_rotated2)
-    #     pcd_rotated3.rotate(R=r,center = [0,0,0])
-    #     T = pano.cartesianTransform
-    #     pcd_trans = copy.deepcopy(pcd_rotated3)
-    #     pcd_trans.transform(T)
-    #     for i, object in enumerate(pano.objecten):
-    #         object.location = np.asarray(pcd_trans.points)[i]
+        # Show the image
+        plt.imshow(image)
+
+        # remove the axis / ticks for a clean looking image
+        plt.xticks([])
+        plt.yticks([])
+
+        # if a title is provided, show it
+        plt.title(self.name)
+
+        plt.show()
         
-def navvis_csv_to_nodes(csvPath :Path, 
-                        directory : Path = None, 
-                        includeDepth : bool = True, 
-                        depthPath : Path = None, 
-                        skip:int=None, **kwargs) -> List[PanoNode]:
-    """Parse Navvis csv file and return a list of PanoNodes with the csv metadata.
-    
-    Args:
-        - csvPath (Path): csv file path e.g. "D:/Data/pano/pano-poses.csv"
-        - skip (int, Optional): select every nth image from the xml. Defaults to None.
-        - Path (Path, Optional): path to the pano directory. Defaults to None.
-        - includeDepth (bool, Optional): include depth images. Defaults to True.
-        - depthPath (Path, Optional): path to the depth images. Defaults to None.
-        - kwargs: additional keyword arguments for the PanoNode instances
-                
-    Returns:
-        - A list of PanoNodes with the csv metadata
-        
-    """
-    assert skip == None or skip >0, f'skip == None or skip '
-    assert os.path.exists(csvPath), f'File does not exist.'
-    assert csvPath.endswith('.csv'), f'File does not end with csv.'
-    
-    #open csv
-    pano_csv_file = open(csvPath, mode = 'r')
-    pano_csv_data = list(pd.reader(pano_csv_file))
-    
-    #get pano information
-    pano_data = []
-    for sublist in pano_csv_data[1:]:
-        pano_data.append(sublist[0].split('; '))
-        
-    pano_filenames = []
-    for sublist in pano_data:
-        pano_filenames.append(sublist[1])
-        
-    pano_timestamps = []
-    for sublist in pano_data:
-        pano_timestamps.append(ut.get_timestamp(sublist[2]))
-        
-    pano_cartesianTransforms = []
-    for sublist in pano_data:
-        r = R.from_quat((float(sublist[7]),float(sublist[8]), float(sublist[9]), float(sublist[6]))).as_matrix()
-        T = np.pad(r, ((0, 1), (0, 1)), mode='constant', constant_values=0)
-        T[0,3] = float(sublist[3])
-        T[1,3] = float(sublist[4])
-        T[2,3] = float(sublist[5])
-        T[3,3] = float(1)
-        pano_cartesianTransforms.append(T)
-        
-    #get pano path
-    directory = csvPath.parent if not directory else directory
-        
-    if includeDepth:
-        depth_filenames = []
-        for pano_filename in pano_filenames:
-            depth_filename  = pano_filename.replace(".jpg","_depth.png") #navvis depth images are png
-            depth_filenames.append(depth_filename)
-        if not depthPath:
-            depthPath = directory.replace("pano", "pano_depth")
-    
-    #create nodes     
-    nodelist=[]
-    for i,pano in enumerate(pano_filenames):
-        if os.path.exists(os.path.join(directory, pano)):
-            if includeDepth:
-                node=PanoNode(name= pano.split(".")[0],
-                            cartesianTransform=pano_cartesianTransforms[i],
-                            timestamp = pano_timestamps[i],
-                            path = directory / pano,
-                            depthPath = depthPath / depth_filenames[i],
-                            **kwargs)
-            nodelist.append(node)
-    return nodelist

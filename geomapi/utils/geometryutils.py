@@ -34,6 +34,63 @@ from scipy.spatial.transform import Rotation as R
 #fixed a problem with the pye57 library
 pye57.e57.SUPPORTED_POINT_FIELDS.update({'nor:normalX' : 'd','nor:normalY': 'd','nor:normalZ': 'd'})
 
+def get_rotation_matrix_from_forward_up(forward: np.ndarray, up: np.ndarray) -> np.ndarray:
+    """
+    Compute a rotation matrix from a forward and an up vector. (right, up, forward)
+
+    Args:
+        forward (np.ndarray): A 3-element array representing the forward direction.
+        up (np.ndarray): A 3-element array representing the up direction.
+
+    Returns:
+        np.ndarray: A 3x3 rotation matrix.
+    """
+    # Normalize the vectors
+    forward = forward / np.linalg.norm(forward)
+
+    # Compute the right vector as the cross product of up and forward
+    right = np.cross(up, forward)
+    right /= np.linalg.norm(right)
+    
+    # Recompute the up vector to ensure orthogonality
+    up = np.cross(forward, right)
+    
+    # Construct the rotation matrix
+    rotation_matrix = np.column_stack((right, up, forward))
+    
+    return rotation_matrix
+
+def convert_to_homogeneous_3d_coordinates(input_data):
+    """
+    Converts 3D Cartesian coordinates into homogeneous coordinates or normalizes 
+    existing homogeneous coordinates.
+
+    Args:
+        input_data (list or numpy.ndarray): The input data representing 3D coordinates.
+                                            Each row should have either 3 (Cartesian) 
+                                            or 4 (homogeneous) elements.
+
+    Returns:
+        numpy.ndarray: A 2D NumPy array where:
+            - If input has 3 columns, a fourth column of ones is added.
+            - If input has 4 columns, all elements are normalized by the last column.
+            - Otherwise, a ValueError is raised.
+    """
+    # Convert to 2D array
+    input_data = ut.map_to_2d_array(input_data)
+
+    # Convert Cartesian coordinates to homogeneous
+    if input_data.shape[1] == 3:
+        homogeneous_column = np.ones((input_data.shape[0], 1))
+        input_data = np.hstack((input_data, homogeneous_column))
+    elif input_data.shape[1] == 4:
+        # Normalize by the last coordinate
+        input_data = input_data / input_data[:, -1][:, np.newaxis]
+    else:
+        raise ValueError("Each coordinate should have either 3 or 4 elements.")
+
+    return input_data
+
 # NOTE I feel like there are too many similar cropping functions
 def create_visible_point_cloud_from_meshes (geometries: List[o3d.geometry.TriangleMesh], 
                                             references:List[o3d.geometry.TriangleMesh], 
@@ -126,19 +183,19 @@ def mesh_to_trimesh(geometry: o3d.geometry.Geometry) -> trimesh.Trimesh:
 
     # Load the texture image if available
     texture_image = None
-    if geometry.textures:
+    #if geometry.textures:
         # Open3D stores textures as Open3D images, convert to numpy
-        o3d_texture = geometry.textures[0]
-        texture_image = np.asarray(o3d_texture)  # Convert Open3D image to numpy
+    #    o3d_texture = geometry.textures[0]
+    #    texture_image = np.asarray(o3d_texture)  # Convert Open3D image to numpy
         # Convert to a PIL image for easier handling
-        texture_pil = Image.fromarray(texture_image)
+    #    texture_pil = Image.fromarray(texture_image)
 
     return trimesh.Trimesh(vertices=geometry.vertices, 
                             faces=geometry.triangles, 
                             face_normals=face_normals,
                             vertex_normals=vertex_normals, 
-                            vertex_colors=vertex_colors,
-                            visual=trimesh.visual.TextureVisuals(uv=uvs, image=texture_pil)) 
+                            vertex_colors=vertex_colors)
+                            #visual=trimesh.visual.TextureVisuals(uv=uvs, image=texture_pil)) 
     
 def crop_mesh_by_convex_hull(source:trimesh.Trimesh, cutters: List[trimesh.Trimesh], inside : bool = True ) -> trimesh.Trimesh:
     """Cut a portion of a mesh that lies within the convex hull of another mesh.
@@ -458,7 +515,7 @@ def get_mesh_representation(geometry:o3d.geometry.Geometry)->o3d.geometry.Triang
     geometry, _ =geometry.compute_convex_hull() if 'PointCloud' in str(type(geometry)) else (geometry,None)
     return geometry
    
-def mesh_get_lineset(geometry: o3d.geometry.TriangleMesh, color: np.array = ut.random_color()) -> o3d.geometry.LineSet:
+def mesh_get_lineset(geometry: o3d.geometry.TriangleMesh, color: np.array = ut.get_random_color()) -> o3d.geometry.LineSet:
     """Returns a lineset representation of a mesh.\n
 
     Args:
@@ -2228,7 +2285,7 @@ def array_to_colors(array: np.array, colors:np.array=None) -> np.array:
     values=np.unique(array)
 
     #validate inputs
-    colors=colors if colors is not None else np.array([ut.random_color() for v in range(len(values))])
+    colors=colors if colors is not None else np.array([ut.get_random_color() for v in range(len(values))])
     assert colors.shape[1] == 3, f'colors.shape[1] != 3, got {colors.shape[1]}'
     assert colors.shape[0] == len(values),f'colors.shape[1] != values.shape[1], got {values.shape[1]}'
     colors=np.c_[colors/255]  if np.amax(colors)>1 else colors
@@ -3294,7 +3351,7 @@ def show_geometries(geometries : 'List[o3d.geometry]', color : bool = False):
     viewer.add_geometry(frame)
     for i, geometry in enumerate(geometries):
         if color:
-            geometry.paint_uniform_color(ut.random_color())
+            geometry.paint_uniform_color(ut.get_random_color())
             # geometry.paint_uniform_color(matplotlib.colors.hsv_to_rgb([float(i)/len(geometries),0.8,0.8]))
         viewer.add_geometry(geometry)
     opt = viewer.get_render_option()

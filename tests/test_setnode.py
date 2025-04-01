@@ -24,9 +24,8 @@ from data_loader_parking import DATALOADERPARKINGINSTANCE
 from geomapi.utils import GEOMAPI_PREFIXES
 import geomapi.utils.geometryutils as gmu
 import geomapi.utils as ut
+
 class TestSetNode(unittest.TestCase):
-
-
 
 ################################## SETUP/TEARDOWN CLASS ######################
     @classmethod

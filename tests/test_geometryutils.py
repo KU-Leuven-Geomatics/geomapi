@@ -112,6 +112,31 @@ class TestGeometryutils(unittest.TestCase):
 
 ################################## TEST FUNCTIONS ######################
 
+    def test_get_rotation_matrix_from_forward_up(self):
+        forward = np.array([0,0,1])
+        up = np.array([0,1,0])
+        rot_matrix = np.array([[ 1.,  0.,  0.],[ 0.,  1.,  0.],[0.,  0.,  1.]])
+        rotated_vector = np.around(gmu.get_rotation_matrix_from_forward_up(forward, up),0)
+        np.testing.assert_array_equal(rot_matrix,rotated_vector)
+
+    def test_convert_to_homogeneous_3d_coordinates(self):
+        # Regular 3d vector
+        vector = [1,0,0]
+        homo_vector = [[1,0,0,1]]
+        np.testing.assert_array_equal(gmu.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
+        # Homogeneous 3d vector
+        vector = [1,0,0,1]
+        homo_vector = [[1,0,0,1]]
+        np.testing.assert_array_equal(gmu.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
+        # Scaled Homogeneous 3d vector
+        vector = [1,0,0,2]
+        homo_vector = [[0.5,0,0,1]]
+        np.testing.assert_array_equal(gmu.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
+        # N-d Homogeneous 3d vector
+        vector = [[1,0,0], [0,1,0],[0,0,1]]
+        homo_vector = [[1,0,0,1], [0,1,0,1],[0,0,1,1]]
+        np.testing.assert_array_equal(gmu.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
+
     def test_create_visible_point_cloud_from_meshes(self):
         referenceMesh1= copy.deepcopy(self.dataLoaderParking.slabMesh)
         referenceMesh1.translate([1,0,0])

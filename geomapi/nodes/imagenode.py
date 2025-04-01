@@ -14,6 +14,7 @@ from pathlib import Path
 import xml.etree.ElementTree as ET
 import cv2
 import PIL
+from matplotlib import pyplot as plt
 from rdflib import Graph, URIRef
 import numpy as np
 import os
@@ -814,7 +815,7 @@ class ImageNode(Node):
             self.timestamp=ut.get_timestamp(path)
         
         if getattr(self,'name',None) is None:
-            self.name=path.stem
+            self.name=Path(path).stem
 
         if (getattr(self,'imageWidth',None) is not None and
             getattr(self,'imageHeight',None) is not None and
@@ -922,7 +923,7 @@ class ImageNode(Node):
             rotationnode=child.find('{http://www.capturingreality.com/ns/xcr/1.1#}Rotation')
             rotation=None
             if rotationnode is not None:
-                rotation=ut.string_to_rotation_matrix(rotationnode.text).T #! RC uses column-based rotaton matrix
+                rotation=ut.literal_to_matrix(rotationnode.text).T #! RC uses column-based rotaton matrix
 
             positionnode=child.find('{http://www.capturingreality.com/ns/xcr/1.1#}Position')
             translation=None
@@ -1515,3 +1516,21 @@ class ImageNode(Node):
         pcd.transform(self._cartesianTransform)
         
         return pcd
+    
+    def show(self):
+        super().show()
+        # Converts from one colour space to the other. this is needed as RGB
+        # is not the default colour space for OpenCV
+        image = cv2.cvtColor(self.resource, cv2.COLOR_BGR2RGB)
+
+        # Show the image
+        plt.imshow(image)
+
+        # remove the axis / ticks for a clean looking image
+        plt.xticks([])
+        plt.yticks([])
+
+        # if a title is provided, show it
+        plt.title(self.name)
+
+        plt.show()

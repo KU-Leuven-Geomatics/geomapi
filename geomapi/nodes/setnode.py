@@ -168,7 +168,7 @@ class SetNode(Node):
             self._linkedSubjects.extend(list)
         else:
             for value in list:
-                if not ut.check_if_uri_exists(self._linkedSubjects,URIRef(value)):
+                if not ut.validate_uri(self._linkedSubjects,URIRef(value)):
                     string=str(value)                
                     prefix='http://'
                     if 'file:///' in string:
@@ -320,7 +320,7 @@ class SetNode(Node):
         #create nodes
         for subject in linkedSubjects:   
             s=subject.toPython() #temp   
-            if not ut.check_if_uri_exists(nodeSubjectList,subject):                
+            if not ut.validate_uri(nodeSubjectList,subject):                
                 g=ut.get_subject_graph(resourceGraph,subject=subject)  
                 if (g):            
                     newNode=create_node(graph=g, subject=subject)
@@ -586,9 +586,9 @@ class SetNode(Node):
         if (directory):
             pass    
         elif self.path is not None:    
-            directory=ut.get_folder(self.path)            
+            directory=Path(self.path).parent            
         elif(self.graphPath): 
-            dir=ut.get_folder(self.graphPath)
+            dir=Path(self.graphPath).parent
             directory=os.path.join(dir,'SET')   
         else:
             directory=os.path.join(os.getcwd(),'SET')

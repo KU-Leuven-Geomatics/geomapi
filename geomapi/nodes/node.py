@@ -73,7 +73,7 @@ class Node:
         Returns:
             Node: An instance of the Node class.
         """
-        #private attributes 
+        #init private attributes 
         self._subject=None
         self._graph=None
         self._graphPath=None 
@@ -85,7 +85,7 @@ class Node:
         self._orientedBoundingBox=None
         self._convexHull=None
 
-        #instance variables (protected inputs)       
+        #set instance variables (protected inputs)       
         self.subject=subject
         self.graphPath=graphPath
         self.graph=graph
@@ -186,7 +186,7 @@ class Node:
         if timestamp is None:
             pass
         elif timestamp:
-            self._timestamp=ut.validate_timestamp(timestamp)
+            self._timestamp=ut.literal_to_datetime(timestamp)
         else:
             raise ValueError('timestamp should be str(yyyy-MM-ddTHH:mm:ss)')
 
@@ -478,7 +478,7 @@ class Node:
             self._subject=URIRef(prefix+ut.validate_string(string))  
         
     def get_subject(self) -> str:
-        """Get the subject of the node. If no subject is present, it is gathered from the folowing parameters or given a unique GUID.
+        """Get the subject of the node. If no subject is present, it is gathered from the following parameters or given a unique GUID.
         
         Features:
             - self._graph
@@ -509,7 +509,7 @@ class Node:
         return self._subject
 
     def get_timestamp(self):
-        """Get the timestamp (str) of the Node. If no timestamp is present, it is gathered from the folowing parameters.
+        """Get the timestamp (str) of the Node. If no timestamp is present, it is gathered from the following parameters.
 
         Features:
             - self._timestamp
@@ -830,7 +830,7 @@ class Node:
                 #handle Path elements          
                 elif attribute in pathlist:
                     if self._graphPath:
-                        folderPath = ut.get_folder(self._graphPath)
+                        folderPath = Path(self._graphPath).parent
                         value = Path(os.path.relpath(value, folderPath))
                     self._graph.add((self._subject, predicate,  Literal(value.as_posix(), datatype=dataType)))
                 else:
@@ -845,64 +845,6 @@ class Node:
             if(save):
                 self.save_graph(graphPath)      
         return self._graph
-    
-    # def to_graph(self, graphPath : str = None, overwrite:bool=True,save:bool=False) -> Graph: #merge this with get_graph
-    #     """Converts the current Node variables to a graph and optionally save.
-
-    #     Args:
-    #         - graphPath (str, optional): The full path to write the graph to. Defaults to None.
-    #         - overwrite (bool, optional=True): Overwrite current graph values or not
-    #         - save (bool, optional=False): Save the graph to the self.graphPath or graphPath.
-    #     """
-    #     if graphPath and next(graphPath.endswith(extension) for extension in ut.RDF_EXTENSIONS) :
-    #         self._graphPath=graphPath
-
-    #     self._graph=Graph() 
-    #     ut.bind_ontologies(self._graph)      
-    #     nodeType=ut.get_node_type(str(type(self)))                
-    #     self._graph.add((self.subject, RDF.type, nodeType ))  
-
-    #     # enumerate attributes in node and write them to triples
-    #     attributes = ut.get_variables_in_class(self)
-    #     attributes = ut.clean_attributes_list(attributes)        
-    #     pathlist = ut.get_paths_in_class(self)
-                
-    #     for attribute in attributes: 
-    #         predicate = ut.match_uri(attribute)
-    #         value=getattr(self,attribute)
-            
-    #         if value is not None:
-    #             dataType=ut.get_data_type(value)
-
-    #             if self._graph.value(self._subject, predicate, None)== str(value):
-    #                 continue
-
-    #             #check if exists
-    #             elif overwrite:
-    #                 self._graph.remove((self._subject, predicate, None))
-
-    #             if 'linkedSubjects' in attribute:
-    #                 if len(value) !=0:
-    #                     value=[subject.toPython() for subject in self.linkedSubjects]
-    #                 else:
-    #                     continue
-                
-    #             elif attribute in pathlist:
-    #                 if (self._graphPath):
-    #                     folderPath=ut.get_folder_path(self.graphPath)
-    #                     try:
-    #                         value=os.path.relpath(value,folderPath)
-    #                     except:
-    #                         pass
-    #             if 'string' not in dataType.toPython():        
-    #                 self._graph.add((self._subject, predicate, Literal(value,datatype=dataType)))
-    #             else:
-    #                 self._graph.add((self._subject, predicate, Literal(value)))
-
-    #     #Save graph
-    #     if(save):
-    #         self.save_graph(graphPath)            
-    #     return self._graph
         
     def save_graph(self,graphPath : str = None) -> bool:
         """Serialize the graph in an RDF file on drive. The RDF graph will be stored in self.graphPath or provided graphPath (str).
@@ -919,9 +861,9 @@ class Node:
             bool: True if file is succesfully saved.
         """
         #check path validity
-        if(graphPath and ut.check_if_path_is_valid(graphPath)): 
+        if(graphPath and ut.validate_path(graphPath)): 
             self.graphPath=graphPath
-        elif ut.check_if_path_is_valid(self._graphPath):
+        elif ut.validate_path(self._graphPath):
             pass
         else: 
             raise ValueError(graphPath +  ' is no valid graphPath.')
@@ -1015,5 +957,11 @@ class Node:
             #convex hull
             self._convexHull.transform( transformation ) if self._convexHull is not None else None
     
-    
+    def show(self):
+        # shows the resource of the node
+        if(self.resource is None):
+            print("No resource Present")
+            return
+        #print("Showing Resource")
+        
 ###############################################

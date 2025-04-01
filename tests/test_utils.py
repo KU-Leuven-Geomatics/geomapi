@@ -79,13 +79,6 @@ class TestUtils(unittest.TestCase):
     def test_time_function(self):
         self.assertEqual(ut.time_function(max, 5,6), 6)
 
-    def test_get_rotation_matrix_from_forward_up(self):
-        forward = np.array([0,0,1])
-        up = np.array([0,1,0])
-        rot_matrix = np.array([[ 1.,  0.,  0.],[ 0.,  1.,  0.],[0.,  0.,  1.]])
-        rotated_vector = np.around(ut.get_rotation_matrix_from_forward_up(forward, up),0)
-        np.testing.assert_array_equal(rot_matrix,rotated_vector)
-
     def test_replace_str_index(self):
         item="rrrr"
         test=ut.replace_str_index(item,index=0,replacement='_')
@@ -96,8 +89,8 @@ class TestUtils(unittest.TestCase):
             ut.replace_str_index(item,index=10,replacement='_')
 
     def test_random_color(self):
-        self.assertLessEqual(np.max(ut.random_color()), 1)
-        self.assertLessEqual(np.max(ut.random_color(255)), 255)
+        self.assertLessEqual(np.max(ut.get_random_color()), 1)
+        self.assertLessEqual(np.max(ut.get_random_color(255)), 255)
 
     def test_map_to_2d_array(self):
         # Regular 3d vector
@@ -108,24 +101,6 @@ class TestUtils(unittest.TestCase):
         np.testing.assert_array_equal(ut.map_to_2d_array(np.array(vector)),vector2d)
         np.testing.assert_array_equal(ut.map_to_2d_array(vector2d),vector2d)
         np.testing.assert_array_equal(ut.map_to_2d_array(vector3d),vector3d)
-
-    def test_convert_to_homogeneous_3d_coordinates(self):
-        # Regular 3d vector
-        vector = [1,0,0]
-        homo_vector = [[1,0,0,1]]
-        np.testing.assert_array_equal(ut.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
-        # Homogeneous 3d vector
-        vector = [1,0,0,1]
-        homo_vector = [[1,0,0,1]]
-        np.testing.assert_array_equal(ut.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
-        # Scaled Homogeneous 3d vector
-        vector = [1,0,0,2]
-        homo_vector = [[0.5,0,0,1]]
-        np.testing.assert_array_equal(ut.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
-        # N-d Homogeneous 3d vector
-        vector = [[1,0,0], [0,1,0],[0,0,1]]
-        homo_vector = [[1,0,0,1], [0,1,0,1],[0,0,1,1]]
-        np.testing.assert_array_equal(ut.convert_to_homogeneous_3d_coordinates(vector),homo_vector)
 
     def test_get_geomapi_classes(self):
         classes = ut.get_geomapi_classes()
@@ -153,10 +128,6 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(len(splitList), 10)
         self.assertEqual(len(splitList[0]), 11)
         self.assertEqual(len(splitList[-1]), 1) #check last element
-
-    def test_get_folder(self):
-        string=ut.get_folder(self.dataLoaderRoad.imagePath2)
-        self.assertEqual(str(string),os.path.join(self.dataLoaderRoad.path,'img'))
 
     def test_get_variables_in_class(self):
         class tinyClass:
@@ -552,12 +523,12 @@ class TestUtils(unittest.TestCase):
     def test_check_if_uri_exists(self):
         list=[URIRef('4499de21-f13f-11ec-a70d-c8f75043ce59'),URIRef('http://IMG_2173'),URIRef('http://000_GM_Opening_Rectangular_Opening_Rectangular_1101520'),URIRef('43be9b1c-f13f-11ec-8e65-c8f75043ce59')]
         subject=URIRef('43be9b1c-f13f-11ec-8e65-c8f75043ce59')
-        test=ut.check_if_uri_exists(list, subject)
+        test=ut.validate_uri(list, subject)
         self.assertTrue(test)
 
         #incorrect one
         subject=URIRef('blablabla')
-        test=ut.check_if_uri_exists(list, subject)
+        test=ut.validate_uri(list, subject)
         self.assertFalse(test)
 
     def test_get_subject_name(self):

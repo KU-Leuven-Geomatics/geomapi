@@ -26,7 +26,7 @@ from data_loader_parking import DATALOADERPARKINGINSTANCE
 from data_loader_road import DATALOADERROADINSTANCE 
 from geomapi.utils import GEOMAPI_PREFIXES
 
-class TestNode(unittest.TestCase):
+class TestPointcloudNode(unittest.TestCase):
 
 
 

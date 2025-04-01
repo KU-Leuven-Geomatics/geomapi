@@ -4,12 +4,12 @@ General Basic functions to support other modules.
 import datetime
 import ntpath
 import os
-from pathlib import Path, PureWindowsPath
+from pathlib import Path
 import re
 import time
 import dateutil.parser
 import math
-from typing import List
+from typing import Callable, List, Optional
 import random
 import importlib
 from re import search
@@ -28,12 +28,8 @@ MESH_EXTENSIONS = [".OBJ",".PLY",".FBX" ]
 PCD_EXTENSIONS = [".PCD", ".E57",".PTS", ".PLY",'.LAS','.LAZ']
 BIM_EXTENSIONS=[".IFC"]
 CAD_EXTENSIONS=[".PLY",".DXF",".TFW"]
-
-
-# INT_ATTRIBUTES = ['pointCount','faceCount','e57Index'] #'label'
-# FLOAT_ATTRIBUTES = ['xResolution','yResolution','imageWidth','imageHeight','focalLength35mm','principalPointU','principalPointV','accuracy']
-# LIST_ATTRIBUTES =  ['distortionCoeficients']
 TIME_FORMAT = "%Y-%m-%d %H-%M-%S"
+RDFMAPPINGS = {}
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
@@ -75,81 +71,23 @@ def time_function(func, *args):
     print("Completed function `" + func.__name__ + "()` in", np.round(end - start,3), "seconds")
     return result
 
-
-#NOTE why does this exist?
-def get_min_average_and_max_value(arrays:List[np.array],ignoreZero:bool=True,threshold:float=0.0)->List[float]:
-    """Return an min,average and max values of a list of arrays. 
-
-    **NOTE** Nan is automatically ignored.\n
-    
-    Args:
-        1.arrays (List[np.array]): arrays are automatically flattened.\n
-        2.ignoreZero (bool, optional): Ignores 0.0 in the arrays array. Defaults to True.\n
-        3.Threshhold (float, optional): Return Nan if less than a threhold is not Nan. Defaults to 0.0.\n
-
-    Returns:
-        List[float]: average values
-    """
-    arrays=item_to_list(arrays)
-    minarr=np.full(len(arrays),np.nan)
-    meanarr=np.full(len(arrays),np.nan)
-    maxarr=np.full(len(arrays),np.nan)
-    
-    for i,a in enumerate(arrays):
-        a=a.flatten()
-        if ignoreZero:
-            a=a[np.nonzero(a)]
-            if any(a) and a.size > threshold*minarr.size:                
-                minarr[i]=np.nanmin(a)        
-                meanarr[i]=np.nanmean(a)
-                maxarr[i]=np.nanmax(a) 
-    return minarr  ,meanarr  ,maxarr
-
-def get_rotation_matrix_from_forward_up(forward: np.ndarray, up: np.ndarray) -> np.ndarray:
-    """
-    Compute a rotation matrix from a forward and an up vector. (right, up, forward)
+# TODO when do we want a timestamp based on the last modified time of the metafile?
+def get_timestamp(path : str) -> str:
+    """Returns the timestamp ('%Y-%m-%dT%H:%M:%S') from a filepath.
 
     Args:
-        forward (np.ndarray): A 3-element array representing the forward direction.
-        up (np.ndarray): A 3-element array representing the up direction.
+        path (str): filepath
 
     Returns:
-        np.ndarray: A 3x3 rotation matrix.
+        dateTime (str): '%Y-%m-%dT%H:%M:%S' The creation date (Windows) or the last modified date (Linux)
     """
-    # Normalize the vectors
-    forward = forward / np.linalg.norm(forward)
+    if(os.path.exists(path)):
+        ctime=os.path.getctime(path)
+        dtime=datetime.datetime.fromtimestamp(ctime)
+        return literal_to_datetime(dtime)
+    raise ValueError("Path does not exist")
 
-    # Compute the right vector as the cross product of up and forward
-    right = np.cross(up, forward)
-    right /= np.linalg.norm(right)
-    
-    # Recompute the up vector to ensure orthogonality
-    up = np.cross(forward, right)
-    
-    # Construct the rotation matrix
-    rotation_matrix = np.column_stack((right, up, forward))
-    
-    return rotation_matrix
-
-def replace_str_index(text:str,index:int,replacement:str='_'):
-    """Replace a string character at the location of the index with the replacement. index must be in the range of the string \n
-
-    Args:
-        1. text (str)\n
-        2. index (int): index to replace. -1 indicates the end of the string \n
-        3. replacement (str, optional): replacement character. Defaults to '_'.\n
-
-    Returns:
-        text (str) with updated characters
-    """
-    # If the index is -1, replace the last char
-    if(index == -1): index = len(text)-1
-    # raise an error if index is outside of the string
-    if index not in range(len(text)):
-        raise ValueError("index outside given string")
-    return '%s%s%s'%(text[:index],replacement,text[index+1:])
-
-def random_color(range:int=1)->np.array:
+def get_random_color(range:int=1)->np.array:
     """Generate random color (either [0-1] or [0-255]).\n
 
     Args:
@@ -190,38 +128,84 @@ def map_to_2d_array(input_data):
     
     return input_data
 
-def convert_to_homogeneous_3d_coordinates(input_data):
-    """
-    Converts 3D Cartesian coordinates into homogeneous coordinates or normalizes 
-    existing homogeneous coordinates.
+def item_to_list(item)-> list:
+    """Returns [item] if item is not yet a list. This function protects functions that rely on list functionality. 
 
     Args:
-        input_data (list or numpy.ndarray): The input data representing 3D coordinates.
-                                            Each row should have either 3 (Cartesian) 
-                                            or 4 (homogeneous) elements.
+        item (Python value) 
 
     Returns:
-        numpy.ndarray: A 2D NumPy array where:
-            - If input has 3 columns, a fourth column of ones is added.
-            - If input has 4 columns, all elements are normalized by the last column.
-            - Otherwise, a ValueError is raised.
+        list[item]
     """
-    # Convert to 2D array
-    input_data = map_to_2d_array(input_data)
-
-    # Convert Cartesian coordinates to homogeneous
-    if input_data.shape[1] == 3:
-        homogeneous_column = np.ones((input_data.shape[0], 1))
-        input_data = np.hstack((input_data, homogeneous_column))
-    elif input_data.shape[1] == 4:
-        # Normalize by the last coordinate
-        input_data = input_data / input_data[:, -1][:, np.newaxis]
+    if type(item) is np.ndarray:
+        item=item.flatten()
+        return item.tolist()
+    elif type(item) is list:
+        return item
     else:
-        raise ValueError("Each coordinate should have either 3 or 4 elements.")
+        return [item]
 
-    return input_data
+def split_list(list, n:int=None,l:int=None):
+    """Split list into approximately equal chunks. Last list might have an unequal number of elements.
 
+    Args:
+        list (object): list to split.\n.
+        n (int,optional): number of splits.\n
+        l:(int,optional): length of each chunk.\n
 
+    Returns:
+        List[List]: 
+    """
+    if n:
+        k, m = divmod(len(list), n)
+        return [list[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n)]
+    elif l:
+        n=int(math.ceil(len(list)/l))
+        return [list[i*l:(i+1)*l] for i in range(n)]
+    else:
+        raise ValueError('No input provided. Enter n or l.')
+
+def replace_str_index(text:str,index:int,replacement:str='_'):
+    """Replace a string character at the location of the index with the replacement. index must be in the range of the string \n
+
+    Args:
+        1. text (str)\n
+        2. index (int): index to replace. -1 indicates the end of the string \n
+        3. replacement (str, optional): replacement character. Defaults to '_'.\n
+
+    Returns:
+        text (str) with updated characters
+    """
+    # If the index is -1, replace the last char
+    if(index == -1): index = len(text)-1
+    # raise an error if index is outside of the string
+    if index not in range(len(text)):
+        raise ValueError("index outside given string")
+    return '%s%s%s'%(text[:index],replacement,text[index+1:])
+
+def get_list_of_files(folder: Path | str , ext: str = None) -> list:
+    """
+    Get a list of all filepaths in the folder and subfolders that match the given file extension.
+
+    Args:
+        folder: The path to the folder as a string or Path object
+        ext: Optional. The file extension to filter by, e.g., ".txt". If None, all files are returned.
+
+    Returns:
+        A list of filepaths that match the given file extension.
+    """
+    folder = Path(folder)  # Ensure the folder is a Path object
+    allFiles = []
+    for subdir, dirs, files in os.walk(folder):
+        for file in files:
+            #print os.path.join(subdir, file)
+            filepath = subdir + os.sep + file
+            # check for an optional extension
+            if ext is None or filepath.lower().endswith(ext.lower()):
+                allFiles.append(Path(filepath))
+    return allFiles
+
+##### Ontology functions #######
 
 def get_geomapi_classes() -> List[URIRef]:
     query = '''
@@ -273,73 +257,17 @@ def apply_method_to_object(datatype, obj):
     # Apply the method to the object
     return func(obj)
 
-def split_list(list, n:int=None,l:int=None):
-    """Split list into approximately equal chunks. Last list might have an unequal number of elements.
+def get_subject_name(subject:URIRef) -> str:
+    """Get the main body of a URIRef graph subject
 
     Args:
-        list (object): list to split.\n.
-        n (int,optional): number of splits.\n
-        l:(int,optional): length of each chunk.\n
+        - subject (URIRef)
 
     Returns:
-        List[List]: 
+        str
     """
-    if n:
-        k, m = divmod(len(list), n)
-        return [list[i*k+min(i, m):(i+1)*k+min(i+1, m)] for i in range(n)]
-    elif l:
-        n=int(math.ceil(len(list)/l))
-        return [list[i*l:(i+1)*l] for i in range(n)]
-    else:
-        raise ValueError('No input provided. Enter n or l.')
-
-def get_folder(path :Path) -> Path:
-    """ Deconstruct path and return folder
-    
-    Args:
-        path (str): filepath
-        
-    Returns:
-        folderPath (str)
-    """
-    return Path(path).parent
-
-def get_variables_in_class(cls) -> List[str]: 
-    """Returns a list of class attributes in the class.\n
-
-    Args:
-        cls(class): class e.g. MeshNode
-    
-    Returns:
-        list of class attribute names
-    """  
-    return [i.strip('_') for i in cls.__dict__.keys() if getattr(cls,i) is not None] 
-
-def get_list_of_files(folder: Path | str , ext: str = None) -> list:
-    """
-    Get a list of all filepaths in the folder and subfolders that match the given file extension.
-
-    Args:
-        folder: The path to the folder as a string or Path object
-        ext: Optional. The file extension to filter by, e.g., ".txt". If None, all files are returned.
-
-    Returns:
-        A list of filepaths that match the given file extension.
-    """
-    folder = Path(folder)  # Ensure the folder is a Path object
-    allFiles = []
-    # Iterate over all the entries in the directory
-    for entry in folder.iterdir():
-        # Create full path
-        fullPath = entry
-        # If entry is a directory then get the list of files in this directory 
-        if fullPath.is_dir():
-            allFiles += get_list_of_files(fullPath, ext=ext)
-        else:
-            # Check if file matches the extension
-            if ext is None or fullPath.suffix.lower() == ext.lower():
-                allFiles.append(fullPath)
-    return allFiles
+    string=subject.toPython()
+    return string.split('/')[-1].split('#')[-1]
 
 def get_subject_graph(graph:Graph, subject:URIRef = None) -> Graph:
         """Returns a subselection of the full Graph that only contains the triples of one subject.
@@ -369,6 +297,25 @@ def get_subject_graph(graph:Graph, subject:URIRef = None) -> Graph:
         else:
             return None
 
+def get_attribute_from_predicate(graph: Graph, predicate : Literal) -> str:
+    """Returns the attribute without the namespace.
+
+    Args:
+        graph (Graph): The Graph containing the namespaces
+        predicate (Literal): The Literal to convert
+
+    Returns:
+        str: The attribute name
+    """
+    predStr = str(predicate)
+    #Get all the namespaces in the graph
+    for nameSpace in graph.namespaces():
+        nameSpaceStr = str(nameSpace[1])
+        if(predStr.__contains__(nameSpaceStr)):
+            predStr = predStr.replace(nameSpaceStr, '')
+            break
+    return predStr
+
 def get_paths_in_class(cls) -> list: 
     """Returns list of path attributes in the class.\n
 
@@ -381,25 +328,133 @@ def get_paths_in_class(cls) -> list:
     return [i.strip('_') for i in cls.__dict__.keys() if search('path',i, re.IGNORECASE) and getattr(cls,i) is not None] 
 
 
-# TODO when do we want a timestamp based on the last modified time of the metafile?
-def get_timestamp(path : str) -> str:
-    """Returns the timestamp ('%Y-%m-%dT%H:%M:%S') from a filepath.
 
-    Args:
-        path (str): filepath
-
-    Returns:
-        dateTime (str): '%Y-%m-%dT%H:%M:%S' The creation date (Windows) or the last modified date (Linux)
-    """
-    if(os.path.exists(path)):
-        ctime=os.path.getctime(path)
-        dtime=datetime.datetime.fromtimestamp(ctime)
-        return validate_timestamp(dtime)
-    raise ValueError("Path does not exist")
 
 #### CONVERSIONS ####
 
-def literal_to_matrix(input:  str | Literal) -> np.array:
+def literal_to_python(literal:  "str | Literal"):
+    """Tries to convert the string to a number
+
+    Args:
+        literal (str | Literal): the input literal
+
+    Returns:
+        int, float, str: the converted value
+    """
+    try:
+        if '.' in literal:
+            return float(literal)
+        else:
+            return int(literal)
+    except ValueError:
+        pass
+
+    # If all conversions fail, return the literal as string
+    return literal
+
+def literal_to_string(literal:  "str | Literal")->str:
+    """Returns string from rdflib.literal.\n
+
+    Args:
+        literal (rdflib): literal containing value, if the value is None returns None
+
+    Returns:
+        string
+    """
+    string=str(literal)
+    try:
+        if 'None' in string:
+            return None
+        else:
+            return string
+    except:
+        raise ValueError('Conversion error')
+
+def literal_to_int(literal: "str | Literal") -> int:
+    """Returns int from rdflib.literal.
+
+    Args:
+        literal (rdflib): literal containing value
+
+    Raises:
+        ValueError: 'Conversion error'
+
+    Returns:
+        int 
+    """
+    try:
+        if 'None' in literal:
+            return None
+        return int(literal.toPython())
+    except:
+        raise ValueError('Conversion error')
+    
+def literal_to_float(literal:  "str | Literal") -> float:
+    """Returns float from rdflib.literal 
+
+    Args:
+        literal (rdflib): literal containing value
+
+    Raises:
+        ValueError: 'Conversion error'
+
+    Returns:
+        float 
+    """
+    try:
+        if 'None' in literal:
+            return None
+        return float(literal.toPython())
+    except:
+        raise ValueError('Conversion error')
+
+def literal_to_list(literal:  "str | Literal")->list:
+    """Returns list from rdflib.literal.
+
+    Args:
+        literal (rdflib): literal containing value
+
+    Raises:
+        ValueError: 'Conversion error'
+
+    Returns:
+        int 
+    """
+    string=str(literal)
+    try:
+        if 'None' not in string:
+            temp=validate_string(string, ' ')
+            temp=temp.replace("\n","")
+            temp=temp.replace("\r","")
+            temp=temp.split(' ')
+            temp=[x for x in temp if x]
+            # res = list(map(float, temp))  
+            if temp:
+                res=[]
+                for item in temp:      
+                    try: 
+                        res.append(int(item))
+                        continue
+                    except: pass
+                    try:
+                        res.append(float(item))
+                        continue
+                    except: pass
+                    try:
+                        res.append(str(item))
+                        continue
+                    except: pass
+                    try:
+                        res.append(URIRef(item))
+                        continue
+                    except:
+                        pass
+                return res
+        return None  
+    except:
+        raise ValueError
+
+def literal_to_matrix(input:  "str | Literal") -> np.array:
     """
     Parses a given string representation of a matrix into a NumPy array of floats,
     while preserving the shape of the matrix.
@@ -455,176 +510,58 @@ def literal_to_matrix(input:  str | Literal) -> np.array:
     except Exception as e:
         raise ValueError(f"Error parsing string to float array: {e}")
 
-def literal_to_float(literal:  str | Literal) -> float:
-    """Returns float from rdflib.literal 
+def literal_to_datetime(input:  "str | Literal", asStr: bool = True, millies: bool = False) -> datetime.datetime | str:
+    """
+    Validates and converts various timestamp formats into a standardized datetime format.
 
-    Args:
-        literal (rdflib): literal containing value
+    Parameters:
+    value (str | int | float): The input timestamp, which can be a string, integer, or float.
+    asStr (bool, optional): If True, returns the timestamp as a formatted string. Defaults to True.
+    millies (bool, optional): If True and asStr is True, includes milliseconds in the output. Defaults to False.
+
+    Returns:
+    datetime.datetime | str: A datetime object or a formatted string depending on `asStr`.
 
     Raises:
-        ValueError: 'Conversion error'
-
-    Returns:
-        float 
+    ValueError: If the input cannot be parsed into a valid timestamp.
     """
+
+    def return_as(val: datetime.datetime, asStr: bool, millies: bool):
+        if asStr:
+            return val.strftime('%Y-%m-%dT%H:%M:%S.%f' if millies else '%Y-%m-%dT%H:%M:%S')
+        return val
+
+    string = str(input)
+
+    # Special case: Handle timestamps formatted as "YYYY:MM:DD HH:MM:SS"
     try:
-        if 'None' in literal:
-            return None
-        return float(literal.toPython())
-    except:
-        raise ValueError('Conversion error')
-
-def literal_to_string(literal:  str | Literal)->str:
-    """Returns string from rdflib.literal.\n
-
-    Args:
-        literal (rdflib): literal containing value
-
-    Returns:
-        string
-    """
-    string=str(literal)
-    try:
-        if 'None' in string:
-            return None
-        else:
-            return string
-    except:
-        raise ValueError('Conversion error')
-
-def literal_to_list(literal:  str | Literal)->list:
-    """Returns list from rdflib.literal.
-
-    Args:
-        literal (rdflib): literal containing value
-
-    Raises:
-        ValueError: 'Conversion error'
-
-    Returns:
-        int 
-    """
-    string=str(literal)
-    try:
-        if 'None' in string:
-            return None
-        else: 
-            return string_to_list(string)
-    except:
-        raise ValueError
-
-def literal_to_int(literal: str | Literal) -> int:
-    """Returns int from rdflib.literal.
-
-    Args:
-        literal (rdflib): literal containing value
-
-    Raises:
-        ValueError: 'Conversion error'
-
-    Returns:
-        int 
-    """
-    try:
-        if 'None' in literal:
-            return None
-        return int(literal.toPython())
-    except:
-        raise ValueError('Conversion error')
-
-def literal_to_python(literal:  str | Literal):
-    """Tries to convert the string to a number
-
-    Args:
-        literal (str | Literal): the input literal
-
-    Returns:
-        int, float, str: the converted value
-    """
-    try:
-        if '.' in literal:
-            return float(literal)
-        else:
-            return int(literal)
+        dt = datetime.datetime.strptime(string, "%Y:%m:%d %H:%M:%S")
+        return return_as(dt, asStr, millies)
     except ValueError:
         pass
 
-    # If all conversions fail, return the literal as string
-    return literal
-
-def literal_to_linked_subjects(string: str | Literal) -> list:
-    """Returns list of URI subjects that were serialized as a string.\n
-
-    Args:
-        string (str): e.g. '[ file:///Subject1, http://Subject2]'
-
-    Returns:
-        list[items] e.g. [ file:///Subject1, http://Subject2]
-    """
-    temp=string.split(',')
-    temp=[re.sub(r"[\[ \' \]]",'',s) for s in temp]
-    return temp
-
-# TODO combineer met literal
-def string_to_list(string:str)->list:
-    """Convert string of items to a list of their respective types. Function deals with both np.array and list encodings of the stringed values.\n
-
-    Args:
-        string (str): string to parse. 
-
-    Returns:
-        List[items in string]
-    """
+    # General date parser (handles ISO formats, standard datetime strings, etc.)
     try:
-        if 'None' not in string:
-            temp=validate_string(string, ' ')
-            temp=temp.replace("\n","")
-            temp=temp.replace("\r","")
-            temp=temp.split(' ')
-            temp=[x for x in temp if x]
-            # res = list(map(float, temp))  
-            if temp:
-                res=[]
-                for item in temp:      
-                    try: 
-                        res.append(int(item))
-                        continue
-                    except: pass
-                    try:
-                        res.append(float(item))
-                        continue
-                    except: pass
-                    try:
-                        res.append(str(item))
-                        continue
-                    except: pass
-                    try:
-                        res.append(URIRef(item))
-                        continue
-                    except:
-                        pass
-                return res
-        return None  
-    except:
-        raise ValueError
+        dt = dateutil.parser.parse(string)
+        return return_as(dt, asStr, millies)
+    except (ValueError, TypeError):
+        pass
 
-def string_to_rotation_matrix(string :str) -> np.array:
-    """Returns rotation matrix (np.array(3x3)) from string.
+    # Handle float or integer Unix timestamps
+    try:
+        dt = datetime.datetime.fromtimestamp(float(string), tz=datetime.timezone.utc)
+        return return_as(dt, asStr, millies)
+    except (ValueError, TypeError, OSError):
+        pass
 
-    Args:
-        string (str): string cast list or np.array that contains the values of the rotation matrix.\n
+    # If no valid format is found, raise an error
+    raise ValueError(
+        "No valid time formatting found. Expected formats include:\n"
+        "  1. Tue Dec  7 09:38:13 2021\n"
+        "  2. 1648468136.033126 (Unix timestamp)\n"
+        "  3. 2022:03:13 13:55:30"
+    )
 
-    Raises:
-        ValueError: 'array.size!=9'
-
-    Returns:
-        np.array (3x3)
-    """
-    array=literal_to_matrix(string)
-    if len(np.ravel(array))==9:
-        return np.reshape(array,(3,3))
-    else:
-        raise ValueError('array.size!=9')
 
 
 def xml_to_float(xml) -> float:
@@ -693,84 +630,7 @@ def xcr_to_alt(xcr:str) -> float:
         if list:
             return float(list[0])/float(list[-1])       
 
-# TODO can be deleted just do array to literal
-def cartesianTransform_to_literal(matrix : np.array) -> str:
-    """ convert nparray [4x4] to str([16x1]).
-
-    Args:
-        nparray [4x4]
-
-    Returns:
-        List[16]
-    """
-    if matrix.size == 16: 
-        return str(matrix.reshape(16,1))
-    else:
-        Exception("wrong array size!")
-#TODO 
-def featured3d_to_literal(value) -> str:
-    "No feature implementation yet"
-    print("Not implemented yet")
-#TODO
-def featured2d_to_literal(value) -> str:
-    "No feature implementation yet"
-    print("Not implemented yet")
-
-def item_to_list(item)-> list:
-    """Returns [item] if item is not yet a list. This function protects functions that rely on list functionality. 
-
-    Args:
-        item (Python value) 
-
-    Returns:
-        list[item]
-    """
-    if type(item) is np.ndarray:
-        item=item.flatten()
-        return item.tolist()
-    elif type(item) is np.array:
-        item=item.flatten()
-        return item.tolist()
-    elif type(item) is list:# and len(item)>1:
-        return item
-    #why is this here? this function should always return a list!
-    # elif type(item) is list and len(item)==1:
-    #     return item[0]
-    else:
-        return [item]
-
 #### VALIDATION ####
-
-def check_if_uri_exists(list:List[URIRef], subject:URIRef) ->bool:
-    """Returns True if a subject occurs in a list of URIRefs.
-
-    Args:
-        list (List[URIRef]): reference list
-        subject (URIRef): subject to test
-
-    Returns:
-        bool: True if subject occurs in list
-    """
-    list=item_to_list(list)
-    list=[item.toPython() for item in list]
-    subject=subject.toPython()
-      
-    if any(subject in s for s in list):
-        return True
-    else: 
-        return False
-
-def get_subject_name(subject:URIRef) -> str:
-    """Get the main body of a URIRef graph subject
-
-    Args:
-        - subject (URIRef)
-
-    Returns:
-        str
-    """
-    string=subject.toPython()
-    return string.split('/')[-1].split('#')[-1]
 
 def validate_string(string:str|Path, replacement ='_') -> str:
     """Checks path validity. A string is considered invalid if it cannot be serialized by rdflib or is not Windows subscribable.\n
@@ -800,57 +660,45 @@ def validate_string(string:str|Path, replacement ='_') -> str:
     string=prefix+string
     return string
 
-def validate_timestamp(value, asStr: bool = True, millies: bool = False) -> datetime.datetime | str:
-    """
-    Validates and converts various timestamp formats into a standardized datetime format.
+def validate_uri(list:List[URIRef], subject:URIRef) ->bool:
+    """Returns True if a subject occurs in a list of URIRefs.
 
-    Parameters:
-    value (str | int | float): The input timestamp, which can be a string, integer, or float.
-    asStr (bool, optional): If True, returns the timestamp as a formatted string. Defaults to True.
-    millies (bool, optional): If True and asStr is True, includes milliseconds in the output. Defaults to False.
+    Args:
+        list (List[URIRef]): reference list
+        subject (URIRef): subject to test
 
     Returns:
-    datetime.datetime | str: A datetime object or a formatted string depending on `asStr`.
-
-    Raises:
-    ValueError: If the input cannot be parsed into a valid timestamp.
+        bool: True if subject occurs in list
     """
+    list=item_to_list(list)
+    list=[item.toPython() for item in list]
+    subject=subject.toPython()
+      
+    if any(subject in s for s in list):
+        return True
+    else: 
+        return False
 
-    def return_as(val: datetime.datetime, asStr: bool, millies: bool):
-        if asStr:
-            return val.strftime('%Y-%m-%dT%H:%M:%S.%f' if millies else '%Y-%m-%dT%H:%M:%S')
-        return val
+def validate_path(path:str)-> bool:
+    """Returns True if the given path is an existing folder.
 
-    string = str(value)
+    Args:
+        - path (str): path to folder or file
 
-    # Special case: Handle timestamps formatted as "YYYY:MM:DD HH:MM:SS"
-    try:
-        dt = datetime.datetime.strptime(string, "%Y:%m:%d %H:%M:%S")
-        return return_as(dt, asStr, millies)
-    except ValueError:
-        pass
+    Returns:
+        bool: True if exsists.
+    """
+    folder=Path(path).parent
+    if os.path.isdir(path):
+        return True
+    elif os.path.exists(folder):
+        return True
+    else:
+        return False
 
-    # General date parser (handles ISO formats, standard datetime strings, etc.)
-    try:
-        dt = dateutil.parser.parse(string)
-        return return_as(dt, asStr, millies)
-    except (ValueError, TypeError):
-        pass
 
-    # Handle float or integer Unix timestamps
-    try:
-        dt = datetime.datetime.fromtimestamp(float(string), tz=datetime.timezone.utc)
-        return return_as(dt, asStr, millies)
-    except (ValueError, TypeError, OSError):
-        pass
 
-    # If no valid format is found, raise an error
-    raise ValueError(
-        "No valid time formatting found. Expected formats include:\n"
-        "  1. Tue Dec  7 09:38:13 2021\n"
-        "  2. 1648468136.033126 (Unix timestamp)\n"
-        "  3. 2022:03:13 13:55:30"
-    )
+
 
 # #### RDF ####
 
@@ -904,46 +752,6 @@ def get_graph_intersection(graphs:List[Graph]) -> Graph:
 
     return selectGraph
 
-def get_graph_subject(graph:Graph,subject:URIRef) ->URIRef:
-    """Returns graph subject with its appropriate prefix given the main body of a subject. This function is mainly used for local file serializations that mud the graph subjects. You can then use this function to use the correct graph subject regardless of the prefix.\n
-
-    Args:
-        1. graph (Graph): graph with subjects with prefix e.g. URIRef(D:\\DATA\\Subject1)\n
-        2. subject (URIRef): subject to search for. e.g. URIREF(Subject1)\n
-
-    Raises:
-        ValueError: 'subject not in graph.'
-
-    Returns:
-        URIRef(subject): e.g.  URIRef(D:\\DATA\\Subject1)
-    """
-    testSubject=subject.split('/')[-1]
-    for s in graph.subjects():
-        graphSubject= s.split('/')[-1]
-        if testSubject==graphSubject:
-            return s
-    raise ValueError ('subject not in graph.')
-
-
-def get_attribute_from_predicate(graph: Graph, predicate : Literal) -> str:
-    """Returns the attribute without the namespace.
-
-    Args:
-        graph (Graph): The Graph containing the namespaces
-        predicate (Literal): The Literal to convert
-
-    Returns:
-        str: The attribute name
-    """
-    predStr = str(predicate)
-    #Get all the namespaces in the graph
-    for nameSpace in graph.namespaces():
-        nameSpaceStr = str(nameSpace[1])
-        if(predStr.__contains__(nameSpaceStr)):
-            predStr = predStr.replace(nameSpaceStr, '')
-            break
-    return predStr
-
 def bind_ontologies(graph : Graph=Graph()) -> Graph:
     """Returns a graph that binds in its namespace the ontologies that GEMOMAPI uses and that are not in the rdflib.
 
@@ -974,79 +782,40 @@ def bind_ontologies(graph : Graph=Graph()) -> Graph:
     
     return graph
 
-# instead of cleaning the attributes, we should only serialise the rdf variables
-def clean_attributes_list(list:list) -> list:
-    """Returns a 'cleaned' list of class attributes that are not to be serialized in the graph. This includes data attributes such as resources (point clouds, images), linkedNodes, etc.\n
-
-    **NOTE**: RDF Graphs are meant to store metadata, not actual GBs of data that should be contained in their native file formats.\n
-
-    Args:
-        list (list): list of class attributes
-
-    Returns:
-        list (list): 'cleaned' list of class attributes 
-    """
-    #NODE
-    excludedList=['graph','resource','graphPath','subject','kwargs', 'type']
-    #BIMNODE    
-    excludedList.extend(['ifcElement'])
-    #MESHNODE
-    excludedList.extend(['mesh'])
-    #IMGNODES
-    excludedList.extend(['exifData','xmlData','image','features2d','pinholeCamera','depthMap'])
-    #PCDNODE
-    excludedList.extend(['pcd','e57Pointcloud','e57xmlNode','e57image','features3d'])
-    #SESSIONNODE
-    excludedList.extend(['linkedNodes'])
-
-    cleanedList = [ elem for elem in list if elem not in excludedList]
-    return cleanedList
-
-def check_if_path_is_valid(path:str)-> bool:
-    """Returns True if the given path is an existing folder.
-
-    Args:
-        - path (str): path to folder or file
-
-    Returns:
-        bool: True if exsists.
-    """
-    folder=get_folder(path)
-    if os.path.isdir(path):
-        return True
-    elif os.path.exists(folder):
-        return True
-    else:
-        return False
 
 
-def get_node_resource_extensions(objectType:str) -> list:
-    """Returns the potential file formats for different types of Nodes' resources (images, pcd, ortho, etc.).\n
+def get_node_resource_extensions(node: object):
+    domain = get_node_type(node)
+    #print(domain)
+    
+    # SPARQL query with Python variable
+    query = f"""
+        PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+        PREFIX dbp: <http://dbpedia.org/ontology/>
+        PREFIX geomapi: <https://w3id.org/geomapi#>
+        PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
+        PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-    Args:
-        objectType (str): Type of node class
+        SELECT ?property ?domain ?extension
+        WHERE {{
+            ?property rdf:type owl:DatatypeProperty ;
+            rdfs:domain ?domain ;
+            dbp:extension ?extension .
+        }}
+        """
+    # Execute the query on your GEOMAPI_GRAPH
+    results = GEOMAPI_GRAPH.query(query)
+    #print(results.vars)
+    extensions = []
+    for row in results:
+        #print(row)
+        # Each row is a tuple of variable bindings (e.g., (?property, ?extension))
+        #print(f"Property: {row['property']}, Extension: {row['extension']}, Domain: {row['domain']}")
+        if(row['domain'] == domain or domain == URIRef("https://w3id.org/geomapi#Node")):
+            #print("match")
+            extensions.append(str(row['extension']))
 
-    Returns:
-        list with possible extensions e.g. .obj, .ply for MeshNodes
-    """    
-    if 'MeshNode' in objectType:        
-        return MESH_EXTENSIONS
-    elif 'SetNode' in objectType:        
-        return MESH_EXTENSIONS
-    elif 'BIMNode' in objectType:        
-        return MESH_EXTENSIONS
-    elif 'PointCloudNode' in objectType:        
-        return PCD_EXTENSIONS  
-    elif 'LineSetNode' in objectType:        
-        return CAD_EXTENSIONS   
-    elif 'ImageNode' in objectType:        
-        return IMG_EXTENSIONS
-    elif 'OrthoNode' in objectType:        
-        return IMG_EXTENSIONS
-    elif 'PanoNode' in objectType:        
-        return IMG_EXTENSIONS
-    else:
-        return ['.txt']+MESH_EXTENSIONS+PCD_EXTENSIONS+IMG_EXTENSIONS+RDF_EXTENSIONS
+    return extensions
 
 def get_node_type(cls) -> URIRef:
     """Return the type of Node as an rdflib literal. By default, URIRef(Node) is returned.
@@ -1156,3 +925,75 @@ def get_predicate_and_datatype(attribute_name: str):
     
     # Return default predicate and None for datatype if no match is found
     return GEOMAPI_NAMESPACE[attribute_name], None
+
+
+
+def rdf_property(predicate: Optional[str] = None, serializer: Optional[Callable] = None, datatype: Optional[str] = None):
+    """
+    Decorator to mark a property for RDF serialization with an optional custom serializer and datatype.
+
+    Args:
+        predicate (Optional[str]): The URI or string representing the RDF predicate. If not provided,
+                                    the predicate will be inferred from the property name.
+        serializer (Optional[Callable]): A custom function to serialize the property value before adding it to the RDF graph.
+                                         If not provided, the default serialization will be used.
+        datatype (Optional[str]): The datatype URI to associate with the property. If not provided, the datatype will be inferred
+                                  from the property name.
+
+    Returns:
+        Callable: The decorated function that marks the property for RDF serialization.
+    """
+    def decorator(func: Callable) -> Callable:
+        # Get default predicate and datatype if not provided
+        _pred, _dat = get_predicate_and_datatype(func.__name__)
+
+        # If predicate or datatype is not provided, use the default one
+        _predicate = _pred if predicate is None else predicate
+        _datatype = _dat if datatype is None else datatype
+
+        # Store the RDF mapping in the RDFMAPPINGS dictionary
+        RDFMAPPINGS[func.__name__] = {"predicate": _predicate, "serializer": serializer, "datatype": _datatype}
+        return func
+    
+    return decorator
+
+######## OBSOLETE #############
+
+def get_variables_in_class(cls) -> List[str]: 
+    """Returns a list of class attributes in the class.\n
+
+    Args:
+        cls(class): class e.g. MeshNode
+    
+    Returns:
+        list of class attribute names
+    """  
+    return [i.strip('_') for i in cls.__dict__.keys() if getattr(cls,i) is not None] 
+
+# instead of cleaning the attributes, we should only serialize the rdf variables
+def clean_attributes_list(list:list) -> list:
+    """Returns a 'cleaned' list of class attributes that are not to be serialized in the graph. This includes data attributes such as resources (point clouds, images), linkedNodes, etc.\n
+
+    **NOTE**: RDF Graphs are meant to store metadata, not actual GBs of data that should be contained in their native file formats.\n
+
+    Args:
+        list (list): list of class attributes
+
+    Returns:
+        list (list): 'cleaned' list of class attributes 
+    """
+    #NODE
+    excludedList=['graph','resource','graphPath','subject','kwargs', 'type']
+    #BIMNODE    
+    excludedList.extend(['ifcElement'])
+    #MESHNODE
+    excludedList.extend(['mesh'])
+    #IMGNODES
+    excludedList.extend(['exifData','xmlData','image','features2d','pinholeCamera','depthMap'])
+    #PCDNODE
+    excludedList.extend(['pcd','e57Pointcloud','e57xmlNode','e57image','features3d'])
+    #SESSIONNODE
+    excludedList.extend(['linkedNodes'])
+
+    cleanedList = [ elem for elem in list if elem not in excludedList]
+    return cleanedList
