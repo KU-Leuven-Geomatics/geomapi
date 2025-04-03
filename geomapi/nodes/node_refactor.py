@@ -75,7 +75,7 @@ class Node:
             Node: An instance of the Node class.
         """
 
-        #set instance variables (protected inputs)       
+        #set properties (protected inputs)       
         self.subject=subject
         self.graphPath=graphPath
         self.graph=graph
@@ -109,30 +109,15 @@ class Node:
     @property
     @rdf_property(serializer=lambda v: v.as_posix())
     def path(self): 
-        """Path (Path) of the resource of the node. If no path is present, you can use `get_path()` to reconstruct the path from either the graphPath or working directory.
+        """Path (Path) of the resource of the node.
         
         Args:
             - value (str or Path): The new path for the node.
         
-        Raises:
-            ValueError: If the path has an invalid type, path, or extension.
-        
         """
         if self._path is not None: #self._path.exists():
             return self._path
-        
-        elif self.graphPath and (self.name or self.subject):
-            folder=self.graphPath.parent 
-            nodeExtensions=ut.get_node_resource_extensions(str(type(self)))
-            allSessionFilePaths=ut.get_list_of_files(folder) 
-            for path in allSessionFilePaths:
-                if path.suffix.upper() in nodeExtensions:
-                    if self.name in path.stem :
-                        self._path = path    
-                        return self._path
-        else:
-            return None
-    
+
     @path.setter 
     def path(self,value: Optional[Path]):        
         if value is None:
@@ -145,7 +130,7 @@ class Node:
     @rdf_property(predicate= GEOMAPI_PREFIXES['rdfs'].label, datatype=XSD.string)
     def name(self):
         """The name (str) of the node. This can include characters that the operating
-        system does not allow. If no name is present, you can use `get_name()` to construct a name from the subject or path.
+        system does not allow.
 
         Args:
             - self.path
@@ -169,7 +154,7 @@ class Node:
     @property
     @rdf_property(predicate=GEOMAPI_PREFIXES['dcterms'].created, datatype=XSD.dateTime)
     def timestamp(self) -> str:
-        """The timestamp (str(yyyy-MM-ddTHH:mm:ss)) of the node. If no timestamp is present, use `get_timestamp()` to gather the timestamp from the path or graphPath.
+        """The timestamp (str(yyyy-MM-ddTHH:mm:ss)) of the node.
 
         Features:
             - self.path
@@ -301,7 +286,7 @@ class Node:
          
     #---------------------CARTESIANTRANSFORM----------------------------    
     @property
-    @rdf_property
+    @rdf_property()
     def cartesianTransform(self) -> np.ndarray:
         """
         The (4x4) transformation matrix of the node containing the translation & rotation. If no matrix is present, you can use `get_cartesian_transform()`, to gather it from the resource, orientedBoundingBox, or convexHull.
@@ -550,16 +535,18 @@ class Node:
         """
         return self._resource
 
-    def get_graph(self, graphPath: Path = None, overwrite: bool = True, save: bool = False, base: URIRef = None) -> Graph:
-        """Serializes the object into an RDF graph using its decorated properties.
+    def get_graph(self, graphPath: Path = None, overwrite: bool = True, save: bool = False, base: URIRef = None, serializeAttributes: List = None) -> Graph:
+        """Serializes the object into an RDF graph using only its decorated properties.
         
         **NOTE** that adding a base URI will change the graph's subject to the base URI/subject. URIRef('http://subject') -> URIRef('http://node#subject'). This is useful for readability and graph navigation.
+        **NOTE** that by default, only the pre-defined properties are serialized, if you want to serialize your own attributes use `serializeAttributes`
         
         Args:
             - graphPath (Path) : The path of the graph to parse.
             - overwrite (bool) : Overwrite the existing graph or not.
             - base (str | URIRef) : BaseURI to match subjects to in the graph (improves readability) e.g. http://node#. Also, the base URI is used to set the subject of the graph. RDF rules and customs apply so the string must be a valid URI (http:// in front, and # at the end).
             - save (bool) : Save the graph to the self.graphPath or graphPath.
+            - serializeAttributes (List(str)) : a list of attributes defined in the node that also need to be serialized
         
         Returns:
             Graph: The RDF graph
@@ -581,9 +568,19 @@ class Node:
             # Define node type
             nodeType = ut.get_node_type(self)
             self._graph.add((self.subject, RDF.type, nodeType))
+            
+            #set the default propertylist
+            propertylist = RDFMAPPINGS
+
+            # check for any user specified attributes that they also want serialized
+            if(serializeAttributes is not None):
+                propertylist = RDFMAPPINGS.copy() # copy the mappings list to add the attributes for this specific graph
+                for prop in serializeAttributes:
+                    _predicate, _datatype = ut.get_predicate_and_datatype(prop)
+                    propertylist[prop] = {"predicate": _predicate, "serializer": None, "datatype": _datatype}
 
             # Process each property using its decorator-defined predicate and serializer
-            for attr, metadata in RDFMAPPINGS.items():
+            for attr, metadata in propertylist.items():
                 predicate = URIRef(metadata["predicate"])
                 datatype = metadata["datatype"]
                 serializer = metadata.get("serializer", None)

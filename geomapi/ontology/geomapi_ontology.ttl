@@ -91,102 +91,6 @@ xsd:float
 	
 #how do we deal with dictionaries?
 
-#################################################################
-#    DATA FORMATS
-###################################################################
-
-#what with the XML files?
-#CAD formats -> mostly covered by fog
-:asDxF
-	rdf:type owl:DatatypeProperty ;
-	rdf:type owl:FunctionalProperty ; 	# unique valued property
-	dbp:extension ".dxf" ;
-	rdfs:comment "Path to .dxf file."@en ;
-	rdfs:isDefinedBy : ;
-	rdfs:label "as DXF format (.dxf)"@en ;
-	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
-	rdfs:domain :LineSetNode; 			
-	rdfs:range xsd:string .
-
-#BIM formats -> fog:asIfc
-
-#MESH formats # -> this is too specific in fog and clutters the geometry parsing using the API's
-:asPolygonalMesh
-	rdf:type owl:DatatypeProperty ;
-	rdf:type owl:FunctionalProperty ;
-	dbp:extension ".obj" ; #we have added extensions
-	dbp:extension ".ply" ;
-	dbp:extension ".fbx" ;
-	rdfs:comment "Path to binary or ASCII file format that can be parsed with Open3D or Trimesh."@en ;
-	rdfs:isDefinedBy : ;
-	rdfs:seeAlso dcterms:source,geo:Geometry;		
-	rdfs:label "as polygonal mesh"@en ;
-	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ; 
-	rdfs:domain :MeshNode; 			
-	rdfs:range xsd:string .
-
-#POINT CLOUD formats
-:asPointCloud 
-	rdf:type owl:DatatypeProperty ;
-	rdf:type owl:FunctionalProperty ;			# this points to a file
-	dbp:extension ".pcd" ;
-	dbp:extension ".e57" ;
-	dbp:extension ".las" ;
-	dbp:extension ".laz" ;
-	dbp:extension ".pts" ;
-	dbp:extension ".ply" ;
-	dbp:extension ".csv" ;
-	dbp:extension ".bin" ;
-	rdfs:comment "Point cloud formats (binary or ASCII) that can be parsed with Python Laspy, Pye57, Pandas or Open3D."@en ;
-	rdfs:isDefinedBy : ;
-	rdfs:seeAlso dcterms:source,geo:Geometry;		
-	rdfs:label "as point cloud"@en ;
-	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
-	rdfs:domain :PointCloudNode;
-	rdfs:range xsd:string .
-	
-:asPointCloudXML
-	rdf:type owl:DatatypeProperty ;
-	rdf:type owl:FunctionalProperty ;			
-	dbp:extension ".xml" ;
-	rdfs:comment "Point cloud XML support format."@en ;
-	rdfs:isDefinedBy : ;
-	rdfs:seeAlso dcterms:source,geo:Geometry;		
-	rdfs:label "as point cloud xml"@en ;
-	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
-	rdfs:domain :PointCloudNode;
-	rdfs:range xsd:string .
-
-#IMAGE formats
-:asImage
-	rdf:type owl:DatatypeProperty ;
-	rdf:type owl:FunctionalProperty ;
-	dbp:extension ".jpeg" ;
-	dbp:extension ".jpg" ;
-	dbp:extension ".png" ;
-	dbp:extension ".tif" ;
-	rdfs:comment "Path to an image file that can be parsed by Python PIL or OpenCV."@en ;
-	rdfs:isDefinedBy : ;
-	rdfs:seeAlso dcterms:source;		
-	rdfs:label "as image"@en ;
-	rdfs:subPropertyOf fog:hasSimpleGeometryDescription ;
-	rdfs:domain :ImageNode;
-	rdfs:range xsd:string . 
-
-:asTexture 						#how is this different from an image, yes there is a parsing difference, but that should be tackled by the Node, not this property?
-	rdf:type owl:DatatypeProperty ;
-	rdf:type owl:FunctionalProperty ;
-	dcterms:requires "can i fill in a method here????????" ; # can i fill in a method here????????
-	rdfs:comment "Path to a geometry texture file. This file always has to be used together with a geometry resource that references it."@en ;
-	rdfs:isDefinedBy : ;
-	rdfs:seeAlso dcterms:source;		
-	rdfs:label "as texture file"@en ;
-	rdfs:subPropertyOf :asImage ;
-	rdfs:domain :MeshNode;
-	rdfs:range xsd:string .
-
-
-
 
 #################################################################
 #    PROPERTIES differentiate between AnnotationProperty (human info), DatatypeProperty (literals), ObjectProperty (classes)
@@ -231,54 +135,6 @@ xsd:float
 	rdfs:domain :Node; 			
 	rdfs:range xsd:string.	
 	
-
-#:centroid									# what do we do with lat,long,alt?
-#	rdf:type owl:DatatypeProperty ;
-#	rdf:type owl:FunctionalProperty ;
-#	rdfs:comment """The 3x1 matrix with the centroid of a geometry [X,Y,Z]."""@en  ;
-#	rdfs:label "Centroid"@en ;
-#	rdfs:seeAlso geo:hasCentroid	;	
-#	rdfs:domain :Node ; 			
-#	rdfs:range geomapi:matrix. 	
-	
-#:cartesianBounds
-#	rdf:type owl:DatatypeProperty ;
-#	rdf:type owl:FunctionalProperty ;
-#	rdfs:comment """The 6x1 matrix with the cartesian bounds of a geometry [X_min,X_max,Y_min,Y_max,Z_min,Z_max] ."""@en  ;
-#	rdfs:label "Cartesian Boundaries"@en ;
-#	rdfs:seeAlso geo:hasBoundingBox	;	
-#	rdfs:seeAlso geom:bbox;
-#	rdfs:domain :Node ; 			
-#	rdfs:range geomapi:matrix. 		
-	
-#:orientedBounds # we are going to deprecate this
-#	rdf:type owl:DatatypeProperty ;
-#	rdf:type owl:FunctionalProperty ;
-#	rdfs:comment """The 8x3 matrix with the 8 bounding points of the Oriented Bounding Box [[X_0,Y_0,Z_0],[X_1,Y_1,Z_1], ...]."""@en  ;
-#	rdfs:label "Oriented Boundaries"@en ;
-#	rdfs:seeAlso geo:hasBoundingBox;		
-#	rdfs:domain :Node; 			
-#	rdfs:range geomapi:matrix. 
-
-#:2DBox 
-#	rdf:type owl:DatatypeProperty ;
-#	rdf:type owl:FunctionalProperty ;
-#	rdfs:comment """The 4x1 matrix with the parameters (location, size) in (m or pix) of an axis aligned Bounding Box [x,y,sx,sy]. If it is a relative definition, then its [u,v,su,sv]."""@en  ;
-#	rdfs:seeAlso <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#_bounding_boxes> ;
-#	rdfs:label "2DBox"@en ;
-#	rdfs:seeAlso geo:hasBoundingBox;		
-#	rdfs:domain :Node; 			
-#	rdfs:range geomapi:matrix. 	
-	
-#:2DHull
-#	rdf:type owl:DatatypeProperty ;
-#	rdf:type owl:FunctionalProperty ;
-#	rdfs:comment """The nx2 matrix with the location "[[u_1,v_1],....[u_i,v_i]]" of the 2D bounding points of the convex hull in the resource. Minumum 3 non-colinear points needed! """@en  ;
-#	rdfs:seeAlso <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#_bounding_boxes> ;
-#	rdfs:label "2DHull"@en ;
-#	rdfs:domain :Node; 			
-#	rdfs:range geomapi:matrix. 	
-
 :pointCount
 	rdf:type owl:DatatypeProperty ;
 	rdf:type owl:FunctionalProperty ;
@@ -568,6 +424,7 @@ xsd:float
 	rdfs:seeAlso geo:SpatialObject; 	#any spatial phenomenon
 	rdfs:label "Node"@en ;
 	rdfs:comment """Archetype of all geomapi resource classes. Defines a set of Geospatial metadata e.g. the cartesian transform of a geomatics resource e.g. a geolocated image or a point cloud. Each node definition is tied to specific GEOMAPI python functionality."""@en  ;
+	dbp:extension ".TTL" ;
 	rdfs:isDefinedBy : .
 
 :SetNode 
@@ -577,21 +434,13 @@ xsd:float
 	rdfs:comment """setNode is a metadata collection of several data Nodes defined by a 3DBox, 3Dhull and cartesianTransform. It is used to easly select groups of resource Nodes and jointly transform them."""@en  ;	
 	rdfs:isDefinedBy : ;
 	rdfs:seeAlso geo:GeometryCollection . 	#any spatial phenomenon
-	
-#:GeometryNode 
-#	rdf:type owl:Class ;
-#	rdfs:subClassOf :Node ;
-#	rdfs:label "GeometryNode"@en ;
-#	rdfs:comment """Archetype of geometry based nodes i.e. PointCloudNode, BIMNode, MeshNode and LineSetNode that share the following propertyset [orientedBoundingBox, cartesianBounds] and methods."""@en  ;
-#	rdfs:isDefinedBy : ;
-#	rdfs:seeAlso omg:geometry ;
-#	owl:disjointWith :Node .
 
 :PointCloudNode 
 	rdf:type owl:Class ;
 	rdfs:subClassOf :Node ;
 	rdfs:label "PointCloudNode"@en ;
 	rdfs:comment """PointCloudNode connecting the RDF graph, point cloud resource and metadata with geospatial methods."""@en  ;
+	dbp:extension ".PCD", ".E57",".PTS", ".PLY",".LAS",".LAZ";
 	rdfs:isDefinedBy : ;
 	owl:disjointWith :MeshNode, :LineSetNode, :BIMNode, :ImageNode, :OrthoNode, :PanoNode  .
 
@@ -600,6 +449,7 @@ xsd:float
 	rdfs:subClassOf :Node ;
 	rdfs:label "MeshNode"@en ;
 	rdfs:comment """MeshNode connecting the RDF graph, mesh resource and metadata with geospatial methods."""@en  ;
+	dbp:extension ".OBJ",".PLY",".FBX" ;
 	rdfs:isDefinedBy : ;
 	owl:disjointWith :PointCloudNode, :LineSetNode, :BIMNode , :ImageNode, :OrthoNode, :PanoNode  .
 
@@ -608,6 +458,7 @@ xsd:float
 	rdfs:subClassOf :Node ;
 	rdfs:label "LineSetNode"@en ;
 	rdfs:comment """LineSetNode connecting the RDF graph, lineset resources and metadata with geospatial methods."""@en  ;
+	dbp:extension ".PLY",".DXF",".TFW" ;
 	rdfs:isDefinedBy : ;
 	owl:disjointWith :PointCloudNode, :MeshNode, :BIMNode , :ImageNode, :OrthoNode, :PanoNode  .
 
@@ -616,6 +467,7 @@ xsd:float
 	rdfs:subClassOf :Node ;
 	rdfs:label "BIMNode"@en ;
 	rdfs:comment """BIMNode connecting the RDF graph, ifc geometries and metadata with geospatial methods."""@en  ;
+	dbp:extension ".PLY",".DXF",".TFW" ;
 	rdfs:isDefinedBy : ;
 	rdfs:seeAlso bot:Element;
 	owl:disjointWith :PointCloudNode, :MeshNode, :LineSetNode , :ImageNode, :OrthoNode, :PanoNode  .
@@ -625,23 +477,16 @@ xsd:float
 	rdfs:subclassof :node ;
 	rdfs:label "ImageNode"@en ;
 	rdfs:comment """ImageNode connecting the RDF graph, pinhole camera parameters, image and metadata with geospatial methods."""@en  ;
+	dbp:extension ".JPG", ".PNG", ".JPEG",".TIF";
 	rdfs:isdefinedby : ;
 	owl:disjointWith :PointCloudNode, :MeshNode, :BIMNode, :LineSetNode, :OrthoNode, :PanoNode .
-
-#:CameraNode
-#	rdf:type owl:Class ;
-#	rdfs:subClassOf :Node ;
-#	rdfs:label "CameraNode"@en ;
-#	rdfs:comment """RDF representation of pinhole cameras imagery. Has unique raytracing methods."""@en  ;
-#	rdfs:isDefinedBy : ;
-#	owl:disjointWith :OrthoNode, 
-#					:PanoNode .
 
 :OrthoNode 
 	rdf:type owl:Class ;
 	rdfs:subClassOf :Node ;
 	rdfs:label "OrthoNode"@en ;
 	rdfs:comment """OrthoNode connecting the RDF graph, orthomosaic image projection parameters, and metadata with geospatial methods."""@en  ;
+	dbp:extension ".JPG", ".PNG", ".JPEG",".TIF";
 	rdfs:isDefinedBy : ;
 	owl:disjointWith :PointCloudNode, :MeshNode, :BIMNode, :LineSetNode, :ImageNode, :PanoNode .
 
@@ -650,6 +495,7 @@ xsd:float
 	rdfs:subClassOf :Node ;
 	rdfs:label "PanoNode"@en ;
 	rdfs:comment """PanoNode connecting the RDF graph, panoramic image projection parameters, and metadata with geospatial methods."""@en  ;
+	dbp:extension ".JPG", ".PNG", ".JPEG",".TIF";
 	rdfs:isDefinedBy : ;
 	owl:disjointWith :PointCloudNode, :MeshNode, :BIMNode, :LineSetNode , :ImageNode, :OrthoNode .
 

@@ -2031,7 +2031,7 @@ def get_oriented_bounding_box(value:np.ndarray |type[o3d.geometry.Geometry], deg
             center=value[:3]
             extent=value[3:6]
             euler_angles=value[6:9]        
-            rotation_matrix = R.from_euler('xyz', euler_angles, degrees=True).as_matrix()
+            rotation_matrix = R.from_euler('xyz', euler_angles, degrees=degrees).as_matrix()
             box = o3d.geometry.OrientedBoundingBox(center, rotation_matrix, extent)  
         else:
             value=np.reshape(value,(-1,3))

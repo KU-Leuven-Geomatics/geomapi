@@ -782,40 +782,34 @@ def bind_ontologies(graph : Graph=Graph()) -> Graph:
     
     return graph
 
+def get_node_resource_extensions(node: object) -> list:
+    """
+    Retrieves the resource extensions associated with the given node's class name 
+    by executing a SPARQL query on the GEOMAPI_GRAPH.
 
+    Args:
+        node (object): The object whose class name is used in the SPARQL query.
 
-def get_node_resource_extensions(node: object):
-    domain = get_node_type(node)
-    #print(domain)
-    
-    # SPARQL query with Python variable
+    Returns:
+        list: A list of extensions (as strings) associated with the node's class.
+    """
     query = f"""
         PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
         PREFIX dbp: <http://dbpedia.org/ontology/>
-        PREFIX geomapi: <https://w3id.org/geomapi#>
         PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
-        PREFIX owl: <http://www.w3.org/2002/07/owl#>
 
-        SELECT ?property ?domain ?extension
+        SELECT ?extension
         WHERE {{
-            ?property rdf:type owl:DatatypeProperty ;
-            rdfs:domain ?domain ;
-            dbp:extension ?extension .
+            ?class rdf:type owl:Class ;
+                   rdfs:label "{node.__class__.__name__}"@en ;  # Dynamically inserted
+                   dbp:extension ?extension .
         }}
-        """
-    # Execute the query on your GEOMAPI_GRAPH
+    """
+    # Execute the query on the GEOMAPI_GRAPH
     results = GEOMAPI_GRAPH.query(query)
-    #print(results.vars)
-    extensions = []
-    for row in results:
-        #print(row)
-        # Each row is a tuple of variable bindings (e.g., (?property, ?extension))
-        #print(f"Property: {row['property']}, Extension: {row['extension']}, Domain: {row['domain']}")
-        if(row['domain'] == domain or domain == URIRef("https://w3id.org/geomapi#Node")):
-            #print("match")
-            extensions.append(str(row['extension']))
 
-    return extensions
+    # Extract and return the extensions
+    return [str(row['extension']) for row in results]
 
 def get_node_type(cls) -> URIRef:
     """Return the type of Node as an rdflib literal. By default, URIRef(Node) is returned.
