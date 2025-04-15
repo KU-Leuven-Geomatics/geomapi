@@ -26,6 +26,7 @@ from rdflib.namespace import RDF
 import open3d as o3d 
 import copy
 from collections import Counter
+import inspect
 
 #IMPORT MODULES
 import geomapi.utils as ut
@@ -88,13 +89,23 @@ class Node:
         self.cartesianTransform=cartesianTransform
 
         #if graphPath is present, parse and set graph
-        if not self.graph and self.graphPath and os.path.exists(self.graphPath):
+        if not self.graph and self.graphPath:
+            if not os.path.exists(self.graphPath):
+                raise ValueError("Invalid graphPath does not exist")
             graph=Graph().parse(self.graphPath)
-            self.graph=ut.get_subject_graph(graph,self.subject) 
-            self.subject=next(self.graph.subjects(RDF.type))
+            if(subject is None):
+                self.graph=ut.get_subject_graph(graph) 
+                self.subject=next(self.graph.subjects(RDF.type))
+            else:
+                self.graph=ut.get_subject_graph(graph,self.subject)
         if self.graph:
+            if(subject is None):
+                self.graph=ut.get_subject_graph(self.graph) 
+                self.subject=next(self.graph.subjects(RDF.type))
             self._set_attributes_from_graph()
-
+        # make sure the node has an identifier when initialised without any data
+        if(not graph and not path and not name and not subject):
+            self.name=uuid.uuid1()
         #if path is present, set name and timestamp
         if loadResource:
             self.load_resource()
@@ -107,7 +118,7 @@ class Node:
 
     #---------------------PATH----------------------------
     @property
-    @rdf_property(serializer=lambda v: v.as_posix())
+    @rdf_property(serializer=ut.get_relative_path)
     def path(self): 
         """Path (Path) of the resource of the node.
         
@@ -189,6 +200,7 @@ class Node:
         elif any(Path(value).suffix.upper()==extension for extension in ut.RDF_EXTENSIONS): 
             self._graphPath=Path(value)
         else:
+            self._graphPath = None
             raise ValueError('GraphPath parsing error due to invalid extension or syntax. Only .ttl is currently proofed')    
 
     #---------------------GRAPH----------------------------    
@@ -204,8 +216,9 @@ class Node:
             self._graph = None
         else:
             if isinstance(value, Graph) :
-                self._graph =  value if len(set(value.subjects()))==1 else ut.get_subject_graph(value,self.subject) 
+                self._graph = value# =  value if len(set(value.subjects()))==1 else ut.get_subject_graph(value,self.subject) 
             else:
+                self._graph = None
                 raise ValueError('Input must be a rdflib.Graph.')
 
     #---------------------SUBJECT----------------------------    
@@ -501,9 +514,9 @@ class Node:
             if hasResource:
                 self.cartesianTransform = gmu.get_cartesian_transform(translation=self.resource.get_center())
             elif self.convexHull is not None:
-                self.cartesianTransform = gmu.get_cartesian_transform(translation=_convexHull.get_center())
+                self.cartesianTransform = gmu.get_cartesian_transform(translation=self.convexHull.get_center())
             elif self.orientedBoundingBox is not None:
-                self.cartesianTransform = gmu.get_cartesian_transform(translation=_orientedBoundingBox.get_center())
+                self.cartesianTransform = gmu.get_cartesian_transform(translation=self.orientedBoundingBox.get_center())
             else:
                 self.cartesianTransform = np.eye(4)
 
@@ -511,7 +524,7 @@ class Node:
             if hasResource:
                 self.convexHull = gmu.get_convex_hull(self.resource)
             elif self.orientedBoundingBox is not None:
-                self.convexHull = gmu.get_convex_hull(self._orientedBoundingBox)
+                self.convexHull = gmu.get_convex_hull(self.orientedBoundingBox)
             else:
                 box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
                 box.translate([-0.5, -0.5, -0.5])
@@ -587,8 +600,23 @@ class Node:
                 value = getattr(self, attr, None)
 
                 if value is not None:
+                    
+                    if serializer:
+                        params = inspect.signature(serializer).parameters
+                        try:
+                            if len(params) == 1:
+                                serialized_value = Literal(serializer(value),datatype=datatype)
+                            elif len(params) == 2:
+                                serialized_value = Literal(serializer(self, value),datatype=datatype)
+                            else:
+                                raise TypeError(f"Unexpected number of arguments in serializer: {serializer}")
+                        except Exception as e:
+                            print(f"Serializer error for {attr}: {e}")
+                            continue  # optionally skip problematic attributes
+                    else:
+                        serialized_value = Literal(value,datatype=datatype)
                     #print(predicate, serializer, datatype)
-                    serialized_value = Literal(serializer(value),datatype=datatype)  if serializer else Literal(value,datatype=datatype)
+                    #serialized_value = Literal(serializer(value),datatype=datatype)  if serializer else Literal(value,datatype=datatype)
 
                     # Handle lists (multiple triples)
                     if isinstance(serialized_value, list):

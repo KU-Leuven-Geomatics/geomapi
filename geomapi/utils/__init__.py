@@ -920,7 +920,13 @@ def get_predicate_and_datatype(attribute_name: str):
     # Return default predicate and None for datatype if no match is found
     return GEOMAPI_NAMESPACE[attribute_name], None
 
-
+def get_relative_path(self, value):
+        if (self.graphPath):
+            folderPath= Path(self.graphPath).parent
+            try:
+                return Path(os.path.relpath(value,folderPath)).as_posix()
+            except: pass
+        else: return value.as_posix()
 
 def rdf_property(predicate: Optional[str] = None, serializer: Optional[Callable] = None, datatype: Optional[str] = None):
     """

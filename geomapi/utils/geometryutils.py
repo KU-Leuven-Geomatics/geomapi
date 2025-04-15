@@ -1768,145 +1768,88 @@ def generate_visual_cone_from_image(cartesianTransform : np.array, height : floa
     else:
         raise ValueError("The given cartesianTransform is not a 4x4 np.array") 
 
-def are_points_collinear(points):
-    """
-    Determines whether a set of points in 2D is collinear.
-    
-    In terms of linear algebra, this corresponds to the points lying within a subspace of <2 dimensions. When appluing SVD ($A=UΣV^T$), the rank (indicating the dimensions) of the matrix $A$ is given by the number of non-zero singular values in $\Sigma$. If the rank is less than 2, the points are colinear.
-
-
-    Parameters:
-    - points (numpy.ndarray): An array of points with shape (n, 2) where n is the number of points.
-
-    Returns:
-    - bool: True if the points are collinear, False otherwise.
-    """
-    if points.shape[0] < 3:
-        # Less than three points are always collinear
-        return True
-    
-    if points.shape[0] > 100:
-        # Randomly select 100 rows
-        selected_row_indices = np.random.choice(points.shape[0], 100, replace=False)
-        # Fetch the rows based on the selected indices
-        points = points[selected_row_indices]
-
-
-    # Centralize points by subtracting the mean
-    mean = np.mean(points, axis=0)
-    centralized_points = points - mean
-
-    # Calculate the rank of the centralized matrix
-    rank = np.linalg.matrix_rank(centralized_points)
-
-    # If rank is less than 2, points are colinear
-    return rank < 2
-
-def are_points_coplanar(points):
-    """
-    Determines whether a set of points is coplanar.
-    
-    In terms of linear algebra, this corresponds to the points lying within a subspace of <3 dimensions. When appluing SVD ($A=UΣV^T$), the rank (indicating the dimensions) of the matrix $A$ is given by the number of non-zero singular values in $\Sigma$. If the rank is less than 3, the points are coplanar.
-  
-    Parameters:
-    - points (numpy.ndarray): An array of points with shape (n, 3) where n is the number of points.
-
-    Returns:
-    - bool: True if the points are coplanar, False otherwise.
-    """
-    points = np.array(points)
-    
-    if points.shape[0] < 4:
-        # Less than four points are always coplanar
-        return True
-    
-    if points.shape[0] > 100:
-            # Randomly select 100 rows
-            selected_row_indices = np.random.choice(points.shape[0], 100, replace=False)
-            # Fetch the rows based on the selected indices
-            points = points[selected_row_indices]
-        
-    # Centralize points by subtracting the mean
-    mean = np.mean(points, axis=0)
-    centralized_points = points - mean
-
-    # Calculate the rank of the centralized matrix
-    rank = np.linalg.matrix_rank(centralized_points)
-
-    # If rank is less than 3, points are coplanar
-    return rank < 3
-
-def get_convex_hull(value:np.ndarray |type[o3d.geometry.Geometry]) ->  o3d.geometry.Geometry:
-    """Get a convex hull Open3D Triangle Mesh from various inputs.
-
-    Args:
-        - Open3D TriangleMesh
-        - Open3D PointCloud
-        - Open3D LineSet
-        - o3d.utility.Vector3dVector
-        - array of 3D points (np.array)
-
-    Returns:
-        o3d.geometry.TriangleMesh
-    """
-    def move_points(points):
-        new_points=copy.deepcopy(points)
-        new_points[:,0]=new_points[:,0]+np.random.uniform(-0.03,0.03)
-        new_points[:,1]=new_points[:,1]+np.random.uniform(-0.03,0.03)
-        new_points[:,2]=new_points[:,2]+np.random.uniform(-0.03,0.03)
-        points=np.vstack((points,new_points))
-        return points
-    
-    if isinstance(value,o3d.geometry.PointCloud):
-        points=np.asarray(value.points)            
-        if are_points_coplanar(points):
-            points=move_points(points)
-            hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
-        else:
-            hull=value.compute_convex_hull()[0]
-    elif isinstance(value,o3d.geometry.LineSet):
-        points=np.asarray(value.points)            
-        if are_points_coplanar(points):
-            points=move_points(points)
-            points=move_points(points)
-            hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
-        else:
-            try:
-                points=move_points(points)
-                hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]   
-            except: 
-                raise ValueError('Not enough points to create a convex hull')
-    elif isinstance(value,o3d.geometry.TriangleMesh):
-        points=np.asarray(value.vertices)
-        if are_points_coplanar(points):
-            points=move_points(points)
-            hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
-        else:
-            hull=value.compute_convex_hull()[0]
-    elif isinstance(value,o3d.geometry.OrientedBoundingBox):
-        points=np.asarray(value.get_box_points())
-        if are_points_coplanar(points):
-            points=move_points(points)
-            hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
-        else:
-            hull=o3d.geometry.PointCloud(value.get_box_points()).compute_convex_hull()[0]
-    elif isinstance(value,o3d.utility.Vector3dVector):        
-        points=np.asarray(value)
-        if are_points_coplanar(points):
-            points=move_points(points)
-            hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
-        else:
-            hull=o3d.geometry.PointCloud(value).compute_convex_hull()[0]
-    elif isinstance(value,np.ndarray):
-        value=np.reshape(value,(-1,3))
-        if are_points_coplanar(value):
-            points=move_points(value)
-        else:
-            points=value
-        hull=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points)).compute_convex_hull()[0]
+def extract_points(geometry):
+    """Extracts points from PointCloud, TriangleMesh, LineSet, Vector3dVector or NumPy array."""
+    if isinstance(geometry, np.ndarray):
+        if geometry.ndim == 1 and geometry.size == 6: # [xMin,xMax,yMin,yMax,zMin,zMax]
+            return np.asarray(ut.get_oriented_bounds(geometry))
+        elif geometry.ndim == 1 and geometry.size == 9: #  [center(3),extent(3),euler_angles(3)]
+            center=geometry[:3]
+            extent=geometry[3:6]
+            euler_angles=geometry[6:9]        
+            rotation_matrix = R.from_euler('xyz', euler_angles, degrees=True).as_matrix()
+            box = o3d.geometry.OrientedBoundingBox(center, rotation_matrix, extent)
+            return np.asarray(box.get_box_points())
+        if geometry.ndim != 2 or geometry.shape[1] != 3:
+            raise ValueError("NumPy array must have shape (N, 3)")
+        return geometry
+    elif isinstance(geometry, (o3d.geometry.PointCloud,  o3d.geometry.LineSet)):
+        return np.asarray(geometry.points)
+    elif isinstance(geometry, o3d.geometry.TriangleMesh):
+        return np.asarray(geometry.vertices)
+    elif isinstance(geometry, o3d.geometry.OrientedBoundingBox):
+        return np.asarray(geometry.get_box_points())
+    elif isinstance(geometry ,o3d.utility.Vector3dVector):
+        return np.asarray(geometry)
     else:
-        raise ValueError('Invalid input type')
+        raise TypeError("Unsupported geometry type. Use PointCloud, TriangleMesh, LineSet, Vector3dVector or NumPy array.")
+
+def preprocess_points_for_geometry(points, thickness=1e-3):
+    """Handles special cases: single point, colinear, and coplanar points."""
+    if len(points) == 1:
+        # Single point: Expand to a small cube
+        offsets = np.array([[x, y, z] for x in [-1, 1] for y in [-1, 1] for z in [-1, 1]]) * thickness * 10
+        return points + offsets
+    
+    elif len(points) == 2 or np.linalg.matrix_rank(points - points.mean(axis=0)) == 1:
+        # Colinear case: Expand perpendicularly
+        line_vec = points[-1] - points[0]
+        line_vec = line_vec / np.linalg.norm(line_vec)
+
+        arbitrary_vec = np.array([1, 0, 0])
+        if np.allclose(line_vec, arbitrary_vec) or np.allclose(line_vec, -arbitrary_vec):
+            arbitrary_vec = np.array([0, 1, 0])
+
+        perp1 = np.cross(line_vec, arbitrary_vec)
+        perp1 = perp1 / np.linalg.norm(perp1)
+        perp2 = np.cross(line_vec, perp1)
+
+        return np.vstack([points, points + perp1 * thickness, points - perp1 * thickness,
+                                  points + perp2 * thickness, points - perp2 * thickness])
+
+    elif np.linalg.matrix_rank(points - points.mean(axis=0)) == 2:
+        # Coplanar case: Add minimal thickness
+        cov = np.cov(points.T)
+        eigvals, eigvecs = np.linalg.eigh(cov)
+        normal = eigvecs[:, np.argmin(eigvals)]  # Smallest eigenvector
+        return np.vstack([points, points + normal * thickness, points - normal * thickness])
+
+    return points  # If already 3D, return as-is
+
+def get_oriented_bounding_box(geometry, thickness=1e-3):
+    """Computes the Oriented Bounding Box (OBB) for PointCloud, Mesh, LineSet, or NumPy array."""
+    points = extract_points(geometry)
+    points = preprocess_points_for_geometry(points, thickness)
+
+    # Convert to point cloud and compute OBB
+    pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
+    return pcd.get_oriented_bounding_box()
+
+def get_convex_hull(geometry, thickness=1e-3):
+    """Computes the Convex Hull for PointCloud, Mesh, LineSet, or NumPy array."""
+    points = extract_points(geometry)
+    points = preprocess_points_for_geometry(points, thickness)
+
+    pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
+    hull, _ = pcd.compute_convex_hull()
+    hull.paint_uniform_color([0.0, 1.0, 0.0])# Green for visualization
     return hull
+
+
+
+
+
+
 
 def create_ellipsoid_mesh(radii: np.ndarray, transformation: np.ndarray, resolution: int = 30):
     """
@@ -1961,88 +1904,7 @@ def create_ellipsoid_mesh(radii: np.ndarray, transformation: np.ndarray, resolut
 
     return mesh
 
-def get_oriented_bounding_box(value:np.ndarray |type[o3d.geometry.Geometry], degrees = False)->o3d.geometry.OrientedBoundingBox:
-    """Get an Open3D OrientedBoundingBox from various inputs. 
 
-    Args:
-        value: One of the following inputs:
-            - cartesianBounds (np.array): [xMin,xMax,yMin,yMax,zMin,zMax]
-            - orientedBounds (np.array): [8x3] bounding points
-            - parameters (np.array): [center,extent,euler_angles] (in radians)
-            - Open3D TriangleMesh
-            - Open3D PointCloud
-            - Open3D LineSet 
-            - array of 3D points (np.array): [nx3] n>3 else confused by parameter array
-            - o3d.utility.Vector3dVector
-        degrees (False): Are the parameters in radians(default) or degrees 
-
-
-    Returns:
-        o3d.geometry.OrientedBoundingBox
-    """
-    
-    def move_points(points): #this is to prevent the bounding box from being too sensitive to the input points
-        new_points=copy.deepcopy(points)
-        new_points[:,0]=new_points[:,0]+np.random.uniform(-0.03,0.03)
-        new_points[:,1]=new_points[:,1]+np.random.uniform(-0.03,0.03)
-        new_points[:,2]=new_points[:,2]+np.random.uniform(-0.03,0.03)
-        points=np.vstack((points,new_points))
-        return points
-
-    if isinstance(value,o3d.geometry.PointCloud):
-        points=np.asarray(value.points)
-        if are_points_coplanar(points):
-            points=move_points(points)
-            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
-        else:
-            box=value.get_oriented_bounding_box()
-    elif isinstance(value,o3d.geometry.LineSet):
-        points=np.asarray(value.points)
-        if are_points_coplanar(points):
-            points=move_points(points)
-            points=move_points(points)
-            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
-        else:
-            points=move_points(points) #its just to sensitive with linesets
-            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
-    elif isinstance(value,o3d.geometry.TriangleMesh):
-        points=np.asarray(value.vertices)
-        if are_points_coplanar(points):
-            points=move_points(points)
-            points=move_points(points)
-            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
-        else:
-            points=move_points(points)
-            box=value.get_oriented_bounding_box()
-    elif isinstance(value,o3d.utility.Vector3dVector):        
-        points=np.asarray(value)
-        if are_points_coplanar(points):
-            points=move_points(points)
-            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
-        else:
-            box=o3d.geometry.OrientedBoundingBox.create_from_points(value)
-    elif isinstance(value,np.ndarray):
-        if value.size==6:
-            points=get_oriented_bounds(value)
-            box=o3d.geometry.OrientedBoundingBox.create_from_points(points)
-        
-        elif value.size==9:    
-            value=value.flatten()
-            center=value[:3]
-            extent=value[3:6]
-            euler_angles=value[6:9]        
-            rotation_matrix = R.from_euler('xyz', euler_angles, degrees=degrees).as_matrix()
-            box = o3d.geometry.OrientedBoundingBox(center, rotation_matrix, extent)  
-        else:
-            value=np.reshape(value,(-1,3))
-            if are_points_coplanar(value):
-                points=move_points(value)
-            else:
-                points=value
-            box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.utility.Vector3dVector(points))
-    else:
-        raise ValueError('Invalid input type')
-    return box
 
 def get_oriented_bounding_box_parameters(orientedBoundingBox: o3d.geometry.OrientedBoundingBox)->np.ndarray:
     """
