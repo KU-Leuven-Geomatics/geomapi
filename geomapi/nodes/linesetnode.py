@@ -11,32 +11,41 @@ Be sure to check the properties defined in those abstract classes to initialise 
 #IMPORT PACKAGES
 import os
 from pathlib import Path
+from typing import Optional
 import open3d as o3d 
 import numpy as np 
 import ezdxf
+#from ezdxf.entities.dxfentity import DXFEntity
 
-from rdflib import Graph, URIRef
+from rdflib import XSD, Graph, URIRef
 from rdflib.namespace import RDF
 
 #IMPORT MODULES
 from geomapi.nodes import Node
 import geomapi.utils as ut
+from geomapi.utils import rdf_property, GEOMAPI_PREFIXES
 import geomapi.utils.geometryutils as gmu
 import geomapi.utils.cadutils as cadu
 
 
 class LineSetNode (Node):
-    def __init__(self,  graph : Graph = None, 
-                        graphPath: Path= None,
-                        subject : URIRef = None,
-                        path : Path= None, 
-                        resource = None,
-                        dxfPath : Path = None,                        
-                        handle : str = None,
-                        layer : str = None,
-                        dxfType : str = None,
-                        getResource : bool = False,
-                        **kwargs): 
+    def __init__(self, 
+                subject: Optional[URIRef] = None,
+                graph: Optional[Graph] = None,
+                graphPath: Optional[Path] = None,
+                name: Optional[str] = None,
+                path: Optional[Path] = None,
+                timestamp: Optional[str] = None,
+                resource = None,
+                cartesianTransform: Optional[np.ndarray] = None,
+                orientedBoundingBox: Optional[o3d.geometry.OrientedBoundingBox] = None,
+                convexHull: Optional[o3d.geometry.TriangleMesh] =None,
+                loadResource: Optional[bool] = False,
+                dxfPath : Optional[Path] = None,                        
+                handle : Optional[str] = None,
+                layer : Optional[str] = None,
+                dxfType : Optional[str] = None,
+                **kwargs):
         """Creates a LineSetNode. Overloaded function.
         
         This Node can be initialised from one or more of the inputs below.
@@ -64,12 +73,7 @@ class LineSetNode (Node):
                             
         Returns:
             BIMNode : A BIMNode with metadata 
-        """  
-        #private attributes 
-        self._dxfPath=None 
-        self._handle=None
-        self._layer=None
-        self._dxfType=None
+        """
         
         #instance variables
         self.dxfPath=dxfPath
@@ -77,21 +81,55 @@ class LineSetNode (Node):
         self.layer=layer
         self.dxfType=dxfType 
 
-        super().__init__(   graph= graph,
-                            graphPath= graphPath,
-                            subject= subject,
-                            path=path,
-                            resource = resource,
-                            getResource=getResource,
-                            **kwargs) 
-                            
-        #initialise functionality
-        self.get_metadata_from_dxf_path() if self.dxfPath else None # we don't do anything with units
-
+        super().__init__( subject = subject,
+                        graph = graph,
+                        graphPath = graphPath,
+                        name = name,
+                        path = path,
+                        timestamp = timestamp,
+                        resource = resource,
+                        cartesianTransform = cartesianTransform,
+                        orientedBoundingBox = orientedBoundingBox,
+                        convexHull = convexHull,
+                        loadResource = loadResource,
+                        **kwargs)  
+        
 #---------------------PROPERTIES----------------------------
+
+    #---------------------pointCount----------------------------
+    @property
+    @rdf_property(datatype=XSD.int)
+    def pointCount(self):
+        if self.resource:
+            return len(np.asarray(self.resource.points))
+        else: 
+            return self._pointCount
+    
+    @pointCount.setter
+    def pointCount(self, value):
+        if self.resource:
+            print("PointCount cannot be set directly when a resource is present")
+        self._pointCount = value
+        
+    #---------------------lineCount----------------------------
+    @property
+    @rdf_property(datatype=XSD.int)
+    def lineCount(self):
+        if self.resource:
+            return len(np.asarray(self.resource.lines))
+        else: 
+            return self._lineCount
+
+    @lineCount.setter
+    def lineCount(self, value):
+        if self.resource:
+            print("LineCount cannot be set directly when a resource is present")
+        self._lineCount = value
+
 
     #---------------------dxfPath----------------------------
     @property
+    @rdf_property(datatype=XSD.string)
     def dxfPath(self): 
         """The path (Path) of the dxf file. Autocad and BrisCAD files currently have confirmed compatibility."""
         return self._dxfPath
@@ -99,14 +137,15 @@ class LineSetNode (Node):
     @dxfPath.setter
     def dxfPath(self,value:Path):
         if value is None:
-           pass
-        elif Path(value).suffix.upper() in ut.CAD_EXTENSIONS:
+           self._dxfPath = None
+        elif Path(value).suffix.upper() == ".DXF":
             self._dxfPath=Path(value)
         else:
             raise ValueError('dxfPath invalid extension.')
         
     #---------------------handle----------------------------
     @property
+    @rdf_property(datatype=XSD.string)
     def handle(self): 
         """The handle (str) of the node that originates from a dxf file."""
         return self._handle
@@ -114,12 +153,13 @@ class LineSetNode (Node):
     @handle.setter
     def handle(self,value:str):
         if value is None:
-            pass
+            self._handle = None
         else:
             self._handle=str(value)
         
     #---------------------layer----------------------------
     @property
+    @rdf_property(datatype=XSD.string)
     def layer(self): 
         """The CAD layername (str) of the node that originates from a dxf file. 
         
@@ -129,12 +169,13 @@ class LineSetNode (Node):
     @layer.setter
     def layer(self,value:str):
         if value is None:
-            pass
+            self._layer = None
         else:
             self._layer=str(value)
             
     #---------------------dxfType----------------------------
     @property
+    @rdf_property(datatype=XSD.string)
     def dxfType(self): 
         """The DXF dxfType (str) of the node that originates from an ifc file. 
         
@@ -145,13 +186,15 @@ class LineSetNode (Node):
     @dxfType.setter
     def dxfType(self,value:str):
         if value is None:
-            pass
+            self._dxfType = None
         else:
             self._dxfType=str(value)
-            
-#---------------------METHODS----------------------------
 
-    def set_resource(self,value):
+
+#---------------------PROPERTY OVERRIDES----------------------------
+
+    @Node.resource.setter
+    def resource(self, value): 
         """Set self.resource (o3d.geometry.Lineset) of the Node.
 
         Args:
@@ -161,109 +204,71 @@ class LineSetNode (Node):
         Raises:
             ValueError: Resource must be ao3d.geometry.Lineset or ezdxf.entities with geometry.
         """
-        if isinstance(value,o3d.geometry.LineSet) and len(value.lines) >=1:
+        if(value is None):
+            self._resource = None
+        elif isinstance(value,o3d.geometry.LineSet) and len(value.lines) >=1:
             self._resource = value
         elif  'ezdxf.entities' in str(type(value)):
             g=cadu.ezdxf_entity_to_o3d(value)
             if g is not None and isinstance(g,o3d.geometry.LineSet):
+                # DXF specific properties
                 self._resource=g
-                self.pointCount=len(g.points)
-                self.lineCount=len(g.lines)
                 self.layer=getattr(value.dxf,'layer',None)
-                
                 self.handle=value.dxf.handle
                 self.dxfType=value.dxftype()
-                self.orientedBoundingBox=gmu.get_oriented_bounding_box(g)
-                self.cartesianTransform= gmu.get_cartesian_transform(translation=g.get_center())
-                self.convexHull=gmu.get_convex_hull(g)
-                self.name=getattr(value.dxf,'name',None)    #maybe protect this with getattr
-                if self._name and self._handle:
-                    self.subject= self._name +'_'+self._handle 
-                else:
-                    self.subject= self._handle
+
                 #colorize
                 if hasattr(value.dxf,'color'):
                     self.color=np.array(cadu.get_rgb_from_aci(value.dxf.color))/255 
                     self._resource.paint_uniform_color(np.repeat(value.dxf.color/256,3))
 
+                # Node properties
+                self.name=getattr(value.dxf,'name',None)    #maybe protect this with getattr
+                if self._name and self._handle:
+                    self.subject= self._name +'_'+self._handle 
+                else:
+                    self.subject= self._handle
+                
             else:
-                raise ValueError('Resource must be ao3d.geometry.Lineset or ezdxf.entities with geometry.')
+                raise ValueError('No geometry found in DXF entity')
         else:
             raise ValueError('Resource must be ao3d.geometry.Lineset or ezdxf.entities with geometry.')
-    
-    def set_path(self, value:Path):
-        """sets the path for the Node type. 
-        """
-        if value is None:
-            pass
-        elif Path(value).suffix.upper() in ut.CAD_EXTENSIONS:
-            self._path = Path(value) 
-        else:
-            raise ValueError('Invalid extension')
+            
+#---------------------METHODS----------------------------
 
-    
-    def get_resource(self)->o3d.geometry.TriangleMesh: 
-        """Returns the data in the node. If none is present, it will search for the data on using the attributes below.
-        
-        **NOTE**: The resource is only loaded if it is valid.
-        
+    def _transform_resource(self, transformation: np.ndarray, rotate_around_center: bool):
+        """
+        Apply a transformation to the lineset resource.
+
+        If rotate_around_center is True, the transformation is applied about the mesh's center.
+        Otherwise, the transformation is applied as-is.
+
         Args:
-            - self.path
-            - self.ifcPath
-
-        Returns:
-            o3d.geometry.TriangleMesh or None
+            transformation (np.ndarray): A 4x4 transformation matrix.
+            rotate_around_center (bool): Whether to rotate around the mesh's center.
         """
-        if not self._resource and self.get_path() :
-            resource =  o3d.io.read_line_set(str(self._path))
-            if len(resource.lines) > 0:
-                self.resource=resource
-        elif not self._resource and self._dxfPath and os.path.exists(self._dxfPath) and self._handle:
-            try:
-                doc = ezdxf.readfile(self._dxfPath)
-                entity = doc.entitydb.get(self._handle)
-                self.resource=cadu.ezdxf_entity_to_o3d(entity)
-            except:
-                print('Dxf retrieval error')
-        if getattr(self,'faceCount',None) is None and self._resource:
-            self.lineCount=len(self._resource.lines) 
-        if getattr(self,'pointCount',None) is None and self._resource:
-            self.pointCount=len(self._resource.points)
+        if rotate_around_center:
+            center = self.resource.get_center()
+            t1 = np.eye(4)
+            t1[:3, 3] = -center
+            t2 = np.eye(4)
+            t2[:3, 3] = center
+            transformation = t2 @ transformation @ t1
+        self.resource.transform(transformation)
+
+    def load_resource(self)->o3d.geometry.LineSet: 
+        """Load the resource from the path.
+            
+        Returns:
+            o3d.geometry.LineSet or None
+        """
+        # Perform path checks
+        if(not super().load_resource()):
+            return None
+
+        self.resource =  o3d.io.read_line_set(str(self.path))
         return self._resource  
     
-    def get_layer(self):
-        """Returns the layer name of the node.
-        """
-        if self._layer is None and self._dxfPath and os.path.exists(self._dxfPath):
-            try:
-                doc = ezdxf.readfile(self._dxfPath)
-                entity = doc.entitydb.get(self.handle)
-                self.layer=getattr(entity.dxf,'layer',None)
-            except:
-                print('Dxf retrieval error')
-        return self._layer
-        
-    def get_handle(self):
-        """Returns the dxf file handle of the node.
-        """
-        if self._handle is None and self._dxfPath and os.path.exists(self._dxfPath):
-            try:
-                doc = ezdxf.readfile(self._dxfPath) #this opens rather slow
-                first_entity = next(entity for entity in doc.modelspace() if entity.dxftype() in ['LINE','ARC','CIRCLE','SPLINE','POLYLINE','LWPOLYLINE','ELLIPSE'])
-                self.handle = first_entity.dxf.handle
-            except:
-                print('Dxf retrieval error')
-        return self._handle    
-    
-    def get_class_name(self) -> str:
-        """Returns the DXF class name (str).
-        """
-        if self._dxfType:
-            pass 
-        else:
-            self._dxfType='LINE'
-        return self._dxfType
-        
     def save_resource(self, directory:str=None,extension :str = '.ply') ->bool:
         """Export the resource of the Node.
 
@@ -277,90 +282,15 @@ class LineSetNode (Node):
         Returns:
             bool: return True if export was succesful
         """          
-        #check path
-        if self.resource is None:
+        # perform the path check and create the directory
+        if not super().save_resource(directory, extension):
             return False
-        
-        #validate extension
-        if extension.upper() not in ut.CAD_EXTENSIONS:
-            raise ValueError('Invalid extension')
-
-        # check if already exists
-        if directory and os.path.exists(os.path.join(directory,self.subject + extension)):
-            self.path=os.path.join(directory,self.subject + extension)
-            return True
-        elif not directory and self.get_path() and os.path.exists(self.path) and extension.upper() in ut.CAD_EXTENSIONS:
-            return True
-                    
-        #get directory
-        if (directory):
-            pass    
-        elif self.path is not None:    
-            directory=Path(self.path).parent            
-        elif(self.graphPath): 
-            dir=Path(self.graphPath).parent
-            directory=os.path.join(dir,'CAD')   
-        else:
-            directory=os.path.join(os.getcwd(),'CAD')
-        # create directory if not present
-        if not os.path.exists(directory):                        
-            os.mkdir(directory) 
-
-        self.path=os.path.join(directory,Path(self.subject.toPython()).stem  + extension) #subject.toPython() replaced by get_name()
 
         #write files
         if o3d.io.write_line_set(str(self.path), self.resource):
             return True
         return False
    
-    def get_metadata_from_dxf_path(self) -> bool:
-        """Sets the metadata of the node from the dxf file.
-
-        Args:
-            - self._dxfPath
-            - self._handle
-
-        Args:
-            - layer 
-            - name 
-            - dxfType
-
-        Returns:
-            bool: True if exif data is successfully parsed
-        """        
-        if (not self._dxfPath or 
-            not os.path.exists(self._dxfPath) or
-            not self.get_handle()):
-            return False
-        
-        if self._graph:
-            return True
-        
-        if self._name and self._dxfType and self._layer :# and getattr(self,'color',None) is not None: #this is super dangerous!
-            return True
-        
-        doc = ezdxf.readfile(self._dxfPath)
-        entity = doc.entitydb.get(self._handle)
-        
-        if entity:
-            self.layer=getattr(entity.dxf,'layer',None)
-            self.dxfType=entity.dxftype()
-            self.name=getattr(entity.dxf,'name',None)
-            self.resource=entity 
-            #colorize -> layer first
-            if hasattr(entity.dxf,'layer'):
-                self.color=np.array(cadu.get_rgb_from_aci(doc.layers.get(self._layer).dxf.color))/255
-                self.resource.paint_uniform_color(self.color) if self.resource else None
-            elif hasattr(entity.dxf,'color'):
-                self.color=np.array(cadu.get_rgb_from_aci(entity.dxf.color))/255    
-                self.resource.paint_uniform_color(self.color) if self.resource else None
-            
-            if self._name and self._handle: #this is super dangerous if a graph is already present!
-                self.subject= self.name +'_'+self.handle
-            return True
-        else:
-            return False   
-        
     def show(self, inline = False):
         super().show()
         if(inline):

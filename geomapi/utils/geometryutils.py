@@ -251,6 +251,7 @@ def sample_geometry(geometries:List[o3d.geometry.Geometry],resolution:float=0.1)
     Returns:
         List[o3d.geometry.PointCloud]
     """
+    isList = isinstance(geometries, List) # if the input is a list, always return a list
     geometries=ut.item_to_list(geometries)
         
     point_clouds=[]
@@ -291,7 +292,7 @@ def sample_geometry(geometries:List[o3d.geometry.Geometry],resolution:float=0.1)
                   
         point_clouds.append(pcd)
         
-    return point_clouds if len(point_clouds)>1 else point_clouds[0]
+    return point_clouds if len(point_clouds)>1 or isList else point_clouds[0]
 
 def pcd_get_normals(pcd:o3d.geometry.PointCloud)->np.ndarray:
     """Compute open3d point cloud normals if not already present.\n
@@ -1772,14 +1773,25 @@ def extract_points(geometry):
     """Extracts points from PointCloud, TriangleMesh, LineSet, Vector3dVector or NumPy array."""
     if isinstance(geometry, np.ndarray):
         if geometry.ndim == 1 and geometry.size == 6: # [xMin,xMax,yMin,yMax,zMin,zMax]
-            return np.asarray(ut.get_oriented_bounds(geometry))
+            x_min, x_max, y_min, y_max, z_min, z_max = geometry
+            corners = np.array([
+                [x_min, y_min, z_min],
+                [x_min, y_min, z_max],
+                [x_min, y_max, z_min],
+                [x_min, y_max, z_max],
+                [x_max, y_min, z_min],
+                [x_max, y_min, z_max],
+                [x_max, y_max, z_min],
+                [x_max, y_max, z_max],
+            ])
+            return corners
         elif geometry.ndim == 1 and geometry.size == 9: #  [center(3),extent(3),euler_angles(3)]
             center=geometry[:3]
             extent=geometry[3:6]
             euler_angles=geometry[6:9]        
             rotation_matrix = R.from_euler('xyz', euler_angles, degrees=True).as_matrix()
             box = o3d.geometry.OrientedBoundingBox(center, rotation_matrix, extent)
-            return np.asarray(box.get_box_points())
+            return box
         if geometry.ndim != 2 or geometry.shape[1] != 3:
             raise ValueError("NumPy array must have shape (N, 3)")
         return geometry
@@ -1788,7 +1800,7 @@ def extract_points(geometry):
     elif isinstance(geometry, o3d.geometry.TriangleMesh):
         return np.asarray(geometry.vertices)
     elif isinstance(geometry, o3d.geometry.OrientedBoundingBox):
-        return np.asarray(geometry.get_box_points())
+        return geometry
     elif isinstance(geometry ,o3d.utility.Vector3dVector):
         return np.asarray(geometry)
     else:
@@ -1796,6 +1808,9 @@ def extract_points(geometry):
 
 def preprocess_points_for_geometry(points, thickness=1e-3):
     """Handles special cases: single point, colinear, and coplanar points."""
+    # Remove all the duplicate points
+    points = np.unique(points, axis=0)
+    
     if len(points) == 1:
         # Single point: Expand to a small cube
         offsets = np.array([[x, y, z] for x in [-1, 1] for y in [-1, 1] for z in [-1, 1]]) * thickness * 10
@@ -1826,29 +1841,54 @@ def preprocess_points_for_geometry(points, thickness=1e-3):
 
     return points  # If already 3D, return as-is
 
-def get_oriented_bounding_box(geometry, thickness=1e-3):
+def get_oriented_bounding_box(geometry, thickness=1e-3, distanceTreshold = 10000):
     """Computes the Oriented Bounding Box (OBB) for PointCloud, Mesh, LineSet, or NumPy array."""
     points = extract_points(geometry)
+    # If already an OBB, just return it
+    if isinstance(points, o3d.geometry.OrientedBoundingBox):
+        return points
     points = preprocess_points_for_geometry(points, thickness)
 
-    # Convert to point cloud and compute OBB
-    pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
-    return pcd.get_oriented_bounding_box()
+    # Compute center and shift points
+    center = np.mean(points, axis=0)
+    if(np.linalg.norm(center) > distanceTreshold): # points are really far away
+        points_centered = points - center
+    else: points_centered = points
 
-def get_convex_hull(geometry, thickness=1e-3):
+    # Convert to Open3D point cloud and compute OBB
+    pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points_centered))
+    obb = pcd.get_oriented_bounding_box()
+
+    # Translate OBB back to original location
+    if(np.linalg.norm(center) > distanceTreshold): # points are really far away
+        obb.translate(center)
+
+    return obb
+
+def get_convex_hull(geometry, thickness=1e-3, distanceTreshold = 10000):
     """Computes the Convex Hull for PointCloud, Mesh, LineSet, or NumPy array."""
     points = extract_points(geometry)
+    # If input is already an OBB, extract box points
+    if isinstance(points, o3d.geometry.OrientedBoundingBox):
+        points = np.asarray(points.get_box_points())
     points = preprocess_points_for_geometry(points, thickness)
 
-    pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points))
+    # Center the points to improve numerical stability
+    center = np.mean(points, axis=0)
+    if(np.linalg.norm(center) > distanceTreshold): # points are really far away
+        points_centered = points - center
+    else: points_centered = points
+
+    # Compute convex hull on centered points
+    pcd = o3d.geometry.PointCloud(o3d.utility.Vector3dVector(points_centered))
     hull, _ = pcd.compute_convex_hull()
-    hull.paint_uniform_color([0.0, 1.0, 0.0])# Green for visualization
+
+    # Translate back to original space
+    if(np.linalg.norm(center) > distanceTreshold): # points are really far away
+        hull.translate(center)
+    hull.paint_uniform_color([0.0, 1.0, 0.0])  # Green for visualization
+
     return hull
-
-
-
-
-
 
 
 def create_ellipsoid_mesh(radii: np.ndarray, transformation: np.ndarray, resolution: int = 30):
@@ -3198,6 +3238,245 @@ def create_3d_camera(translation: np.array = [0,0,0], rotation:np.array  = np.ey
     box.translate(translation)
     return box
 
+def create_camera_frustum_mesh(transform, focal_length_35mm, depth=5.0):
+    # Standard full-frame sensor size (in mm)
+    sensor_width = 36.0
+    sensor_height = 24.0
+
+    # Compute field of view based on 35mm focal length
+    fov_x = 2 * math.atan((sensor_width / 2) / focal_length_35mm)
+    fov_y = 2 * math.atan((sensor_height / 2) / focal_length_35mm)
+
+    # Calculate half-width and half-height at far plane
+    half_width = depth * math.tan(fov_x / 2)
+    half_height = depth * math.tan(fov_y / 2)
+
+    # Define vertices of the frustum pyramid
+    vertices = np.array([
+        [0, 0, 0],  # Camera origin
+
+        [-half_width, -half_height, depth],  # Far bottom-left
+        [ half_width, -half_height, depth],  # Far bottom-right
+        [ half_width,  half_height, depth],  # Far top-right
+        [-half_width,  half_height, depth],  # Far top-left
+    ])
+
+    # Define triangles (faces of the pyramid)
+    triangles = [
+        [0, 1, 2],  # Bottom face
+        [0, 2, 3],  # Right face
+        [0, 3, 4],  # Top face
+        [0, 4, 1],  # Left face
+        [1, 2, 3], [1, 3, 4],  # Back (far) face (optional)
+    ]
+
+    mesh = o3d.geometry.TriangleMesh()
+    mesh.vertices = o3d.utility.Vector3dVector(vertices)
+    mesh.triangles = o3d.utility.Vector3iVector(triangles)
+
+    # Optional: set color
+    mesh.paint_uniform_color([0.8, 0.2, 0.2])
+
+    # Optional: compute normals
+    mesh.compute_vertex_normals()
+
+    # Transform to world space
+    mesh.transform(transform)
+
+    return mesh
+
+def create_transform_from_pyramid_points(points, tol=1e-6):
+    """
+    Given 5 points of a pyramid (4 base + 1 tip, unordered),
+    find the tip and compute a transform with:
+    - origin at tip
+    - forward toward base center
+    - up aligned as closely as possible to world_up
+    """
+    assert points.shape == (5, 3), "Input must be a 5x3 array of 3D points."
+    world_up = np.array([0, 1, 0])
+
+    # Step 1: Find 4 coplanar points
+    def are_coplanar(p1, p2, p3, p4):
+        v1 = p2 - p1
+        v2 = p3 - p1
+        v3 = p4 - p1
+        volume = np.abs(np.dot(np.cross(v1, v2), v3))
+        return volume < tol
+
+    coplanar_idxs = None
+    for idxs in itertools.combinations(range(5), 4):
+        if are_coplanar(*points[list(idxs)]):
+            coplanar_idxs = list(idxs)
+            break
+    if coplanar_idxs is None:
+        raise ValueError("No 4 coplanar points found.")
+
+    # Step 2: Identify the 5th point
+    all_idxs = set(range(5))
+    fifth_idx = list(all_idxs - set(coplanar_idxs))[0]
+    origin = points[fifth_idx]
+    rect = points[coplanar_idxs]
+
+    # Step 3: Find the edge closest to world up → use as 'up'
+    best_up = None
+    best_alignment = -np.inf
+    for i in range(4):
+        a = rect[i]
+        b = rect[(i + 1) % 4]
+        edge = b - a
+        edge_norm = edge / np.linalg.norm(edge)
+        alignment = np.abs(np.dot(edge_norm, world_up))
+        if alignment > best_alignment:
+            best_alignment = alignment
+            best_up = edge_norm
+    up = best_up
+
+    # Step 4: Compute forward vector (toward center of plane)
+    center = np.mean(rect, axis=0)
+    forward = center - origin
+    forward /= np.linalg.norm(forward)
+
+    # Step 5: Compute right and re-orthogonalized up
+    right = np.cross(up, forward)
+    right /= np.linalg.norm(right)
+    up = np.cross(forward, right)
+    up /= np.linalg.norm(up)
+
+    # Step 6: Assemble transform matrix
+    transform = np.eye(4)
+    transform[:3, 0] = right
+    transform[:3, 1] = up
+    transform[:3, 2] = forward
+    transform[:3, 3] = origin
+
+    return transform
+
+def create_obb_from_orthophoto(cartesian_transform, image_width, image_height, gsd, depth):
+    """
+    Creates an oriented bounding box (OBB) for an orthographic image,
+    with the origin at the center of the back face (z = 0) of the box.
+
+    Parameters:
+        cartesian_transform (np.ndarray): 4x4 transformation matrix.
+        image_width (int): Image width in pixels.
+        image_height (int): Image height in pixels.
+        gsd (float): Ground sampling distance (meters per pixel).
+        depth (float): Depth (thickness) of the image in meters.
+
+    Returns:
+        o3d.geometry.OrientedBoundingBox: The computed OBB.
+    """
+    # Convert image size from pixels to meters
+    width_m = image_width * gsd
+    height_m = image_height * gsd
+
+    # Define center of back face (at z = 0)
+    local_center = np.array([0,0, depth / 2])
+
+    # Create box centered at that point
+    obb = o3d.geometry.OrientedBoundingBox()
+    obb.center = (cartesian_transform @ np.append(local_center, 1))[:3]
+    obb.extent = np.array([width_m, height_m, depth])
+    obb.R = cartesian_transform[:3, :3]  # Extract rotation
+
+    return obb
+
+def get_backface_center_transform(obb: o3d.geometry.OrientedBoundingBox) -> np.ndarray:
+    """
+    Returns the full 4x4 Cartesian transform (position and rotation) of the center
+    of the back face (along -Z in local space) of an oriented bounding box.
+
+    Parameters:
+        obb (o3d.geometry.OrientedBoundingBox): The oriented bounding box.
+
+    Returns:
+        np.ndarray: 4x4 transformation matrix for the center of the back face.
+    """
+    # Rotation (3x3)
+    R = obb.R
+
+    # Vector pointing from the center toward the back face in local coordinates
+    back_offset_local = np.array([0, 0, -obb.extent[2] / 2])
+
+    # Convert to world space using rotation
+    back_offset_world = R @ back_offset_local
+
+    # New origin = center of the back face
+    backface_origin = obb.center + back_offset_world
+
+    # Construct 4x4 transform
+    transform = np.eye(4)
+    transform[:3, :3] = R
+    transform[:3, 3] = backface_origin
+
+    return transform
+
+def get_pcd_from_depth_map(self)->o3d.geometry.PointCloud:
+    """
+    Convert a panoramic depth map and image colors (equirectangular) to a 3D point cloud.
+    
+    Args:
+        - self._depthMap: 2D numpy array containing depth values (equirectangular depth map)
+        - self._resource: 2D numpy array containing color values (equirectangular color image)
+    
+    Returns:
+        - An Open3D point cloud object
+    """
+    if not isinstance(self._depthMap,np.ndarray):
+        return None
+    
+    # Get the dimensions of the depth map
+    height, width = self._depthMap.shape
+    
+    # Check if the color image and depth map have the same dimensions
+    resource=cv2.resize(self._resource,(self._depthMap.shape[1],self._depthMap.shape[0])) if (isinstance(self._resource,np.ndarray) and not self._resource.shape[0] == self._depthMap.shape[0]) else self._resource
+
+    # field of view in radians
+    fov_horizontal_rad =  2*np.pi
+    fov_vertical_rad = np.pi
+
+    # Generate arrays for pixel coordinates
+    # u: horizontal pixel coordinates (0 to width-1), v: vertical pixel coordinates (0 to height-1)
+    u = np.linspace(0, width - 1, width)
+    v = np.linspace(0, height - 1, height)#[::-1]  # Flip vertically (top to bottom)
+    u, v = np.meshgrid(u, v)
+
+    # Map pixels to spherical coordinates
+    # Azimuth (longitude) theta is mapped from 0 to 2*pi across the width of the image
+    theta = u / (width - 1) * fov_horizontal_rad - np.pi  # Map [0, width-1] to [-pi, pi]
+
+    # Elevation (latitude) phi is mapped from 0 to pi across the height of the image
+    phi = v / (height - 1) * fov_vertical_rad - (np.pi / 2)  # Map [0, height-1] to [-pi/2, pi/2]
+
+    # Spherical to Cartesian conversion in camera coordinate system (z-forward, y-up)
+    x = self._depthMap * np.cos(phi) * np.sin(theta)    # x-axis (left-right in pinhole model)
+    y = self._depthMap * -np.sin(phi)                   # y-axis (up-down in pinhole model)
+    z = self._depthMap * np.cos(phi) * np.cos(theta)    # z-axis (forward-backward in pinhole model)
+    
+    # Flatten the x, y, z arrays to create a list of points
+    points = np.stack((x.flatten(order='C'), y.flatten(order='C'), z.flatten(order='C')), axis=-1)
+    
+    # Flatten the color image to correspond to the points
+    colors=None
+    if isinstance(resource,np.ndarray):
+        colors = resource.reshape(-1, 3, order='C')  # Ensure row-major order (C-style)
+        #divide by 255 if the colors are in the range 0-255
+        colors = colors / 255 if np.max(colors) > 1 else colors
+    
+    # Create an Open3D point cloud from the points
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(points)
+    if isinstance(colors,np.ndarray):
+        pcd.colors = o3d.utility.Vector3dVector(colors)
+
+    # #note that Z goes through the center of the image, so we need to rotate the point cloud 90° clockwise around the x-axis
+    # r = R.from_euler('x', -90, degrees=True).as_matrix()
+    # pcd.rotate(r,center = [0,0,0])
+    
+    #transform to the cartesianTransform
+    pcd.transform(self._cartesianTransform) if self._cartesianTransform is not None else None
+    return pcd
 def show_geometries(geometries : 'List[o3d.geometry]', color : bool = False):
     """Displays different types of geometry in a scene
 

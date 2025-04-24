@@ -20,7 +20,7 @@ import open3d as o3d
 import ezdxf
 import geomapi.utils.cadutils as cadu
 
-from rdflib import Graph, URIRef
+from rdflib import XSD, Graph, URIRef
 import numpy as np
 from pathlib import Path
 from scipy.spatial.transform import Rotation as R
@@ -30,26 +30,34 @@ from typing import List, Optional,Tuple,Union
 #IMPORT MODULES
 from geomapi.nodes import Node
 import geomapi.utils as ut
+from geomapi.utils import rdf_property, GEOMAPI_PREFIXES
+
 import geomapi.utils.imageutils as iu
 import geomapi.utils.geometryutils as gmu
 
 class OrthoNode(Node):
     # class attributes
     
-    def __init__(self,  graph : Graph = None, 
-                        graphPath:Path=None,
-                        subject : URIRef = None,
-                        path : Path=None,                  
-                        resource = None,
-                        dxfPath : Path = None, 
-                        tfwPath : Path = None,
-                        gsd: float = None,
-                        depth:float=10,
-                        height:float=None,
-                        imageWidth:int = None, #2000
-                        imageHeight:int = None, #1000
-                        getResource : bool = False,
-                        **kwargs): 
+    def __init__(self, 
+                subject: Optional[URIRef] = None,
+                graph: Optional[Graph] = None,
+                graphPath: Optional[Path] = None,
+                name: Optional[str] = None,
+                path: Optional[Path] = None,
+                timestamp: Optional[str] = None,
+                resource = None,
+                cartesianTransform: Optional[np.ndarray] = None,
+                orientedBoundingBox: Optional[o3d.geometry.OrientedBoundingBox] = None,
+                convexHull: Optional[o3d.geometry.TriangleMesh] =None,
+                loadResource: bool = False,
+                dxfPath : Path = None, 
+                tfwPath : Path = None,
+                imageWidth:int = None, #2000
+                imageHeight:int = None, #1000
+                gsd: float = None,
+                depth:float=10,
+                height:float=None,
+                **kwargs): 
         """
         Creates an OrthoNode. Overloaded function.
         
@@ -89,13 +97,6 @@ class OrthoNode(Node):
         Returns:
             OrthoNode : A OrthoNode with metadata
         """  
-        self._gsd=None
-        self._imageWidth = None 
-        self._imageHeight = None  
-        self._depth=None
-        self._height=None
-        self._dxfPath=None
-        self._tfwPath=None
    
         self.gsd=gsd
         self.imageWidth=imageWidth
@@ -105,23 +106,28 @@ class OrthoNode(Node):
         self.dxfPath=dxfPath
         self.tfwPath=tfwPath
 
-        super().__init__(   graph= graph,
-                            graphPath= graphPath,
-                            subject= subject,
-                            path=path,
+        super().__init__(   subject = subject,
+                            graph = graph,
+                            graphPath = graphPath,
+                            name = name,
+                            path = path,
+                            timestamp = timestamp,
                             resource = resource,
-                            getResource=getResource,
+                            cartesianTransform = cartesianTransform,
+                            orientedBoundingBox = orientedBoundingBox,
+                            convexHull = convexHull,
+                            loadResource = loadResource,
                             **kwargs) 
         
         #initialise functionality
         self.get_metadata_from_tfw_path() if self.tfwPath else None 
-        self.get_metadata_from_dxf_path() if self.dxfPath else None # we don't do anything with units
  
 
 #---------------------PROPERTIES----------------------------
 
     #---------------------dxfPath----------------------------
     @property
+    @rdf_property(datatype=XSD.string)
     def dxfPath(self): 
         """The path (Path) of the dxf file with the orthometadata from MetaShape."""
         return self._dxfPath
@@ -129,14 +135,15 @@ class OrthoNode(Node):
     @dxfPath.setter
     def dxfPath(self,value:Path):
         if value is None:
-           pass
-        elif Path(value).suffix.upper() in ut.CAD_EXTENSIONS:
+           self._dxfPath = None
+        elif Path(value).suffix.upper() == ".DXF":
             self._dxfPath=Path(value)
         else:
             raise ValueError('dxfPath invalid extension.')
         
     #---------------------tfwPath----------------------------
     @property
+    @rdf_property(datatype=XSD.string)
     def tfwPath(self): 
         """The path (Path) of the tfw file with the orthometadata from MetaShape.
         The tfw world file is a text file used to georeference the GeoTIFF raster images, like the orthomosaic and the DSM.
@@ -154,7 +161,7 @@ class OrthoNode(Node):
     @tfwPath.setter
     def tfwPath(self,value:Path):
         if value is None:
-           pass
+           self._tfwPath = None
         elif Path(value).suffix.upper() in ut.CAD_EXTENSIONS:
             self._tfwPath=Path(value)
         else:
@@ -162,16 +169,19 @@ class OrthoNode(Node):
             
     #---------------------imageWidth----------------------------
     @property
+    @rdf_property(predicate= GEOMAPI_PREFIXES['exif'].imageWidth, datatype=XSD.int)
     def imageWidth(self):
-        """Get the imageWidth (int) or columns of the resource of the node."""
-        if self._imageWidth is None and self._resource is not None:
-            self._imageWidth=self._resource.shape[1]
+        """Get the imageWidth (int) or number of columns of the resource of the node."""
+        if self._imageWidth is None:
+            self._imageWidth = 2000
+            if self.resource is not None:
+                self._imageWidth=self._resource.shape[1]
         return self._imageWidth
     
     @imageWidth.setter
     def imageWidth(self,value:int):
         if value is None:
-            pass
+            self._imageWidth = None
         elif type(int(value)) is int:
             self._imageWidth=int(value)
         else:
@@ -179,16 +189,19 @@ class OrthoNode(Node):
         
     #---------------------imageHeight----------------------------
     @property
+    @rdf_property(predicate= GEOMAPI_PREFIXES['exif'].imageLength, datatype=XSD.int)
     def imageHeight(self):
         """Get the imageHeight (int) or number of rows of the resource of the node."""
-        if self._imageHeight is None and self._resource is not None:
-            self._imageHeight=self._resource.shape[0]
+        if self._imageHeight is None:
+            self._imageHeight = 1000
+            if self.resource is not None:
+                self._imageHeight=self.resource.shape[0]
         return self._imageHeight
     
     @imageHeight.setter
     def imageHeight(self,value:int):
         if value is None:
-            pass
+            self._imageHeight = None
         elif type(int(value)) is int:
             self._imageHeight=int(value)
         else:
@@ -196,61 +209,71 @@ class OrthoNode(Node):
         
     #---------------------gsd----------------------------
     @property
+    @rdf_property(datatype=XSD.float)
     def gsd(self):
         """Get the Ground Sampling Distance (float) of the node."""
-        if self._gsd is None :
-            pass
+        if(self._gsd is None):
+            self._gsd = 0.01
         return self._gsd
+    
+        if self._imageWidth and self._orientedBoundingBox:
+            #get most common value
+            array1 = self._orientedBoundingBox.extent/self._imageHeight
+            array2 = self._orientedBoundingBox.extent/self._imageWidth
+            rounded_result = np.round(np.stack((array1, array2), axis=0),4)
+            unique, counts = np.unique(rounded_result, return_counts=True)
+            self._focalLength35mm = unique[np.argmax(counts)]
     
     @gsd.setter
     def gsd(self,value:float):
         if value is None:
-            pass
+            self._gsd = None
         elif type(float(value)) is float and float(value)>0:
             self._gsd=float(value)
         else:
             raise ValueError('self.gsd must be a float and greater than 0')
     
-    #---------------------depth----------------------------
+    #---------------------Depth----------------------------
     @property
+    @rdf_property(datatype=XSD.float)
     def depth(self):
-        """Get the average depth (float) of the Image. This is used for the convex hull and oriented bounding box."""
+        """Get the maximum depth of the image, defaults to one"""
+        if self._depth is None:
+            self._depth = 1
         return self._depth
     
     @depth.setter
     def depth(self,value:float):
         if value is None:
-            pass
-        elif type(float(value)) is float and float(value)>0:
+            self._depth = None
+        elif type(float(value)) is float:
             self._depth=float(value)
         else:
-            raise ValueError('self.depth must be a float and greater than 0')
+            raise ValueError('depth must be a float')
         
     #---------------------height----------------------------
     @property
+    @rdf_property(datatype=XSD.float)
     def height(self):
         """Get the average height (float) of cameras that generated the image. This is used for the convex hull and oriented bounding box."""
+        if self._height is None:
+            self._height = 0
         return self._height
     
     @height.setter
     def height(self,value:float):
         if value is None:
-            pass
+            self._height=None
         elif type(float(value)) is float:
             self._height=float(value)
         else:
             raise ValueError('self.height must be a float')
 
-        
-        
-        
-        
-        
-        
-#---------------------METHODS----------------------------
+#---------------------PROPERTY OVERRIDES----------------------------
    
-    def set_resource(self,value):
-        """Set the resource of the Node from various inputs.\n
+    @Node.resource.setter
+    def resource(self,value):
+        """Set the resource of the Node from various inputs.
 
         Args:
             - np.ndarray (OpenCV)
@@ -260,68 +283,40 @@ class OrthoNode(Node):
         Raises:
             ValueError: Resource must be np.ndarray (OpenCV), PIL Image or Open3D Image.
         """
-
-        if type(np.array(value)) is np.ndarray : #OpenCV
+        if(value is None):
+            self._resource = None
+        elif isinstance(np.asarray(value),np.ndarray) : #OpenCV
             self._resource = np.asarray(value)
+        elif isinstance(value,PIL.MpoImagePlugin.MpoImageFile): 
+            self._resource=  np.array(value)#cv2.cvtColor(np.array(value), cv2.COLOR_RGB2BGR) #not sure if this is needed
+        elif isinstance(value,PIL.Image.Image): 
+            self._resource=  np.array(value)#cv2.cvtColor(np.array(value), cv2.COLOR_RGB2BGR)
+        elif isinstance(value,o3d.geometry.Image):
+            self._resource = np.array(value)
         else:
-            raise ValueError('Resource must be np.ndarray (OpenCV) or PIL Image')
+            raise ValueError('Resource must be np.ndarray (OpenCV) or PIL Image')        
+        
+        
+        
+        
+        
+#---------------------METHODS----------------------------
+
             
-    def get_resource(self)->np.ndarray: 
-        """Returns the data in the node. If none is present, it will search for the data on using the attributes below.
-
-        Args:
-            - self.path
+    def load_resource(self)->np.ndarray: 
+        """Loads the resource from the path
 
         Returns:
-            - np.ndarray or None
+            np.ndarray or None
         """
-        if self._resource is not None :
-            return self._resource
-        elif self.get_path() and self._path.exists():
-            self._resource   = np.array(Image.open(self._path)) # PIL is 5% faster than OpenCV cv2.imread(self.path)
-        return self._resource  
+        # Perform path checks
+        if(not super().load_resource()):
+            return None
+
+        if self.path:
+            self.resource = np.array(Image.open(self.path)) # PIL is 5% faster than OpenCV cv2.imread(self.path)
+        return self._resource 
         
-    def set_path(self, value):
-        """sets the path for the Node type. 
-        """
-        if value is None:
-            pass
-        elif Path(value).suffix.upper() in ut.IMG_EXTENSIONS:
-            self._path = Path(value) 
-        else:
-            raise ValueError('Invalid extension')
-
-    def get_path(self) -> Path:
-        """Returns the full path of the resource from this Node. If no path is present, it is gathered from the following inputs.
-
-        Args:
-            - self._path
-            - self._graphPath
-            - self._name
-            - self._subject
-
-        Returns:
-            - path 
-        """      
-        if self._path is not None: #self._path.exists():
-            return self._path
-        
-        elif self._graphPath and (self._name or self._subject):
-            folder=self._graphPath.parent 
-            nodeExtensions=ut.get_node_resource_extensions(str(type(self)))
-            allSessionFilePaths=ut.get_list_of_files(folder) 
-            for path in allSessionFilePaths:
-                if path.suffix.upper() in nodeExtensions:
-                    if self.get_name() in path.stem :
-                        self.path = path    
-                        return self._path
-            if self._name:
-                self.path=os.path.join(folder,self._name+nodeExtensions[0])
-            else:
-                self.path=os.path.join(folder,self._subject+nodeExtensions[0])
-            return self._path
-
-
     def save_resource(self, directory:Path |str=None,extension :str = '.jpg') ->bool:
         """Export the resource of the Node.
 
@@ -333,224 +328,47 @@ class OrthoNode(Node):
             ValueError: Unsuitable extension. Please check permitted extension types in utils._init_.
 
         Returns:
-            bool: return True if export was succesful
+            bool: return True if export was succesfull
         """     
-        #check path
-        if self.resource is None:
+                # perform the path check and create the directory
+        if not super().save_resource(directory, extension):
             return False
         
-        #validate extension
-        if extension.upper() not in ut.IMG_EXTENSIONS:
-            raise ValueError('Invalid extension')
-        
-        filename=ut.validate_string(self.name)
-
-        # check if already exists
-        if directory and os.path.exists(os.path.join(directory,self.get_name() + extension)):
-            self.path=os.path.join(directory,self.get_name() + extension)
-            return True
-        elif not directory and self.get_path() and os.path.exists(self.path) and extension.upper() in ut.IMG_EXTENSIONS:
-            return True    
-          
-        #get path        
-        if directory:
-            self.path=os.path.join(directory,filename + extension)
-        else:
-            if self.get_path():
-                directory =self._path.parent
-                
-            elif self._graphPath: 
-                dir=self.graphPath.parent
-                directory=os.path.join(dir,'ORTHO')   
-                self.path=os.path.join(dir,filename + extension)
-            else:
-                directory=os.path.join(os.getcwd(),'ORTHO')
-                self.path=os.path.join(dir,filename + extension)
-        # create directory if not present
-        if not os.path.exists(directory):                        
-            os.mkdir(directory) 
-
         #write files
         try:
-            img = Image.fromarray(self.resource) # if cv2.imwrite(self.path, self.resource) is 5 times slower
-            img.save(self.path)        
+            img = Image.fromarray(self._resource) # if cv2.imwrite(self.path, self.resource) is 5 times slower
+            img.save(self._path)        
             return True
         except:
             return False
     
-    def get_image_width(self) -> int:
-        if self._imageWidth:
-            pass
-        elif self._resource is not None:
-            self._imageWidth=self._resource.shape[1]  
-        else:
-            self._imageWidth=2000
-        return self._imageWidth
+    def _set_geometric_properties(self, _cartesianTransform=None, _convexHull=None, _orientedBoundingBox=None):
     
-    def get_image_height(self) -> int:
-        if self._imageHeight:
-            pass
-        elif self._resource is not None:
-            self._imageHeight=self._resource.shape[0]  
-        else:
-            self._imageHeight=1000
-        return self._imageHeight
-    
-    def get_height(self) -> int:
-        if self._height:
-            pass
-        else:
-            self._height=0
-        return self._height
-    
-    def get_gsd(self) -> float:
-        if self._gsd:
-            pass
-        elif self._imageWidth and self._orientedBoundingBox:
-            #get most common value
-            array1 = self._orientedBoundingBox.extent/self._imageHeight
-            array2 = self._orientedBoundingBox.extent/self._imageWidth
-            rounded_result = np.round(np.stack((array1, array2), axis=0),4)
-            unique, counts = np.unique(rounded_result, return_counts=True)
-            self._focalLength35mm = unique[np.argmax(counts)]
-        else:
-            self._gsd=0.01
-        return self._gsd
-    
-    def get_cartesian_transform(self) -> np.ndarray:
-        """Get the cartesianTransform of the node from various inputs. if no cartesianTransform is present, it is gathered from the following inputs. 
-                
-        Args:
-            - self._convexHul: The cartesianTransform is set at the middle of the base of the convexHull, with the z-axis pointing upwards and the y-axis pointing towards the top of the image.
-            - self._orientedBoundingBox: The same applies
+        self.cartesianTransform = _cartesianTransform
+        self.convexHull = _convexHull
+        self.orientedBoundingBox = _orientedBoundingBox
 
-        Returns:
-            - cartesianTransform(np.ndarray(4x4))
-        """
-        if self._cartesianTransform is not None:
-            return self._cartesianTransform
-            
-        if self._cartesianTransform is None and self.get_convex_hull() is not None:
-            #get box points
-            points = np.asarray(self._convexHull.vertices)
-            #get topPoints and topCenter
-            topCenter=np.mean(points[4:,:],axis=0)
-            #compute vector
-            vector=topCenter-self._convexHull.get_center()
-            
-            #get translation -> center is at the base
-            translation = self._convexHull.get_center() - vector 
-            
-            #get rotation
-            #1.Normalize the vector (in this case, it's already normalized)
-            vector = vector / np.linalg.norm(vector)
-            #2.Determine the axis and angle
-            #Rotate from z-axis to the target vector
-            z_axis = np.array([0, 0, 1])
-            cross_product = np.cross(z_axis, vector)
-            dot_product = np.dot(z_axis, vector)
-            norm_cross_product = np.linalg.norm(cross_product)
-
-            if norm_cross_product != 0:
-                axis = cross_product / norm_cross_product
-                angle = np.arctan2(norm_cross_product, dot_product)
+        # --- Handle Transform ---
+        if self.cartesianTransform is None:
+            if self.orientedBoundingBox is not None: # the boundingbox has more info, the orientation can return the backface as the origin
+                self.cartesianTransform = gmu.get_backface_center_transform(self.orientedBoundingBox)
+            elif self.convexHull is not None:
+                self.cartesianTransform = gmu.get_cartesian_transform(translation=np.asarray(self.convexHull.get_center()))
             else:
-                # If the vector is already aligned with the z-axis, no rotation is needed.
-                axis = np.array([1, 0, 0])  # Arbitrary axis
-                angle = 0.0 if dot_product > 0 else np.pi  # 0 if aligned, pi if opposite
-
-            #3.Compute the rotation matrix using the axis and angle
-            rotation_matrix = o3d.geometry.get_rotation_matrix_from_axis_angle(axis * angle)
-            self._cartesianTransform = gmu.get_cartesian_transform(translation=translation,rotation=rotation_matrix) 
-            
-        if self._cartesianTransform is None:
-            self._cartesianTransform = np.eye(4)
-            self._cartesianTransform[2,3]=self.get_height()
+                self.cartesianTransform = np.eye(4)  # Default to identity transform
         
-        return self._cartesianTransform
-    
-    def get_convex_hull(self) -> o3d.geometry.TriangleMesh:
-        """Gets the Open3D Convex Hull of the node. If no convex hull is present, it is gathered from the following inputs.
+        # --- Handle Oriented Bounding Box ---
+        if self.orientedBoundingBox is None:
+            if self.convexHull is not None:
+                self.orientedBoundingBox = gmu.get_oriented_bounding_box(self.convexHull)
+            else:
+                # Create a boundingbox from the image parameters
+                self.orientedBoundingBox = gmu.create_obb_from_orthophoto(self.cartesianTransform, self.imageWidth, self.imageHeight, self.gsd, self.depth)
         
-        Args:
-            - self._orientedBoundingBox
-            - self._cartesianTransform
-
-        Returns:
-            - o3d.geometry.TriangleMesh
-        """
-        if self._convexHull is not None:
-            return self._convexHull
-        
-        if self._convexHull is None and self._cartesianTransform is not None:
-            #create box at origin
-            box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
-            vertices=np.array(box.vertices)
- 
-            #compute dimensions
-            width=self.get_image_width()*self.get_gsd()
-            height=self.get_image_height()*self.get_gsd()
-            
-            #modify vertices
-            xmin=-width/2
-            xmax=width/2
-            ymin=-height/2
-            ymax=height/2
-            zmin=0
-            zmax=self._depth
-            vertices=np.array([[xmin,ymin,zmin],
-                    [xmax,ymin,zmin],
-                    [xmin,ymax,zmin],
-                    [xmax,ymax,zmin],
-                    [xmin,ymin,zmax],
-                    [xmax,ymin,zmax],
-                    [xmin,ymax,zmax],
-                    [xmax,ymax,zmax]])
-            box.vertices = o3d.utility.Vector3dVector(vertices)
-            
-            #transform box
-            #rotate and translate to correct position     
-            box.rotate(self._cartesianTransform[0:3,0:3],center=(0,0,0))
-            translation=gmu.get_translation(self._cartesianTransform)
-            box.translate(translation)  
-            self._convexHull = box        
-        return self._convexHull
-    
-    def get_oriented_bounding_box(self) -> o3d.geometry.OrientedBoundingBox:
-        """Gets the Open3D OrientedBoundingBox of the node. If no orientedBoundingBox is present, it is gathered from the following inputs.
-        
-        Args:
-            - self._resource
-            - self._convexHull
-            - self._cartesianTransform
-
-        Returns:
-            - o3d.geometry.OrientedBoundingBox
-        """
-        if self._orientedBoundingBox is not None:
-            return self._orientedBoundingBox
-
-        if self._orientedBoundingBox is None and self.get_convex_hull() is not None and self._cartesianTransform is not None: 
-            #create box at origin
-            box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
-            box.translate((-0.5,-0.5,-0.5))  
-            box = box.get_oriented_bounding_box() # u is x, v is y, w is z in this case
-
-            #compute dimensions and expand box
-            points=np.asarray(self._convexHull.vertices)
-            width=np.linalg.norm(points[0]-points[1]) #self.get_image_width()*self.get_gsd()
-            height=np.linalg.norm(points[0]-points[2]) #self.get_image_height()*self.get_gsd()
-            depth=np.linalg.norm(points[0]-points[4])
-            box=gmu.expand_box(box,width-1,height-1,depth-1)
-            box.translate([0,0,depth/2]) #center at the base so move upwards
-            
-            #rotate and translate to correct position     
-            box.rotate(self._cartesianTransform[0:3,0:3],center=(0,0,0)) #center (0,0,0) is at the base
-            box.translate(gmu.get_translation(self._cartesianTransform))  
-            self._orientedBoundingBox = box   
-            #TEST
-            test_vertices=np.asarray(self._orientedBoundingBox.get_box_points()) #TEST    
-        return self._orientedBoundingBox
+        # --- Handle Convex Hull ---
+        if self.convexHull is None:
+            # get from bb
+            self.convexHull = gmu.get_convex_hull(self.orientedBoundingBox)
     
     def get_metadata_from_tfw_path(self):
         """Get metadata from the tfw file. Uses the following information.
@@ -580,143 +398,36 @@ class OrthoNode(Node):
         if self._graph:
             return None
         
-        # Open the file and read it line by line
-        with open(self._tfwPath, 'r') as file:
-            rows = file.readlines()
-            
-        self._name=Path(self._tfwPath).stem
-        self.subject=URIRef(self._name)
+        self.name=Path(self.tfwPath).stem
+        self.subject=URIRef(self.name)
 
-        # Strip newline characters from each line
-        rows = [float(line.strip()) for line in rows]
-        
-        #get gsd
-        self._gsd=rows[0] #we assume that the gsd is the same in both directions
-        
-        #get translation -> this is not correct
-        if self._imageWidth == 2000 or self._imageHeight == 1000:
-            print('Warning: Image dimensions are not set. Please set the imageWidth (2000pix) and imageHeight(1000pix) to get the correct translation.')
-        x=rows[4]+self._imageWidth/2*self._gsd # this is a little bit off
-        y=rows[5]-self._imageHeight/2*self._gsd
-        translation=np.array([x,y,self.get_height()])
-        
+        with open(self.tfwPath, 'r') as f:
+            A = float(f.readline())  # pixel size X
+            D = float(f.readline())  # rotation
+            B = float(f.readline())  # rotation
+            E = float(f.readline())  # pixel size Y
+            C = float(f.readline())  # top-left X position of the center of the pixel
+            F = float(f.readline())  # top-left Y position of the center of the pixel
+            
+        # Calculate the ground sample distance (GSD)
+        self.gsd = abs(A)  # usually GSD is the same in both X and Y directions
+
+        # Translation (C, F) represents the position of the top-left pixel
+        x=C+(self.imageWidth/2.0-0.5) * self._gsd
+        y=F-(self.imageHeight/2.0-0.5) * self._gsd
+        translation=np.array([x,y,self.height])
         #get rotation -> we apply downwards rotation similar to pinhole camera coordinate systems
         rotation_matrix_180_x=   np.array( [[1,0,0],
                                         [ 0,-1,0],
                                         [ 0,0,-1]])  
-        rotation_x=  R.from_euler('x',rows[2],degrees=False).as_matrix()
-        rotation_y=  R.from_euler('y',rows[1],degrees=False).as_matrix()
-        
+        rotation_x=  R.from_euler('x',B,degrees=False).as_matrix()
+        rotation_y=  R.from_euler('y',D,degrees=False).as_matrix()
         #unsure how to combine the rotations -> looks about right
         rotation_matrix=rotation_matrix_180_x*rotation_x*rotation_y
-        self._cartesianTransform=gmu.get_cartesian_transform(translation=translation,rotation=rotation_matrix)
+        self.cartesianTransform=gmu.get_cartesian_transform(translation=translation,rotation=rotation_matrix)
         
         #reset bounding box and convexhull
-        self._orientedBoundingBox=None
-        self._convexHull=None
-        self.get_oriented_bounding_box()
-        self.get_convex_hull()
-    
-    def get_metadata_from_dxf_path(self) -> bool:
-        """Sets the metadata of the node from the dxf file.
-        
-        **BUG**: MetaShape Dxf are poorly formatted. resave the dxf with a CAD software like AutoCAD to fix the issue.
-
-        Args:
-            - self._dxfPath
-            - self._name (should be identical to the orthomosaic name)
-            - self._height
-            - self._depth
-
-        Args:
-            - imageWidth 
-            - imageHeight
-            - cartesianTransform
-
-        Returns:
-            True if exif data is successfully parsed
-        """        
-        if (not self._dxfPath or 
-            not os.path.exists(self._dxfPath)):
-            return False
-        
-        if self._graph:
-            return True
-    
-        dxf = ezdxf.readfile(self._dxfPath)
-        #contours and names are in the same list as pairs
-        entities=[entity for entity in dxf.modelspace()]
-        
-        def create_convex_hull_from_dxf_points():
-            box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
-            bottomLeftLow=points[2]
-            bottomRightLow=points[3]
-            topLeftLow=points[1]
-            topRightLow=points[0]
-            bottomLeftHigh=points[2]+normal*self._depth
-            bottomRightHigh=points[3]+normal*self._depth
-            topLeftHigh=points[1]+normal*self._depth
-            topRightHigh=points[0]+normal*self._depth
-            vertices=np.array([[bottomLeftLow],
-                                [bottomRightLow],
-                                [topLeftLow],
-                                [topRightLow],
-                                [bottomLeftHigh],
-                                [bottomRightHigh],
-                                [topLeftHigh],
-                                [topRightHigh]])
-            
-            box.vertices = o3d.utility.Vector3dVector(np.reshape(vertices,(8,3)))                    
-            self._convexHull = box  
-        
-        if len([entity for entity in entities if entity.dxftype() == 'INSERT' and Path(entity.attribs[0].dxf.text).stem==self._name])==0:
-            print('Warning: No INSERT entity found with the name of the orthomosaic. taking first ...')
-            entity=entities[0]
-            self._name=Path(entity.attribs[0].dxf.text).stem
-        
-        #iterate through entities per two
-        for i in range(0,len(entities),2):
-            #entity1 are the entities with the name
-            entity1=entities[i] 
-            #entity2 are the entities with the geometry
-            entity2=entities[i+1]
-            name=Path(entity1.attribs[0].dxf.text).stem
-            if name == self._name:        
-                #get geometry
-                g=cadu.ezdxf_entity_to_o3d(entity2)
-                g.translate(np.array([0,0,self.get_height()]))
-                #get points -> they are ordered counter clockwise starting from the top left
-                points=np.asarray(g.points)
-                #get the center of the geometry
-                center=g.get_center()
-                #get the vector 0-1 and 0-3
-                vec1=points[1]-points[0]
-                vec2=points[3]-points[0]
-                #get the normal of the plane
-                normal=np.cross(vec1,vec2)
-                #normalize the normal
-                normal=normal/np.linalg.norm(normal)
-                
-                #get the translation matrix
-                translation=center#-normal*self._depth
-                
-                #get rotation matrix from this normal to the z-axis
-                rotation_matrix=ut.get_rotation_matrix_from_forward_up(normal, vec2)
-                
-                cartesianTransform = gmu.get_cartesian_transform(translation=translation,rotation=rotation_matrix) 
-                self._cartesianTransform=cartesianTransform    
-                
-                #create convexhull
-                create_convex_hull_from_dxf_points()
-                
-                #reset bounding box
-                self._orientedBoundingBox=None
-                self.get_oriented_bounding_box()
-                
-                #get gsd
-                self._gsd=np.linalg.norm(vec1[0])/self.get_image_width()
-                      
-                return True
+        self._set_geometric_properties(self.cartesianTransform)
     
     def project_lineset_on_image(self,lineSet:o3d.geometry.LineSet) -> o3d.geometry.LineSet:
         """Project a LineSet on the image. The LineSet is projected on the image using the camera model of the orthomosaic.
@@ -843,7 +554,7 @@ class OrthoNode(Node):
             - The function performs a series of transformations, including world to camera, camera to image, and image centering.
             - It returns the imageCoordinates as a 2D array.
         """
-        worldCoordinates=ut.convert_to_homogeneous_3d_coordinates(worldCoordinates)
+        worldCoordinates=gmu.convert_to_homogeneous_3d_coordinates(worldCoordinates)
         
         imageCoordinates= np.linalg.inv(self._cartesianTransform) @ worldCoordinates.T
 
@@ -876,7 +587,7 @@ class OrthoNode(Node):
         Returns:
             - The resource of the ImageNode with the projected lines.
         """
-        if self.get_resource() is None:
+        if self.resource is None:
             return None
         
         #copy if overwrite is False

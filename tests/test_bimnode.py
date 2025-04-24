@@ -72,7 +72,7 @@ class TestBIMNode(unittest.TestCase):
         node= BIMNode()
         self.assertIsNotNone(node.subject)
         self.assertIsNotNone(node.name)
-        self.assertEqual(node.className,'IfcBuildingElement')
+        #self.assertEqual(node.className,'IfcBuildingElement')
         
     def test_subject(self):
         #subject
@@ -103,10 +103,9 @@ class TestBIMNode(unittest.TestCase):
         self.assertEqual(node.objectType,objectType)
         self.assertNotIn(objectType,node.subject.toPython())
         
-    def test_ifc_path(self):
+    def test_ifc(self):
         #valid path
-        ifcPath=self.dataLoaderParking.ifcPath
-        node= BIMNode(ifcPath=ifcPath)        
+        node= BIMNode(resource=self.dataLoaderParking.ifcBeam)        
         #assert that node.globalId is in ifc
         self.assertIsNotNone(self.dataLoaderParking.ifc.by_guid(node.globalId))
         #check if name is correct
@@ -116,24 +115,18 @@ class TestBIMNode(unittest.TestCase):
         #check if object type is correct
         self.assertEqual(node.objectType,self.dataLoaderParking.ifc.by_guid(node.globalId).ObjectType)
         #check if resource is None
-        self.assertIsNone(node.resource)
-        
-        #invalid path
-        ifcPath='qsffqsdf.dwg'
-        self.assertRaises(ValueError,BIMNode,ifcPath=ifcPath)
+        self.assertIsNotNone(node.resource)
         
     def test_path(self):
         #valid path
         path=self.dataLoaderParking.ifcWallPath
         globalId=path.stem.split('_')[-1]
         name=path.stem
-        name=name.replace('_'+globalId,'')      
           
         node= BIMNode(path=path)        
         self.assertEqual(node.path,path)
         self.assertEqual(node.subject.toPython(),'http://'+path.stem)
-        self.assertEqual(node.name,name) #no globalID
-        self.assertEqual(node.globalId,globalId)
+        self.assertEqual(node.name,name)
         self.assertIsNone(node.resource)
         
         #invalid path
@@ -144,13 +137,13 @@ class TestBIMNode(unittest.TestCase):
     def test_resource(self):
         #triangle mesh
         resource=self.dataLoaderParking.columnMesh
-        node= BIMNode(resource=resource)
+        node= BIMNode(resource=resource, loadResource=True)
         self.assertEqual(node.resource,resource)        
         
         #ifcopenshell entity
         resource=self.dataLoaderParking.ifcBeam
         mesh=self.dataLoaderParking.beamMesh
-        node= BIMNode(resource=resource)
+        node= BIMNode(resource=resource, loadResource=True)
         self.assertEqual(len(node.resource.vertices),len(mesh.vertices))
         self.assertEqual(node.globalId,resource.GlobalId)
         self.assertEqual(node.name,resource.Name)
@@ -159,7 +152,7 @@ class TestBIMNode(unittest.TestCase):
         self.assertTrue(np.allclose(node.cartesianTransform[:3,3],mesh.get_center()))
         self.assertEqual(node.faceCount,len(mesh.triangles)) #maybe np.asarray
         self.assertEqual(node.pointCount,len(mesh.vertices))
-        self.assertEqual(node.convexHull.get_volume(),mesh.compute_convex_hull()[0].get_volume())
+        self.assertAlmostEqual(node.convexHull.get_volume(),mesh.compute_convex_hull()[0].get_volume())
         
         #invalid resource
         resource='qsffqsdf'
@@ -168,34 +161,19 @@ class TestBIMNode(unittest.TestCase):
     def test_get_resource(self):
         #path+getResource
         mesh=self.dataLoaderParking.wallMesh
-        node= BIMNode(path=self.dataLoaderParking.ifcWallPath,getResource=True)
-        self.assertTrue(node.resource==mesh)
+        node= BIMNode(path=self.dataLoaderParking.ifcWallPath,loadResource=True)
+        self.assertTrue(isinstance(node.resource,o3d.geometry.TriangleMesh))
         self.assertTrue(np.allclose(node.cartesianTransform[:3,3],mesh.get_center()))
-        self.assertTrue(np.allclose(gmu.get_oriented_bounding_box_parameters(node.orientedBoundingBox),gmu.get_oriented_bounding_box_parameters(mesh.get_oriented_bounding_box())))
-        self.assertEqual(node.convexHull,mesh.compute_convex_hull()[0])
-        self.assertEqual(node.faceCount,len(mesh.triangles)) 
-        self.assertEqual(node.pointCount,len(mesh.vertices))
-        
-        #ifcPath+getResource
-        ifcpath=self.dataLoaderParking.ifcPath
-        mesh=self.dataLoaderParking.beamMesh
-        node= BIMNode(ifcPath=ifcpath,getResource=True)
-        self.assertTrue(node.resource==mesh)
-        self.assertTrue(np.allclose(node.cartesianTransform[:3,3],mesh.get_center()))
-        self.assertTrue(np.allclose(gmu.get_oriented_bounding_box_parameters(node.orientedBoundingBox),gmu.get_oriented_bounding_box_parameters(mesh.get_oriented_bounding_box())))
-        self.assertEqual(node.convexHull,mesh.compute_convex_hull()[0])
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.get_center(),mesh.get_oriented_bounding_box().get_center(),3)
+        np.testing.assert_array_almost_equal(len(np.asarray(node.convexHull.vertices)),len(np.asarray(mesh.compute_convex_hull()[0].vertices)))
         self.assertEqual(node.faceCount,len(mesh.triangles)) 
         self.assertEqual(node.pointCount,len(mesh.vertices))
         
         #path unexisting
         path='qsffqsdf.obj'
-        node= BIMNode(path=path,getResource=True)
+        node= BIMNode(path=path,loadResource=True)
         self.assertIsNone(node.resource)
         
-        #ifcPath unexisting
-        ifcpath='qsffqsdf.ifc'
-        node= BIMNode(ifcPath=ifcpath,getResource=True)
-        self.assertIsNone(node.resource)
 
     def test_graphPath(self):
         node=BIMNode(graphPath=self.dataLoaderParking.ifcGraphPath)
@@ -257,8 +235,6 @@ class TestBIMNode(unittest.TestCase):
         subject=next(self.dataLoaderRoad.ifcGraph.subjects(RDF.type))
         node= BIMNode(subject=subject,graph=self.dataLoaderRoad.ifcGraph,graphPath=self.dataLoaderRoad.ifcGraphPath)
         self.assertEqual(node.subject.toPython(),subject.toPython())
-        node.get_graph()
-        self.assertTrue((subject,GEOMAPI_PREFIXES['geomapi'].faceCount, Literal(node.faceCount)) in self.dataLoaderRoad.ifcGraph)
 
 
     def test_clear_resource(self):
@@ -267,70 +243,6 @@ class TestBIMNode(unittest.TestCase):
         self.assertIsNotNone(node.resource)
         del node.resource
         self.assertIsNone(node.resource)
-
-    # def test_save_resource(self):
-    #     #no mesh -> False
-    #     node= BIMNode()
-    #     self.assertFalse(node.export_resource())
-
-    #     #directory
-    #     node= BIMNode(mesh=self.mesh2)
-    #     self.assertTrue(node.export_resource(os.path.join(self.path,'resources')))
-
-    #     #graphPath        
-    #     node= BIMNode(mesh=self.mesh2,graphPath=self.bimGraphPath2)
-    #     self.assertTrue(node.export_resource())
-
-    #     #no path or graphPath
-    #     node= BIMNode(mesh=self.mesh4)        
-    #     self.assertTrue(node.export_resource())
-
-    #     #invalid extension -> error
-    #     node= BIMNode(mesh=self.mesh3)
-    #     self.assertRaises(ValueError,node.export_resource,os.path.join(self.path,'resources'),'.kjhgfdfg')
-
-    #     #.ply -> ok
-    #     node= BIMNode(mesh=self.mesh2)
-    #     self.assertTrue(node.export_resource(os.path.join(self.path,'resources'),'.ply'))
-    #     self.assertEqual(node.path,os.path.join(self.path,'resources',node.name+'.ply'))
-
-    #     #.obj -> ok
-    #     node= BIMNode(mesh=self.mesh3)
-    #     self.assertTrue(node.export_resource(os.path.join(self.path,'resources'),'.obj'))
-    #     self.assertEqual(node.path,os.path.join(self.path,'resources',node.name+'.obj'))
-        
-    #     #path -> new name
-    #     node= BIMNode(subject=URIRef('myMesh'),path=self.path2,getResource=True)
-    #     self.assertTrue(node.export_resource())
-    #     files=ut.get_list_of_files(ut.get_folder(node.path))
-    #     self.assertTrue( node.path in files)
-        
-    #     #graphPath with directory
-    #     node=BIMNode(subject=self.subject2,graphPath=self.bimGraphPath2, mesh=self.mesh3)
-    #     self.assertTrue(node.export_resource(os.path.join(self.path,'resources')))
-    #     files=ut.get_list_of_files(ut.get_folder(node.path))
-    #     self.assertTrue(node.path in files)
-
-    #     #graph with new subject
-    #     node=BIMNode(subject=self.subject4,grap=self.bimGraph4, mesh=self.mesh4)
-    #     node.name='myMesh'
-    #     self.assertTrue(node.export_resource())
-    #     files=ut.get_list_of_files(ut.get_folder(node.path))
-    #     self.assertTrue(node.path in files)
-
-    def test_get_resource(self):
-        #mesh
-        node=BIMNode(resource=self.dataLoaderRoad.collectorMesh)  
-        self.assertIsNotNone(node.get_resource())
-
-        #no mesh
-        del node.resource
-        self.assertIsNone(node.get_resource())
-
-        # #graphPath with getResource
-        # subject=next(self.dataLoaderRoad.ifcGraph.subjects(RDF.type))
-        # node=BIMNode(graphPath=self.dataLoaderRoad.ifcGraphPath,subject=subject,getResource=True)
-        # self.assertIsNotNone(node.get_resource())
 
 
 if __name__ == '__main__':

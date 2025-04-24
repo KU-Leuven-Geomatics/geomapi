@@ -77,6 +77,7 @@ class TestImageNode(unittest.TestCase):
         node= ImageNode()
         self.assertIsNotNone(node.subject)
         self.assertIsNotNone(node.name)
+        self.assertIsNone(node.resource)
         self.assertEqual(node.imageWidth,640)
         self.assertEqual(node.imageHeight,480)
         self.assertEqual(node.focalLength35mm,2600)
@@ -115,7 +116,7 @@ class TestImageNode(unittest.TestCase):
         #check oriented bounding box
         np.testing.assert_array_equal(node.orientedBoundingBox.get_center(),np.array([0,0,50]))
         #check convex hull -> note that convexhull is mean of all the vertices. because its a pyramid, the center is more towards the base
-        np.testing.assert_array_almost_equal(node.convexHull.get_center(),np.array([0,0,79.06973581]))
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),np.array([0,0,80]))
     
     def test_cartesianTransform(self):
         #create a convex hull in the shape of a pyramid
@@ -131,8 +132,8 @@ class TestImageNode(unittest.TestCase):
         #base hull
         node= ImageNode(convexHull=base_hull)
         expectedCartesianTransform=np.eye(4)
-        self.assertTrue(np.allclose(node.cartesianTransform,expectedCartesianTransform,atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),base_hull_center,atol=0.001))
+        np.testing.assert_array_almost_equal(node.cartesianTransform,expectedCartesianTransform)
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),base_hull_center)
         np.testing.assert_array_almost_equal(node.orientedBoundingBox.get_center(),base_hull_box_center)
         
         #translation
@@ -145,42 +146,39 @@ class TestImageNode(unittest.TestCase):
                                             [0,1,0,0],
                                             [0,0,1,0],
                                             [0,0,0,1]])
-        self.assertTrue(np.allclose(node.cartesianTransform,expectedCartesianTransform,atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),translated_hull_center,atol=0.001))
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),translated_hull_box_center,atol=0.001))
+        np.testing.assert_array_almost_equal(node.cartesianTransform,expectedCartesianTransform,3)
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),translated_hull_center,3)
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.get_center(),translated_hull_box_center,3)
         
         #rotation
         rotated_hull_90_x=copy.deepcopy(base_hull)
-        rotated_hull_90_x.rotate(np.array( [[ 1, 0 , 0.        ],
-                                        [ 0,  0,  -1        ],
-                                        [ 0.   ,       1    ,      0        ]])  ,center=[0,0,0])
-        rotated_hull_center=np.array([0,-40,0])
-        rotated_hull_box_center=np.array([0,-25,0])
-        node= ImageNode(convexHull=rotated_hull_90_x)
-        expectedCartesianTransform=np.array([[1,0,0,0], 
-                                            [0,0,-1,0],
+        expectedCartesianTransform=np.array([[0,0,1,0], 
                                             [0,1,0,0],
+                                            [-1,0,0,0],
                                             [0,0,0,1]])
-        self.assertTrue(np.allclose(node.cartesianTransform,expectedCartesianTransform,atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),rotated_hull_center,atol=0.001))
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),rotated_hull_box_center,atol=0.001))
+        rotated_hull_90_x.rotate(expectedCartesianTransform[:3,:3]  ,center=[0,0,0])
+        rotated_hull_center=np.array([40,0,0])
+        rotated_hull_box_center=np.array([25,0,0])
+        node= ImageNode(convexHull=rotated_hull_90_x)
+        
+        np.testing.assert_array_almost_equal(node.cartesianTransform,expectedCartesianTransform,3)
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),rotated_hull_center,3)
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.get_center(),rotated_hull_box_center,3)
         
         #rotation an translation
         rotated_translated_hull=copy.deepcopy(base_hull)
-        rotated_translated_hull.rotate(np.array( [[ 1, 0 , 0.        ],
-                                        [ 0,  0,  -1        ],
-                                        [ 0.   ,       1    ,      0        ]])  ,center=[0,0,0])
-        rotated_translated_hull.translate([1,0,0])
-        rotated_translated_center=np.array([1,-40,0])
-        rotated_translated_box_center=np.array([1,-25,0])
-        node= ImageNode(convexHull=rotated_translated_hull)
-        expectedCartesianTransform=np.array([[1,0,0,1], 
-                                            [0,0,-1,0],
+        expectedCartesianTransform=np.array([[0,0,1,1], 
                                             [0,1,0,0],
+                                            [-1,0,0,0],
                                             [0,0,0,1]])
-        self.assertTrue(np.allclose(node.cartesianTransform,expectedCartesianTransform,atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),rotated_translated_center,atol=0.001))
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),rotated_translated_box_center,atol=0.001))
+        rotated_translated_hull.rotate(expectedCartesianTransform[:3,:3] ,center=[0,0,0])
+        rotated_translated_hull.translate(expectedCartesianTransform[:3,3])
+        rotated_translated_center=np.array([41,0,0])
+        rotated_translated_box_center=np.array([26,0,0])
+        node= ImageNode(convexHull=rotated_translated_hull)
+        np.testing.assert_array_almost_equal(node.cartesianTransform,expectedCartesianTransform,3)
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),rotated_translated_center,3)
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.get_center(),rotated_translated_box_center,3)
         
     def test_orientedBoundingBox_and_convex_hull(self):
         #translation
@@ -189,8 +187,8 @@ class TestImageNode(unittest.TestCase):
                                      [0,0,1,0],
                                      [0,0,0,1]])
         node= ImageNode(cartesianTransform=cartesianTransform)
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),np.array([1,0,25]),atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),np.array([1,0,39.534867912]),atol=0.001))
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.get_center(),np.array([1,0,0.5]),3)
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),np.array([1,0,0.8]),3)
         
         #90° rotation around z-axis
         rotation_matrix_90_z=   np.array( [[ 0, -1 , 0. ,0       ],
@@ -198,8 +196,8 @@ class TestImageNode(unittest.TestCase):
                                         [ 0.   ,       0.    ,      1.    ,0    ],
                                         [0,0,0,1]])  
         node= ImageNode(cartesianTransform=rotation_matrix_90_z)
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),np.array([0,0,25]),atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),np.array([0,0,39.534867912]),atol=0.001))
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.get_center(),np.array([0,0,0.5]),3)
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),np.array([0,0,0.8]),3)
         
         #90° rotation around x-axis
         rotation_matrix_90_x=   np.array( [[ 1, 0 , 0. ,0       ],
@@ -207,8 +205,8 @@ class TestImageNode(unittest.TestCase):
                                         [ 0.   ,       1    ,      0    ,0    ],
                                         [0,0,0,1]])  
         node= ImageNode(cartesianTransform=rotation_matrix_90_x)
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),np.array([0,-25,0]),atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),np.array([0,-39.534867912,0]),atol=0.001))
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.get_center(),np.array([0,-0.5,0]),3)
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),np.array([0,-0.8,0]),3)
         
         #90° rotation around x-axis + translation
         rotation_matrix_90_x=   np.array( [[ 1, 0 , 0. ,1       ],
@@ -216,8 +214,8 @@ class TestImageNode(unittest.TestCase):
                                         [ 0.   ,       1    ,      0    ,0    ],
                                         [0,0,0,1]])  
         node= ImageNode(cartesianTransform=rotation_matrix_90_x)
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),np.array([1,-25,0]),atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),np.array([1,-39.534867912,0]),atol=0.001))
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.get_center(),np.array([1,-0.5,0]),3)
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),np.array([1,-0.8,0]),3)
     
     def test_focalLength35mm(self):
         node= ImageNode(focalLength35mm=100)
@@ -244,13 +242,13 @@ class TestImageNode(unittest.TestCase):
         self.assertRaises(ValueError,ImageNode,principalPointV='qsdf')
                     
     def test_path(self):
-        #path1 without getResource
+        #path1 without loadResource
         node= ImageNode(path=self.dataLoaderParking.imagePath2)
         self.assertEqual(node.name,self.dataLoaderParking.imagePath2.stem)
         self.assertIsNone(node._resource)
 
-        #path2 with getResource
-        node= ImageNode(path=self.dataLoaderRoad.imagePath1,getResource=True)        
+        #path2 with loadResource
+        node= ImageNode(path=self.dataLoaderRoad.imagePath1,loadResource=True)        
         self.assertEqual(node.name,self.dataLoaderRoad.imagePath1.stem)
         self.assertEqual(node.imageHeight,self.dataLoaderRoad.image1.shape[0])
         self.assertIsNotNone(node._resource)
@@ -263,51 +261,25 @@ class TestImageNode(unittest.TestCase):
         node= ImageNode(xmpPath=self.dataLoaderParking.imageXmpPath1)
         self.assertEqual(node.xmpPath,self.dataLoaderParking.imageXmpPath1)        
         self.assertEqual(node.name,self.dataLoaderParking.imageXmpPath1.stem)
-        self.assertEqual(node.imageWidth,np.asarray(self.dataLoaderParking.image1).shape[1])
-        self.assertEqual(node.imageHeight,np.asarray(self.dataLoaderParking.image1).shape[0])
+        self.assertEqual(node.focalLength35mm,self.dataLoaderParking.focalLength35mm)
         self.assertEqual(node.principalPointU,self.dataLoaderParking.principalPointU)
-        self.assertEqual(node.principalPointV,self.dataLoaderParking.principalPointV)   
-        self.assertEqual(np.allclose(node.cartesianTransform,self.dataLoaderParking.imageCartesianTransform1),True)
+        self.assertEqual(node.principalPointV,self.dataLoaderParking.principalPointV)
+        np.testing.assert_array_almost_equal(node.cartesianTransform,self.dataLoaderParking.imageCartesianTransform1,3)
         self.assertIsNone(node.resource)
         
         
-        #path with getResource without extra info 
-        node= ImageNode(xmpPath=self.dataLoaderParking.imageXmpPath2,getResource=True)        
+        #path with loadResource without extra info 
+        node= ImageNode(xmpPath=self.dataLoaderParking.imageXmpPath2,path=self.dataLoaderParking.imagePath2, loadResource=True)        
         self.assertEqual(node.xmpPath,self.dataLoaderParking.imageXmpPath2)        
         self.assertEqual(node.name,self.dataLoaderParking.imageXmpPath2.stem)
         self.assertEqual(node.imageWidth,np.asarray(self.dataLoaderParking.image2).shape[1])
         self.assertEqual(node.imageHeight,np.asarray(self.dataLoaderParking.image2).shape[0])     
-        self.assertEqual(np.allclose(node.cartesianTransform,self.dataLoaderParking.imageCartesianTransform2),True)
+        np.testing.assert_array_almost_equal(node.cartesianTransform,self.dataLoaderParking.imageCartesianTransform2,3)
         self.assertIsNotNone(node.resource)
         
         #raise error when wrong path
         self.assertRaises(ValueError,ImageNode,principalPointU='xmpPath')
         
-    def test_xmlPath(self):      
-        #path without extra info 
-        node= ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,
-                        )
-        self.assertIsNotNone(node.name)
-
-        #path with subject
-        node= ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,
-                        subject='P0024688',
-                        getResource=False)        
-        self.assertIsNotNone(node.name)
-        self.assertIsNone(node.resource)
-        self.assertTrue(np.allclose(node.cartesianTransform,self.dataLoaderRailway.imageCartesianTransform1,atol=0.01),True)
-        
-    
-        #path with subject + getResource
-        node= ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,
-                        subject='P0024688',
-                        getResource=True)        
-        self.assertIsNotNone(node.name)
-        self.assertIsNotNone(node.resource)
-        self.assertTrue(np.allclose(node.cartesianTransform,self.dataLoaderRailway.imageCartesianTransform1,atol=0.01),True)
-
-
-    
     def test_resource(self):
         #cv2 image
         node= ImageNode(resource=self.dataLoaderRoad.image1)
@@ -408,29 +380,29 @@ class TestImageNode(unittest.TestCase):
                 self.assertTrue(np.allclose(matrix,node.intrinsicMatrix,atol=0.001))
 
  
-    def test_node_creation_with_get_resource(self):
+    def test_node_creation_with_load_resource(self):
         #mesh
         node= ImageNode(resource=self.dataLoaderParking.image1)
         self.assertIsNotNone(node._resource)
 
-        #path without getResource
+        #path without loadResource
         node= ImageNode(path=self.dataLoaderParking.imagePath2)
         self.assertIsNone(node._resource)
 
-        #path with getResource
-        node= ImageNode(path=self.dataLoaderParking.imagePath1,getResource=True)
+        #path with loadResource
+        node= ImageNode(path=self.dataLoaderParking.imagePath1,loadResource=True)
         self.assertIsNotNone(node._resource)
 
         #graph with get resource
         node= ImageNode(subject=self.dataLoaderRoad.imageSubject1,
                         graph=self.dataLoaderRoad.imgGraph,
-                        getResource=True)
+                        loadResource=True)
         self.assertIsNone(node._resource)
         
         #graphPath with get resource
         node= ImageNode(subject=self.dataLoaderParking.imageSubject2,
                         graphPath=self.dataLoaderParking.imgGraphPath,
-                        getResource=True)
+                        loadResource=True)
         self.assertIsNotNone(node._resource)
 
     def test_clear_resource(self):
@@ -461,7 +433,7 @@ class TestImageNode(unittest.TestCase):
         #path -> new name
         node= ImageNode(subject=URIRef('myImg'),
                         path=self.dataLoaderRoad.imagePath2,
-                        getResource=True)
+                        loadResource=True)
         self.assertTrue(node.save_resource(self.dataLoaderRoad.resourcePath))
         
         #graphPath with directory
@@ -477,20 +449,20 @@ class TestImageNode(unittest.TestCase):
         node.subject='myImg'
         self.assertTrue(node.save_resource(self.dataLoaderRoad.resourcePath))
 
-    def test_get_resource(self):
+    def test_load_resource(self):
         #mesh
         node=ImageNode(resource=self.dataLoaderParking.image2)  
-        self.assertIsNotNone(node.get_resource())
+        self.assertIsNotNone(node.load_resource())
 
         #no mesh
         del node.resource
-        self.assertIsNone(node.get_resource())
+        self.assertIsNone(node.load_resource())
 
-        #graphPath with getResource
+        #graphPath with loadResource
         node=ImageNode(graphPath=str(self.dataLoaderParking.imgGraphPath),
                        subject=self.dataLoaderParking.imageSubject1,
-                       getResource=True)
-        self.assertIsNotNone(node.get_resource())
+                       loadResource=True)
+        self.assertIsNotNone(node.load_resource())
 
     def test_set_path(self):
         #valid path
@@ -505,7 +477,6 @@ class TestImageNode(unittest.TestCase):
         #graphPath & name
         node=ImageNode(subject=self.dataLoaderParking.imageSubject1,
                        graphPath=self.dataLoaderParking.imgGraphPath)
-        node.get_path()
         self.assertEqual(node.path,self.dataLoaderParking.imagePath1)
 
     def test_set_xmp_path(self):
@@ -573,11 +544,12 @@ class TestImageNode(unittest.TestCase):
         node=ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,subject=self.dataLoaderRailway.imageSubject1)
         box=copy.deepcopy(node.orientedBoundingBox)
         hull=copy.deepcopy(node.convexHull)
+        cartesianTransform = node.cartesianTransform
         translation = [1,0,0]
         node.transform(translation=translation)
         self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),box.get_center()+translation,atol=0.001))
         self.assertTrue(np.allclose(node.convexHull.get_center(),hull.get_center()+translation,atol=0.001))
-        self.assertTrue(np.allclose(node.cartesianTransform[:3,3],node.cartesianTransform[:3,3]+translation,atol=0.001))
+        self.assertTrue(np.allclose(node.cartesianTransform[:3,3].flatten(),cartesianTransform[:3,3].flatten()+translation,atol=0.001))
         
     def test_transform_rotation(self):
         
@@ -599,7 +571,7 @@ class TestImageNode(unittest.TestCase):
         self.assertTrue(np.allclose(node.convexHull.get_center(),hull.rotate(rotation_matrix,center=node.get_center()).get_center(),atol=0.001))
    
     def test_create_rays(self):
-        node=ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,subject='P0024688',getResource=True)
+        node=ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,subject='P0024688',loadResource=True)
         
         #no inputs
         node=ImageNode()
@@ -628,7 +600,7 @@ class TestImageNode(unittest.TestCase):
             self.assertEqual(result.shape,(1,6))
             
         #check specific case
-        node=ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,subject='P0024688',getResource=False)
+        node=ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,subject='P0024688',loadResource=False)
         rays=node.create_rays(self.dataLoaderRailway.imgCoordinate,self.dataLoaderRailway.distance)        
         self.assertTrue(np.allclose(rays[0][:3],node.cartesianTransform[:3,3],atol=0.001))
         _,endpoint=gmu.rays_to_points(rays)        

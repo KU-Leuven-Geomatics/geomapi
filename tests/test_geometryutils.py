@@ -190,7 +190,7 @@ class TestGeometryutils(unittest.TestCase):
         assert len(sampled_pcd[0].points) > 0  # Should contain points
 
     def test_get_points_and_normals(self):
-        gmu.get_points_and_normals()
+        gmu.get_points_and_normals(self.dataLoaderParking.pcd)
 
     def test_compute_nearest_neighbors(self):
         # Create some reference and query points
@@ -204,23 +204,11 @@ class TestGeometryutils(unittest.TestCase):
         indices, distances = gmu.compute_nearest_neighbors(query_points, reference_points, n=1)
 
         # Check if the returned values match expectations
-        np.testing.assert_array_equal(indices, expected_indices)
-        np.testing.assert_allclose(distances, expected_distances, atol=1e-5)
+        np.testing.assert_array_equal(indices.flatten(), expected_indices)
+        np.testing.assert_allclose(distances.flatten(), expected_distances, atol=1e-5)
 
     def test_filter_pcd_by_distance(self):
-        gmu.filter_pcd_by_distance()
-
-
-
-
-
-
-
-
-
-
-
-
+        gmu.filter_pcd_by_distance(self.dataLoaderParking.pcd, self.dataLoaderParking.pcd, 1)
 
     def test_arrays_to_mesh_and_mesh_to_arrays(self):
         #mesh_to_arrays
@@ -335,9 +323,9 @@ class TestGeometryutils(unittest.TestCase):
     def test_get_oriented_bounding_box_parameters(self):
         center = [0, 0, 0]
         extent = [1, 2, 3]
-        euler_angles = [90, 0, 0]
+        euler_angles = [0, 0, 90]
 
-        obb = gmu.get_oriented_bounding_box(np.array([center, extent, euler_angles]), True)
+        obb = gmu.get_oriented_bounding_box(np.array([center, extent, euler_angles]).flatten(), True)
         parameters = gmu.get_oriented_bounding_box_parameters(obb)
 
         expected_parameters = np.hstack((center, extent, euler_angles))

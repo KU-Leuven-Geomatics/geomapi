@@ -103,17 +103,17 @@ class TestPointcloudNode(unittest.TestCase):
 
         
     def test_PointCloudNode_creation_from_path(self):
-        #path1 without getResource
+        #path1 without loadResource
         node= PointCloudNode(path=self.dataLoaderRoad.pcdPath)
         self.assertEqual(node.name,self.dataLoaderRoad.pcdPath.stem)
 
-        #path2 with getResource
-        node= PointCloudNode(path=self.dataLoaderRoad.pcdPath,getResource=True)        
+        #path2 with loadResource
+        node= PointCloudNode(path=self.dataLoaderRoad.pcdPath,loadResource=True)        
         self.assertEqual(node.name,self.dataLoaderRoad.pcdPath.stem)
         self.assertEqual(node.pointCount,len(self.dataLoaderRoad.pcd.points))
 
         #path3 
-        node= PointCloudNode(path=self.dataLoaderRoad.e57Path,getResource=True)
+        node= PointCloudNode(path=self.dataLoaderRoad.e57Path,loadResource=True)
         self.assertEqual(node.pointCount,self.dataLoaderRoad.e57.get_header(0).point_count)
 
     def test_PointCloudNode_creation_from_resource(self):
@@ -170,7 +170,7 @@ class TestPointcloudNode(unittest.TestCase):
     def test_creation_from_subject_and_path(self):        
         node= PointCloudNode(subject=self.dataLoaderParking.pcdSubject,
                              path=self.dataLoaderParking.pcdPath,
-                             getResource=True)
+                             loadResource=True)
         self.assertEqual(node.subject.toPython(),self.dataLoaderParking.pcdSubject.toPython())
 
     def test_creation_from_subject_and_path_and_graph(self):        
@@ -205,29 +205,29 @@ class TestPointcloudNode(unittest.TestCase):
 
     def test_node_creation_with_get_resource(self):
         #pcd
-        node= PointCloudNode(path=self.dataLoaderRoad.pcdPath,getResource=True)
+        node= PointCloudNode(path=self.dataLoaderRoad.pcdPath,loadResource=True)
         self.assertEqual(node.pointCount,len(self.dataLoaderRoad.pcd.points))
         
         #e57
-        node= PointCloudNode(path=self.dataLoaderRoad.e57Path,getResource=True)
+        node= PointCloudNode(path=self.dataLoaderRoad.e57Path,loadResource=True)
         self.assertEqual(node.pointCount,self.dataLoaderRoad.e57.get_header(0).point_count)
         
         #las
-        node= PointCloudNode(path=self.dataLoaderParking.lasPath,getResource=True)
+        node= PointCloudNode(path=self.dataLoaderParking.lasPath,loadResource=True)
         self.assertEqual(node.pointCount,len(self.dataLoaderParking.las.xyz))
 
         #graphPath with get resource
         node= PointCloudNode(subject=self.dataLoaderParking.pcdSubject,
                              graphPath=self.dataLoaderParking.pcdGraphPath,
-                             getResource=True)
+                             loadResource=True)
         self.assertIsNotNone(node.resource)
 
     def test_delete_resource(self):
         #pcd
         node= PointCloudNode(resource=self.dataLoaderParking.pcd)
-        self.assertIsNotNone(node._resource)
+        self.assertIsNotNone(node.resource)
         del node.resource
-        self.assertIsNone(node._resource)
+        self.assertIsNone(node.resource)
 
     def test_save_resource(self):
         #no pcd -> False
@@ -236,6 +236,7 @@ class TestPointcloudNode(unittest.TestCase):
 
         #directory
         node= PointCloudNode(resource=self.dataLoaderParking.pcd)
+        self.assertIsNotNone(node.resource)
         self.assertTrue(node.save_resource(self.dataLoaderParking.resourcePath))
 
         # #graphPath        
@@ -266,7 +267,7 @@ class TestPointcloudNode(unittest.TestCase):
         #self.assertEqual(node.path,os.path.join(self.resourcePath,node.name+'.e57'))
         #
         ##path -> new name
-        #node= PointCloudNode(subject=URIRef('mypcd'),path=self.path2,getResource=True)
+        #node= PointCloudNode(subject=URIRef('mypcd'),path=self.path2,loadResource=True)
         #self.assertTrue(node.save_resource())
         #
         ##graphPath with directory
@@ -281,17 +282,17 @@ class TestPointcloudNode(unittest.TestCase):
     def test_get_resource(self):
         #pcd
         node=PointCloudNode(resource=self.dataLoaderParking.e571)  
-        self.assertIsNotNone(node.get_resource())
+        self.assertIsNotNone(node.load_resource())
 
         #no pcd
         del node.resource
-        self.assertIsNone(node.get_resource())
+        self.assertIsNone(node.load_resource())
 
-        #graphPath with getResource
+        #graphPath with loadResource
         node=PointCloudNode(graphPath=self.dataLoaderParking.pcdGraphPath,
                             subject=self.dataLoaderParking.pcdSubject,
-                            getResource=True)
-        self.assertIsNotNone(node.get_resource())
+                            loadResource=True)
+        self.assertIsNotNone(node.load_resource())
 
 
 if __name__ == '__main__':

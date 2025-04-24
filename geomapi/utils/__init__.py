@@ -316,20 +316,6 @@ def get_attribute_from_predicate(graph: Graph, predicate : Literal) -> str:
             break
     return predStr
 
-def get_paths_in_class(cls) -> list: 
-    """Returns list of path attributes in the class.\n
-
-    Args:
-        cls (class): class e.g. MeshNode
-
-    Rerturns:
-        class atttributes that contain 'path' information e.g. cls.ifcPath, cls.path, etc.
-    """  
-    return [i.strip('_') for i in cls.__dict__.keys() if search('path',i, re.IGNORECASE) and getattr(cls,i) is not None] 
-
-
-
-
 #### CONVERSIONS ####
 
 def literal_to_python(literal:  "str | Literal"):
@@ -801,8 +787,9 @@ def get_node_resource_extensions(node: object) -> list:
         SELECT ?extension
         WHERE {{
             ?class rdf:type owl:Class ;
-                   rdfs:label "{node.__class__.__name__}"@en ;  # Dynamically inserted
-                   dbp:extension ?extension .
+               rdfs:label ?label .
+        OPTIONAL {{ ?class dbp:extension ?extension }}  # In case not all have extensions
+        FILTER(CONTAINS(LCASE(STR(?label)), LCASE("{node.__class__.__name__}")))
         }}
     """
     # Execute the query on the GEOMAPI_GRAPH
@@ -863,18 +850,6 @@ def get_geomapi_data_types():
     # Extract and return the class if found
     return [row[0] for row in result]
 
-def get_xsd_datatypes() -> set:
-    xsd_types = {
-    XSD.string, XSD.boolean, XSD.decimal, XSD.float, XSD.double, XSD.duration,
-    XSD.dateTime, XSD.time, XSD.date, XSD.gYearMonth, XSD.gYear, XSD.gMonthDay,
-    XSD.gDay, XSD.gMonth, XSD.hexBinary, XSD.base64Binary, XSD.anyURI, XSD.QName,
-    XSD.NOTATION, XSD.normalizedString, XSD.token, XSD.language, XSD.NMTOKEN,
-    XSD.Name, XSD.NCName, XSD.ID, XSD.IDREF, XSD.ENTITY, XSD.integer,
-    XSD.nonPositiveInteger, XSD.negativeInteger, XSD.long, XSD.int, XSD.short,
-    XSD.byte, XSD.nonNegativeInteger, XSD.unsignedLong, XSD.unsignedInt,
-    XSD.unsignedShort, XSD.unsignedByte, XSD.positiveInteger}
-    
-    return xsd_types
 
 def get_ifcowl_uri(value:str=None) -> URIRef:
     ifwOwlClasses=list(IFC_GRAPH.subjects(RDFS.subClassOf, IFC_NAMESPACE.IfcBuildingElement))
@@ -959,41 +934,3 @@ def rdf_property(predicate: Optional[str] = None, serializer: Optional[Callable]
 
 ######## OBSOLETE #############
 
-def get_variables_in_class(cls) -> List[str]: 
-    """Returns a list of class attributes in the class.\n
-
-    Args:
-        cls(class): class e.g. MeshNode
-    
-    Returns:
-        list of class attribute names
-    """  
-    return [i.strip('_') for i in cls.__dict__.keys() if getattr(cls,i) is not None] 
-
-# instead of cleaning the attributes, we should only serialize the rdf variables
-def clean_attributes_list(list:list) -> list:
-    """Returns a 'cleaned' list of class attributes that are not to be serialized in the graph. This includes data attributes such as resources (point clouds, images), linkedNodes, etc.\n
-
-    **NOTE**: RDF Graphs are meant to store metadata, not actual GBs of data that should be contained in their native file formats.\n
-
-    Args:
-        list (list): list of class attributes
-
-    Returns:
-        list (list): 'cleaned' list of class attributes 
-    """
-    #NODE
-    excludedList=['graph','resource','graphPath','subject','kwargs', 'type']
-    #BIMNODE    
-    excludedList.extend(['ifcElement'])
-    #MESHNODE
-    excludedList.extend(['mesh'])
-    #IMGNODES
-    excludedList.extend(['exifData','xmlData','image','features2d','pinholeCamera','depthMap'])
-    #PCDNODE
-    excludedList.extend(['pcd','e57Pointcloud','e57xmlNode','e57image','features3d'])
-    #SESSIONNODE
-    excludedList.extend(['linkedNodes'])
-
-    cleanedList = [ elem for elem in list if elem not in excludedList]
-    return cleanedList

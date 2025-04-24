@@ -129,6 +129,7 @@ class DataLoaderParking:
         self.imageSubject1=next((s for s in self.imgGraph.subjects() if 'DJI_0085' in s.toPython()),None )
         self.principalPointV=-0.00481084380622187
         self.principalPointU=-0.00219347744418651
+        self.focalLength35mm = 24.2967624747033
         print(f'    loaded {self.imagePath1}')           
 
         self.imageXmpPath2 = self.path / 'img' / 'IMG_8834.xmp'

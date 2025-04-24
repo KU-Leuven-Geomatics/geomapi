@@ -8,9 +8,10 @@ This node builds upon the Open3D and Trimesh API for the geometry definitions.
 """
 #IMPORT PACKAGES
 # from multiprocessing.sharedctypes import Value
+from typing import Optional
 import open3d as o3d 
 import numpy as np 
-from rdflib import Graph, URIRef
+from rdflib import XSD, Graph, URIRef
 import os
 from pathlib import Path
 import trimesh
@@ -18,16 +19,23 @@ import trimesh
 # from geomapi.nodes import GeometryNode
 from geomapi.nodes import Node
 import geomapi.utils as ut
+from geomapi.utils import rdf_property, GEOMAPI_PREFIXES
 import geomapi.utils.geometryutils as gmu
 
 class MeshNode (Node):   
-    def __init__(self,  graph : Graph = None, 
-                        graphPath:Path=None,
-                        subject : URIRef = None,
-                        path : Path=None, 
-                        resource = None,
-                        getResource: bool = False,
-                        **kwargs): 
+    def __init__(self, 
+                subject: Optional[URIRef] = None,
+                graph: Optional[Graph] = None,
+                graphPath: Optional[Path] = None,
+                name: Optional[str] = None,
+                path: Optional[Path] = None,
+                timestamp: Optional[str] = None,
+                resource = None,
+                cartesianTransform: Optional[np.ndarray] = None,
+                orientedBoundingBox: Optional[o3d.geometry.OrientedBoundingBox] = None,
+                convexHull: Optional[o3d.geometry.TriangleMesh] =None,
+                loadResource: bool = False,
+                **kwargs):
         """
         Creates a MeshNode. Overloaded function.
         
@@ -48,25 +56,59 @@ class MeshNode (Node):
         
         Returns:
             MeshNode : A MeshNode with metadata
-        """   
-        #private attributes
-        self.pointCount = None 
-        self.faceCount = None        
+        """ 
 
-        super().__init__(   graph= graph,
-                            graphPath= graphPath,
-                            subject= subject,
-                            path=path,
-                            resource = resource,
-                            getResource=getResource,
-                            **kwargs)    
+        super().__init__(   subject = subject,
+                    graph = graph,
+                    graphPath = graphPath,
+                    name = name,
+                    path = path,
+                    timestamp = timestamp,
+                    resource = resource,
+                    cartesianTransform = cartesianTransform,
+                    orientedBoundingBox = orientedBoundingBox,
+                    convexHull = convexHull,
+                    loadResource = loadResource,
+                    **kwargs)   
+        
 
-        #initialisation functionality
-        self.get_point_and_face_count()
+#---------------------PROPERTIES----------------------------
+    
+    #---------------------pointCount----------------------------
+    @property
+    @rdf_property(datatype=XSD.int)
+    def pointCount(self):
+        if self.resource:
+            return len(np.asarray(self.resource.vertices))
+        else: 
+            return self._pointCount
+    
+    @pointCount.setter
+    def pointCount(self, value):
+        if self.resource:
+            print("PointCount cannot be set directly when a resource is present")
+        self._pointCount = value
+        
+    #---------------------faceCount----------------------------
+    @property
+    @rdf_property(datatype=XSD.int)
+    def faceCount(self):
+        if self.resource:
+            return len(np.asarray(self.resource.triangles))
+        else: 
+            return self._faceCount
 
-#---------------------METHODS----------------------------
+    @faceCount.setter
+    def faceCount(self, value):
+        if self.resource:
+            print("FaceCount cannot be set directly when a resource is present")
+        self._faceCount = value
 
-    def set_resource(self, value): 
+
+#---------------------PROPERTY OVERRIDES----------------------------
+
+    @Node.resource.setter
+    def resource(self, value): 
         """Set the self.resource (o3d.geometry.TriangleMesh) of the Node.
 
         Args:
@@ -74,40 +116,52 @@ class MeshNode (Node):
             - trimesh.Trimesh
 
         Raises:
-            ValueError: Resource must be an o3d.geometry.TriangleMesh with len(resource.triangles) >=2 or an trimesh.Trimesh instance.
+            ValueError: Resource must be an o3d.geometry.TriangleMesh with len(resource.triangles) >=1 or an trimesh.Trimesh instance.
         """
-        if isinstance(value,o3d.geometry.TriangleMesh) and len(value.triangles) >=1:
+        if value is None:
+            self._resource = None
+        elif isinstance(value,o3d.geometry.TriangleMesh) and len(value.triangles) >=1:
             self._resource = value
         elif isinstance(value,trimesh.base.Trimesh):
             self._resource=value.as_open3d
         else:
-            raise ValueError('Resource must be an o3d.geometry.TriangleMesh with len(resource.triangles) >=2 or an trimesh.Trimesh instance.')
+            raise ValueError('Resource must be an o3d.geometry.TriangleMesh with len(resource.triangles) >=1 or an trimesh.Trimesh instance.')
 
-    def get_resource(self)->o3d.geometry.TriangleMesh: 
-        """Returns the mesh data in the node. If none is present, it will search for the data on drive from path, graphPath, name or subject. 
-        
+#---------------------METHODS----------------------------
+
+    def _transform_resource(self, transformation: np.ndarray, rotate_around_center: bool):
+        """
+        Apply a transformation to the mesh resource.
+
+        If rotate_around_center is True, the transformation is applied about the mesh's center.
+        Otherwise, the transformation is applied as-is.
+
         Args:
-            - self.path
+            transformation (np.ndarray): A 4x4 transformation matrix.
+            rotate_around_center (bool): Whether to rotate around the mesh's center.
+        """
+        if rotate_around_center:
+            center = self.resource.get_center()
+            t1 = np.eye(4)
+            t1[:3, 3] = -center
+            t2 = np.eye(4)
+            t2[:3, 3] = center
+            transformation = t2 @ transformation @ t1
+        self.resource.transform(transformation)
+
+    def load_resource(self)->o3d.geometry.TriangleMesh: 
+        """Load the resource from the path.
             
         Returns:
             o3d.geometry.TriangleMesh or None
         """
-        if not self._resource and self.get_path() :
-            resource =  o3d.io.read_triangle_mesh(str(self.path))
-            if len(resource.triangles)>2:
-                self._resource = resource
-        return self._resource  
-    
-    def set_path(self, value:Path):
-        """sets the path for the Node type. 
-        """
-        if value is None:
-            pass
-        elif Path(value).suffix.upper() in ut.MESH_EXTENSIONS:
-            self._path = Path(value) 
-        else:
-            raise ValueError('Invalid extension')
-        
+        # Perform path checks
+        if(not super().load_resource()):
+            return None
+
+        self.resource =  o3d.io.read_triangle_mesh(str(self.path))
+        return self.resource 
+
     def save_resource(self, directory:str=None,extension :str = '.ply') ->bool:
         """Export the resource of the Node.
 
@@ -116,56 +170,19 @@ class MeshNode (Node):
             - extension (str, optional) : file extension. Defaults to '.ply'.
 
         Raises:
-            ValueError: Unsuitable extension. Please check permitted extension types in utils._init_.
+            ValueError: Unsuitable extension. Please check permitted extension types in the ontology.
 
         Returns:
-            bool: return True if export was succesful
-        """         
-        #check path
-        if self.resource is None:
+            bool: return True if export was successful
+        """
+        # perform the path check and create the directory
+        if not super().save_resource(directory, extension):
             return False
-        
-        #validate extension
-        if extension.upper() not in ut.MESH_EXTENSIONS:
-            raise ValueError('Invalid extension')
-
-        # check if already exists
-        if directory and os.path.exists(os.path.join(directory,self.name + extension)):
-            self.path=os.path.join(directory,self.get_name() + extension)
-            return True
-        elif not directory and self.get_path() and os.path.exists(self.path) and extension.upper() in ut.MESH_EXTENSIONS:
-            return True
-                    
-        #get directory
-        if (directory):
-            pass    
-        elif self.path is not None:    
-            directory=Path(self.path).parent            
-        elif(self.graphPath): 
-            dir=Path(self.graphPath).parent
-            directory=os.path.join(dir,'MESH')   
-        else:
-            directory=os.path.join(os.getcwd(),'MESH')
-        # create directory if not present
-        if not os.path.exists(directory):                        
-            os.mkdir(directory) 
-
-        self.path=os.path.join(directory,Path(self.subject.toPython()).stem  + extension) #subject.toPython() replaced by get_name()
 
         #write files
         if o3d.io.write_triangle_mesh(str(self.path), self.resource):
             return True
         return False
-
-
-    def get_point_and_face_count(self) ->int:
-        """Returns the number of vertices and faces in the resource.
-        """
-        if self._resource:
-            self.pointCount=len(np.asarray(self._resource.vertices))  
-            self.faceCount=len(np.asarray(self._resource.triangles))
-        return self.pointCount, self.faceCount
-    
     
     def show(self, inline = False):
         super().show()

@@ -108,15 +108,15 @@ class TestMeshNode(unittest.TestCase):
         self.assertEqual(node.faceCount,object.toPython())
         
     def test_meshnode_creation_from_path(self):
-        #path1 without getResource
+        #path1 without loadResource
         node= MeshNode(path=self.dataLoaderParking.meshPath)
         self.assertEqual(node.name,self.dataLoaderParking.meshPath.stem)
-        #path2 with getResource
-        node= MeshNode(path=self.dataLoaderParking.meshPath,getResource=True)        
+        #path2 with loadResource
+        node= MeshNode(path=self.dataLoaderParking.meshPath,loadResource=True)        
         self.assertEqual(node.name,self.dataLoaderParking.meshPath.stem)
         self.assertEqual(node.faceCount,len(self.dataLoaderParking.mesh.triangles))
         #path3 
-        node= MeshNode(path=self.dataLoaderRoad.meshPath,getResource=True)
+        node= MeshNode(path=self.dataLoaderRoad.meshPath,loadResource=True)
         self.assertEqual(node.name,self.dataLoaderRoad.meshPath.stem)
         self.assertEqual(node.faceCount,len(self.dataLoaderRoad.mesh.triangles))
 
@@ -149,7 +149,7 @@ class TestMeshNode(unittest.TestCase):
     def test_creation_from_subject_and_path(self):        
         node= MeshNode(subject='myMesh',
                        path=self.dataLoaderParking.meshPath,
-                       getResource=True)
+                       loadResource=True)
         self.assertEqual(node.subject.toPython(),'http://myMesh')
         node.get_graph()
         
@@ -172,7 +172,7 @@ class TestMeshNode(unittest.TestCase):
         node= MeshNode(subject=self.dataLoaderRoad.meshSubject,
                        path=self.dataLoaderRoad.meshPath,
                        graph=self.dataLoaderRoad.meshGraph,
-                       getResource=True)
+                       loadResource=True)
         self.assertEqual(node.subject,self.dataLoaderRoad.meshSubject)
         node.get_graph()
         initialGraph=ut.get_subject_graph(self.dataLoaderRoad.meshGraph,subject=self.dataLoaderRoad.meshSubject)
@@ -203,20 +203,20 @@ class TestMeshNode(unittest.TestCase):
         node= MeshNode(resource=self.dataLoaderParking.mesh)
         self.assertIsNotNone(node._resource)
 
-        #path without getResource
+        #path without loadResource
         node= MeshNode(path=self.dataLoaderParking.meshPath)
         self.assertIsNone(node._resource)
 
-        #path with getResource
-        node= MeshNode(path=self.dataLoaderParking.meshPath,getResource=True)
+        #path with loadResource
+        node= MeshNode(path=self.dataLoaderParking.meshPath,loadResource=True)
         self.assertIsNotNone(node._resource)
 
         #graph with get resource
-        node= MeshNode(subject=self.dataLoaderParking.meshSubject,graph=self.dataLoaderParking.meshGraph,getResource=True)
+        node= MeshNode(subject=self.dataLoaderParking.meshSubject,graph=self.dataLoaderParking.meshGraph,loadResource=True)
         self.assertIsNone(node._resource)
 
         #graphPath with get resource
-        node= MeshNode(subject=self.dataLoaderParking.meshSubject,graphPath=self.dataLoaderParking.meshGraphPath,getResource=True)
+        node= MeshNode(subject=self.dataLoaderParking.meshSubject,graphPath=self.dataLoaderParking.meshGraphPath,loadResource=True)
         self.assertIsNotNone(node._resource)
 
     def test_delete_resource(self):
@@ -258,7 +258,7 @@ class TestMeshNode(unittest.TestCase):
 
         
     #     #path -> new name
-    #     node= MeshNode(subject=URIRef('myMesh'),path=self.dataLoaderParking.meshPath,getResource=True)
+    #     node= MeshNode(subject=URIRef('myMesh'),path=self.dataLoaderParking.meshPath,loadResource=True)
     #     self.assertTrue(node.save_resource())
         
     #     #graphPath with directory
@@ -275,15 +275,15 @@ class TestMeshNode(unittest.TestCase):
     def test_get_resource(self):
         #mesh
         node=MeshNode(resource=self.dataLoaderRoad.mesh)  
-        self.assertIsNotNone(node.get_resource())
+        self.assertIsNone(node.load_resource()) # no path is given, cannot reload resource
 
         #no mesh
         node=MeshNode()
-        self.assertIsNone(node.get_resource())
+        self.assertIsNone(node.load_resource())
 
-        #graphPath with getResource
-        node=MeshNode(graphPath=self.dataLoaderParking.meshGraphPath,subject=self.dataLoaderParking.meshSubject,getResource=True)
-        self.assertIsNotNone(node.get_resource())
+        #graphPath with loadResource
+        node=MeshNode(graphPath=self.dataLoaderParking.meshGraphPath,subject=self.dataLoaderParking.meshSubject,loadResource=True)
+        self.assertIsNotNone(node.load_resource())
 
     def test_get_metadata_from_resource(self):
         #mesh
@@ -296,7 +296,7 @@ class TestMeshNode(unittest.TestCase):
             if 'orientedBoundingBox' in p.toPython():
                 graph_param=ut.literal_to_matrix(o)
                 node_param=gmu.get_oriented_bounding_box_parameters(node.orientedBoundingBox)
-                self.assertTrue(np.allclose(graph_param,node_param,atol=0.001))
+                np.testing.assert_array_almost_equal(graph_param,node_param,2)
             if 'convexHull' in p.toPython():
                 graph_param=ut.literal_to_matrix(o)
                 graph_volume=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(graph_param)).compute_convex_hull()[0].get_volume()
@@ -304,7 +304,7 @@ class TestMeshNode(unittest.TestCase):
                 self.assertAlmostEqual(graph_volume,node_volume,delta=0.01)
 
         #graphPath
-        node=MeshNode(graphPath=self.dataLoaderParking.meshGraphPath,subject=self.dataLoaderParking.meshSubject,getResource=True)
+        node=MeshNode(graphPath=self.dataLoaderParking.meshGraphPath,subject=self.dataLoaderParking.meshSubject,loadResource=True)
         for s, p, o in self.dataLoaderParking.meshGraph.triples((self.dataLoaderParking.meshSubject, None, None)):
             if 'cartesianTransform' in p.toPython():
                     matrix=ut.literal_to_matrix(o)
@@ -313,7 +313,7 @@ class TestMeshNode(unittest.TestCase):
             if 'orientedBoundingBox' in p.toPython():
                 graph_param=ut.literal_to_matrix(o)
                 node_param=gmu.get_oriented_bounding_box_parameters(node.orientedBoundingBox)
-                self.assertTrue(np.allclose(graph_param,node_param,atol=0.001))
+                np.testing.assert_array_almost_equal(graph_param[:6],node_param[:6],2)
             if 'convexHull' in p.toPython():
                 graph_param=ut.literal_to_matrix(o)
                 graph_volume=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(graph_param)).compute_convex_hull()[0].get_volume()

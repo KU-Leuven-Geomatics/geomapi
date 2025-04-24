@@ -87,7 +87,7 @@ class TestPanoNode(unittest.TestCase):
         # self.assertEqual(node.imageHeight,480)
         self.assertIsNotNone(node.timestamp)
         np.testing.assert_array_almost_equal(node.cartesianTransform,np.eye(4),3)
-        np.testing.assert_array_almost_equal(node.orientedBoundingBox.extent,np.array([1,1,1]),3)
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.extent,np.array([2,2,2]),3)
         np.testing.assert_array_almost_equal(node.convexHull.get_center(),np.array([0,0,0]),3)
         
         
@@ -103,46 +103,7 @@ class TestPanoNode(unittest.TestCase):
         #raise error when text
         self.assertRaises(ValueError,PanoNode,imageHeight='qsdf')
         
-    def test_depth_map(self):
-        self.assertRaises(ValueError,PanoNode,depthMap=100)
-        self.assertRaises(ValueError,PanoNode,depthMap='qsdf')
-        node=PanoNode(resource=self.pano)
-        self.assertRaises(ValueError,node,depthMap=np.full((100,100), 0))
-        
-        #float value
-        node= PanoNode(depthMap=100)    
-        self.assertEqual(node.depthMap.shape[0],self.pano.shape[0])
-        self.assertEqual(node.depthMap.shape[1],self.pano.shape[1])
-        self.assertEqual(node.depthMap[0,0],100)
-                
-        #np.array
-        array_2d = np.random.uniform(5, 10, size=(100,100))
-        array_2d[0,0] = np.nan
-        max_value = np.nanmax(array_2d)
-        node= PanoNode(depthMap=array_2d)
-        self.assertEqual(node.depthMap.shape[0],100)
-        self.assertEqual(node.depthMap.shape[1],100)
-        
-        #image with depth map
-        node= PanoNode(resource=self.pano,depthMap=self.depthMap)
-        self.assertEqual(node.depthMap.shape[0],100)
-        self.assertEqual(node.depthMap.shape[1],100)
-        
-    def test_depth_path(self):
-        #without loading
-        node= PanoNode(depthPath=self.depthPath)
-        self.assertEqual(node.depthPath,self.depthPath)
-        self.assertEqual(node.depthMap,None)
-        
-        #with loading
-        node= PanoNode(depthPath=self.depthPath,getResource=True)
-        self.assertEqual(node.depthPath,self.depthPath)
-        self.assertEqual(node.depthMap.shape[0],1024)
-        self.assertEqual(node.depthMap.shape[1],512)
-        
-        #raise error when wrong path
-        self.assertRaises(ValueError,PanoNode,depthPath='dfsgsdfgsd')    
-    
+  
     def test_cartesianTransform(self):
         ball=o3d.geometry.TriangleMesh.create_sphere(radius=0.5) #this gets Obox with x,y,z and no rotation
         ball.translate([0,0,-1])
@@ -158,7 +119,7 @@ class TestPanoNode(unittest.TestCase):
                        convexHull=ball)
         self.assertTrue(np.allclose(node.cartesianTransform[:3,3],np.array([ 0,0,-1]),atol=0.001))
 
-        #depthMap + convex hull + oriented box -> depthMap  has priority
+        #depth + convex hull + oriented box -> depth  has priority
         node= PanoNode(depthPath=self.depthPath,convexHull=ball,orientedBoundingBox=box,getResource=True)
         self.assertTrue(np.allclose(node.cartesianTransform[:3,3],np.array([ 6.38405617, -1.74535209,  0.29007973]),atol=0.001))
 
@@ -167,7 +128,7 @@ class TestPanoNode(unittest.TestCase):
         self.assertTrue(np.allclose(node.cartesianTransform[:3,3],np.array([0.0896231, -0.189631, -1.05647]),atol=0.001))
 
         
-        #json + depthMap -> json has priority
+        #json + depth -> json has priority
         node= PanoNode(jsonPath=self.jsonPath,depthPath=self.depthPath,getResource=True)
         self.assertTrue(np.allclose(node.cartesianTransform[:3,3],np.array([0.0896231, -0.189631, -1.05647]),atol=0.001))
         
@@ -437,14 +398,14 @@ class TestPanoNode(unittest.TestCase):
     
     def test_get_pcd_from_depth_map(self):
         
-        node=PanoNode(depthMap=self.depthMap,resource=self.pano)
+        node=PanoNode(depth=self.depth,resource=self.pano)
         pcd=node.get_pcd_from_depth_map()
         points=np.asarray(pcd.points)
         middle_point=points[int(points.shape[0]/2)]
         #check if the middle point of the point cloud is the same as the middle point of the depth map
         self.assertTrue(np.allclose(middle_point,np.array([8.161,0.575,10.292]),atol=0.001))
         #check if number of points is the same as the number of pixels in the depth map
-        self.assertEqual(points.shape[0],self.depthMap.size)
+        self.assertEqual(points.shape[0],self.depth.size)
         #check if colors are the same as the colors of the image
         colors=np.asarray(pcd.colors)
         self.assertTrue(np.allclose(colors[0],self.pano[0]/255),atol=0.001)

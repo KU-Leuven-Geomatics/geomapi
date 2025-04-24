@@ -129,14 +129,7 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(len(splitList[0]), 11)
         self.assertEqual(len(splitList[-1]), 1) #check last element
 
-    def test_get_variables_in_class(self):
-        class tinyClass:
-            def __init__(self,**kwargs):
-                self.__dict__.update(kwargs)  
 
-        test=tinyClass(path=1,myPath=2,thisisnotapat=3,resolution=4)
-        variables=ut.get_variables_in_class(test)
-        self.assertEqual(len(variables),4)
 
     def test_get_list_of_files(self):
         files=ut.get_list_of_files(self.dataLoaderParking.path)
@@ -156,15 +149,6 @@ class TestUtils(unittest.TestCase):
 
         #wrong subject
         self.assertRaises(ValueError,ut.get_subject_graph,graph=self.dataLoaderParking.imgGraph,subject=URIRef('blabla'))
-
-    def test_get_paths_in_class(self):
-        class tinyClass:
-            def __init__(self,**kwargs):
-                self.__dict__.update(kwargs)  
-
-        test=tinyClass(path=1,myPath=2,thisisnotapat=3,resolution=4)
-        paths=ut.get_paths_in_class(test)
-        self.assertEqual(len(paths),2)
 
     def test_get_timestamp(self):
         timeStamp=ut.get_timestamp(self.dataLoaderParking.pcdGraphPath) 
@@ -407,54 +391,6 @@ class TestUtils(unittest.TestCase):
         test=ut.literal_to_python(item)
         self.assertIsInstance(test,str)
 
-    def test_literal_to_linked_subjects(self):
-        string="['file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904659_0_Z_Q8COz94wZzVDqlx5_s', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904099_0_Z_Q8COz94wZzVDqlx5c6', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_903697_0_Z_Q8COz94wZzVDqlx5Wq', 'file:///DJI_0085', 'file:///IMG_8834', 'file:///parking', 'file:///parking']"
-
-        list=ut.literal_to_linked_subjects(string)
-        gtlist=['file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904659_0_Z_Q8COz94wZzVDqlx5_s', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_904099_0_Z_Q8COz94wZzVDqlx5c6', 'file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_903697_0_Z_Q8COz94wZzVDqlx5Wq', 'file:///DJI_0085', 'file:///IMG_8834', 'file:///parking', 'file:///parking']
-
-        (self.assertTrue(list[i]==gtlist[i]) for i in range(len(list)) )
-
-    def test_string_to_list(self):
-        #cartesianBounds
-        item="[-12.33742784 -10.91544131  73.8353109   73.96926636   8.642    9.462     ]"
-        test=ut.string_to_list(item)
-        self.assertEqual(len(test),6)
-
-        item="[-12.33742784, -10.91544131,  73.8353109  , 73.96926636  , 8.642   , 9.462     ]"
-        test=ut.string_to_list(item)
-        self.assertEqual(len(test),6)
-
-        item="None"
-        test=ut.string_to_list(item)
-        self.assertIsNone(test)
-        
-        item="[None, None, None]" 
-        test=ut.string_to_list(item)
-        self.assertIsNone(test)
-
-    def test_string_to_rotation_matrix(self):
-        #cartesianBounds
-        item="[-12.33742784 -10.91544131  73.8353109   73.96926636   8.642    9.462 -12.33742784 -10.91544131  73.8353109    ]"
-        test=ut.string_to_rotation_matrix(item)
-        self.assertEqual(test.shape,(3,3))
-
-        item="[-12.33742784, -10.91544131,  73.8353109  , 73.96926636  , 8.642   , 9.462  ,-12.33742784, -10.91544131,  73.8353109   ]"
-        test=ut.string_to_rotation_matrix(item)
-        self.assertEqual(test.shape,(3,3))
-
-        item="[[-12.33742784, -10.91544131,  73.8353109 ] ,   [ 73.96926636  , 8.642   , 9.462  ] ,  [-12.33742784, -10.91544131,  73.8353109   ]]"
-        test=ut.string_to_rotation_matrix(item)
-        self.assertEqual(test.shape,(3,3))
-
-        item="[-12.33742784, -10.91544131,  73.8353109  , 73.96926636  , 8.642   , 9.462  ,-12.33742784, -10.91544131   ]"
-        self.assertRaises(ValueError,ut.string_to_rotation_matrix,item)
-
-        item="None"
-        self.assertRaises(ValueError,ut.string_to_rotation_matrix,item)
-        
-        item="[[None, None, None],[None, None, None],[None, None, None]]"     
-        self.assertRaises(ValueError,ut.string_to_rotation_matrix,item)
 
     def test_xml_to_float(self):
         item="10"
@@ -499,25 +435,6 @@ class TestUtils(unittest.TestCase):
         test=ut.xcr_to_long(item)
         self.assertIsNone(test)
 
-    def test_featured3d_to_literal(self):
-        self.assertEqual(ut.featured3d_to_literal(), np.array(1))
-
-    def test_featured2d_to_literal(self):
-        self.assertEqual(ut.featured3d_to_literal(), np.array(1))
-
-    def test_item_to_list(self):
-        item=5
-        test=ut.item_to_list(item)
-        self.assertEqual(len(test),1)
-        item=['qsdf']
-        test=ut.item_to_list(item)
-        self.assertEqual(len(test),1)
-        item=['qsdf',1]
-        test=ut.item_to_list(item)
-        self.assertEqual(len(test),2)
-
-        self.assertRaises(ValueError,ut.get_graph_subject,self.dataLoaderParking.imgGraph,URIRef('kjhgfd'))
-
 #### VALIDATION ####
 
     def test_check_if_uri_exists(self):
@@ -551,18 +468,18 @@ class TestUtils(unittest.TestCase):
         test=ut.validate_string('[this<has$to^change]')
         self.assertEqual(test,'_this_has_to_change_')
 
-    def test_validate_timestamp(self):
+    def test_literal_to_datetime(self):
 
         #string
-        self.assertEqual(str(ut.validate_timestamp("2022:03:13 13:55:26")),"2022-03-13T13:55:26")
+        self.assertEqual(str(ut.literal_to_datetime("2022:03:13 13:55:26")),"2022-03-13T13:55:26")
         #string
-        self.assertEqual(str(ut.validate_timestamp('Tue Dec  7 09:38:13 2021')),"2021-12-07T09:38:13")
+        self.assertEqual(str(ut.literal_to_datetime('Tue Dec  7 09:38:13 2021')),"2021-12-07T09:38:13")
         #string
-        self.assertEqual(str(ut.validate_timestamp("1648468136.033126", millies=True)),"2022-03-28T11:48:56.033126")
+        self.assertEqual(str(ut.literal_to_datetime("1648468136.033126", millies=True)),"2022-03-28T11:48:56.033126")
         #datetime object
-        self.assertEqual(str(ut.validate_timestamp(datetime(2022,3,13,13,55,26))),"2022-03-13T13:55:26")
+        self.assertEqual(str(ut.literal_to_datetime(datetime(2022,3,13,13,55,26))),"2022-03-13T13:55:26")
         # invalid
-        self.assertRaises(ValueError,ut.validate_timestamp,'qsdfqsdf')
+        self.assertRaises(ValueError,ut.literal_to_datetime,'qsdfqsdf')
 
     def test_check_if_subject_is_in_graph(self):
         #http
@@ -580,20 +497,6 @@ class TestUtils(unittest.TestCase):
     def test_get_graph_intersection(self):
         intersectionGraph = ut.get_graph_intersection([self.dataLoaderRoad.imgGraph,self.dataLoaderRoad.imgGraph])
         self.assertEqual(len(list(intersectionGraph.subjects())),len(list(self.dataLoaderRoad.imgGraph.subjects())))
-
-    def test_get_graph_subject(self):
-        #http
-        self.assertIsNotNone(ut.get_graph_subject(self.dataLoaderParking.meshGraph,next(s for s in self.dataLoaderParking.meshGraph.subjects(RDF.type))))
-        
-        #file
-        self.assertIsNotNone(ut.get_graph_subject(self.dataLoaderParking.pcdGraph,next(s for s in self.dataLoaderParking.pcdGraph.subjects(RDF.type))))
-
-        #random
-        graph=Graph()
-        graph.add((URIRef('mySubject'),RDFS.label,Literal('label')))
-        self.assertIsNotNone(ut.get_graph_subject(graph,URIRef('mySubject')))
-
-        #not in graph
 
     def test_get_attribute_from_predicate(self):
         graph=Graph()
@@ -618,21 +521,14 @@ class TestUtils(unittest.TestCase):
                 test=True
         self.assertTrue(test)
 
-    def test_clean_attributes_list(self):
-        list=['blablabla',
-            'graph','graphPath','subject','fullResourcePath','kwargs', 'orientedBoundingBox',
-            'ifcElement',
-            'mesh',
-            'exifData','xmlData','image','features2d','pinholeCamera',
-            'pcd','e57Pointcloud','e57xmlNode','e57image','features3d',
-            'linkedNodes']
-        newList=ut.clean_attributes_list(list)
-        self.assertEqual(len(newList),3)
+
       
     def test_get_node_resource_extensions(self):
-        
-        self.assertEqual(ut.get_node_resource_extensions("geomapi.nodes.MeshNode"), ut.MESH_EXTENSIONS)
-        self.assertEqual(ut.get_node_resource_extensions("geomapi.nodes.PanoNode"), ut.IMG_EXTENSIONS)
+        class ImageNode():
+            def __init__(self):
+                pass
+        node = ImageNode()
+        self.assertEqual(ut.get_node_resource_extensions(node), ut.IMG_EXTENSIONS)
 
     def test_get_node_type(self):
         class ImageNode():
@@ -665,10 +561,6 @@ class TestUtils(unittest.TestCase):
         value=(1,2,3)
         dataType=ut.get_data_type(value)
         self.assertAlmostEqual(dataType,XSD.string)
-
-    def test_cartesianTransform_to_literal(self):
-        literal=ut.cartesianTransform_to_literal(self.dataLoaderParking.imageCartesianTransform1)
-        self.assertTrue('-8.13902571e-02' in literal)
 
     def test_get_geomapi_data_types(self):
         self.assertGreater(len(ut.get_geomapi_data_types()),0)

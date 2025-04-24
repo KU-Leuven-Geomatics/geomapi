@@ -26,26 +26,28 @@ from rdflib.namespace import RDF
 import open3d as o3d 
 import copy
 from collections import Counter
+import inspect
 
 #IMPORT MODULES
 import geomapi.utils as ut
+from geomapi.utils import rdf_property, RDFMAPPINGS
 import geomapi.utils.geometryutils as gmu
 from geomapi.utils import GEOMAPI_PREFIXES
 
 class Node:
     def __init__(self, 
-                 subject: Optional[URIRef] = None,
-                 graph: Optional[Graph] = None,
-                 graphPath: Optional[Path] = None,
-                 name: Optional[str] = None,
-                 path: Optional[Path] = None,
-                 timestamp: Optional[str] = None,
-                 resource = None,
-                 cartesianTransform: Optional[np.ndarray] = None,
-                 orientedBoundingBox: Optional[o3d.geometry.OrientedBoundingBox] = None,
-                 convexHull: Optional[o3d.geometry.TriangleMesh] =None,
-                 getResource: bool = False,
-                 **kwargs):
+                subject: Optional[URIRef] = None,
+                graph: Optional[Graph] = None,
+                graphPath: Optional[Path] = None,
+                name: Optional[str] = None,
+                path: Optional[Path] = None,
+                timestamp: Optional[str] = None,
+                resource = None,
+                cartesianTransform: Optional[np.ndarray] = None,
+                orientedBoundingBox: Optional[o3d.geometry.OrientedBoundingBox] = None,
+                convexHull: Optional[o3d.geometry.TriangleMesh] =None,
+                loadResource: bool = False,
+                **kwargs):
         """
         Creates a Node from one or more of the following inputs.
         
@@ -73,19 +75,8 @@ class Node:
         Returns:
             Node: An instance of the Node class.
         """
-        #init private attributes 
-        self._subject=None
-        self._graph=None
-        self._graphPath=None 
-        self._path=None
-        self._name=None
-        self._timestamp=None 
-        self._resource=None 
-        self._cartesianTransform=None
-        self._orientedBoundingBox=None
-        self._convexHull=None
 
-        #set instance variables (protected inputs)       
+        #set properties (protected inputs)       
         self.subject=subject
         self.graphPath=graphPath
         self.graph=graph
@@ -97,112 +88,123 @@ class Node:
         self.convexHull=convexHull
         self.cartesianTransform=cartesianTransform
 
-        self.initialize(getResource,kwargs)
+        self._serializeAttributes = []
 
-    def initialize(self,getResource, kwargs):
-        """ Initializes the Node by setting the attributes from the graph, path, or name. It also sets the subject, name, and timestamp if they are not present. Finally, it updates the geometries from highest to lowest detailing."""
-        
         #if graphPath is present, parse and set graph
-        if not self._graph and self._graphPath and os.path.exists(self._graphPath):
-            graph=Graph().parse(self._graphPath)
-            self.graph=ut.get_subject_graph(graph,self._subject) 
-            self.subject=next(self._graph.subjects(RDF.type))
-        
-        if self._graph:
-            self.set_attributes_from_graph()
-            
+        if not self.graph and self.graphPath:
+            if not os.path.exists(self.graphPath):
+                raise ValueError("Invalid graphPath does not exist")
+            graph=Graph().parse(self.graphPath)
+            if(subject is None):
+                self.graph=ut.get_subject_graph(graph) 
+                self.subject=next(self.graph.subjects(RDF.type))
+            else:
+                self.graph=ut.get_subject_graph(graph,self.subject)
+        if self.graph:
+            if(subject is None):
+                self.graph=ut.get_subject_graph(self.graph) 
+                self.subject=next(self.graph.subjects(RDF.type))
+            self._set_attributes_from_graph()
+        # make sure the node has an identifier when initialised without any data
+        if(not graph and not path and not self._name and not subject):
+            self.name=uuid.uuid1()
         #if path is present, set name and timestamp
-        if getResource:
-            self.get_resource()
-            
-        #update attributes if they are None
-        self.get_subject()
-        self.get_name()        
-        self.get_timestamp()
-        
-        #update geometries from highest to lowest detailing
-        self.get_cartesian_transform()
-        self.get_convex_hull() 
-        self.get_oriented_bounding_box()
-                   
+        if loadResource:
+            self.load_resource()
 
+        # load the geometric properties
+        self._set_geometric_properties(self.cartesianTransform, self.convexHull, self.orientedBoundingBox)
         self.__dict__.update(kwargs)
 
 #---------------------PROPERTIES----------------------------
 
     #---------------------PATH----------------------------
     @property
+    @rdf_property(serializer=ut.get_relative_path)
     def path(self): 
-        """Path (Path) of the resource of the node. If no path is present, you can use `get_path()` to reconstruct the path from either the graphPath or working directory.
+        """Path (Path) of the resource of the node.
         
         Args:
             - value (str or Path): The new path for the node.
         
-        Raises:
-            ValueError: If the path has an invalid type, path, or extension.
-        
         """
-        return self._path
-    
+        if self._path is not None: #self._path.exists():
+            return self._path
+
     @path.setter 
     def path(self,value: Optional[Path]):        
         if value is None:
-            pass
+            self._path = None
+        elif Path(value).suffix.upper() in ut.get_node_resource_extensions(self):
+            self._path = Path(value) 
         else:
-            self.set_path(value)   
+            raise ValueError('Invalid extension: ' + Path(value).suffix.upper())
 
     #---------------------NAME----------------------------
     @property
+    @rdf_property(predicate= GEOMAPI_PREFIXES['rdfs'].label, datatype=XSD.string)
     def name(self):
         """The name (str) of the node. This can include characters that the operating
-        system does not allow. If no name is present, you can use `get_name()` to construct a name from the subject or path.
+        system does not allow.
 
         Args:
             - self.path
             - self.subject
         """        
+        if self._name is None:
+            if self.path:                
+                self._name=Path(self.path).stem 
+            elif self.subject:                     
+                self.name=ut.get_subject_name(self.subject)
         return self._name
 
     @name.setter
     def name(self, value: Optional[str]):
         if value is None:
-            pass
+            self._name = None
         else:            
             self._name = str(value)
 
     #---------------------TIMESTAMP----------------------------
     @property
+    @rdf_property(predicate=GEOMAPI_PREFIXES['dcterms'].created, datatype=XSD.dateTime)
     def timestamp(self) -> str:
-        """The timestamp (str(yyyy-MM-ddTHH:mm:ss)) of the node. If no timestamp is present, use `get_timestamp()` to gather the timestamp from the path or graphPath.
+        """The timestamp (str(yyyy-MM-ddTHH:mm:ss)) of the node.
 
         Features:
             - self.path
             - self.graphPath
         """
+        if self._timestamp is None:
+            if self.path and os.path.exists(self.path):
+                self._timestamp=ut.get_timestamp(self.path)  
+            elif self.graphPath and os.path.exists(self.graphPath):
+                self._timestamp=ut.get_timestamp(self.graphPath)  
+            else:
+                self._timestamp=datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
         return self._timestamp
 
     @timestamp.setter
     def timestamp(self,timestamp):
         if timestamp is None:
-            pass
-        elif timestamp:
-            self._timestamp=ut.literal_to_datetime(timestamp)
+            self._timestamp = None
         else:
-            raise ValueError('timestamp should be str(yyyy-MM-ddTHH:mm:ss)')
+            self._timestamp=ut.literal_to_datetime(timestamp)
 
     #---------------------GRAPHPATH----------------------------    
     @property
     def graphPath(self) -> str:
         """The path (Path) of graph of the node. This can be both a local file or a remote URL.""" 
-        return self._graphPath #ut.parse_path(self._graphPath)
+        return self._graphPath
 
     @graphPath.setter
     def graphPath(self,value):
         if value is None:
-            pass
+            self._graphPath = None
         elif any(Path(value).suffix.upper()==extension for extension in ut.RDF_EXTENSIONS): 
             self._graphPath=Path(value)
         else:
+            self._graphPath = None
             raise ValueError('GraphPath parsing error due to invalid extension or syntax. Only .ttl is currently proofed')    
 
     #---------------------GRAPH----------------------------    
@@ -215,9 +217,13 @@ class Node:
     @graph.setter
     def graph(self,value):
         if value is None:
-            pass
+            self._graph = None
         else:
-            self.set_graph(value)
+            if isinstance(value, Graph) :
+                self._graph = value# =  value if len(set(value.subjects()))==1 else ut.get_subject_graph(value,self.subject) 
+            else:
+                self._graph = None
+                raise ValueError('Input must be a rdflib.Graph.')
 
     #---------------------SUBJECT----------------------------    
     @property
@@ -229,14 +235,45 @@ class Node:
             - self.graph
             - self.path
         """
+        #subject
+        if self._subject:
+            pass
+        # self.graph
+        elif self.graph:
+            self._subject=next(self.graph.subjects(RDF.type))
+        #self.path
+        elif self.path:
+            self.name=self.path.stem 
+            self._subject=URIRef('http://'+ut.validate_string(self.name))
+        #self_name
+        elif self.name:
+            self._subject=URIRef('http://'+ut.validate_string(self.name))
+        #guid
+        else:
+            self.name=str(uuid.uuid1())
+            self._subject=URIRef('http://'+self.name)            
         return self._subject
 
     @subject.setter
     def subject(self,value):
         if value is None:
-            pass
+            self._subject = None
         else:
-            self.set_subject(value)            
+            if isinstance(value, URIRef):
+                self._subject=value
+            else: 
+                string=str(value)
+                prefix='http://'
+                if 'file:///' in string:
+                    string=string.replace('file:///','')
+                    prefix='file:///'
+                elif 'http://' in string:
+                    string=string.replace('http://','')
+                    prefix='http://' 
+                elif 'https://' in string:
+                    string=string.replace('https://','')
+                    prefix='https://' 
+                self._subject=URIRef(prefix+ut.validate_string(string)) 
             
     
     #---------------------RESOURCE----------------------------    
@@ -249,14 +286,16 @@ class Node:
             - self.name
             - self.graphPath
         """        
+        if(self._resource is None and self.path):
+            print("Resource not loaded, but path is defined, call `load_resource()` to access it.")
         return self._resource
 
     @resource.setter
     def resource(self,value):
         if value is None:
-            pass
+            self._resource = None
         else:
-            self.set_resource(value)
+            self._resource=value
 
     @resource.deleter
     def resource(self):
@@ -264,6 +303,7 @@ class Node:
          
     #---------------------CARTESIANTRANSFORM----------------------------    
     @property
+    @rdf_property()
     def cartesianTransform(self) -> np.ndarray:
         """
         The (4x4) transformation matrix of the node containing the translation & rotation. If no matrix is present, you can use `get_cartesian_transform()`, to gather it from the resource, orientedBoundingBox, or convexHull.
@@ -296,12 +336,22 @@ class Node:
             ValueError: If the input is not a valid numpy array of shape (4,4) or (3,).
         """
         if value is None:
-            pass
+            self._cartesianTransform = None
         else:
-            self.set_cartesian_transform(value)
+            if isinstance(value, np.ndarray) and value.shape == (4, 4):
+                self._cartesianTransform = value
+            else:
+                value = np.reshape(np.asarray(value), (-1))
+                if value.shape == (16,):
+                    self._cartesianTransform = value.reshape((4, 4))
+                elif value.shape == (3,):
+                    self._cartesianTransform = gmu.get_cartesian_transform(translation=value)
+                else:
+                    raise ValueError('Input must be a numpy array of shape (4,4) or (3,).')
             
     #---------------------ORIENTEDBOUNDINGBOX----------------------------
     @property
+    @rdf_property(serializer=gmu.get_oriented_bounding_box_parameters)
     def orientedBoundingBox(self) -> o3d.geometry.OrientedBoundingBox: 
         """
         The o3d.orientedBoundingBox of the Node containing the bounding box of the geometry. If no box is present, you can use `get_oriented_bounding_box()`, to gather it from the resource, cartesianTransform or convexHull.
@@ -346,15 +396,19 @@ class Node:
     @orientedBoundingBox.setter
     def orientedBoundingBox(self, value):
         if value is None:
-            pass
+            self._orientedBoundingBox = None
         else:
-            self.set_oriented_bounding_box(value)
+            if isinstance(value, o3d.geometry.OrientedBoundingBox):
+                self._orientedBoundingBox = value
+            else:
+                self._orientedBoundingBox=gmu.get_oriented_bounding_box(value)
 
     @orientedBoundingBox.deleter
     def orientedBoundingBox(self):
         self._orientedBoundingBox=None
 #---------------------CONVEXHULL----------------------------
     @property
+    @rdf_property(serializer=lambda v: np.asarray(v.vertices))
     def convexHull(self) -> o3d.geometry.TriangleMesh:
         """
         The convex hull of the Node containing the bounding hull of the geometry. If no convex hull is present, you can use `get_convex_hull()`, to gather it from the resource, cartesianTransform or orientedBoundingBox.
@@ -387,463 +441,254 @@ class Node:
     @convexHull.setter
     def convexHull(self, value):
         if value is None:
-            pass
+            self._convexHull = None
         else:
-            self.set_convex_hull(value)
+            if isinstance(value, o3d.geometry.TriangleMesh):
+                self._convexHull = value
+            else:
+                self._convexHull=gmu.get_convex_hull(value)
 
     @convexHull.deleter
     def convexHull(self):
-        self._convexHull=None        
+        self._convexHull=None  
+
 #---------------------METHODS----------------------------     
  
-    def set_attributes_from_graph(self,overwrite:bool=False):
+    def _set_attributes_from_graph(self,overwrite:bool=False):
         """Helper function to convert graph literals to node attributes. 
 
         Args:
             - self._graph (RDFlib.Graph):  Graph to parse
             - self._subject (RDFlib.URIRef): The subject to parse the graph for
             - overwrite (bool, optional): Overwrite existing attributes or not. Defaults to False.
-        """       
-       
+        """
+
         def handle_path(attr, obj):
             path=Path(obj)
-            
             # Handle relative path
             if not path.is_absolute():
-                path = (self._graphPath.parent / path).resolve() if self._graphPath else path.resolve()
+                path = (self.graphPath.parent / path).resolve() if self._graphPath else path.resolve()
             setattr(self, attr, path) if getattr(self, attr,None) is None or overwrite  else None #don't overwrite existing paths
 
-        attr_handlers = { #this is dealing with exceptions
-            'type': lambda attr, obj: setattr(self, 'className', ut.get_ifcopenshell_class_name(obj)) if 'IFC' in obj else None, #not sure if this works
-            'label': lambda attr, obj: setattr(self, 'name', obj),
-            'created': lambda attr, obj: setattr(self, 'timestamp', obj),
-            # 'objectType': lambda attr, obj: setattr(self, 'objectType', obj.split('/')[-1]), 
-            'IfcGloballyUniqueId': lambda attr, obj: setattr(self, 'globalId', obj),
-            'objectType_IfcObject': lambda attr, obj: setattr(self, 'objectType', obj),
-            'imageLength': lambda attr, obj: setattr(self, 'imageHeight', obj), #not sure
-            'hasPart': lambda attr, obj: setattr(self, 'linkedSubjects', [str(obj) for obj in self._graph.objects(subject=self._subject, predicate=GEOMAPI_PREFIXES['geomapi'].hasPart)]),
-        }
-        # Count occurrences of each predicate
-        predicate_counts = Counter(predicate for predicate, _ in self._graph.predicate_objects(subject=self._subject))
-
-        for predicate, object in self._graph.predicate_objects(subject=self._subject):
-            #get attribute
-            attr = ut.get_attribute_from_predicate(self._graph, predicate)
+        #loop over all predicates
+        predicate_counts = Counter(predicate for predicate, _ in self.graph.predicate_objects(subject=self.subject))       
+        for predicate, object in self.graph.predicate_objects(subject=self.subject):
+            #get attribute based on the last part of the predicate
+            attr = ut.get_attribute_from_predicate(self.graph, predicate)
+            # check if the attribute is not defined by another name by using the rdf decorator
+            for func_name, mapping in RDFMAPPINGS.items():
+                if mapping["predicate"] == predicate:
+                    attr = func_name
+            
+            # add the non pre-defined attributes to the list so they will be re serialized
+            # don't add "type" because it is defined by the nodetype
+            if(not hasattr(self, attr) and str(attr) != "type"):
+                print(attr)
+                self._serializeAttributes.append(attr)
             
             #get datatype
             datatype=getattr(object,'datatype',None)
-            
+
             #convert object to python datatype
             if datatype is not None:
                 object=ut.apply_method_to_object( datatype, object)
             else:
-                object=ut.literal_to_python(object)                 
-            
-            #set attribute
-            if attr in attr_handlers:
-                attr_handlers[attr](attr, object)
-            elif re.search('path', attr, re.IGNORECASE):
+                object=ut.literal_to_python(object)
+
+            if re.search('path', attr, re.IGNORECASE):
                 handle_path(attr, object)            
             else:
-                # if predicate occurs multiple times, append to list
-                existing_value = getattr(self, attr, None)
                 if predicate_counts[predicate] > 1:
+                    # check if the value is a list
+                    existing_value = getattr(self, attr, None)
                     # If predicate occurs multiple times, use a list
                     if existing_value is None:
                         setattr(self, attr, [object])
                     elif isinstance(existing_value, list):
                         existing_value.append(object)
-                    else:
+                    else: #create a list with the original value and the new value
                         setattr(self, attr, [existing_value, object])
                 else:
                     setattr(self, attr, object)
-                # setattr(self, attr,object ) #if getattr(self, attr,None) is None or overwrite else None #don't overwrite existing attributes
-                    
-    def set_subject(self, value: Union[URIRef, str]):
-        """Set the subject for the node, ensuring it is a valid URIRef or string compatible with RDF and Windows."""
-        if isinstance(value, URIRef):
-            self._subject=value
-        else: 
-            string=str(value)
-            prefix='http://'
-            if 'file:///' in string:
-                string=string.replace('file:///','')
-                prefix='file:///'
-            elif 'http://' in string:
-                string=string.replace('http://','')
-                prefix='http://' 
-            elif 'https://' in string:
-                string=string.replace('https://','')
-                prefix='https://' 
-            self._subject=URIRef(prefix+ut.validate_string(string))  
-        
-    def get_subject(self) -> str:
-        """Get the subject of the node. If no subject is present, it is gathered from the following parameters or given a unique GUID.
-        
-        Features:
-            - self._graph
-            - self._path
-            - self._name
-            - uuid.uuid1() guid
-            
-        Returns:
-            - subject (URIREF)
-        """
-        #subject
-        if self._subject:
-            pass
-        # self.graph
-        elif self._graph:
-            self._subject=next(self._graph.subjects(RDF.type))
-        #self.path
-        elif self._path:
-            self._name=self._path.stem 
-            self._subject=URIRef('http://'+ut.validate_string(self._name))
-        #self_name
-        elif self._name:
-            self._subject=URIRef('http://'+ut.validate_string(self._name))
-        #guid
-        else:
-            self._name=str(uuid.uuid1())
-            self._subject=URIRef('http://'+self._name)            
-        return self._subject
 
-    def get_timestamp(self):
-        """Get the timestamp (str) of the Node. If no timestamp is present, it is gathered from the following parameters.
-
-        Features:
-            - self._timestamp
-            - self._path
-            - self._graphPath
-            - datetime.datetime.now()
+    def _set_geometric_properties(self, _cartesianTransform = None, _convexHull = None, _orientedBoundingBox = None):
         
-        Returns:
-            timestamp (str): '%Y-%m-%dT%H:%M:%S'
-        """
-        if self._timestamp is None:
-            if self._path and os.path.exists(self._path):
-                self._timestamp=ut.get_timestamp(self._path)  
-            elif self._graphPath and os.path.exists(self._graphPath):
-                self._timestamp=ut.get_timestamp(self._graphPath)  
+        # first try transform
+        self.cartesianTransform = _cartesianTransform
+        self.convexHull = _convexHull
+        self.orientedBoundingBox = _orientedBoundingBox
+
+        hasResource = self.resource is not None
+
+        if self.cartesianTransform is None:
+            if hasResource:
+                self.cartesianTransform = gmu.get_cartesian_transform(translation=self.resource.get_center())
+            elif self.convexHull is not None:
+                self.cartesianTransform = gmu.get_cartesian_transform(translation=self.convexHull.get_center())
+            elif self.orientedBoundingBox is not None:
+                self.cartesianTransform = gmu.get_cartesian_transform(translation=self.orientedBoundingBox.get_center(), rotation=self.orientedBoundingBox.R) # the carthesian transform matches the rotation of the bounding box
             else:
-                self._timestamp=datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
-        return self._timestamp
+                self.cartesianTransform = np.eye(4)
 
-    def get_name(self) -> str:
-        """Returns the name (str) of the Node. If no name is present, it is gathered from the following parameters.
-        
-        Features:
-            - self._name
-            - self._path
-            - self._subject
-
-        Returns:
-           name (str)
-        """
-        if self._name is None:
-            if self._path:                
-                self._name=Path(self._path).stem 
-            elif self._subject:                     
-                self._name=ut.get_subject_name(self._subject)
-        return self._name
-
-    def set_cartesian_transform(self, value):
-        """Set the cartesianTransform for the Node from various inputs. This is overwritten per node type.
-
-        Args:
-            - (4x4) full transformation matrix
-            - (3x1) translation vector
-
-        Raises:
-            ValueError: If the input is not a valid numpy array of shape (4,4) or (3,).
-        """
-        if isinstance(value, np.ndarray) and value.shape == (4, 4):
-            self._cartesianTransform = value
-        else:
-            value = np.reshape(np.asarray(value), (-1))
-            if value.shape == (16,):
-                self._cartesianTransform = value.reshape((4, 4))
-            elif value.shape == (3,):
-                self._cartesianTransform = gmu.get_cartesian_transform(translation=value)
+        if self.convexHull is None:
+            if hasResource:
+                self.convexHull = gmu.get_convex_hull(self.resource)
+            elif self.orientedBoundingBox is not None:
+                self.convexHull = gmu.get_convex_hull(self.orientedBoundingBox)
             else:
-                raise ValueError('Input must be a numpy array of shape (4,4) or (3,).')
-
-    def get_cartesian_transform(self) -> np.ndarray:
-        """Get the cartesianTransform of the node from various inputs. if no cartesianTransform is present, it is gathered from the following inputs. 
-        
-        **NOTE**: this function is overwritten for ImageNodes,PanoNodes and OrthoNodes to get the cartesianTransform from the image centerpoint.
-        
-        Args:
-            - self._resource
-            - self._orientedBoundingBox
-            - self._convexHull
-
-        Returns:
-            cartesianTransform(np.ndarray(4x4))
-        """
-        if self._cartesianTransform is not None:
-            return self._cartesianTransform
-        
-        if self._resource is not None:
-            self._cartesianTransform = gmu.get_cartesian_transform(translation=self._resource.get_center()) # this only works for open3d resources
-        if self._cartesianTransform is None and self._convexHull is not None:
-            self._cartesianTransform = gmu.get_cartesian_transform(translation=self._convexHull.get_center())
-        if self._cartesianTransform is None and self._orientedBoundingBox is not None:
-            self._cartesianTransform = gmu.get_cartesian_transform(translation=self._orientedBoundingBox.get_center())
-        if self._cartesianTransform is None:
-            self._cartesianTransform = np.eye(4)
-        
-        return self._cartesianTransform
-    
-    def set_oriented_bounding_box(self, value):
-        """Set the orientedBoundingBox for the Node from various inputs. This is overwritten per node type.
-        
-        Args:
-            - orientedBoundingBox (o3d.geometry.OrientedBoundingBox)
-            - Open3D geometry
-            - set of points (np.array(nx3)) or Vector3dVector
-            - 9 parameters $[x,y,z,e_x,e_y,e_z, R_x,R_y,R_z]$
-        """
-        if isinstance(value, o3d.geometry.OrientedBoundingBox):
-            self._orientedBoundingBox = value
-        else:
-            self._orientedBoundingBox=gmu.get_oriented_bounding_box(value)
-
-    def get_oriented_bounding_box(self) -> o3d.geometry.OrientedBoundingBox:
-        """Gets the Open3D OrientedBoundingBox of the node. If no orientedBoundingBox is present, it is gathered from the following inputs.
-        
-        Features:
-            1. self._resource
-            2. self._convexHull
-            3. self._cartesianTransform
-
-        Returns:
-            o3d.geometry.OrientedBoundingBox
-        """
-        if self._orientedBoundingBox is not None:
-            return self._orientedBoundingBox
-        
-        if self._resource is not None:
-            self._orientedBoundingBox = gmu.get_oriented_bounding_box(self._resource)
-        if self._orientedBoundingBox is None and self._convexHull is not None:
-            self._orientedBoundingBox = gmu.get_oriented_bounding_box(self._convexHull)
-        if self._orientedBoundingBox is None and self._cartesianTransform is not None: 
-            box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
-            box.translate([-0.5, -0.5, -0.5])
-            box.transform(self._cartesianTransform)
-            self._orientedBoundingBox = box.get_oriented_bounding_box()
-        return self._orientedBoundingBox
-    
-    def set_convex_hull(self, value):
-        """Set the convex hull for the Node from various inputs. This is overwritten per node type.
-        
-        Args:
-            - convexHull (o3d.geometry.TriangleMesh)
-            - Open3D geometry
-            - set of points (np.array(nx3)) or Vector3dVectord 
-        """
-        if isinstance(value, o3d.geometry.TriangleMesh):
-            self._convexHull = value
-        else:
-            self._convexHull=gmu.get_convex_hull(value)
- 
-    def get_convex_hull(self) -> o3d.geometry.TriangleMesh:
-        """Gets the Open3D Convex Hull of the node. If no convex hull is present, it is gathered from the following inputs.
-        
-        Features:
-            - self._resource
-            - self._orientedBoundingBox
-            - self._cartesianTransform
-
-        Returns:
-            o3d.geometry.TriangleMesh
-        """
-        if self._convexHull is not None:
-            return self._convexHull
-        
-        if self._resource is not None:
-            self._convexHull = gmu.get_convex_hull(self._resource)
-        if self._convexHull is None and self._orientedBoundingBox is not None:
-            self._convexHull = gmu.get_convex_hull(self._orientedBoundingBox)
-        if self._convexHull is None and self._cartesianTransform is not None:
-            try:
                 box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
                 box.translate([-0.5, -0.5, -0.5])
-                box.transform(self._cartesianTransform)
-                self._convexHull = box
-            except Exception as e:
-                print(f"Failed to compute convex hull from cartesian transform: {e}")
-        
-        return self._convexHull
-        
-    def get_resource(self):
-        """Returns the resource from the Node type. Overwrite this function for each node type to access more utilities.
-        """
-        return self._resource
+                box.transform(self.cartesianTransform)
+                self.convexHull = box
 
-    def set_resource(self,value):
-        """sets the resource for the Node type. Overwrite this function for each node type to access more utilities.
-        """
-        self._resource=value #copy.deepcopy(value) #copy is required to avoid reference issues
+        if self.orientedBoundingBox is None:
+            if hasResource:
+                self.orientedBoundingBox = gmu.get_oriented_bounding_box(self.resource)
+            else:
+                self.orientedBoundingBox = gmu.get_oriented_bounding_box(self.convexHull)
 
     def get_center(self) -> np.ndarray:
         """Returns the center of the node."""
         return self._cartesianTransform[:3, 3]
+    
 
-    def set_path(self, value):
-        """sets the path for the Node type. Overwrite this function for each node type to access more utilities.
+
+    def load_resource(self)->bool:
+        """Load the resource from the path. Overwrite this function for each node type to access more utilities.
         """
-        self._path = Path(value) 
-            
-    def get_path(self) -> Path:
-        """Returns the full path of the resource from this Node. If no path is present, it is gathered from the following inputs.
+        if self.path is None:
+            print("No path is defined, unable to load resource")
+            return False
+        if not os.path.exists(self.path):
+            print("Path does not exist, unable to load resource")
+            return False
+        if not Path(self.path).suffix.upper() in ut.get_node_resource_extensions(self):
+            print("Path has unsupported extension: " + Path(self.path).suffix.upper())
+            return False
+        return True
         
-        Args:
-            - self._path
-            - self._graphPath
-            - self._name
-            - self._subject
-
-        Returns:
-            path 
-        """      
-        if self._path is not None: #self._path.exists():
-            return self._path
+    def save_resource(self, directory:str=None,extension :str = '.txt') ->bool:
+        """Export the resource of the Node. this base function checks for the validity of the path. 
+        if no directory is given: checks for path and uses that, checks for 
+        """         
+        #check path
+        if self.resource is None:
+            print("This Node has no resource")
+            #raise ValueError('No resource to save')
+            return False
         
-        elif self._graphPath and (self._name or self._subject):
-            folder=self._graphPath.parent 
-            nodeExtensions=ut.get_node_resource_extensions(str(type(self)))
-            allSessionFilePaths=ut.get_list_of_files(folder) 
-            for path in allSessionFilePaths:
-                if path.suffix.upper() in nodeExtensions:
-                    if self.get_name() in path.stem :
-                        self.path = path    
-                        return self._path
-            # if self._name:
-            #     self.path=os.path.join(folder,self._name+nodeExtensions[0])
-            # else:
-            #     self.path=os.path.join(folder,self._subject+nodeExtensions[0])
-            # return self._path
+        #validate extension
+        if extension and extension.upper() not in ut.get_node_resource_extensions(self):
+            print('Invalid extension')
+            return False
+        
+        #get directory
+        if (directory):
+            if(Path(directory).suffix == '' and not Path(directory).name.startswith('.')): # it is likely a folder
+                directory = Path(directory)
+            else: # else get the parent folder of the file path
+                directory = Path(directory).parent
+        elif self.path is not None:    
+            directory=Path(self.path).parent            
+        elif(self.graphPath): 
+            dir=Path(self.graphPath).parent
+            directory=os.path.join(dir,self.__class__.__name__[:-4])   
         else:
-            return None
-        
-    def set_graph(self, value: Graph,overwrite=True):
-        """
-        Helper method to set the graph attribute.
+            directory=os.path.join(os.getcwd(),self.__class__.__name__[:-4])
+        # create directory if not present
+        if not os.path.exists(Path(directory)):                        
+            os.mkdir(directory) 
 
-        Args:
-            - Graph: The RDF graph to set.
+        self.path=os.path.join(directory,Path(self.subject.toPython()).stem  + extension) #subject.toPython() replaced by get_name()
+        return True
 
-        Raises:
-            ValueError: If the input is not a rdf Graph.
-        """
-        if isinstance(value, Graph) :
-            self._graph =  value if len(set(value.subjects()))==1 else ut.get_subject_graph(value,self._subject) 
-        else:
-            raise ValueError('Input must be a rdflib.Graph.')
-        
-    def get_graph(self, graphPath: Path = None, overwrite: bool = True, save: bool = False, base: URIRef = None) -> Graph:
-        """
-        Returns the graph of the Node. If no graph is present, it is gathered from the following inputs:
+
+
+    def get_graph(self, graphPath: Path = None, overwrite: bool = True, save: bool = False, base: URIRef = None, serializeAttributes: List = None) -> Graph:
+        """Serializes the object into an RDF graph using only its decorated properties.
         
         **NOTE** that adding a base URI will change the graph's subject to the base URI/subject. URIRef('http://subject') -> URIRef('http://node#subject'). This is useful for readability and graph navigation.
+        **NOTE** that by default, only the pre-defined properties are serialized, if you want to serialize your own attributes use `serializeAttributes`
         
         Args:
             - graphPath (Path) : The path of the graph to parse.
             - overwrite (bool) : Overwrite the existing graph or not.
             - base (str | URIRef) : BaseURI to match subjects to in the graph (improves readability) e.g. http://node#. Also, the base URI is used to set the subject of the graph. RDF rules and customs apply so the string must be a valid URI (http:// in front, and # at the end).
             - save (bool) : Save the graph to the self.graphPath or graphPath.
+            - serializeAttributes (List(str)) : a list of attributes defined in the node that also need to be serialized
         
         Returns:
             Graph: The RDF graph
         """
+
         if graphPath:
-            self.graphPath = graphPath          
-            
+            self.graphPath = graphPath
+
         if self._graph is None or overwrite:
-            #create graph
+            # Create RDF graph
             self._graph = ut.bind_ontologies(Graph())
-            
-            #create graph scope
+
+            # Set base URI scope
             if base:
                 inst = Namespace(base)
-                self._graph.bind("inst", inst)                
-                self.subject = inst[self._subject.replace('#', '/').split('/')[-1]]
-            
+                self._graph.bind("inst", inst)
+                self.subject = inst[self.subject.replace('#', '/').split('/')[-1]]
+
+            # Define node type
             nodeType = ut.get_node_type(self)
-            self._graph.add((self._subject, RDF.type, nodeType))
-            attributes = ut.get_variables_in_class(self)
-            attributes = ut.clean_attributes_list(attributes) #this is a bit shitty
-            pathlist = ut.get_paths_in_class(self)
+            self._graph.add((self.subject, RDF.type, nodeType))
             
-            def handle_oriented_bounding_box(predicate, value, dataType):                        
-                        value=gmu.get_oriented_bounding_box_parameters(self.get_oriented_bounding_box())
-                        self._graph.add((self._subject, predicate,  Literal(value, datatype=dataType)))
-                        
-            def handle_convex_hull(predicate, value, dataType):
-                        hull=self.get_convex_hull()
-                        value=np.asarray(hull.vertices)
-                        self._graph.add((self._subject, predicate,  Literal(value, datatype=dataType)))
-            
-            #watch out, because named attributes can unintentionally affect attributes in other node types
-            attr_handlers = { #this is dealing with exceptions
-                        'name': lambda predicate, value, dataType: self._graph.add((self._subject, GEOMAPI_PREFIXES['rdfs'].label,  Literal(value, datatype=dataType))),
-                        'className': lambda predicate, value, dataType: self._graph.add((self._subject, GEOMAPI_PREFIXES['rdfs'].type,  ut.get_ifcowl_uri(value))),
-                        'globalId': lambda predicate, value, dataType: self._graph.add((self._subject, GEOMAPI_PREFIXES['ifc'].IfcGloballyUniqueId,  Literal(value))), #this is not a valid URI so we make it a Literal, and in IFCOWL, the global id is contained in an express:hasString predicate                        
-                        'objectType': lambda predicate, value, dataType: self._graph.add((self._subject, GEOMAPI_PREFIXES['ifc'].objectType_IfcObject,  Literal(value))), #this is a bit shitty 
-                        'resource': lambda predicate, value, dataType: None,
-                        'timestamp': lambda predicate, value, dataType: self._graph.add((self._subject, GEOMAPI_PREFIXES['dcterms'].created,  Literal(value, datatype=XSD.dateTime))),
-                        'convexHull': lambda predicate, value, dataType: handle_convex_hull(predicate, value, dataType),
-                        'orientedBoundingBox': lambda predicate, value, dataType: handle_oriented_bounding_box(predicate, value, dataType),
-                        'imageWidth': lambda predicate, value, dataType: self._graph.add((self._subject, GEOMAPI_PREFIXES['exif'].imageWidth,  Literal(value, datatype=dataType))),
-                        'imageHeight': lambda predicate, value, dataType: self._graph.add((self._subject, GEOMAPI_PREFIXES['exif'].imageLength,  Literal(value, datatype=dataType))),
-                        'linkedSubjects': lambda predicate, value, dataType: [self._graph.add((self._subject, GEOMAPI_PREFIXES['geomapi'].hasPart,  URIRef(subject))) for subject in value],
-                    }
- 
-            for attribute in attributes:
-                # predicate,dataType = ut.match_uri(attribute)
-                predicate,dataType =ut.get_predicate_and_datatype(attribute)
-                value = getattr(self, attribute)    
-                dataType = dataType if dataType else ut.get_data_type(value)
-                            
+            #set the default propertylist
+            propertylist = RDFMAPPINGS.copy() # copy the mappings list to add the attributes for this specific graph
 
-                #     dataType = ut.get_data_type(value)
-                #     if self._graph.value(self._subject, predicate, None) == str(value):
-                #         continue
-                #     elif overwrite:
-                #         self._graph.remove((self._subject, predicate, None))
+            # check for the attributes that were read from the initial graph
+            if(len(self._serializeAttributes) > 0):
+                for prop in self._serializeAttributes:
+                    _predicate, _datatype = ut.get_predicate_and_datatype(prop)
+                    propertylist[prop] = {"predicate": _predicate, "serializer": None, "datatype": _datatype}
+            # check for any user specified attributes that they also want serialized
+            if(serializeAttributes is not None):
+                for prop in serializeAttributes:
+                    _predicate, _datatype = ut.get_predicate_and_datatype(prop)
+                    propertylist[prop] = {"predicate": _predicate, "serializer": None, "datatype": _datatype}
+
+            # Process each property using its decorator-defined predicate and serializer
+            for attr, metadata in propertylist.items():
+                predicate = URIRef(metadata["predicate"])
+                datatype = metadata["datatype"]
+                serializer = metadata.get("serializer", None)
+                value = getattr(self, attr, None)
+
+                if value is not None:
                     
-                #     if 'linkedSubjects' in attribute:
-                #         if len(value) != 0:
-                #             value = [subject.toPython() for subject in self.linkedSubjects]
-                #         else:
-                #             continue
-                                
-                #set graph attributes
+                    if serializer:
+                        params = inspect.signature(serializer).parameters
+                        try:
+                            if len(params) == 1:
+                                serialized_value = Literal(serializer(value),datatype=datatype)
+                            elif len(params) == 2:
+                                serialized_value = Literal(serializer(self, value),datatype=datatype)
+                            else:
+                                raise TypeError(f"Unexpected number of arguments in serializer: {serializer}")
+                        except Exception as e:
+                            print(f"Serializer error for {attr}: {e}")
+                            continue  # optionally skip problematic attributes
+                    else:
+                        serialized_value = Literal(value,datatype=datatype)
+                    #print(predicate, serializer, datatype)
+                    #serialized_value = Literal(serializer(value),datatype=datatype)  if serializer else Literal(value,datatype=datatype)
 
-                #handle special cases
-                if any(handler in predicate for handler in attr_handlers):
-                    attr_handlers[attribute](predicate, value, dataType)     
-                #handle URIRef elements
-                # elif dataType not in ut.get_xsd_datatypes() and dataType not in ut.get_geomapi_data_types():
-                #     self._graph.add((self._subject, predicate,  value))   
-                #handle Path elements          
-                elif attribute in pathlist:
-                    if self._graphPath:
-                        folderPath = Path(self._graphPath).parent
-                        value = Path(os.path.relpath(value, folderPath))
-                    self._graph.add((self._subject, predicate,  Literal(value.as_posix(), datatype=dataType)))
-                else:
-                    #first try as URIREF -> this might be a list
-                    try:
-                        for n in ut.item_to_list(value):
-                            self._graph.add((self._subject, predicate,  n))
-                        # self._graph.add((self._subject, predicate,  value))
-                    except:
-                        #then as literal
-                        self._graph.add((self._subject, predicate,  Literal(value, datatype=dataType)))
-            if(save):
-                self.save_graph(graphPath)      
+                    # Handle lists (multiple triples)
+                    if isinstance(serialized_value, list):
+                        for val in serialized_value:
+                            self._graph.add((self.subject, predicate, val))
+                    else:
+                        self._graph.add((self.subject, predicate, serialized_value))
+
+            # Save graph if requested
+            if save:
+                self.save_graph(graphPath)
+
         return self._graph
         
     def save_graph(self,graphPath : str = None) -> bool:
@@ -858,106 +703,103 @@ class Node:
             - ValueError: Save failed despite valid graphPath and extension (serialization error).
 
         Returns:
-            bool: True if file is succesfully saved.
+            bool: True if file is successfully saved.
         """
         #check path validity
         if(graphPath and ut.validate_path(graphPath)): 
             self.graphPath=graphPath
-        elif ut.validate_path(self._graphPath):
+        elif ut.validate_path(self.graphPath):
             pass
         else: 
             raise ValueError(graphPath +  ' is no valid graphPath.')
         #check extension
-        if (self._graphPath.suffix.upper() not in ut.RDF_EXTENSIONS):
+        if (self.graphPath.suffix.upper() not in ut.RDF_EXTENSIONS):
             raise ValueError(''.join(ut.RDF_EXTENSIONS) + ' currently are only supported extensions.')
 
         try: 
             # f= open(self._graphPath, 'w') 
             # base=ut.get_folder(self.graphPath)
-            self._graph.serialize(self._graphPath)#,base=base
+            self.graph.serialize(self.graphPath)#,base=base
             # f.close()
-            if os.path.exists(self._graphPath):                
+            if os.path.exists(self.graphPath):                
                 return True
 
             return False
         except:
             raise ValueError('Save failed despite valid graphPath.') 
-
+    
     def transform(self, 
                   transformation: Optional[np.ndarray] = None, 
                   rotation: Optional[Union[np.ndarray, Tuple[float, float, float]]] = None, 
                   translation: Optional[np.ndarray] = None, 
                   rotate_around_center: bool = True):
         """
-        Apply a transformation to the Node's cartesianTransform, resource, and convexHull.
+        Apply a transformation to the Node's cartesianTransform, orientedBoundingBox, and convexHull.
+        Subclasses should override this method to transform their specific resource types.
         
         Args:
             - transformation (Optional[np.ndarray]): A 4x4 transformation matrix.
-            - rotation (Optional[Union[np.ndarray, Tuple[float, float, float]]]): A 3x3 rotation matrix or Euler angles $(R_z,R_y,R_x)$ for rotation.
+            - rotation (Optional[Union[np.ndarray, np.array[float, float, float]]]): A 3x3 rotation matrix or Euler angles (Rz, Ry, Rx).
             - translation (Optional[np.ndarray]): A 3-element translation vector.
-            - rotate_around_center (bool): If True, rotate around the object's center.
+            - rotate_around_center (bool): If True, rotate around the object's center (handled by subclass if needed).
         """
+        if transformation is None:
+            transformation = np.eye(4)
+
+            # Handle rotation
+            if rotation is not None:
+                if isinstance(rotation, (tuple, List)):
+                    R = o3d.geometry.get_rotation_matrix_from_xyz( np.deg2rad(np.array(rotation)))
+                elif isinstance(rotation, np.ndarray) and rotation.shape == (3,):
+                    R = o3d.geometry.get_rotation_matrix_from_xyz( np.deg2rad(rotation))
+                elif isinstance(rotation, np.ndarray) and rotation.shape == (3, 3):
+                    R = rotation
+                else:
+                    raise ValueError("Rotation must be a 3x3 matrix or a 3-element array of Euler angles.")
+                rot_transform = np.eye(4)
+                rot_transform[:3, :3] = R
+                transformation = rot_transform @ transformation
+
+            # Handle translation
+            if translation is not None:
+                trans_transform = np.eye(4)
+                trans_transform[:3, 3] = translation
+                transformation = trans_transform @ transformation
+
+        # Update cartesianTransform
         if self.cartesianTransform is None:
-            self.get_cartesian_transform()
-            
-        if transformation is not None:
-            transformation=np.reshape(np.asarray(transformation),(4,4))            
-        elif translation is not None or rotation is not None:
-            transformation = gmu.get_cartesian_transform(rotation=rotation, translation=translation)
-            
-   
-        if rotate_around_center:
-            #cartesian transformation                
-            transform_to_center = gmu.get_cartesian_transform (translation=-self.cartesianTransform[:3,3] ) 
-            transform_back = gmu.get_cartesian_transform (translation=self.cartesianTransform[:3,3] )
-            self._cartesianTransform = transform_back @ transformation @ transform_to_center @ self.cartesianTransform
-            
-            #resource
-            if self._resource is not None:
-                transform_to_center = gmu.get_cartesian_transform (translation=-self.resource.get_center() )
-                transform_back = gmu.get_cartesian_transform (translation=self.resource.get_center() )                
-                self._resource.transform(transform_to_center)
-                self._resource.transform(transformation) # this can be a problem if the resource center is different from the node center
-                self._resource.transform(transform_back) 
-                               
-                                     
-            #oriented bounding box
-            if self._orientedBoundingBox is not None:
-                transform_to_center = gmu.get_cartesian_transform (translation=-self._orientedBoundingBox.get_center() )
-                transform_back = gmu.get_cartesian_transform (translation=self._orientedBoundingBox.get_center() )            
-                points=self._orientedBoundingBox.get_box_points()
-                pcd=o3d.geometry.PointCloud(points)      
-                pcd.transform(transform_to_center)
-                pcd.transform(transformation)      
-                pcd.transform(transform_back )
-                self._orientedBoundingBox=o3d.geometry.OrientedBoundingBox.create_from_points(pcd.points)
-            
-            #convex hull
-            if self._convexHull is not None:
-                transform_to_center = gmu.get_cartesian_transform (translation=-self._convexHull.get_center() )
-                transform_back = gmu.get_cartesian_transform (translation=self._convexHull.get_center() )
-                self._convexHull.transform(transform_to_center)
-                self._convexHull.transform( transformation)
-                self._convexHull.transform(transform_back)
-                            
+            self.cartesianTransform = transformation
         else:
-            #cartesian transformation                
-            self._cartesianTransform = transformation @ self.cartesianTransform 
-            
-            #resource
-            self._resource.transform(transformation) if self._resource is not None else None
-            
-            #oriented bounding box
-            if self._orientedBoundingBox is not None:
-                points=self._orientedBoundingBox.get_box_points()
-                pcd=o3d.geometry.PointCloud(points)            
-                pcd.transform(transformation )
-                self._orientedBoundingBox=o3d.geometry.OrientedBoundingBox.create_from_points(pcd.points)
-            
-            #convex hull
-            self._convexHull.transform( transformation ) if self._convexHull is not None else None
+            self.cartesianTransform = transformation @ self.cartesianTransform
+
+        # Apply transformation to optional geometry elements
+        if self.orientedBoundingBox is not None:
+            #self.orientedBoundingBox = self.orientedBoundingBox.transform(transformation)
+            scale = np.cbrt(np.linalg.det(transformation[:3, :3]))
+            self.orientedBoundingBox.rotate(transformation[:3, :3]/scale, center=(0, 0, 0))
+            self.orientedBoundingBox.scale(scale, center=(0,0,0))
+            self.orientedBoundingBox.translate(transformation[:3, 3])
+        if self.convexHull is not None:
+            self.convexHull.transform(transformation)
+
+        # Let subclass handle resource transformation
+        if(self.resource):
+            self._transform_resource(transformation, rotate_around_center)
+
+    def _transform_resource(self, transformation: np.ndarray, rotate_around_center: bool):
+        """Optional hook for subclasses to implement their own resource transformation. The base works for all types of open3D geometry"""
+        if rotate_around_center:
+            center = self.resource.get_center()
+            t1 = np.eye(4)
+            t1[:3, 3] = -center
+            t2 = np.eye(4)
+            t2[:3, 3] = center
+            transformation = t2 @ transformation @ t1
+        self.resource.transform(transformation)
     
     def show(self):
+        """Creates a visualization of the resource (if loaded)
+        """
         # shows the resource of the node
         if(self.resource is None):
             print("No resource Present")

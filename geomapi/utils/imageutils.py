@@ -16,11 +16,13 @@ import copy
 import matplotlib.pyplot as plt
 import numpy as np
 import geomapi.utils as ut
+import os
 
 from scipy.spatial.transform import Rotation
 from mpl_toolkits.mplot3d import Axes3D
 from PIL import Image
 import cv2
+import open3d as o3d
 # NOTE this looks too basic to create a new function
 def image_resize(img:np.array,width:int=None,height:int=None,scale:float=None)->np.array:
     """Resize an cv2 image (np.array).
@@ -508,4 +510,59 @@ def match_images(img1: np.array, img2: np.array, featureType: str = "orb", match
     raise ValueError("Invalid feature name, please use one of the following: orb, sift")
 
 
+def load_navvis_depth_map(self):        
+    """Returns the full path of the depthMap from this Node. If no path is present, it is gathered from the following inputs.
 
+    Args:
+        - self._depthPath
+        
+    Returns:
+        - np.array: depthMap
+    """
+    # Load depthmap image
+    if(self.depthPath):
+        depthmap = np.asarray(Image.open(self.depthPath)).astype(float)
+        
+        # Vectorized calculation for the depth values
+        depth_value = (depthmap[:, :, 0] / 256) * 256 + \
+                    (depthmap[:, :, 1] / 256) * 256 ** 2 + \
+                    (depthmap[:, :, 2] / 256) * 256 ** 3 + \
+                    (depthmap[:, :, 3] / 256) * 256 ** 4
+
+        # Assign the computed depth values to the class attribute _depthMap
+        self.depthMap = depth_value
+        return self._depthMap 
+    
+def get_pcd_from_depth_map(self)->o3d.geometry.PointCloud:
+    """
+    Convert a depth map and resource colors to a 3D point cloud.
+    
+    Args:
+        - self._depthMap: 2D numpy array containing depth values 
+        - self._resource: 2D numpy array containing color values 
+        - self._intrinsic_matrix: 3x3 numpy array containing camera intrinsics
+    
+    Returns:
+        - An Open3D point cloud object
+    """
+    # Create Open3D image from depth map
+    depth_o3d = o3d.geometry.Image(self._depthMap)
+
+    # Check if the color image and depth map have the same dimensions
+    resource=cv2.resize(self._resource,self._depthMap.shape) if self._resource and not self._resource.shape == self._depthMap.shape else self._resource
+
+    # Create point cloud from the depth image using the camera intrinsics
+    pcd = o3d.geometry.PointCloud.create_from_depth_image(
+                                            depth_o3d, 
+                                            self._intrinsic_matrix, 
+                                            project_valid_depth_only=True
+                                            )
+    
+    # Flatten the color image to correspond to the points
+    colors = resource.reshape(-1, 3) if resource is not None else None
+    pcd.colors = o3d.utility.Vector3dVector(colors) if colors is not None else None
+
+    #transform to the cartesianTransform
+    pcd.transform(self._cartesianTransform)
+    
+    return pcd

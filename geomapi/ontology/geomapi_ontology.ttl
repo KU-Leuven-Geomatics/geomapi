@@ -24,7 +24,7 @@
 	
 #IMAGES
 @prefix exif: <http://www.w3.org/2003/12/exif/ns#> .
-@prefix xcr: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xcr: <http://www.capturingreality.com/ns/xcr/1.1#> .
 
 #BUILDINGS
 @prefix bot: 	<https://w3id.org/bot#> .
@@ -197,7 +197,7 @@ xsd:float
         [0 0  1] """@en  ;
 	rdfs:label "Intrinsic Matrix "@en ;
 	rdfs:domain :ImageNode;			
-	rdfs:range :matrix. 
+	rdfs:range geomapi:matrix. 
 
 :lineCount
 	rdf:type owl:DatatypeProperty ;
@@ -467,7 +467,7 @@ xsd:float
 	rdfs:subClassOf :Node ;
 	rdfs:label "BIMNode"@en ;
 	rdfs:comment """BIMNode connecting the RDF graph, ifc geometries and metadata with geospatial methods."""@en  ;
-	dbp:extension ".PLY",".DXF",".TFW" ;
+	dbp:extension ".PLY",".DXF",".TFW" , ".IFC", ".OBJ", ".FBX";
 	rdfs:isDefinedBy : ;
 	rdfs:seeAlso bot:Element;
 	owl:disjointWith :PointCloudNode, :MeshNode, :LineSetNode , :ImageNode, :OrthoNode, :PanoNode  .

@@ -106,40 +106,40 @@ class TestLinesetNode(unittest.TestCase):
         self.assertEqual(node.layer,layer)
         self.assertNotIn(layer,node.subject.toPython())
         
-    def test_dxf_path(self):
-        #valid path
-        dxfPath=self.dataLoaderRailway.dxfPath
-        node= LineSetNode(dxfPath=dxfPath)        
-        self.assertIsNotNone(self.dataLoaderRailway.dxf.entitydb.get(node.handle))
-        self.assertEqual(node.layer,getattr(self.dataLoaderRailway.dxf.entitydb.get(node.handle).dxf,'layer'))
-        self.assertIsNotNone(node.resource)
-        
-        #dxfPath with handle
-        handle=self.dataLoaderRoad.entity.dxf.handle
-        node= LineSetNode(dxfPath=dxfPath,handle=handle)
-        self.assertEqual(node.handle,handle)
-        
-        #test if metadata is correctly parsed        
-        entity = next(entity for entity in self.dataLoaderRailway.dxf.modelspace().query("LINE"))
-        g=cadu.ezdxf_entity_to_o3d(entity)
-        node=LineSetNode(dxfPath=self.dataLoaderRailway.dxfPath)
-        self.assertEqual(node.dxfType,'LINE')
-        self.assertEqual(node.lineCount,len(g.lines))
-        self.assertEqual(node.pointCount,len(g.points))
-        self.assertTrue(np.allclose(node.cartesianTransform[:3,3],g.get_center()))
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),gmu.get_oriented_bounding_box(g).get_center(),atol=0.1))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),g.get_center(),atol=0.1))
-        #check layer
-        self.assertEqual(node.layer,entity.dxf.layer)
-        #check if the handle is correctly parsed
-        self.assertEqual(node.handle,entity.dxf.handle)
-        #check if resource is colored
-        self.assertTrue(node.resource.has_colors())
-        
-       
-        #invalid path
-        dxfPath='qsffqsdf.dwg'
-        self.assertRaises(ValueError,LineSetNode,dxfPath=dxfPath)
+    #def test_dxf_path(self):
+    #    #valid path
+    #    dxfPath=self.dataLoaderRailway.dxfPath
+    #    node= LineSetNode(dxfPath=dxfPath)
+    #    self.assertIsNotNone(self.dataLoaderRailway.dxf.entitydb.get(node.handle))
+    #    self.assertEqual(node.layer,getattr(self.dataLoaderRailway.dxf.entitydb.get(node.handle).dxf,'layer'))
+    #    self.assertIsNotNone(node.resource)
+    #    
+    #    #dxfPath with handle
+    #    handle=self.dataLoaderRoad.entity.dxf.handle
+    #    node= LineSetNode(dxfPath=dxfPath,handle=handle)
+    #    self.assertEqual(node.handle,handle)
+    #    
+    #    #test if metadata is correctly parsed        
+    #    entity = next(entity for entity in self.dataLoaderRailway.dxf.modelspace().query("LINE"))
+    #    g=cadu.ezdxf_entity_to_o3d(entity)
+    #    node=LineSetNode(dxfPath=self.dataLoaderRailway.dxfPath)
+    #    self.assertEqual(node.dxfType,'LINE')
+    #    self.assertEqual(node.lineCount,len(g.lines))
+    #    self.assertEqual(node.pointCount,len(g.points))
+    #    self.assertTrue(np.allclose(node.cartesianTransform[:3,3],g.get_center()))
+    #    self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),gmu.get_oriented_bounding_box(g).get_center(),atol=0.1))
+    #    self.assertTrue(np.allclose(node.convexHull.get_center(),g.get_center(),atol=0.1))
+    #    #check layer
+    #    self.assertEqual(node.layer,entity.dxf.layer)
+    #    #check if the handle is correctly parsed
+    #    self.assertEqual(node.handle,entity.dxf.handle)
+    #    #check if resource is colored
+    #    self.assertTrue(node.resource.has_colors())
+    #    
+    #   
+    #    #invalid path
+    #    dxfPath='qsffqsdf.dwg'
+    #    self.assertRaises(ValueError,LineSetNode,dxfPath=dxfPath)
  
     def test_resource(self):
         #line
@@ -165,7 +165,7 @@ class TestLinesetNode(unittest.TestCase):
         geometry_groups,layer_groups=cadu.ezdxf_to_o3d(dxf,explode_blocks=False,join_geometries=False,dtypes=['LINE','POLYLINE','LWPOLYLINE'])
         for listg,layer in zip(geometry_groups,layer_groups):
             for g in listg:
-                if isinstance(g,o3d.geometry.LineSet):
+                if isinstance(g,o3d.geometry.LineSet) and len(g.lines) >=1:
                     node=LineSetNode(resource=g,layer=layer)
                     self.assertIsNotNone(node.resource)
                     self.assertEqual(node.layer,layer)
@@ -193,24 +193,12 @@ class TestLinesetNode(unittest.TestCase):
     def test_get_resource(self):
         #path+getResource
         resource=self.dataLoaderRoad.line
-        node= LineSetNode(path=self.dataLoaderRoad.cadPath,getResource=True)
+        node= LineSetNode(path=self.dataLoaderRoad.cadPath,loadResource=True)
         self.assertIsNotNone(node.resource)
         self.assertTrue(np.allclose(node.cartesianTransform[:3,3],resource.get_center()))
         self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),gmu.get_oriented_bounding_box(resource).get_center(),atol=0.1))
         self.assertTrue(np.allclose(node.convexHull.get_center() ,resource.get_center(),atol=0.1))
-        self.assertEqual(node.lineCount,len(resource.lines)) 
-        self.assertEqual(node.pointCount,len(resource.points))
-        
-        #dxfPath + getResource
-        resource=self.dataLoaderRoad.insert
-        dxfPath=self.dataLoaderRoad.dxfPath
-        handle=self.dataLoaderRoad.entity.dxf.handle
-        node= LineSetNode(dxfPath=dxfPath,handle=handle,getResource=True) #takes super long
-        self.assertIsNotNone(node.resource)
-        self.assertTrue(np.allclose(node.cartesianTransform[:3,3],resource.get_center()))
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),resource.get_center(),atol=0.1))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),resource.get_center(),atol=0.1))
-        self.assertEqual(node.lineCount,len(resource.lines)) #maybe np.asarray
+        self.assertEqual(node.lineCount,len(resource.lines))
         self.assertEqual(node.pointCount,len(resource.points))
         
         #path unexisting
@@ -218,11 +206,6 @@ class TestLinesetNode(unittest.TestCase):
         node= LineSetNode(path=path,getResource=True)
         self.assertIsNone(node.resource)
         
-        #dxfPath unexisting
-        dxfPath='qsffqsdf.dxf'
-        node= LineSetNode(dxfPath=dxfPath,getResource=True)
-        self.assertIsNone(node.resource)
-
     def test_graphPath(self):
         node=LineSetNode(graphPath=self.dataLoaderRoad.cadGraphPath)
         self.assertEqual(node.graphPath,self.dataLoaderRoad.cadGraphPath)

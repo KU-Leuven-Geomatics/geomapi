@@ -1,6 +1,7 @@
 """Different tools to Manage RDF data."""
 
 #IMPORT PACKAGES
+import cv2
 import numpy as np 
 import open3d as o3d 
 import os 
@@ -8,7 +9,7 @@ import re
 import pye57 
 import pandas as pd
 import xml.etree.ElementTree as ET 
-from typing import List,Tuple
+from typing import List,Tuple, Union
 from pathlib import Path
 import ezdxf
 from scipy.spatial.transform import Rotation as R
@@ -217,7 +218,7 @@ def e57path_to_nodes(path:str,percentage:float=1.0) ->List[PointCloudNode]:
         nodes.append(node)
     return nodes
 
-def ezdxf_path_to_nodes(dxfPath:str |Path,
+def ezdxf_path_to_line_set_nodes(dxfPath:str |Path,
                         **kwargs) -> List[LineSetNode]:
     """Parse a dxf file to a list of LineSetNodes.
 
@@ -231,7 +232,7 @@ def ezdxf_path_to_nodes(dxfPath:str |Path,
         List[LineSetNode]
     """    
     dxfPath=Path(dxfPath) 
-    print(f'Reading dxf file...')
+    print(f"Reading DXF file from {dxfPath}...")
     dxf = ezdxf.readfile(str(dxfPath))
     
     # check units
@@ -269,6 +270,204 @@ def ezdxf_path_to_nodes(dxfPath:str |Path,
     print(f'    loaded {len(nodelist)} lineSetNodes from dxf file')
     return nodelist
 
+def ezdxf_path_to_ortho_nodes(dxfPath: Union[str, Path], name_filter: str = None, **kwargs) -> List[OrthoNode]:
+    """
+    Parse a DXF file into a list of OrthoNode objects.
+
+    Args:
+        dxfPath (str | Path): Path to the DXF file.
+        name_filter (str, optional): If provided, only include entities matching this name.
+        **kwargs: Additional arguments passed to OrthoNode.
+
+    Returns:
+        List[OrthoNode]
+    """
+    dxfPath = Path(dxfPath)
+    print(f"Reading DXF file from {dxfPath}...")
+    dxf = ezdxf.readfile(str(dxfPath))
+    entities = [entity for entity in dxf.modelspace()]
+    orthonodes = []
+
+    # Try to auto-detect name_filter if not provided
+    if name_filter is None:
+        for e in entities:
+            if e.dxftype() == 'INSERT':
+                try:
+                    name_filter = Path(e.attribs[0].dxf.text).stem
+                    break
+                except Exception:
+                    continue
+        if name_filter is None:
+            print("Warning: No valid INSERT entity with a name found. Skipping name filtering.")
+
+    for i in range(0, len(entities) - 1, 2):
+        entity1 = entities[i]
+        entity2 = entities[i + 1]
+
+        try:
+            name = Path(entity1.attribs[0].dxf.text).stem
+        except Exception:
+            continue
+
+        if name_filter and name != name_filter:
+            continue
+
+        g = cadu.ezdxf_entity_to_o3d(entity2)
+        if not hasattr(g, "points"):
+            continue
+
+        height = kwargs.get("height", 0)
+        g.translate(np.array([0, 0, height]))
+
+        points = np.asarray(g.points)
+        center = g.get_center()
+        vec1 = points[1] - points[0]
+        vec2 = points[3] - points[0]
+        normal = np.cross(vec1, vec2)
+        normal = normal / np.linalg.norm(normal)
+
+        rotation_matrix = gmu.get_rotation_matrix_from_forward_up(normal, vec2)
+        translation = center
+        cartesian_transform = gmu.get_cartesian_transform(translation=translation, rotation=rotation_matrix)
+
+        depth = kwargs.get("depth", 10.0)
+
+        convex_vertices = np.array([
+            points[2],
+            points[3],
+            points[1],
+            points[0],
+            points[2] + normal * depth,
+            points[3] + normal * depth,
+            points[1] + normal * depth,
+            points[0] + normal * depth
+        ])
+
+        box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
+        box.vertices = o3d.utility.Vector3dVector(convex_vertices)
+
+        image_width = kwargs.get("imageWidth", 1)
+        gsd = np.linalg.norm(vec1[0]) / image_width
+
+        node = OrthoNode(
+            name=name,
+            cartesianTransform=cartesian_transform,
+            orientedBoundingBox=g.get_oriented_bounding_box(),
+            convexHull=box,
+            dxfPath=dxfPath,
+            imageWidth=image_width,
+            imageHeight=kwargs.get("imageHeight"),
+            gsd=gsd,
+            depth=depth,
+            height=height,
+            **kwargs
+        )
+        orthonodes.append(node)
+
+    print(f"Loaded {len(orthonodes)} OrthoNodes from DXF.")
+    return orthonodes
+#def metashape_dxf_to_orthonodes(dxfPath:str |Path, **kwargs) -> List[OrthoNode]:
+#    dxf = ezdxf.readfile(self._dxfPath)
+#    #contours and names are in the same list as pairs
+#    entities=[entity for entity in dxf.modelspace()]
+#    
+#    def create_convex_hull_from_dxf_points():
+#        box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
+#        bottomLeftLow=points[2]
+#        bottomRightLow=points[3]
+#        topLeftLow=points[1]
+#        topRightLow=points[0]
+#        bottomLeftHigh=points[2]+normal*self._depth
+#        bottomRightHigh=points[3]+normal*self._depth
+#        topLeftHigh=points[1]+normal*self._depth
+#        topRightHigh=points[0]+normal*self._depth
+#        vertices=np.array([[bottomLeftLow],
+#                            [bottomRightLow],
+#                            [topLeftLow],
+#                            [topRightLow],
+#                            [bottomLeftHigh],
+#                            [bottomRightHigh],
+#                            [topLeftHigh],
+#                            [topRightHigh]])
+#        
+#        box.vertices = o3d.utility.Vector3dVector(np.reshape(vertices,(8,3)))                    
+#        self._convexHull = box  
+#    
+#    if len([entity for entity in entities if entity.dxftype() == 'INSERT' and Path(entity.attribs[0].dxf.text).stem==self._name])==0:
+#        print('Warning: No INSERT entity found with the name of the orthomosaic. taking first ...')
+#        entity=entities[0]
+#        self._name=Path(entity.attribs[0].dxf.text).stem
+#    
+#    #iterate through entities per two
+#    for i in range(0,len(entities),2):
+#        #entity1 are the entities with the name
+#        entity1=entities[i] 
+#        #entity2 are the entities with the geometry
+#        entity2=entities[i+1]
+#        name=Path(entity1.attribs[0].dxf.text).stem
+#        if name == self._name:        
+#            #get geometry
+#            g=cadu.ezdxf_entity_to_o3d(entity2)
+#            g.translate(np.array([0,0,self.get_height()]))
+#            #get points -> they are ordered counter clockwise starting from the top left
+#            points=np.asarray(g.points)
+#            #get the center of the geometry
+#            center=g.get_center()
+#            #get the vector 0-1 and 0-3
+#            vec1=points[1]-points[0]
+#            vec2=points[3]-points[0]
+#            #get the normal of the plane
+#            normal=np.cross(vec1,vec2)
+#            #normalize the normal
+#            normal=normal/np.linalg.norm(normal)
+#            
+#            #get the translation matrix
+#            translation=center#-normal*self._depth
+#            
+#            #get rotation matrix from this normal to the z-axis
+#            rotation_matrix=ut.get_rotation_matrix_from_forward_up(normal, vec2)
+#            
+#            cartesianTransform = gmu.get_cartesian_transform(translation=translation,rotation=rotation_matrix) 
+#            self._cartesianTransform=cartesianTransform    
+#            
+#            #create convexhull
+#            create_convex_hull_from_dxf_points()
+#            
+#            #reset bounding box
+#            self._orientedBoundingBox=None
+#            self.get_oriented_bounding_box()
+#            
+#            #get gsd
+#            self._gsd=np.linalg.norm(vec1[0])/self.get_image_width()
+
+def navvis_depth_to_pano_nodes():
+    def get_depth_map(self):
+        """
+        Function to decode the depthmaps generated by the navvis processing
+
+        Args:
+            - None
+            
+        Returns:
+            - np.array: Depthmap
+        """
+        if isinstance(self._depthMap,np.ndarray):
+            return self._depthMap
+        elif self._depthPath is None:
+            return None
+        
+        # Load depthmap image
+        depthmap = np.asarray(Image.open(self._depthPath)).astype(float)
+        
+        # Vectorized calculation for the depth values
+        depth_value = (depthmap[:, :, 0] / 256) * 256 + \
+                    (depthmap[:, :, 1] / 256) * 256 ** 2 + \
+                    (depthmap[:, :, 2] / 256) * 256 ** 3 + \
+                    (depthmap[:, :, 3] / 256) * 256 ** 4
+
+        # Assign the computed depth values to the class attribute _depthMap
+        self._depthMap = depth_value/1000 # Convert to meters
+        return self._depthMap 
 def e57path_to_nodes_mutiprocessing(path:str,percentage:float=1.0) ->List[PointCloudNode]:
     """Load an e57 file and convert all data to a list of PointCloudNodes.\n
 
@@ -1285,3 +1484,4 @@ def get_linked_nodes(node: Node ,graph:Graph, getResource=False, **kwargs) -> Li
             if graph.value(subject=subject,predicate=RDF.type) is not None:
                 nodelist.append(create_node(graph=graph,subject=subject, getResource=getResource, **kwargs)) 
     return nodelist
+

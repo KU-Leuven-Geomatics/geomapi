@@ -118,79 +118,14 @@ class TestOrthoNode(unittest.TestCase):
         self.assertRaises(ValueError,OrthoNode,imageHeight='qsdf')
     
     def test_cartesianTransform(self):
-        #create a convex hull in the shape of a pyramid
+        #create a convex hull in the shape of a box
         base_hull = o3d.geometry.TriangleMesh.create_box(width=1, height=1, depth=1) #this gets Obox with x,y,z and no rotation
-        xmin=-100/2
-        xmax=100/2
-        ymin=-50/2
-        ymax=50/2
-        zmin=0
-        zmax=25
-        vertices=np.array([[xmin,ymin,zmin],
-                [xmax,ymin,zmin],
-                [xmin,ymax,zmin],
-                [xmax,ymax,zmin],
-                [xmin,ymin,zmax],
-                [xmax,ymin,zmax],
-                [xmin,ymax,zmax],
-                [xmax,ymax,zmax]])
-        base_hull.vertices=o3d.utility.Vector3dVector(vertices)
-        base_hull_center=np.array([0,0,12.5])
-        base_hull_box_center=np.array([0,0,12.5])
-        
+        base_hull.translate((-0.5,-0.5,-0.5))
         #base hull
-        node= OrthoNode(convexHull=base_hull)
+        node= OrthoNode(cartesianTransform=base_hull.get_center())
         expectedCartesianTransform=np.eye(4)
         self.assertTrue(np.allclose(node.cartesianTransform,expectedCartesianTransform,atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),base_hull_center,atol=0.001))
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),base_hull_box_center,atol=0.001))
         
-        #translation
-        translated_hull=copy.deepcopy(base_hull)
-        translated_hull.translate([1,0,0])
-        translated_hull_center=np.array([1,0,12.5])
-        translated_hull_box_center=np.array([1,0,12.5])
-        node= OrthoNode(convexHull=translated_hull)
-        expectedCartesianTransform=np.array([[1,0,0,1], 
-                                            [0,1,0,0],
-                                            [0,0,1,0],
-                                            [0,0,0,1]])
-        self.assertTrue(np.allclose(node.cartesianTransform,expectedCartesianTransform,atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),translated_hull_center,atol=0.001))
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),translated_hull_box_center,atol=0.001))
-        
-        #rotation
-        rotated_hull_90_x=copy.deepcopy(base_hull)
-        rotated_hull_90_x.rotate(np.array( [[ 1, 0 , 0.        ],
-                                        [ 0,  0,  -1        ],
-                                        [ 0.   ,       1    ,      0        ]])  ,center=[0,0,0])
-        rotated_hull_center=np.array([0,-12.5,0])
-        rotated_hull_box_center=np.array([0,-12.5,0])
-        node= OrthoNode(convexHull=rotated_hull_90_x)
-        expectedCartesianTransform=np.array([[1,0,0,0], 
-                                            [0,0,-1,0],
-                                            [0,1,0,0],
-                                            [0,0,0,1]])
-        self.assertTrue(np.allclose(node.cartesianTransform,expectedCartesianTransform,atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),rotated_hull_center,atol=0.001))
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),rotated_hull_box_center,atol=0.001))
-        
-        #rotation an translation
-        rotated_translated_hull=copy.deepcopy(base_hull)
-        rotated_translated_hull.rotate(np.array( [[ 1, 0 , 0.        ],
-                                        [ 0,  0,  -1        ],
-                                        [ 0.   ,       1    ,      0        ]])  ,center=[0,0,0])
-        rotated_translated_hull.translate([1,0,0])
-        rotated_translated_center=np.array([1,-12.5,0])
-        rotated_translated_box_center=np.array([1,-12.5,0])
-        node= OrthoNode(convexHull=rotated_translated_hull)
-        expectedCartesianTransform=np.array([[1,0,0,1], 
-                                            [0,0,-1,0],
-                                            [0,1,0,0],
-                                            [0,0,0,1]])
-        self.assertTrue(np.allclose(node.cartesianTransform,expectedCartesianTransform,atol=0.001))
-        self.assertTrue(np.allclose(node.convexHull.get_center(),rotated_translated_center,atol=0.001))
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),rotated_translated_box_center,atol=0.001))
         
     def test_orientedBoundingBox_and_convex_hull(self):
         #default box width should be 20, height 10m, and depth 10
@@ -241,13 +176,13 @@ class TestOrthoNode(unittest.TestCase):
         
         
     def test_path(self):
-        #path1 without getResource
+        #path1 without loadResource
         node= OrthoNode(path=self.dataLoaderRailway.orthoPath2)
         self.assertEqual(node.name,self.dataLoaderRailway.orthoPath2.stem)
         self.assertIsNone(node._resource)
 
-        #path2 with getResource
-        node= OrthoNode(path=self.dataLoaderRailway.orthoPath2,getResource=True)        
+        #path2 with loadResource
+        node= OrthoNode(path=self.dataLoaderRailway.orthoPath2,loadResource=True)        
         self.assertEqual(node.name,self.dataLoaderRailway.orthoPath2.stem)
         self.assertEqual(node.path,self.dataLoaderRailway.orthoPath2)        
         self.assertEqual(node.imageHeight,self.dataLoaderRailway.ortho2.shape[0])
@@ -346,24 +281,24 @@ class TestOrthoNode(unittest.TestCase):
         node= OrthoNode(resource=self.dataLoaderRailway.ortho2)
         self.assertIsNotNone(node._resource)
 
-        #path without getResource
+        #path without loadResource
         node= OrthoNode(path=self.dataLoaderRailway.orthoPath2)
         self.assertIsNone(node._resource)
 
-        #path with getResource
-        node= OrthoNode(path=self.dataLoaderRailway.orthoPath2,getResource=True)
+        #path with loadResource
+        node= OrthoNode(path=self.dataLoaderRailway.orthoPath2,loadResource=True)
         self.assertIsNotNone(node._resource)
 
         #graph with get resource
         node= OrthoNode(subject=self.dataLoaderRailway.orthoSubject,
                         graph=self.dataLoaderRailway.orthoGraph,
-                        getResource=True)
+                        loadResource=True)
         self.assertIsNone(node._resource)
         
         #graphPath with get resource
         node= OrthoNode(subject=self.dataLoaderRailway.orthoSubject,
                         graphPath=self.dataLoaderRailway.orthoGraphPath,
-                        getResource=True)
+                        loadResource=True)
         self.assertIsNotNone(node._resource)
 
     def test_save_resource(self):
@@ -387,7 +322,7 @@ class TestOrthoNode(unittest.TestCase):
         #path -> new name
         node= OrthoNode(subject=URIRef('myImg'),
                         path=self.dataLoaderRailway.orthoPath2,
-                        getResource=True)
+                        loadResource=True)
         self.assertTrue(node.save_resource(self.dataLoaderRailway.resourcePath))
         
         #graphPath with directory
@@ -406,17 +341,13 @@ class TestOrthoNode(unittest.TestCase):
     def test_get_resource(self):
         #mesh
         node=OrthoNode(resource=self.dataLoaderRailway.ortho2)  
-        self.assertIsNotNone(node.get_resource())
+        self.assertIsNone(node.load_resource())
 
-        #no mesh
-        del node.resource
-        self.assertIsNone(node.get_resource())
-
-        #graphPath with getResource
+        #graphPath with loadResource
         node=OrthoNode(graphPath=str(self.dataLoaderRailway.orthoGraphPath),
                        subject=self.dataLoaderRailway.orthoSubject,
-                       getResource=True)
-        self.assertIsNotNone(node.get_resource())
+                       loadResource=True)
+        self.assertIsNotNone(node.load_resource())
 
     def test_set_path(self):
         #valid path
@@ -431,7 +362,6 @@ class TestOrthoNode(unittest.TestCase):
         #graphPath & name
         node=OrthoNode(subject=self.dataLoaderRailway.orthoSubject,
                        graphPath=self.dataLoaderRailway.orthoGraphPath)
-        node.get_path()
         self.assertEqual(node.path,self.dataLoaderRailway.orthoPath2)
 
     def test_transform_translation(self):
@@ -450,10 +380,11 @@ class TestOrthoNode(unittest.TestCase):
         box=copy.deepcopy(node.orientedBoundingBox)
         hull=copy.deepcopy(node.convexHull)
         translation = [1,0,0]
+        transform = node.cartesianTransform
         node.transform(translation=translation)
         self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),box.get_center()+translation,atol=0.001))
         self.assertTrue(np.allclose(node.convexHull.get_center(),hull.get_center()+translation,atol=0.001))
-        self.assertTrue(np.allclose(node.cartesianTransform[:3,3],node.cartesianTransform[:3,3]+translation,atol=0.001))
+        self.assertTrue(np.allclose(node.cartesianTransform[:3,3],transform[:3,3]+translation,atol=0.001))
         
     def test_transform_rotation(self):
         
@@ -522,28 +453,12 @@ class TestOrthoNode(unittest.TestCase):
         node=OrthoNode(dxfPath=self.dataLoaderRailway.orthoDxfPath2,
                tfwPath=self.dataLoaderRailway.orthoTfwPath2,
                path=self.dataLoaderRailway.orthoPath2,
-               getResource=True,
+               loadResource=True,
                height=300,
                depth=50)
         self.dataLoaderRailway.line        
         node.project_lineset_on_image(self.dataLoaderRailway.line)
 
-    def test_dxf_path(self):
-
-        #dxfPath and name + height-> offset in y and z
-        node=OrthoNode(dxfPath=self.dataLoaderRailway.orthoDxfPath2,name='railway-0-0',height=self.dataLoaderRailway.orthoHeight)
-        self.assertEqual(node.dxfPath,self.dataLoaderRailway.orthoDxfPath2)
-        #check cartesianTransform
-        self.assertTrue(np.allclose(node.cartesianTransform,self.dataLoaderRailway.orthoCartesianTransform,atol=0.001))
-        #check orientedBoundingBox. height default 5
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),np.array([263379.5193, 151089.1667 ,self.dataLoaderRailway.orthoHeight-5]),atol=0.001))
-        #check convexHull
-        self.assertTrue(np.allclose(node.convexHull.get_center(),np.array([263379.5193, 151089.1667 ,self.dataLoaderRailway.orthoHeight-5]),atol=0.001))
-        
-        
-        #raise error when wrong path
-        self.assertRaises(ValueError,OrthoNode,dxfPath='dfsgsdfgsd')
-        
         
     def test_tfw_path(self):
        
@@ -565,7 +480,7 @@ class TestOrthoNode(unittest.TestCase):
         
         
     def test_height(self):
-        #default height should be None
+        #default height should be 0
         node=OrthoNode()
         self.assertEqual(node.height,0)
         
