@@ -1,6 +1,7 @@
 """Different tools to Manage RDF data."""
 
 #IMPORT PACKAGES
+import inspect
 import cv2
 import numpy as np 
 import open3d as o3d 
@@ -26,8 +27,10 @@ import multiprocessing
 import concurrent.futures
 
 #IMPORT MODULES 
+import geomapi
 from geomapi.nodes import *
 import geomapi.utils as ut
+from geomapi.utils import GEOMAPI_PREFIXES
 import geomapi.utils.geometryutils as gmu
 import geomapi.utils.cadutils as cadu
 from warnings import warn
@@ -1055,13 +1058,13 @@ def select_nodes_k_nearest_neighbors(node:Node,nodelist:List[Node],k:int=10) -> 
     assert k>0, f'k is {k}, but k should be >0.'
 
     #get node center
-    if node.get_cartesian_transform() is not None:
+    if node.cartesianTransform is not None:
         point=gmu.get_translation(node.cartesianTransform)
         #create pcd from nodelist centers
         pcd = o3d.geometry.PointCloud()
         array=np.empty(shape=(len(nodelist),3))
         for idx,node in enumerate(nodelist):
-            if node.get_cartesian_transform() is not None:
+            if node.cartesianTransform is not None:
                 array[idx]=gmu.get_translation(node.cartesianTransform)
             else:
                 array[idx]=[-10000.0,-10000.0,-10000.0]
@@ -1079,7 +1082,7 @@ def select_nodes_k_nearest_neighbors(node:Node,nodelist:List[Node],k:int=10) -> 
     else:
         return None,None
 
-
+#OBSOLETE
 def create_selection_box_from_image_boundary_points(n:ImageNode,roi:Tuple[int,int,int,int],mesh:o3d.geometry.TriangleMesh,z:float=5)->o3d.geometry.OrientedBoundingBox:
     """Create a selection box from an ImageNode, a region of interest (roi) and a mesh to raycast.
     A o3d.geometry.OrientedBoundingBox will be created on the location of the intersection of the rays with the mesh.
@@ -1138,13 +1141,13 @@ def select_nodes_with_centers_in_radius(node:Node,nodelist:List[Node],r:float=0.
     assert r >0, f'r is {r}, while it should be >0.'
     
     #get node center
-    if node.get_cartesian_transform() is not None:
+    if node.cartesianTransform is not None:
         point=gmu.get_translation(node.cartesianTransform)
         #create pcd from nodelist centers
         pcd = o3d.geometry.PointCloud()
         array=np.empty(shape=(len(nodelist),3))
         for idx,node in enumerate(nodelist):
-            if node.get_cartesian_transform() is not None:
+            if node.cartesianTransform is not None:
                 array[idx]=gmu.get_translation(node.cartesianTransform)
             else:
                 array[idx]=[-10000.0,-10000.0,-10000.0]
@@ -1180,14 +1183,14 @@ def select_nodes_with_centers_in_bounding_box(node:Node,nodelist:List[Node],u:fl
         List [Node]
     """
     #get box source node
-    if node.get_oriented_bounding_box() is not None:
+    if node.orientedBoundingBox is not None:
         box=node.orientedBoundingBox
         box=gmu.expand_box(box,u=u,v=v,w=w)
 
         # get centers
         centers=np.empty((len(nodelist),3),dtype=float)
         for idx,node in enumerate(nodelist):
-            if node.get_cartesian_transform() is not None:
+            if node.cartesianTransform is not None:
                 centers[idx]=gmu.get_translation(node.cartesianTransform)
 
         #points are the centers of all the nodes
@@ -1219,14 +1222,14 @@ def select_nodes_with_bounding_points_in_bounding_box(node:Node,nodelist:List[No
         List [Node]
     """
     #get box source node
-    if node.get_oriented_bounding_box() is not None:
+    if node.orientedBoundingBox is not None:
         box=node.orientedBoundingBox
         box=gmu.expand_box(box,u=u,v=v,w=w)
 
         # get boxes nodelist
         boxes=np.empty((len(nodelist),1),dtype=o3d.geometry.OrientedBoundingBox)
         for idx,node in enumerate(nodelist):
-            boxes[idx]=node.get_oriented_bounding_box()
+            boxes[idx]=node.orientedBoundingBox
 
         # Find the nodes of which the bounding points lie in the source node box
         idxList=gmu.get_box_inliers(box,boxes)
@@ -1252,14 +1255,14 @@ def select_nodes_with_intersecting_bounding_box(node:Node,nodelist:List[Node],u:
         List [Node]
     """
     #get box source node
-    if node.get_oriented_bounding_box() is not None:
+    if node.orientedBoundingBox is not None:
         box=node.orientedBoundingBox
         box=gmu.expand_box(box,u=u,v=v,w=w)
 
         # get boxes nodelist
         boxes=np.empty((len(nodelist),1),dtype=o3d.geometry.OrientedBoundingBox)
         for idx,node in enumerate(nodelist):
-            boxes[idx]=node.get_oriented_bounding_box()
+            boxes[idx]=node.orientedBoundingBox
         
         # Find the nodes of which the bounding box itersects with the source node box
         idxList=gmu.get_box_intersections(box,boxes)
@@ -1285,14 +1288,14 @@ def select_nodes_with_intersecting_resources(node:Node,nodelist:List[Node]) -> L
         List [Node] 
     """
     #get geometry source node
-    if node.get_resource() is not None: 
+    if node.resource is not None: 
         mesh=get_mesh_representation(node)
         # get geometries nodelist        
         # meshes=np.empty((len(nodelist),1),dtype=o3d.geometry.TriangleMesh)
         
         meshes=[None]*len(nodelist)
         for idx,testnode in enumerate(nodelist):
-            if testnode.get_resource() is not None: 
+            if testnode.resource is not None: 
                     meshes[idx]=get_mesh_representation(testnode)
 
         # Find the nodes of which the geometry intersects with the source node box
@@ -1305,7 +1308,7 @@ def select_nodes_with_intersecting_resources(node:Node,nodelist:List[Node]) -> L
             return selectedNodeList
     return None
 
-# TODO fix function
+# OBSOLETE, every node has a convex hull, and image nodes have frustrums
 def get_mesh_representation(node: Node)->o3d.geometry.TriangleMesh:
     """Returns the mesh representation of a node resource\n
     Returns the convex hull if it is a PointCloudNode.\n
@@ -1318,7 +1321,7 @@ def get_mesh_representation(node: Node)->o3d.geometry.TriangleMesh:
         o3d.geometry.TriangleMesh 
     """
     nodeType=str(type(node))
-    resource= node.get_resource()
+    resource= node.resource
    
     if 'PointCloudNode' in str(type(node)):
         hull, _ =resource.compute_convex_hull()
@@ -1362,7 +1365,7 @@ def nodes_to_graph(nodelist : List[Node], path:str =None, overwrite: bool =False
 
 #### OBSOLETE #####
 
-def graph_path_to_nodes(path : str,**kwargs) -> List[Node]:
+def graph_path_to_nodes(graphPath : str,**kwargs) -> List[Node]:
     """Convert a graphPath to a set of Nodes.
 
     Args:
@@ -1372,14 +1375,28 @@ def graph_path_to_nodes(path : str,**kwargs) -> List[Node]:
     Returns:
         A list of pointcloudnodes, imagenodes, meshnodes, bimnodes, orthonodes with metadata 
     """    
-    path=Path(path) if path else None
-     
-    nodelist=[]
-    graph=Graph().parse(path)
-    for subject in graph.subjects(RDF.type):
-        myGraph=ut.get_subject_graph(graph,subject)
-        nodelist.append(create_node(graph=myGraph,graphPath=path,subject=subject,**kwargs) )
-    return nodelist
+    """
+    Parses RDF graph, finds subjects of type geomapi:*Node, and instantiates corresponding Python classes.
+    
+    :param graph: rdflib.Graph object
+    :return: dict mapping subject URIs to class instances
+    """
+    instances = []
+    graph = Graph().parse(graphPath)
+    # Build a map of class names available in the given module
+    class_map = {name: cls for name, cls in inspect.getmembers(geomapi.nodes, inspect.isclass)}
+
+    for subject in graph.subjects(RDF.type, None):
+        for rdf_type in graph.objects(subject, RDF.type):
+            if str(rdf_type).startswith(str(GEOMAPI_PREFIXES["geomapi"])):
+                class_name = rdf_type.split("#")[-1]
+                cls = class_map.get(class_name)
+                if cls:
+                    instances.append(cls(graph = graph, graphPath = graphPath, subject = subject,**kwargs))
+                else:
+                    print(f"⚠️ No matching class found for RDF type: {class_name}")
+
+    return instances
 
 def graph_to_nodes(graph : Graph,**kwargs) -> List[Node]:
     """Convert a graph to a set of Nodes.
@@ -1466,6 +1483,34 @@ def create_node(graph: Graph = None, graphPath: str =None, subject: URIRef = Non
         node=Node(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs) 
     return node
 
+def resources_to_linked_nodes(self,resources) -> None:
+    """Create linked Nodes from a set of data resources.
+
+    **NOTE**: Images, ortho and panos are not processed as their resources don't have a geometry.
+    
+    Args:
+        - resources (List[mesh,pcd,lineset,etc.])
+
+    Returns:
+        None 
+    """
+    nodelist=[]
+    for resource in ut.item_to_list(resources):
+        #check type
+        if isinstance(resource,o3d.geometry.TriangleMesh): 
+            nodelist.append(MeshNode(resource=resource))
+        elif isinstance(resource,o3d.geometry.PointCloud):
+            nodelist.append( PointCloudNode(resource=resource))
+        elif isinstance(resource,o3d.geometry.LineSet):
+            nodelist.append( LineSetNode(resource=resource))
+        elif isinstance(resource,ifcopenshell.entity_instance):
+            nodelist.append( BIMNode(resource=resource))
+        # elif isinstance(np.asarray(resource),np.ndarray) and len(np.asarray(resource).shape) == 3:
+        #     nodelist.append( ImageNode(resource=resource)) # we can't diffirentiate between ortho and image and panorama
+        else:
+            print('Resource type not supported')
+    if nodelist:
+        self.set_linked_nodes(nodelist)
 def get_linked_nodes(node: Node ,graph:Graph, getResource=False, **kwargs) -> List[Node]:
     """Get related nodes based on linkedNodes variable.\n
 
@@ -1485,3 +1530,26 @@ def get_linked_nodes(node: Node ,graph:Graph, getResource=False, **kwargs) -> Li
                 nodelist.append(create_node(graph=graph,subject=subject, getResource=getResource, **kwargs)) 
     return nodelist
 
+def instantiate_nodes_from_graph(graphPath):
+    """
+    Parses RDF graph, finds subjects of type geomapi:*Node, and instantiates corresponding Python classes.
+    
+    :param graph: rdflib.Graph object
+    :return: dict mapping subject URIs to class instances
+    """
+    instances = []
+    graph = Graph().parse(graphPath)
+    # Build a map of class names available in the given module
+    class_map = {name: cls for name, cls in inspect.getmembers(geomapi.nodes, inspect.isclass)}
+
+    for subject in graph.subjects(RDF.type, None):
+        for rdf_type in graph.objects(subject, RDF.type):
+            if str(rdf_type).startswith(str(GEOMAPI_PREFIXES["geomapi"])):
+                class_name = rdf_type.split("#")[-1]
+                cls = class_map.get(class_name)
+                if cls:
+                    instances.append(cls(graph = graph, graphPath = graphPath, subject = subject))
+                else:
+                    print(f"⚠️ No matching class found for RDF type: {class_name}")
+
+    return instances

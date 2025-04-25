@@ -24,7 +24,6 @@ import numpy as np
 from rdflib import Graph, URIRef, Literal,Namespace,XSD
 from rdflib.namespace import RDF
 import open3d as o3d 
-import copy
 from collections import Counter
 import inspect
 
@@ -483,7 +482,7 @@ class Node:
             # add the non pre-defined attributes to the list so they will be re serialized
             # don't add "type" because it is defined by the nodetype
             if(not hasattr(self, attr) and str(attr) != "type"):
-                print(attr)
+                #print(attr)
                 self._serializeAttributes.append(attr)
             
             #get datatype
@@ -665,24 +664,23 @@ class Node:
                         params = inspect.signature(serializer).parameters
                         try:
                             if len(params) == 1:
-                                serialized_value = Literal(serializer(value),datatype=datatype)
+                                result = serializer(value)
                             elif len(params) == 2:
-                                serialized_value = Literal(serializer(self, value),datatype=datatype)
+                                result = serializer(self, value)
                             else:
                                 raise TypeError(f"Unexpected number of arguments in serializer: {serializer}")
                         except Exception as e:
                             print(f"Serializer error for {attr}: {e}")
                             continue  # optionally skip problematic attributes
                     else:
-                        serialized_value = Literal(value,datatype=datatype)
-                    #print(predicate, serializer, datatype)
-                    #serialized_value = Literal(serializer(value),datatype=datatype)  if serializer else Literal(value,datatype=datatype)
-
-                    # Handle lists (multiple triples)
-                    if isinstance(serialized_value, list):
-                        for val in serialized_value:
-                            self._graph.add((self.subject, predicate, val))
+                        result = value
+                    #if the result of the serializer is a List, add it multiple times as a separate triple
+                    if isinstance(result, list):
+                        for val in result:
+                            serialized_value = Literal(val, datatype=datatype)
+                            self._graph.add((self.subject, predicate, serialized_value))
                     else:
+                        serialized_value = Literal(result, datatype=datatype)
                         self._graph.add((self.subject, predicate, serialized_value))
 
             # Save graph if requested

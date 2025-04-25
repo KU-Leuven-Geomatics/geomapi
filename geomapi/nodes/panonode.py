@@ -402,8 +402,8 @@ class PanoNode(Node):
         Returns:
             rays: o3d.core.Tensor (n,6) [:,0:3] with the camera center and [:,3:6] are the directions of the rays towards the imagePoints.
         """
-        width=self._imageWidth
-        height=self._imageHeight
+        width=self.imageWidth
+        height=self.imageHeight
         if imagePoints is None: # watch out near poles as cos and sin are highly sensitive in those areas.
             points=np.array([[height/2,width/2 ],   # front     [0,0,1]
                             [0,width/2],            # top       [0,1,0]
@@ -415,7 +415,7 @@ class PanoNode(Node):
             points=ut.map_to_2d_array(imagePoints)
             
         if depths is None:
-            depths=np.full(points.shape[0],self._depthMap.max() if isinstance(self._depthMap,np.ndarray) else 10)
+            depths=np.full(points.shape[0],self.depth)
         else:
              depths = np.asarray(depths).flatten()  # Ensure depths is a 1D array
         
@@ -529,7 +529,7 @@ class PanoNode(Node):
 
         # Calculate the world coordinates
         if depths is None:
-            depths = np.full((direction.shape[0], 1), self._depthMap.max() if isinstance(self._depthMap,np.ndarray) else 10)
+            depths = np.full((direction.shape[0], 1), self.depth)
         world_coordinates = camera_center + direction * depths
 
         return world_coordinates

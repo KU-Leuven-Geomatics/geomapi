@@ -48,6 +48,7 @@ class ImageNode(Node):
                 convexHull: Optional[o3d.geometry.TriangleMesh] =None,
                 loadResource: bool = False,
                 xmpPath: Path = None,
+                xmlPath: Path = None,
                 imageWidth:int = None, #640
                 imageHeight:int = None, #480
                 principalPointU:float =None,  
@@ -99,6 +100,7 @@ class ImageNode(Node):
 
         #instance variables
         self.xmpPath=xmpPath
+        self.xmlPath=xmlPath
         self.imageWidth=imageWidth
         self.imageHeight=imageHeight
         self.principalPointU=principalPointU
@@ -143,7 +145,23 @@ class ImageNode(Node):
         elif Path(value).suffix =='.xmp':
             self._xmpPath=Path(value)
         else:
-            raise ValueError('self.xmpPath has invalid type, path or extension.')   
+            raise ValueError('self.xmpPath has invalid type, path or extension.')
+        
+#---------------------xmlPath----------------------------
+    @property
+    @rdf_property(datatype=XSD.string)
+    def xmlPath(self): 
+        """Get the xmlPath (str) of the node. This is the RealityCapture xml file path."""
+        return self._xmlPath#ut.parse_path(self._xmpPath)
+
+    @xmlPath.setter
+    def xmlPath(self,value:Path):
+        if value is None:
+            self._xmlPath = None
+        elif Path(value).suffix =='.xml':
+            self._xmlPath=Path(value)
+        else:
+            raise ValueError('self.xmlPath has invalid type, path or extension.')   
 
     #---------------------imageWidth----------------------------
     @property
@@ -605,14 +623,14 @@ class ImageNode(Node):
         """
         if imagePoints is None:
             points=np.array([[0, 0], # top left
-                                  [0, self._imageWidth], # top right
-                                  [self._imageHeight, 0],  # bottom left
-                                  [self._imageHeight, self._imageWidth]]) # bottom right
+                                  [0, self.imageWidth], # top right
+                                  [self.imageHeight, 0],  # bottom left
+                                  [self.imageHeight, self.imageWidth]]) # bottom right
         else:
             points=ut.map_to_2d_array(imagePoints)
             
         if depths is None:
-            depths=np.full(points.shape[0],self._depthMap.max() if self._depthMap is not None else 10)
+            depths=np.full(points.shape[0],self.depth)
         else:
              depths = np.asarray(depths).flatten()  # Ensure depths is a 1D array
 
@@ -620,15 +638,15 @@ class ImageNode(Node):
         #validate inputs
         points=np.reshape(points,(-1,2)) #if len(points.shape) >2 else points
             
-        f=self._focalLength35mm 
-        k=self._intrinsicMatrix #get_intrinsic_camera_parameters().intrinsic_matrix
-        m=self._cartesianTransform 
+        f=self.focalLength35mm 
+        k=self.intrinsicMatrix #get_intrinsic_camera_parameters().intrinsic_matrix
+        m=self.cartesianTransform 
         t=gmu.get_translation(m)  
         n=points.shape[0]
         
         #transform pixels to image coordinates (rows are first)
-        u=+points[:,1]-self._imageWidth/2
-        v=+points[:,0]-self._imageHeight/2    
+        u=+points[:,1]-self.imageWidth/2
+        v=+points[:,0]-self.imageHeight/2    
         camera_coordinates=np.vstack((u,v,np.ones(n)))
         
         #transform to world coordinates
@@ -668,7 +686,7 @@ class ImageNode(Node):
             - The function performs a series of transformations, including world to camera, camera to image, and image centering.
             - It returns the imageCoordinates as a 2D array.
         """
-        worldCoordinates=ut.convert_to_homogeneous_3d_coordinates(worldCoordinates)
+        worldCoordinates=gmu.convert_to_homogeneous_3d_coordinates(worldCoordinates)
         
         imageCoordinates= np.linalg.inv(self.cartesianTransform) @ worldCoordinates.T
 
@@ -716,7 +734,7 @@ class ImageNode(Node):
 
         # Calculate the world coordinates
         if depths is None:
-            depths = np.full((direction.shape[0], 1), self._depthMap.max() if self._depthMap is not None else 10)
+            depths = np.full((direction.shape[0], 1), self.depth)
         world_coordinates = camera_center + direction * depths
 
         return world_coordinates
@@ -737,11 +755,11 @@ class ImageNode(Node):
         Returns:
             resource : The resource of the ImageNode with the projected lines.
         """
-        if self.resource() is None:
+        if self.resource is None:
             return None
         
         #copy if overwrite is False
-        image=self._resource if overwrite else copy.deepcopy(self._resource)
+        image=self.resource if overwrite else copy.deepcopy(self.resource)
         
         # Loop through each LineSet
         for lineset in ut.item_to_list(linesets):
@@ -783,7 +801,7 @@ class ImageNode(Node):
             image : The cropped image
         """
         #copy if overwrite is False
-        image=self._resource if overwrite else copy.deepcopy(self._resource)
+        image=self.resource if overwrite else copy.deepcopy(self.resource)
         
         # Project the lineset onto the image plane
         points = np.asarray(lineset.points)

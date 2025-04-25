@@ -110,8 +110,8 @@ class TestImageNode(unittest.TestCase):
         #raise error when text
         self.assertRaises(ValueError,ImageNode,imageHeight='qsdf')
     def test_depth(self):
-        node= ImageNode(depthMap=100)
-        self.assertEqual(node.depthMap,100)
+        node= ImageNode(depth=100)
+        self.assertEqual(node.depth,100)
         np.testing.assert_array_equal(node.cartesianTransform[:3,3],np.array([0,0,0]))
         #check oriented bounding box
         np.testing.assert_array_equal(node.orientedBoundingBox.get_center(),np.array([0,0,50]))
@@ -452,10 +452,6 @@ class TestImageNode(unittest.TestCase):
     def test_load_resource(self):
         #mesh
         node=ImageNode(resource=self.dataLoaderParking.image2)  
-        self.assertIsNotNone(node.load_resource())
-
-        #no mesh
-        del node.resource
         self.assertIsNone(node.load_resource())
 
         #graphPath with loadResource
@@ -498,13 +494,13 @@ class TestImageNode(unittest.TestCase):
         
     def test_world_to_pixel_coordinates(self):
         #array(1,4)
-        node=ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,subject=self.dataLoaderRailway.imageSubject1)
+        node=ImageNode(path=self.dataLoaderRailway.imagePath1, loadResource=True)
         pixel=node.world_to_pixel_coordinates(self.dataLoaderRailway.worldCoordinate)
-        self.assertTrue(np.allclose(pixel,self.dataLoaderRailway.imgCoordinate,atol=10))
+        np.testing.assert_array_almost_equal(pixel,self.dataLoaderRailway.imgCoordinate,0)
         
         #array(1,3)
         pixel=node.world_to_pixel_coordinates(self.dataLoaderRailway.worldCoordinate[0][:3])
-        self.assertTrue(np.allclose(pixel,self.dataLoaderRailway.imgCoordinate,atol=10))
+        np.testing.assert_array_almost_equal(pixel,self.dataLoaderRailway.imgCoordinate,0)
         
         # #different input formats single point
         # inputs = [

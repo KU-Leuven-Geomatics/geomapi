@@ -490,5 +490,6 @@ class TestOrthoNode(unittest.TestCase):
         
         #raise error when text
         self.assertRaises(ValueError,OrthoNode,height='qsdf')
+
 if __name__ == '__main__':
     unittest.main()
