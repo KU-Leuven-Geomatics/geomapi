@@ -74,7 +74,7 @@ def e57xml_to_nodes(path :str, **kwargs) -> List[PointCloudNode]:
     return nodelist
 
 
-def img_xml_to_nodes(path :str,skip:int=None, filterByFolder:bool=False,**kwargs) -> List[ImageNode]:
+def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFolder:bool=False,**kwargs) -> List[ImageNode]:
     """Parse XML file that is created with https://www.agisoft.com/.
 
     Args:
@@ -1365,7 +1365,7 @@ def nodes_to_graph(nodelist : List[Node], path:str =None, overwrite: bool =False
 
 #### OBSOLETE #####
 
-def graph_path_to_nodes(graphPath : str,**kwargs) -> List[Node]:
+def graph_to_nodes(graphPath : str, graph: Graph, subjects: List, **kwargs) -> List[Node]:
     """Convert a graphPath to a set of Nodes.
 
     Args:
@@ -1382,11 +1382,18 @@ def graph_path_to_nodes(graphPath : str,**kwargs) -> List[Node]:
     :return: dict mapping subject URIs to class instances
     """
     instances = []
-    graph = Graph().parse(graphPath)
+    if(not graph):
+        if(not graphPath):
+            raise ValueError("No graph or graphPath provided")
+        else:
+            graph = Graph().parse(graphPath)
     # Build a map of class names available in the given module
     class_map = {name: cls for name, cls in inspect.getmembers(geomapi.nodes, inspect.isclass)}
 
     for subject in graph.subjects(RDF.type, None):
+        if(subjects is not None): # Check the subject filter
+            if(str(subject) not in subjects):
+                continue
         for rdf_type in graph.objects(subject, RDF.type):
             if str(rdf_type).startswith(str(GEOMAPI_PREFIXES["geomapi"])):
                 class_name = rdf_type.split("#")[-1]

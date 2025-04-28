@@ -81,15 +81,15 @@ class TestTools(unittest.TestCase):
         # geometries=[n.resource for n in nodes]
         # self.assertEqual(len(geometries),2)
 
-    def test_img_xml_to_nodes(self):
+    def test_xml_to_image_nodes(self):
 
-        self.assertEqual(len(tl.img_xml_to_nodes(self.dataLoaderRoad.imageXmlPath,filterByFolder=False) ),78)
-        self.assertEqual(len(tl.img_xml_to_nodes(self.dataLoaderRoad.imageXmlPath,filterByFolder=True) ),2)
-        nodes=tl.img_xml_to_nodes(self.dataLoaderRoad.imageXmlPath,filterByFolder=True,getResource=True) 
+        self.assertEqual(len(tl.xml_to_image_nodes(self.dataLoaderRoad.imageXmlPath,filterByFolder=False) ),78)
+        self.assertEqual(len(tl.xml_to_image_nodes(self.dataLoaderRoad.imageXmlPath,filterByFolder=True) ),2)
+        nodes=tl.xml_to_image_nodes(self.dataLoaderRoad.imageXmlPath,filterByFolder=True,getResource=True) 
         self.assertEqual(len(nodes),2)
         self.assertEqual(len([n.resource for n in nodes]),2)
         
-        self.assertEqual(len(tl.img_xml_to_nodes(self.dataLoaderRoad.imageXmlPath,skip=10,filterByFolder=False) ),8)
+        self.assertEqual(len(tl.xml_to_image_nodes(self.dataLoaderRoad.imageXmlPath,skip=10,filterByFolder=False) ),8)
                         
     def test_e57header_to_nodes(self):
 
