@@ -13,7 +13,7 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 from geomapi.nodes import *
-from geomapi.tools import graph_path_to_nodes
+from geomapi.tools import graph_to_nodes
 
 #DATA
 sys.path.append(current_dir)
@@ -38,7 +38,7 @@ class TestSetNode(unittest.TestCase):
         cls.dataLoaderParking = DATALOADERPARKINGINSTANCE
         
         #pointcloud
-        cls.nodes=graph_path_to_nodes(cls.dataLoaderParking.resourceGraphPath,getResource=True)
+        cls.nodes=graph_to_nodes(cls.dataLoaderParking.resourceGraphPath,loadResource=True)
         
         cls.pcdNode=next(n for n in cls.nodes if isinstance(n,PointCloudNode))
         cls.meshNode=next(n for n in cls.nodes if isinstance(n,MeshNode))

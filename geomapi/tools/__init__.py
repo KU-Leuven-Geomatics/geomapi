@@ -40,7 +40,51 @@ loa=rdflib.Namespace('https://docplayer.net/131921614-Usibd-level-of-accuracy-lo
 ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')
 
 #### NODE CREATION ####
-def e57xml_to_nodes(path :str, **kwargs) -> List[PointCloudNode]:
+
+### GRAPH ###
+def graph_to_nodes(graphPath : str = None, graph: Graph = None, subjects: List = None, **kwargs) -> List[Node]:
+    """Convert a graphPath to a set of Nodes.
+
+    Args:
+        0. graphPath (str):  absolute path to .ttl RDF Graph\n
+        1. kwargs (Any) \n
+
+    Returns:
+        A list of pointcloudnodes, imagenodes, meshnodes, bimnodes, orthonodes with metadata 
+    """    
+    """
+    Parses RDF graph, finds subjects of type geomapi:*Node, and instantiates corresponding Python classes.
+    
+    :param graph: rdflib.Graph object
+    :return: dict mapping subject URIs to class instances
+    """
+    instances = []
+    if(not graph):
+        if(not graphPath):
+            raise ValueError("No graph or graphPath provided")
+        else:
+            graph = Graph().parse(graphPath)
+    # Build a map of class names available in the given module
+    class_map = {name: cls for name, cls in inspect.getmembers(geomapi.nodes, inspect.isclass)}
+
+    for subject in graph.subjects(RDF.type, None):
+        if(subjects is not None): # Check the subject filter
+            if(str(subject) not in subjects):
+                continue
+        for rdf_type in graph.objects(subject, RDF.type):
+            if str(rdf_type).startswith(str(GEOMAPI_PREFIXES["geomapi"])):
+                class_name = rdf_type.split("#")[-1]
+                cls = class_map.get(class_name)
+                if cls:
+                    try: instances.append(cls(graph = graph, graphPath = graphPath, subject = subject,**kwargs))
+                    except: print("Failed to create Node: ", subject)
+                else:
+                    print(f"⚠️ No matching class found for RDF type: {class_name}")
+
+    return instances
+
+### XML ###
+def e57xml_to_pointcloud_nodes(xmlPath :str, **kwargs) -> List[PointCloudNode]:
     """Parse XML file that is created with E57lib e57xmldump.exe.
         E57 XML file structure
         e57Root
@@ -63,22 +107,71 @@ def e57xml_to_nodes(path :str, **kwargs) -> List[PointCloudNode]:
         A list of pointcloudnodes with the xml metadata 
     """
     
-    path=Path(path)
+    path=Path(xmlPath)
     mytree = ET.parse(path)
     root = mytree.getroot()
     nodelist=[]
-    e57Path=path.with_suffix('.e57')
+    e57Path=xmlPath.with_suffix('.e57')
+    # loop over every vectorchild
+    for idx,e57xml in enumerate(root.iter('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}vectorChild')):
+        # OrientedBoundingBox
+        # TODO switch to OBB 
+        cartesianBoundsnode=e57xml.find('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}cartesianBounds') 
+        if cartesianBoundsnode is not None:
+            try:
+                OrientedBoundingBox=np.array([ut.xml_to_float(cartesianBoundsnode[0].text),
+                                        ut.xml_to_float(cartesianBoundsnode[1].text),
+                                        ut.xml_to_float(cartesianBoundsnode[2].text),
+                                        ut.xml_to_float(cartesianBoundsnode[3].text),
+                                        ut.xml_to_float(cartesianBoundsnode[4].text),
+                                        ut.xml_to_float(cartesianBoundsnode[5].text)])
+                OrientedBoundingBox=OrientedBoundingBox.astype(float)
+                OrientedBoundingBox=np.nan_to_num(OrientedBoundingBox)
+            except:
+                OrientedBoundingBox=None
 
-    for idx,_ in enumerate(root.iter('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}vectorChild')):
-        nodelist.append(PointCloudNode(e57XmlPath=path,e57Index=idx,path=e57Path,**kwargs))
+        # CartesianTransform
+        posenode=e57xml.find('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}pose')
+        if posenode is not None:
+            rotationnode=posenode.find('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}rotation')
+            if rotationnode is not None:               
+                try:
+                    quaternion=np.array([ ut.xml_to_float(rotationnode[3].text),
+                                    ut.xml_to_float(rotationnode[0].text),
+                                    ut.xml_to_float(rotationnode[1].text),
+                                    ut.xml_to_float(rotationnode[2].text) ])
+                    quaternion=quaternion.astype(float)   
+                    quaternion=np.nan_to_num(quaternion)                
+                except:
+                    quaternion=np.array([0,0,0,1])
+                r = R.from_quat(quaternion)
+                rotationMatrix =r.as_matrix()
+
+            translationnode=posenode.find('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}translation')
+            if translationnode is not None: 
+                try:
+                    translationVector= np.array([ut.xml_to_float(translationnode[0].text),
+                                                ut.xml_to_float(translationnode[1].text),
+                                                ut.xml_to_float(translationnode[2].text)])
+                    translationVector=translationVector.astype(float)
+                    translationVector=np.nan_to_num(translationVector)       
+                except:
+                    translationVector=np.array([0.0,0.0,0.0])
+            cartesianTransform = gmu.get_cartesian_transform(translation=translationVector,rotation=rotationMatrix)
+
+        pointsnode=e57xml.find('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}points')
+        if not pointsnode is None:
+            pointCount=int(pointsnode.attrib['recordCount'])
+        else: pointCount = None
+        nodelist.append(PointCloudNode(cartesianTransform=cartesianTransform, orientedBoundingBox=OrientedBoundingBox, pointCount= pointCount, e57XmlPath=path,e57Index=idx,path=e57Path,**kwargs))
     return nodelist
-
 
 def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFolder:bool=False,**kwargs) -> List[ImageNode]:
     """Parse XML file that is created with https://www.agisoft.com/.
 
     Args:
         1.xmlPath (string or Path): xml file path e.g. "D:/Data/cameras.xml"
+        2.subjects (List[str]): a list of labels, matching with the camera labels, that you want filtered.
         2.skip (int, Optional): select every nth image from the xml. Defaults to None.
         3.filterByFolder (bool, Optional): Filter imgNodes based on the images in the folder or not. Defaults to False.
             
@@ -148,6 +241,11 @@ def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFo
         try:
             #get name
             name=cam.get('label')
+
+            # Skip over al not matching labels
+            if(subjects is not None):
+                if(name not in subjects):
+                    continue
             
             #get component
             componentid=cam.get('component_id')  
@@ -193,37 +291,35 @@ def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFo
             continue
     return nodelist[0::skip] if skip else nodelist
 
-def e57path_to_nodes(path:str,percentage:float=1.0) ->List[PointCloudNode]:
-    """Load an e57 file and convert all data to a list of PointCloudNodes.\n
+### E57 ###
+def e57_to_pointcloud_nodes(e57Path, subjects = None, percentage: float = None, loadResource = False, multiProcessingTreshold = 10, **kwargs) -> List[PointCloudNode]:
 
-    **NOTE**: lowering the percentage barely affects assignment performance (numpy array assignments are extremely efficient). \n 
-    Only do this to lower computational complexity or free up memory.
-
-    Args:
-        1. e57path(str): absolute path to .e57 file\n
-        2. percentage(float,optional): percentage of points to load. Defaults to 1.0 (100%)\n
-
-    Returns:
-        o3d.geometry.PointCloud
-    """    
-    path=Path(path) if path else None
     
-    e57 = pye57.E57(str(path))
+    nodelist=[]   
+    e57 = pye57.E57(str(e57Path))   
     gmu.e57_update_point_field(e57)
-    nodes=[]
-    for s in range(e57.scan_count):
-        resource=gmu.e57_to_pcd(e57,e57Index=s,percentage=percentage)
-        node=PointCloudNode(resource=resource,
-                            path=path,
-                            e57Index=s,
-                            percentage=percentage)
-        node.pointCount=len(resource.points)
-        nodes.append(node)
-    return nodes
 
-def ezdxf_path_to_line_set_nodes(dxfPath:str |Path,
-                        **kwargs) -> List[LineSetNode]:
-    """Parse a dxf file to a list of LineSetNodes.
+    # If you need to load a large amount of pointclouds, use multiprocessing
+    if(e57.scan_count >= multiProcessingTreshold and loadResource):
+        with concurrent.futures.ProcessPoolExecutor() as executor:
+            # first load all e57 data and output it as np.arrays
+            results=[executor.submit(gmu.e57_to_arrays,e57Path=e57Path,e57Index=s,percentage=percentage) for s in range(e57.scan_count)]
+            # next, the arrays are assigned to point clouds outside the loop.
+            for s,r in enumerate(concurrent.futures.as_completed(results)):
+                resource=gmu.arrays_to_pcd(r.result())
+                nodelist.append(PointCloudNode(path=Path(e57Path),e57Index=s,resource=resource, loadResource=loadResource, **kwargs))
+    else:
+        for idx in range(e57.scan_count):
+            if(percentage and loadResource):
+                resource = gmu.e57_to_pcd(e57,e57Index=idx,percentage=percentage)
+            else: resource = None
+            nodelist.append(PointCloudNode(path=Path(e57Path),e57Index=idx,resource=resource, loadResource=loadResource, **kwargs))
+    return nodelist
+
+### DXF ###
+
+def dxf_to_lineset_nodes(dxfPath:str |Path, **kwargs) -> List[LineSetNode]:
+    """Parse a dxf file to a list of LineSetNodes. created by CAD software
 
     **NOTE**: be aware of the scale factor!
 
@@ -273,9 +369,9 @@ def ezdxf_path_to_line_set_nodes(dxfPath:str |Path,
     print(f'    loaded {len(nodelist)} lineSetNodes from dxf file')
     return nodelist
 
-def ezdxf_path_to_ortho_nodes(dxfPath: Union[str, Path], name_filter: str = None, **kwargs) -> List[OrthoNode]:
+def dxf_to_ortho_nodes(dxfPath: Union[str, Path], name_filter: str = None, **kwargs) -> List[OrthoNode]:
     """
-    Parse a DXF file into a list of OrthoNode objects.
+    Parse a DXF file into a list of OrthoNode objects., created by Metashape
 
     Args:
         dxfPath (str | Path): Path to the DXF file.
@@ -369,108 +465,590 @@ def ezdxf_path_to_ortho_nodes(dxfPath: Union[str, Path], name_filter: str = None
 
     print(f"Loaded {len(orthonodes)} OrthoNodes from DXF.")
     return orthonodes
-#def metashape_dxf_to_orthonodes(dxfPath:str |Path, **kwargs) -> List[OrthoNode]:
-#    dxf = ezdxf.readfile(self._dxfPath)
-#    #contours and names are in the same list as pairs
-#    entities=[entity for entity in dxf.modelspace()]
-#    
-#    def create_convex_hull_from_dxf_points():
-#        box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
-#        bottomLeftLow=points[2]
-#        bottomRightLow=points[3]
-#        topLeftLow=points[1]
-#        topRightLow=points[0]
-#        bottomLeftHigh=points[2]+normal*self._depth
-#        bottomRightHigh=points[3]+normal*self._depth
-#        topLeftHigh=points[1]+normal*self._depth
-#        topRightHigh=points[0]+normal*self._depth
-#        vertices=np.array([[bottomLeftLow],
-#                            [bottomRightLow],
-#                            [topLeftLow],
-#                            [topRightLow],
-#                            [bottomLeftHigh],
-#                            [bottomRightHigh],
-#                            [topLeftHigh],
-#                            [topRightHigh]])
-#        
-#        box.vertices = o3d.utility.Vector3dVector(np.reshape(vertices,(8,3)))                    
-#        self._convexHull = box  
-#    
-#    if len([entity for entity in entities if entity.dxftype() == 'INSERT' and Path(entity.attribs[0].dxf.text).stem==self._name])==0:
-#        print('Warning: No INSERT entity found with the name of the orthomosaic. taking first ...')
-#        entity=entities[0]
-#        self._name=Path(entity.attribs[0].dxf.text).stem
-#    
-#    #iterate through entities per two
-#    for i in range(0,len(entities),2):
-#        #entity1 are the entities with the name
-#        entity1=entities[i] 
-#        #entity2 are the entities with the geometry
-#        entity2=entities[i+1]
-#        name=Path(entity1.attribs[0].dxf.text).stem
-#        if name == self._name:        
-#            #get geometry
-#            g=cadu.ezdxf_entity_to_o3d(entity2)
-#            g.translate(np.array([0,0,self.get_height()]))
-#            #get points -> they are ordered counter clockwise starting from the top left
-#            points=np.asarray(g.points)
-#            #get the center of the geometry
-#            center=g.get_center()
-#            #get the vector 0-1 and 0-3
-#            vec1=points[1]-points[0]
-#            vec2=points[3]-points[0]
-#            #get the normal of the plane
-#            normal=np.cross(vec1,vec2)
-#            #normalize the normal
-#            normal=normal/np.linalg.norm(normal)
-#            
-#            #get the translation matrix
-#            translation=center#-normal*self._depth
-#            
-#            #get rotation matrix from this normal to the z-axis
-#            rotation_matrix=ut.get_rotation_matrix_from_forward_up(normal, vec2)
-#            
-#            cartesianTransform = gmu.get_cartesian_transform(translation=translation,rotation=rotation_matrix) 
-#            self._cartesianTransform=cartesianTransform    
-#            
-#            #create convexhull
-#            create_convex_hull_from_dxf_points()
-#            
-#            #reset bounding box
-#            self._orientedBoundingBox=None
-#            self.get_oriented_bounding_box()
-#            
-#            #get gsd
-#            self._gsd=np.linalg.norm(vec1[0])/self.get_image_width()
 
-def navvis_depth_to_pano_nodes():
-    def get_depth_map(self):
-        """
-        Function to decode the depthmaps generated by the navvis processing
+#### IFC ########
 
-        Args:
-            - None
-            
-        Returns:
-            - np.array: Depthmap
-        """
-        if isinstance(self._depthMap,np.ndarray):
-            return self._depthMap
-        elif self._depthPath is None:
-            return None
+def ifc_to_bim_nodes(path:str, classes:str = None,  guids:list = None, types:List = None, getResource : bool=True,**kwargs)-> List[BIMNode]:
+    """
+    Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
+
+    **NOTE**: classes are not case sensitive. It is advised to solely focus on IfcBuildingElement classes or inherited classes as these typically have geometry representations that can be used by GEOMAPI.
+
+    **NOTE**: If you intend to parse 1000+ elements, use the multithreading of the entire file instead and filter the BIMNodes afterwards as it will be faster. 
+
+    **WARNING**: IfcOpenShell struggles with some ifc serializations. In our experience, IFC4 serializations is more robust.
+
+    .. image:: ../../../docs/pics/ifc_inheritance.PNG
+
+
+    Args:
+        1. ifcPath (string):  absolute ifc file path e.g. "D:/myifc.ifc"\n
+        2. classes (string, optional): ifcClasses e.g. 'IfcBeam, IfcColumn, IfcWall, IfcSlab'. Defaults to 'IfcBuildingElement'.   
+    
+    Raises:
+        ValueError: 'No valid ifcPath.'
+
+    Returns:
+        List[BIMNode]
+    """   
+    path=Path(path)
+    
+    nodelist=[]   
+    ifc = ifcopenshell.open(path)
+    timestamp=ut.get_timestamp(path)
+    
+    if(classes is not None):
+        ifcElements = ifcopenshell.util.selector.filter_elements(ifc, str(classes))
+    elif(guids is not None):
+        ifcElements = [ut.item_to_list(ifc.by_id(guid)) for guid in guids]
+    elif(types is not None):
+        ifcElements = [ifc.by_type(type) for type in types]
+    else:
+        ifcElements = ifcopenshell.util.selector.filter_elements(ifc, 'IfcBuildingElement')
+
+    for ifcElement in ifcElements:
+        nodelist.append(BIMNode(timestamp=timestamp, ifcPath=path, resource=ifcElement,getResource=getResource, **kwargs))
+
+    return nodelist
+
+def ifc_to_nodes_multiprocessing(path:str, **kwargs)-> List[BIMNode]:
+    """Returns the contents of geometry elements in an ifc file as BIMNodes.
+    This method is 3x faster than other parsing methods due to its multi-threading.
+    However, only the entire ifc can be parsed.
+
+    **WARNING**: IfcOpenShell strugles with some ifc serializations. In our experience, IFC4 serializations is more robust.
+
+    Args:
+        ifcPath (str | Path): ifc file path e.g. "D:/myifc.ifc"
+
+    Raises:
+        ValueError: 'No valid ifcPath.'
+
+    Returns:
+        List[BIMNode]
+    """
+    path=Path(path)
+    
+    try:
+        ifc_file = ifcopenshell.open(path)
+    except:
+        print(ifcopenshell.get_log())
+    else: 
+        nodelist=[]   
+        timestamp=ut.get_timestamp(path)
+        settings = ifcopenshell.geom.settings()
+        settings.set(settings.USE_WORLD_COORDS, True) 
+        iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
+        if iterator.initialize():
+            while True:
+                shape = iterator.get()
+                ifcElement = ifc_file.by_guid(shape.guid) 
+                faces = shape.geometry.faces # Indices of vertices per triangle face e.g. [f1v1, f1v2, f1v3, f2v1, f2v2, f2v3, ...]
+                verts = shape.geometry.verts # X Y Z of vertices in flattened list e.g. [v1x, v1y, v1z, v2x, v2y, v2z, ...]
+                # materials = shape.geometry.materials # Material names and colour style information that are relevant to this shape
+                # material_ids = shape.geometry.material_ids # Indices of material applied per triangle face e.g. [f1m, f2m, ...]
+
+                # Since the lists are flattened, you may prefer to group them per face like so depending on your geometry kernel
+                grouped_verts = [[verts[i], verts[i + 1], verts[i + 2]] for i in range(0, len(verts), 3)]
+                grouped_faces = [[faces[i], faces[i + 1], faces[i + 2]] for i in range(0, len(faces), 3)]
+
+                #Convert grouped vertices/faces to Open3D objects 
+                o3dVertices = o3d.utility.Vector3dVector(np.asarray(grouped_verts))
+                o3dTriangles = o3d.utility.Vector3iVector(np.asarray(grouped_faces))
+
+                # Create the Open3D mesh object
+                mesh=o3d.geometry.TriangleMesh(o3dVertices,o3dTriangles)
+
+                #if mesh, create node
+                if len(mesh.triangles)>1:
+                    # node=BIMNode(**kwargs)
+                    name=ifcElement.Name
+                    className=ifcElement.is_a()
+                    globalId=ifcElement.GlobalId
+                    subject= name +'_'+globalId 
+                    resource=mesh
+                    timestamp=timestamp
+                    ifcPath=path
+                    objectType =ifcElement.ObjectType
+                    nodelist.append(BIMNode(name=name,
+                                            className=className,
+                                            globalId=globalId,
+                                            subject=subject,
+                                            resource=resource,
+                                            timestamp=timestamp,
+                                            ifcPath=ifcPath,
+                                            objectType=objectType,
+                                            faceCount=len(mesh.triangles),
+                                            pointCount=len(mesh.vertices),
+                                            **kwargs))
+                if not iterator.next():
+                    break
+        return nodelist
+
+### CSV ###
+
+def navvis_csv_to_pano_nodes(csvPath :Path, 
+                        directory : Path = None, 
+                        includeDepth : bool = True, 
+                        depthPath : Path = None, 
+                        skip:int=None, **kwargs) -> List[PanoNode]:
+    """Parse Navvis csv file and return a list of PanoNodes with the csv metadata.
+    
+    Args:
+        - csvPath (Path): csv file path e.g. "D:/Data/pano/pano-poses.csv"
+        - skip (int, Optional): select every nth image from the xml. Defaults to None.
+        - Path (Path, Optional): path to the pano directory. Defaults to None.
+        - includeDepth (bool, Optional): include depth images. Defaults to True.
+        - depthPath (Path, Optional): path to the depth images. Defaults to None.
+        - kwargs: additional keyword arguments for the PanoNode instances
+                
+    Returns:
+        - A list of PanoNodes with the csv metadata
         
-        # Load depthmap image
-        depthmap = np.asarray(Image.open(self._depthPath)).astype(float)
+    """
+    assert skip == None or skip >0, f'skip == None or skip '
+    assert os.path.exists(csvPath), f'File does not exist.'
+    assert csvPath.suffix == '.csv', f'File does not end with csv.'
+    
+    #open csv
+    pano_csv_file = open(csvPath, mode = 'r')
+    pano_csv_data = list(pd.read_csv(pano_csv_file))
+    
+    #get pano information
+    pano_data = []
+    for sublist in pano_csv_data[1:]:
+        pano_data.append(sublist[0].split('; '))
         
-        # Vectorized calculation for the depth values
-        depth_value = (depthmap[:, :, 0] / 256) * 256 + \
-                    (depthmap[:, :, 1] / 256) * 256 ** 2 + \
-                    (depthmap[:, :, 2] / 256) * 256 ** 3 + \
-                    (depthmap[:, :, 3] / 256) * 256 ** 4
+    pano_filenames = []
+    for sublist in pano_data:
+        pano_filenames.append(sublist[1])
+        
+    pano_timestamps = []
+    for sublist in pano_data:
+        pano_timestamps.append(ut.get_timestamp(sublist[2]))
+        
+    pano_cartesianTransforms = []
+    for sublist in pano_data:
+        r = R.from_quat((float(sublist[7]),float(sublist[8]), float(sublist[9]), float(sublist[6]))).as_matrix()
+        T = np.pad(r, ((0, 1), (0, 1)), mode='constant', constant_values=0)
+        T[0,3] = float(sublist[3])
+        T[1,3] = float(sublist[4])
+        T[2,3] = float(sublist[5])
+        T[3,3] = float(1)
+        pano_cartesianTransforms.append(T)
+        
+    #get pano path
+    directory = csvPath.parent if not directory else directory
+        
+    if includeDepth:
+        depth_filenames = []
+        for pano_filename in pano_filenames:
+            depth_filename  = pano_filename.replace(".jpg","_depth.png") #navvis depth images are png
+            depth_filenames.append(depth_filename)
+        if not depthPath:
+            depthPath = directory.replace("pano", "pano_depth")
+    
+    #create nodes     
+    nodelist=[]
+    for i,pano in enumerate(pano_filenames):
+        if os.path.exists(os.path.join(directory, pano)):
+            if includeDepth:
+                node=PanoNode(name= pano.split(".")[0],
+                            cartesianTransform=pano_cartesianTransforms[i],
+                            timestamp = pano_timestamps[i],
+                            path = directory / pano,
+                            depthPath = depthPath / depth_filenames[i],
+                            **kwargs)
+            nodelist.append(node)
+    return nodelist
 
-        # Assign the computed depth values to the class attribute _depthMap
-        self._depthMap = depth_value/1000 # Convert to meters
-        return self._depthMap 
+##### NODE SELECTION #####
+
+def select_nodes_k_nearest_neighbors(nodes:List[Node], center: np.ndarray = [0,0,0],k:int=10):
+    """Select k nearest nodes based on Euclidean distance between centroids."""
+    
+    assert k>0, f'k is {k}, but k should be >0.'
+    # create a pointcloud te perform nearest neighbors search on
+    pcd = o3d.geometry.PointCloud()
+    array=np.empty(shape=(len(nodes),3))
+    for idx,node in enumerate(nodes):
+        array[idx]=gmu.get_translation(node.cartesianTransform)
+    pcd.points = o3d.utility.Vector3dVector(array)
+
+    #Create KDTree from pcd
+    pcdTree = o3d.geometry.KDTreeFlann(pcd)
+
+    #Find k nearest neighbors
+    _, idxList, distances = pcdTree.search_knn_vector_3d(np.array(center), k)
+    selectedNodeList=[node for idx,node in enumerate(nodes) if idx in idxList]
+
+    if any(selectedNodeList):        
+        return selectedNodeList, distances
+    return None, None
+    
+def select_nodes_within_radius(nodes, center, radius):
+    
+    if(radius <= 0):
+        raise ValueError("Radius must be > 0")
+    
+    centers=np.empty(shape=(len(nodes),3),dtype=float)
+    for idx,node in enumerate(nodes):
+        centers[idx]=gmu.get_translation(node.cartesianTransform)
+    
+    # Create a point cloud of centers
+    pcd = o3d.geometry.PointCloud()
+    pcd.points = o3d.utility.Vector3dVector(centers)
+
+    #Create KDTree from pcd
+    pcdTree = o3d.geometry.KDTreeFlann(pcd)
+
+    #Find k nearest neighbors
+    [_, idxList, distances] = pcdTree.search_radius_vector_3d(np.array(center), radius)
+    selectedNodeList = [node for idx,node in enumerate(nodes) if idx in idxList ]
+    selectedNodeList = [node for i,node in enumerate(selectedNodeList) if distances[i] <= radius]
+    distances = [dist for dist in distances if dist <=radius]
+
+    if any(selectedNodeList):        
+        return selectedNodeList, distances
+    return None, None
+
+def select_nodes_within_bounding_box(nodes: List[Node], 
+    bbox: o3d.geometry.OrientedBoundingBox, 
+    margin: List[float] = [0, 0, 0]
+    ) -> List[Node]:
+    """
+    Select the nodes whose centers lie inside the given bounding box.
+    
+    Args:
+        nodes: List of node objects.
+        bbox: An open3d.geometry.OrientedBoundingBox (or AxisAlignedBoundingBox).
+        margin: List of margins [u, v, w] to expand the bounding box.
+    
+    Returns:
+        List of nodes inside the bounding box, or None if no nodes are inside.
+    """
+
+    # Expand the bounding box by the given margin
+    box = gmu.expand_box(bbox, u=margin[0], v=margin[1], w=margin[2])
+
+    # Get node centers
+    centers = np.empty((len(nodes), 3), dtype=float)
+    for idx, node in enumerate(nodes):
+        centers[idx] = gmu.get_translation(node.cartesianTransform)
+
+    # Directly check which centers are inside
+    points = o3d.utility.Vector3dVector(centers)
+    idxList = box.get_point_indices_within_bounding_box(points)
+
+    # Select nodes based on index list
+    selectedNodeList = [node for idx, node in enumerate(nodes) if idx in idxList]
+
+    if selectedNodeList:
+        return selectedNodeList
+    return None
+
+def select_nodes_within_convex_hull(nodes: List[Node], 
+    hull: o3d.geometry.TriangleMesh, 
+    ) -> List[Node]:
+    """
+    Select the nodes whose centers lie inside the given convex hull.
+    
+    Args:
+        nodes: List of node objects.
+        hull: An open3d.geometry.TriangleMesh representing a convex hull.
+    
+    Returns:
+        List of nodes inside the convex hull, or None if no nodes are inside.
+    """    
+    if not hull.is_watertight():
+        raise ValueError("Input convex hull is not watertight.")
+
+    # Get node centers
+    centers = np.empty((len(nodes), 3), dtype=float)
+    for idx, node in enumerate(nodes):
+        centers[idx] = gmu.get_translation(node.cartesianTransform)
+
+    # Directly check if centers are inside
+    scene = o3d.t.geometry.RaycastingScene()
+    _ = scene.add_triangles(o3d.t.geometry.TriangleMesh.from_legacy(hull))  # we do not need the geometry ID for mesh
+    signed_distance = scene.compute_signed_distance(o3d.cpu.pybind.core.Tensor(centers, dtype=o3d.core.Dtype.Float32))
+
+    # Select nodes based on the mask
+    selectedNodeList = [node for idx, node in enumerate(nodes) if signed_distance[idx] < 0]
+
+    if selectedNodeList:
+        return selectedNodeList
+    return None
+
+def select_nodes_intersecting_bounding_box(nodes: List[Node], 
+    bbox: o3d.geometry.OrientedBoundingBox, 
+    margin: List[float] = [0, 0, 0]
+    ) -> List[Node]:
+    """
+    Select the nodes whose bounding box intersects with the given bounding box.
+    
+    Args:
+        nodes: List of node objects.
+        bbox: An open3d.geometry.OrientedBoundingBox.
+        margin: List of margins [u, v, w] to expand the bounding box.
+    
+    Returns:
+        List of nodes whose bounding box intersects the given bounding box.
+    """
+    
+    # Expand the bounding box by the given margin
+    box = gmu.expand_box(bbox, u=margin[0], v=margin[1], w=margin[2])
+
+    selectedNodeList = []
+
+    for node in nodes:
+        # Get the bounding box of the node
+        node_box = node.orientedBoundingBox
+        
+        # Check if it intersects with the given bounding box
+        if box.intersects(node_box):
+            selectedNodeList.append(node)
+
+    if selectedNodeList:
+        return selectedNodeList
+    return None
+
+def select_nodes_intersecting_convex_hull(nodes: List[Node], 
+    hull: o3d.geometry.TriangleMesh, 
+    ) -> List[Node]:
+    """
+    Select the nodes whose convex hull intersects with the given convex hull.
+    
+    Args:
+        nodes: List of node objects.
+        hull: An open3d.geometry.TriangleMesh.
+    
+    Returns:
+        List of nodes whose convex hull intersects the given convex hull.
+    """
+    hulls=[None]*len(nodes)
+    for idx,node in enumerate(nodes):
+            hulls[idx]=node.convexHull
+
+    # Find the nodes of which the geometry intersects with the source node box
+    idxList=gmu.get_mesh_inliers(reference=hull,sources=hulls)
+    #print(idxList)
+
+    # idxList=gmu.get_mesh_collisions_trimesh(mesh,meshes)
+    selectedNodeList=[node for idx,node in enumerate(nodes) if idx in idxList]
+    if any(selectedNodeList):        
+        return selectedNodeList
+    return None
+
+#### GRAPH CREATION ####
+
+def nodes_to_graph(nodelist : List[Node], path:str =None, overwrite: bool =False,save: bool =False,base: URIRef = None) -> Graph:
+    """Convert list of nodes to an RDF graph.
+
+    Args:
+        - nodelist (List[Node])
+        - graphPath (str, optional): path that serves as the basepath for all path information in the graph. This is also the storage location of the graph.
+        - overwrite (bool, optional): Overwrite the existing graph triples. Defaults to False.
+        - save (bool, optional): Save the Graph to file. Defaults to False.
+
+    Returns:
+        Graph 
+    """
+    path=Path(path) if path else None
+    g=Graph()
+    g=ut.bind_ontologies(g)
+    
+    for node in nodelist:
+            node.get_graph(path,base=base)
+            g+= node.graph
+    if(path and save):
+        g.serialize(path)     
+    return g  
+
+#### NAVVIS TOOLS ####
+
+def navvis_decode_depthmap(depth_image):
+    """
+    Function to decode the depthmaps generated by the navvis processing
+
+    Args:
+        - None
+        
+    Returns:
+        - np.array: Depthmap
+    """
+    if not isinstance(depth_image,np.ndarray):
+        raise ValueError("Depth_image should be a 4 channel rgbd np.array")
+    
+    # Vectorized calculation for the depth values
+    depth_value = (depth_image[:, :, 0] / 256) * 256 + \
+                (depth_image[:, :, 1] / 256) * 256 ** 2 + \
+                (depth_image[:, :, 2] / 256) * 256 ** 3 + \
+                (depth_image[:, :, 3] / 256) * 256 ** 4
+
+    # Assign the computed depth values to the class attribute _depthMap
+    depthMap = depth_value/1000 # Convert to meters
+    return depthMap 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+#OBSOLETE
+def create_selection_box_from_image_boundary_points(n:ImageNode,roi:Tuple[int,int,int,int],mesh:o3d.geometry.TriangleMesh,z:float=5)->o3d.geometry.OrientedBoundingBox:
+    """Create a selection box from an ImageNode, a region of interest (roi) and a mesh to raycast.
+    A o3d.geometry.OrientedBoundingBox will be created on the location of the intersection of the rays with the mesh.
+    The height of the box is determined by the offset of z in both positive and negative Z-direction
+
+    Args:
+        n (ImageNode): Imagenode used for the raycasting (internal and external camera paramters)
+        roi (Tuple[int,int,int,int]): region of interest (rowMin,rowMax,columnMin,columnMax)
+        mesh (o3d.geometry.TriangleMesh): mesh used for the raycasting
+        z (float, optional): offset in height of the bounding box. Defaults to [-5m:5m].
+
+    Returns:
+        o3d.geometry.OrientedBoundingBox or None (if not all rays hit the mesh)
+    """
+    box=None
+    
+    #create rays for boundaries
+    uvCoordinates=np.array([[roi[0],roi[2]], # top left
+                            [roi[0],roi[3]], # top right
+                            [roi[1],roi[2]], # bottom left
+                            [roi[1],roi[3]] # bottom right
+                            ])
+    # transform uvcoordinates  to world coordinates to rays   
+    rays=n.create_rays(uvCoordinates)
+    
+    # cast rays to 3D mesh 
+    distances,_=gmu.compute_raycasting_collisions(mesh,rays)
+    
+    if all(np.isnan(distances)==False): #if all rays hit
+        #compute endpoints 
+        _,endpoints=gmu.rays_to_points(rays,distances)
+        
+        #create box of projected points
+        points=np.vstack((gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,z],[0,0,0,1]])),
+                        gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,-z],[0,0,0,1]]))))
+        box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.cpu.pybind.utility.Vector3dVector(points))
+        box.color=[1,0,0]     
+    return box 
+
+#### OBSOLETE #####
+
+def ifc_to_nodes_by_guids(path:str, guids:list,getResource : bool=True,**kwargs)-> List[BIMNode]:
+    """
+    Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
+
+    .. image:: ../../../docs/pics/ifc_inheritance.PNG
+
+    Args:
+        1. ifcPath (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
+        2. guids (list of strings): IFC guids you want to parse e.g. [''3saOMnutrFHPtEwspUjESB'',''3saOMnutrFHPtEwspUjESB']. \n  
+    
+    Returns:
+        List[BIMNode]
+    """ 
+    path=Path(path)
+    
+    ifc_file = ifcopenshell.open(path)
+    nodelist=[]   
+    for guid in guids:
+        ifcElements = ifc_file.by_id(guid)
+        ifcElements=ut.item_to_list(ifcElements)
+        for ifcElement in ifcElements:
+            node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
+            node.ifcPath=path
+            nodelist.append(node)
+    return nodelist
+
+def ifc_to_nodes_by_type(path:str, types:list=['IfcBuildingElement'],getResource : bool=True,**kwargs)-> List[BIMNode]:
+    """
+    Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
+
+    **NOTE**: classes are not case sensitive. It is advised to solely focus on IfcBuildingElement classes or inherited classes as these typically have geometry representations that can be used by GEOMAPI.
+
+    **WARNING**: IfcOpenShell strugles with some ifc serializations. In our experience, IFC4 serializations is more robust.
+
+    .. image:: ../../../docs/pics/ifc_inheritance.PNG
+
+    Args:
+        1. ifcPath (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
+        2. types (list of strings, optional): ifcClasses you want to parse e.g. ['IfcWall','IfcSlab','IfcBeam','IfcColumn','IfcStair','IfcWindow','IfcDoor']. Defaults to ['IfcBuildingElement']. \n  
+    
+    Raises:
+        ValueError: 'No valid ifcPath.'
+
+    Returns:
+        List[BIMNode]
+    """   
+    path=Path(path) 
+    
+    try:
+        ifc_file = ifcopenshell.open(path)
+    except:
+        print(ifcopenshell.get_log())
+    else:
+        nodelist=[]   
+        for type in types:
+            ifcElements = ifc_file.by_type(type)
+            ifcElements=ut.item_to_list(ifcElements)
+            for ifcElement in ifcElements:
+                node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
+                node.ifcPath=path
+                nodelist.append(node)
+        return nodelist
+
+
+
+
+def e57path_to_nodes(path:str,percentage:float=1.0) ->List[PointCloudNode]:
+    """Load an e57 file and convert all data to a list of PointCloudNodes.\n
+
+    **NOTE**: lowering the percentage barely affects assignment performance (numpy array assignments are extremely efficient). \n 
+    Only do this to lower computational complexity or free up memory.
+
+    Args:
+        1. e57path(str): absolute path to .e57 file\n
+        2. percentage(float,optional): percentage of points to load. Defaults to 1.0 (100%)\n
+
+    Returns:
+        o3d.geometry.PointCloud
+    """
+    path=Path(path) if path else None
+    
+    e57 = pye57.E57(str(path))
+    gmu.e57_update_point_field(e57)
+    nodes=[]
+    for s in range(e57.scan_count):
+        resource=gmu.e57_to_pcd(e57,e57Index=s,percentage=percentage)
+        node=PointCloudNode(resource=resource,
+                            path=path,
+                            e57Index=s,
+                            percentage=percentage)
+        node.pointCount=len(resource.points)
+        nodes.append(node)
+    return nodes
+
 def e57path_to_nodes_mutiprocessing(path:str,percentage:float=1.0) ->List[PointCloudNode]:
     """Load an e57 file and convert all data to a list of PointCloudNodes.\n
 
@@ -528,7 +1106,23 @@ def e57header_to_nodes(path:str, **kwargs) -> List[PointCloudNode]:
         nodelist.append(PointCloudNode(path=path,e57Index=idx, **kwargs))
     return nodelist
 
-#### IFC ########
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 def get_loaclasses_from_ifcclass(ifcClass:str)->URIRef:
     """ Return the matching LOA class given a ifcClass e.g. IfcWall -> URIRef('https://B2010_EXTERIOR_WALLS').
@@ -790,257 +1384,121 @@ def get_loa_class_per_bimnode(BIMNodes:List[BIMNode] , path:str=None):
             if attr not in ['classes','type']:
                 setattr(n,attr,o.toPython()) 
 
-def ifc_to_nodes(path:str, classes:str='IfcBuildingElement',getResource : bool=True,**kwargs)-> List[BIMNode]:
-    """
-    Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
 
-    **NOTE**: classes are not case sensitive. It is advised to solely focus on IfcBuildingElement classes or inherited classes as these typically have geometry representations that can be used by GEOMAPI.
 
-    **NOTE**: If you intend to parse 1000+ elements, use the multithreading of the entire file instead and filter the BIMNodes afterwards as it will be faster. 
 
-    **WARNING**: IfcOpenShell strugles with some ifc serializations. In our experience, IFC4 serializations is more robust.
 
-    .. image:: ../../../docs/pics/ifc_inheritance.PNG
 
+
+
+
+
+
+
+
+
+
+
+#def metashape_dxf_to_orthonodes(dxfPath:str |Path, **kwargs) -> List[OrthoNode]:
+#    dxf = ezdxf.readfile(self._dxfPath)
+#    #contours and names are in the same list as pairs
+#    entities=[entity for entity in dxf.modelspace()]
+#    
+#    def create_convex_hull_from_dxf_points():
+#        box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
+#        bottomLeftLow=points[2]
+#        bottomRightLow=points[3]
+#        topLeftLow=points[1]
+#        topRightLow=points[0]
+#        bottomLeftHigh=points[2]+normal*self._depth
+#        bottomRightHigh=points[3]+normal*self._depth
+#        topLeftHigh=points[1]+normal*self._depth
+#        topRightHigh=points[0]+normal*self._depth
+#        vertices=np.array([[bottomLeftLow],
+#                            [bottomRightLow],
+#                            [topLeftLow],
+#                            [topRightLow],
+#                            [bottomLeftHigh],
+#                            [bottomRightHigh],
+#                            [topLeftHigh],
+#                            [topRightHigh]])
+#        
+#        box.vertices = o3d.utility.Vector3dVector(np.reshape(vertices,(8,3)))                    
+#        self._convexHull = box  
+#    
+#    if len([entity for entity in entities if entity.dxftype() == 'INSERT' and Path(entity.attribs[0].dxf.text).stem==self._name])==0:
+#        print('Warning: No INSERT entity found with the name of the orthomosaic. taking first ...')
+#        entity=entities[0]
+#        self._name=Path(entity.attribs[0].dxf.text).stem
+#    
+#    #iterate through entities per two
+#    for i in range(0,len(entities),2):
+#        #entity1 are the entities with the name
+#        entity1=entities[i] 
+#        #entity2 are the entities with the geometry
+#        entity2=entities[i+1]
+#        name=Path(entity1.attribs[0].dxf.text).stem
+#        if name == self._name:        
+#            #get geometry
+#            g=cadu.ezdxf_entity_to_o3d(entity2)
+#            g.translate(np.array([0,0,self.get_height()]))
+#            #get points -> they are ordered counter clockwise starting from the top left
+#            points=np.asarray(g.points)
+#            #get the center of the geometry
+#            center=g.get_center()
+#            #get the vector 0-1 and 0-3
+#            vec1=points[1]-points[0]
+#            vec2=points[3]-points[0]
+#            #get the normal of the plane
+#            normal=np.cross(vec1,vec2)
+#            #normalize the normal
+#            normal=normal/np.linalg.norm(normal)
+#            
+#            #get the translation matrix
+#            translation=center#-normal*self._depth
+#            
+#            #get rotation matrix from this normal to the z-axis
+#            rotation_matrix=ut.get_rotation_matrix_from_forward_up(normal, vec2)
+#            
+#            cartesianTransform = gmu.get_cartesian_transform(translation=translation,rotation=rotation_matrix) 
+#            self._cartesianTransform=cartesianTransform    
+#            
+#            #create convexhull
+#            create_convex_hull_from_dxf_points()
+#            
+#            #reset bounding box
+#            self._orientedBoundingBox=None
+#            self.get_oriented_bounding_box()
+#            
+#            #get gsd
+#            self._gsd=np.linalg.norm(vec1[0])/self.get_image_width()
+
+# OBSOLETE, every node has a convex hull, and image nodes have frustrums
+def get_mesh_representation(node: Node)->o3d.geometry.TriangleMesh:
+    """Returns the mesh representation of a node resource\n
+    Returns the convex hull if it is a PointCloudNode.\n
+    For ImageNodes, a virtual mesh cone is used with respect to the field of view.
 
     Args:
-        1. ifcPath (string):  absolute ifc file path e.g. "D:/myifc.ifc"\n
-        2. classes (string, optional): ifcClasses e.g. 'IfcBeam, IfcColumn, IfcWall, IfcSlab'. Defaults to 'IfcBuildingElement'.   
-    
-    Raises:
-        ValueError: 'No valid ifcPath.'
+        Node (Node): geomapi node such as a PointCloudNode
 
     Returns:
-        List[BIMNode]
-    """   
-    path=Path(path)
-    
-    nodelist=[]   
-    ifc = ifcopenshell.open(path)   
-    
-    elements=ifcopenshell.util.selector.filter_elements(ifc, classes)
-    for ifcElement in elements:
-        node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
-        node.ifcPath=path
-        nodelist.append(node)
-  
-    return nodelist
-
-
-def ifc_to_nodes_by_guids(path:str, guids:list,getResource : bool=True,**kwargs)-> List[BIMNode]:
+        o3d.geometry.TriangleMesh 
     """
-    Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
-
-    .. image:: ../../../docs/pics/ifc_inheritance.PNG
-
-    Args:
-        1. ifcPath (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
-        2. guids (list of strings): IFC guids you want to parse e.g. [''3saOMnutrFHPtEwspUjESB'',''3saOMnutrFHPtEwspUjESB']. \n  
-    
-    Returns:
-        List[BIMNode]
-    """ 
-    path=Path(path)
-    
-    ifc_file = ifcopenshell.open(path)
-    nodelist=[]   
-    for guid in guids:
-        ifcElements = ifc_file.by_id(guid)
-        ifcElements=ut.item_to_list(ifcElements)
-        for ifcElement in ifcElements:
-            node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
-            node.ifcPath=path
-            nodelist.append(node)
-    return nodelist
-
-def ifc_to_nodes_by_type(path:str, types:list=['IfcBuildingElement'],getResource : bool=True,**kwargs)-> List[BIMNode]:
-    """
-    Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
-
-    **NOTE**: classes are not case sensitive. It is advised to solely focus on IfcBuildingElement classes or inherited classes as these typically have geometry representations that can be used by GEOMAPI.
-
-    **WARNING**: IfcOpenShell strugles with some ifc serializations. In our experience, IFC4 serializations is more robust.
-
-    .. image:: ../../../docs/pics/ifc_inheritance.PNG
-
-    Args:
-        1. ifcPath (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
-        2. types (list of strings, optional): ifcClasses you want to parse e.g. ['IfcWall','IfcSlab','IfcBeam','IfcColumn','IfcStair','IfcWindow','IfcDoor']. Defaults to ['IfcBuildingElement']. \n  
-    
-    Raises:
-        ValueError: 'No valid ifcPath.'
-
-    Returns:
-        List[BIMNode]
-    """   
-    path=Path(path) 
-    
-    try:
-        ifc_file = ifcopenshell.open(path)
-    except:
-        print(ifcopenshell.get_log())
+    nodeType=str(type(node))
+    resource= node.resource
+   
+    if 'PointCloudNode' in str(type(node)):
+        hull, _ =resource.compute_convex_hull()
+        return hull
+    elif 'ImageNode' in nodeType:
+        return node.convexHull
+    elif 'OrthoNode' in nodeType:
+        #print('not implemented')
+        return node.convexHull
     else:
-        nodelist=[]   
-        for type in types:
-            ifcElements = ifc_file.by_type(type)
-            ifcElements=ut.item_to_list(ifcElements)
-            for ifcElement in ifcElements:
-                node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
-                node.ifcPath=path
-                nodelist.append(node)
-        return nodelist
-
-
-def ifc_to_nodes_multiprocessing(path:str, **kwargs)-> List[BIMNode]:
-    """Returns the contents of geometry elements in an ifc file as BIMNodes.
-    This method is 3x faster than other parsing methods due to its multi-threading.
-    However, only the entire ifc can be parsed.
-
-    **WARNING**: IfcOpenShell strugles with some ifc serializations. In our experience, IFC4 serializations is more robust.
-
-    Args:
-        ifcPath (str | Path): ifc file path e.g. "D:/myifc.ifc"
-
-    Raises:
-        ValueError: 'No valid ifcPath.'
-
-    Returns:
-        List[BIMNode]
-    """
-    path=Path(path)
+        return resource
     
-    try:
-        ifc_file = ifcopenshell.open(path)
-    except:
-        print(ifcopenshell.get_log())
-    else: 
-        nodelist=[]   
-        timestamp=ut.get_timestamp(path)
-        settings = ifcopenshell.geom.settings()
-        settings.set(settings.USE_WORLD_COORDS, True) 
-        iterator = ifcopenshell.geom.iterator(settings, ifc_file, multiprocessing.cpu_count())
-        if iterator.initialize():
-            while True:
-                shape = iterator.get()
-                ifcElement = ifc_file.by_guid(shape.guid) 
-                faces = shape.geometry.faces # Indices of vertices per triangle face e.g. [f1v1, f1v2, f1v3, f2v1, f2v2, f2v3, ...]
-                verts = shape.geometry.verts # X Y Z of vertices in flattened list e.g. [v1x, v1y, v1z, v2x, v2y, v2z, ...]
-                # materials = shape.geometry.materials # Material names and colour style information that are relevant to this shape
-                # material_ids = shape.geometry.material_ids # Indices of material applied per triangle face e.g. [f1m, f2m, ...]
-
-                # Since the lists are flattened, you may prefer to group them per face like so depending on your geometry kernel
-                grouped_verts = [[verts[i], verts[i + 1], verts[i + 2]] for i in range(0, len(verts), 3)]
-                grouped_faces = [[faces[i], faces[i + 1], faces[i + 2]] for i in range(0, len(faces), 3)]
-
-                #Convert grouped vertices/faces to Open3D objects 
-                o3dVertices = o3d.utility.Vector3dVector(np.asarray(grouped_verts))
-                o3dTriangles = o3d.utility.Vector3iVector(np.asarray(grouped_faces))
-
-                # Create the Open3D mesh object
-                mesh=o3d.geometry.TriangleMesh(o3dVertices,o3dTriangles)
-
-                #if mesh, create node
-                if len(mesh.triangles)>1:
-                    # node=BIMNode(**kwargs)
-                    name=ifcElement.Name
-                    className=ifcElement.is_a()
-                    globalId=ifcElement.GlobalId
-                    subject= name +'_'+globalId 
-                    resource=mesh
-                    timestamp=timestamp
-                    ifcPath=path
-                    objectType =ifcElement.ObjectType
-                    nodelist.append(BIMNode(name=name,
-                                            className=className,
-                                            globalId=globalId,
-                                            subject=subject,
-                                            resource=resource,
-                                            timestamp=timestamp,
-                                            ifcPath=ifcPath,
-                                            objectType=objectType,
-                                            faceCount=len(mesh.triangles),
-                                            pointCount=len(mesh.vertices),
-                                            **kwargs))
-                if not iterator.next():
-                    break
-        return nodelist
-
-def navvis_csv_to_nodes(csvPath :Path, 
-                        directory : Path = None, 
-                        includeDepth : bool = True, 
-                        depthPath : Path = None, 
-                        skip:int=None, **kwargs) -> List[PanoNode]:
-    """Parse Navvis csv file and return a list of PanoNodes with the csv metadata.
-    
-    Args:
-        - csvPath (Path): csv file path e.g. "D:/Data/pano/pano-poses.csv"
-        - skip (int, Optional): select every nth image from the xml. Defaults to None.
-        - Path (Path, Optional): path to the pano directory. Defaults to None.
-        - includeDepth (bool, Optional): include depth images. Defaults to True.
-        - depthPath (Path, Optional): path to the depth images. Defaults to None.
-        - kwargs: additional keyword arguments for the PanoNode instances
-                
-    Returns:
-        - A list of PanoNodes with the csv metadata
-        
-    """
-    assert skip == None or skip >0, f'skip == None or skip '
-    assert os.path.exists(csvPath), f'File does not exist.'
-    assert csvPath.endswith('.csv'), f'File does not end with csv.'
-    
-    #open csv
-    pano_csv_file = open(csvPath, mode = 'r')
-    pano_csv_data = list(pd.reader(pano_csv_file))
-    
-    #get pano information
-    pano_data = []
-    for sublist in pano_csv_data[1:]:
-        pano_data.append(sublist[0].split('; '))
-        
-    pano_filenames = []
-    for sublist in pano_data:
-        pano_filenames.append(sublist[1])
-        
-    pano_timestamps = []
-    for sublist in pano_data:
-        pano_timestamps.append(ut.get_timestamp(sublist[2]))
-        
-    pano_cartesianTransforms = []
-    for sublist in pano_data:
-        r = R.from_quat((float(sublist[7]),float(sublist[8]), float(sublist[9]), float(sublist[6]))).as_matrix()
-        T = np.pad(r, ((0, 1), (0, 1)), mode='constant', constant_values=0)
-        T[0,3] = float(sublist[3])
-        T[1,3] = float(sublist[4])
-        T[2,3] = float(sublist[5])
-        T[3,3] = float(1)
-        pano_cartesianTransforms.append(T)
-        
-    #get pano path
-    directory = csvPath.parent if not directory else directory
-        
-    if includeDepth:
-        depth_filenames = []
-        for pano_filename in pano_filenames:
-            depth_filename  = pano_filename.replace(".jpg","_depth.png") #navvis depth images are png
-            depth_filenames.append(depth_filename)
-        if not depthPath:
-            depthPath = directory.replace("pano", "pano_depth")
-    
-    #create nodes     
-    nodelist=[]
-    for i,pano in enumerate(pano_filenames):
-        if os.path.exists(os.path.join(directory, pano)):
-            if includeDepth:
-                node=PanoNode(name= pano.split(".")[0],
-                            cartesianTransform=pano_cartesianTransforms[i],
-                            timestamp = pano_timestamps[i],
-                            path = directory / pano,
-                            depthPath = depthPath / depth_filenames[i],
-                            **kwargs)
-            nodelist.append(node)
-    return nodelist
-
-##### NODE SELECTION #####
 
 def select_nodes_k_nearest_neighbors(node:Node,nodelist:List[Node],k:int=10) -> Tuple[List [Node], o3d.utility.DoubleVector]:
     """ Select k nearest nodes based on Euclidean distance between centroids.\n
@@ -1081,48 +1539,6 @@ def select_nodes_k_nearest_neighbors(node:Node,nodelist:List[Node],k:int=10) -> 
             return selectedNodeList, distances
     else:
         return None,None
-
-#OBSOLETE
-def create_selection_box_from_image_boundary_points(n:ImageNode,roi:Tuple[int,int,int,int],mesh:o3d.geometry.TriangleMesh,z:float=5)->o3d.geometry.OrientedBoundingBox:
-    """Create a selection box from an ImageNode, a region of interest (roi) and a mesh to raycast.
-    A o3d.geometry.OrientedBoundingBox will be created on the location of the intersection of the rays with the mesh.
-    The height of the box is determined by the offset of z in both positive and negative Z-direction
-
-    Args:
-        n (ImageNode): Imagenode used for the raycasting (internal and external camera paramters)
-        roi (Tuple[int,int,int,int]): region of interest (rowMin,rowMax,columnMin,columnMax)
-        mesh (o3d.geometry.TriangleMesh): mesh used for the raycasting
-        z (float, optional): offset in height of the bounding box. Defaults to [-5m:5m].
-
-    Returns:
-        o3d.geometry.OrientedBoundingBox or None (if not all rays hit the mesh)
-    """
-    box=None
-    
-    #create rays for boundaries
-    uvCoordinates=np.array([[roi[0],roi[2]], # top left
-                            [roi[0],roi[3]], # top right
-                            [roi[1],roi[2]], # bottom left
-                            [roi[1],roi[3]] # bottom right
-                            ])
-    # transform uvcoordinates  to world coordinates to rays   
-    rays=n.create_rays(uvCoordinates)
-    
-    # cast rays to 3D mesh 
-    distances,_=gmu.compute_raycasting_collisions(mesh,rays)
-    
-    if all(np.isnan(distances)==False): #if all rays hit
-        #compute endpoints 
-        _,endpoints=gmu.rays_to_points(rays,distances)
-        
-        #create box of projected points
-        points=np.vstack((gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,z],[0,0,0,1]])),
-                        gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,-z],[0,0,0,1]]))))
-        box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.cpu.pybind.utility.Vector3dVector(points))
-        box.color=[1,0,0]     
-    return box 
-
-
 
 def select_nodes_with_centers_in_radius(node:Node,nodelist:List[Node],r:float=0.5) -> Tuple[List [Node] ,List[float]]:
     """Select nodes within radius of the node centroid based on Euclidean distance between node centroids.\n
@@ -1307,256 +1723,3 @@ def select_nodes_with_intersecting_resources(node:Node,nodelist:List[Node]) -> L
         if any(selectedNodeList):        
             return selectedNodeList
     return None
-
-# OBSOLETE, every node has a convex hull, and image nodes have frustrums
-def get_mesh_representation(node: Node)->o3d.geometry.TriangleMesh:
-    """Returns the mesh representation of a node resource\n
-    Returns the convex hull if it is a PointCloudNode.\n
-    For ImageNodes, a virtual mesh cone is used with respect to the field of view.
-
-    Args:
-        Node (Node): geomapi node such as a PointCloudNode
-
-    Returns:
-        o3d.geometry.TriangleMesh 
-    """
-    nodeType=str(type(node))
-    resource= node.resource
-   
-    if 'PointCloudNode' in str(type(node)):
-        hull, _ =resource.compute_convex_hull()
-        return hull
-    elif 'ImageNode' in nodeType:
-        return node.convexHull
-    elif 'OrthoNode' in nodeType:
-        #print('not implemented')
-        return node.convexHull
-    else:
-        return resource
-
-def nodes_to_graph(nodelist : List[Node], path:str =None, overwrite: bool =False,save: bool =False,base: URIRef = None) -> Graph:
-    """Convert list of nodes to an RDF graph.
-
-    Args:
-        - nodelist (List[Node])
-        - graphPath (str, optional): path that serves as the basepath for all path information in the graph. This is also the storage location of the graph.
-        - overwrite (bool, optional): Overwrite the existing graph triples. Defaults to False.
-        - save (bool, optional): Save the Graph to file. Defaults to False.
-
-    Returns:
-        Graph 
-    """
-    path=Path(path) if path else None
-    g=Graph()
-    g=ut.bind_ontologies(g)
-    
-    #create graph scope
-    if base:
-        inst = Namespace(base)
-        g.bind("inst", inst)                
-        # subject = inst[subject.replace('#', '/').split('/')[-1]]
-                
-    for node in nodelist:
-            node.get_graph(path,base=base)
-            g+= node.graph
-    if(path and save):
-        g.serialize(path)     
-    return g  
-
-#### OBSOLETE #####
-
-def graph_to_nodes(graphPath : str, graph: Graph, subjects: List, **kwargs) -> List[Node]:
-    """Convert a graphPath to a set of Nodes.
-
-    Args:
-        0. graphPath (str):  absolute path to .ttl RDF Graph\n
-        1. kwargs (Any) \n
-
-    Returns:
-        A list of pointcloudnodes, imagenodes, meshnodes, bimnodes, orthonodes with metadata 
-    """    
-    """
-    Parses RDF graph, finds subjects of type geomapi:*Node, and instantiates corresponding Python classes.
-    
-    :param graph: rdflib.Graph object
-    :return: dict mapping subject URIs to class instances
-    """
-    instances = []
-    if(not graph):
-        if(not graphPath):
-            raise ValueError("No graph or graphPath provided")
-        else:
-            graph = Graph().parse(graphPath)
-    # Build a map of class names available in the given module
-    class_map = {name: cls for name, cls in inspect.getmembers(geomapi.nodes, inspect.isclass)}
-
-    for subject in graph.subjects(RDF.type, None):
-        if(subjects is not None): # Check the subject filter
-            if(str(subject) not in subjects):
-                continue
-        for rdf_type in graph.objects(subject, RDF.type):
-            if str(rdf_type).startswith(str(GEOMAPI_PREFIXES["geomapi"])):
-                class_name = rdf_type.split("#")[-1]
-                cls = class_map.get(class_name)
-                if cls:
-                    instances.append(cls(graph = graph, graphPath = graphPath, subject = subject,**kwargs))
-                else:
-                    print(f"⚠️ No matching class found for RDF type: {class_name}")
-
-    return instances
-
-def graph_to_nodes(graph : Graph,**kwargs) -> List[Node]:
-    """Convert a graph to a set of Nodes.
-
-    Args:
-        0. graph (RDFlib.Graph):  Graph to parse\n
-        1. kwargs (Any) \n
-
-    Returns:
-        A list of pointcloudnodes, imagenodes, meshnodes, bimnodes, orthonodes with metadata 
-    """    
-    nodelist=[]
-    for subject in graph.subjects(RDF.type):
-        node=create_node(graph=graph,subject=subject,**kwargs) 
-        nodelist.append(node)
-    return nodelist
-
-# def subject_to_node_type(graph: Graph , subject:URIRef, **kwargs)-> Node:
-#     # warn("This function is depricated use a SetNode instead")
-
-#     nodeType = ut.literal_to_string(graph.value(subject=subject,predicate=RDF.type))
-#     g = Graph()
-#     g += graph.triples((subject, None, None))
-#     if 'BIMNode' in nodeType:
-#         node=BIMNode(graph=g,**kwargs)
-#     elif 'MeshNode' in nodeType:
-#         node=MeshNode(graph=g,**kwargs)
-#     elif 'PointCloudNode' in nodeType:
-#         node=PointCloudNode(graph=g,**kwargs)
-#     elif 'ImageNode' in nodeType:
-#         node=ImageNode(graph=g,**kwargs)
-#     elif 'SetNode' in nodeType:
-#         node=SetNode(graph=g,**kwargs)  
-#     else:
-#         node=Node(graph=g,**kwargs) 
-#     return node
-
-def create_node(graph: Graph = None, graphPath: str =None, subject: URIRef = None, resource = None, **kwargs)-> Node:
-    """Create Node from various optional inputs i.e. graphs, graphPaths, etc.
-
-    Args:
-        graph (Graph, optional): RDF Graph. 
-        path (str, optional): path to RDF graph.
-        subject (URIRef, optional): URI subject in the graph 
-        **kwargs are forwarded to created Nodes
-
-    Returns:
-        Node (PointCloudNode,MeshNode,GeometryNode,ImageNode)
-    """
-    graphPath=Path(graphPath) if graphPath else None
-    #input validation
-    if(graphPath and not graph):
-            graph = Graph().parse(graphPath)
-    if(graph and not subject):
-        subject=next(graph.subjects(RDF.type))
-    if (subject and graph):    
-        nodeType = ut.literal_to_string(graph.value(subject=subject,predicate=RDF.type))
-    elif (resource):
-        if type(resource) is o3d.geometry.PointCloud:
-            nodeType='PointCloudNode'
-        elif type(resource) is o3d.geometry.TriangleMesh:
-            nodeType='MeshNode'
-        elif type(resource) is o3d.geometry:
-            nodeType='GeometryNode'
-        elif type(resource) is np.ndarray:
-            nodeType='ImageNode'        
-    else:        
-        nodeType = 'Node'
-
-    #node creation
-    if 'BIMNode' in nodeType:
-        node=BIMNode(graph=graph, graphPath=graphPath, resource=resource,subject=subject, **kwargs)
-    elif 'MeshNode' in nodeType:
-        node=MeshNode(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs)
-    elif 'GeometryNode' in nodeType:
-        node=GeometryNode(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs)
-    elif 'PointCloudNode' in nodeType:
-        node=PointCloudNode(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs)
-    elif 'ImageNode' in nodeType:
-        node=ImageNode(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs)
-    elif 'SetNode' in nodeType:
-        node=SetNode(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs)  
-    else:
-        node=Node(graph=graph, graphPath=graphPath, resource=resource, subject=subject, **kwargs) 
-    return node
-
-def resources_to_linked_nodes(self,resources) -> None:
-    """Create linked Nodes from a set of data resources.
-
-    **NOTE**: Images, ortho and panos are not processed as their resources don't have a geometry.
-    
-    Args:
-        - resources (List[mesh,pcd,lineset,etc.])
-
-    Returns:
-        None 
-    """
-    nodelist=[]
-    for resource in ut.item_to_list(resources):
-        #check type
-        if isinstance(resource,o3d.geometry.TriangleMesh): 
-            nodelist.append(MeshNode(resource=resource))
-        elif isinstance(resource,o3d.geometry.PointCloud):
-            nodelist.append( PointCloudNode(resource=resource))
-        elif isinstance(resource,o3d.geometry.LineSet):
-            nodelist.append( LineSetNode(resource=resource))
-        elif isinstance(resource,ifcopenshell.entity_instance):
-            nodelist.append( BIMNode(resource=resource))
-        # elif isinstance(np.asarray(resource),np.ndarray) and len(np.asarray(resource).shape) == 3:
-        #     nodelist.append( ImageNode(resource=resource)) # we can't diffirentiate between ortho and image and panorama
-        else:
-            print('Resource type not supported')
-    if nodelist:
-        self.set_linked_nodes(nodelist)
-def get_linked_nodes(node: Node ,graph:Graph, getResource=False, **kwargs) -> List[Node]:
-    """Get related nodes based on linkedNodes variable.\n
-
-    Args:
-        0. node (Node): source node to evaluate. \n
-        1. graph (Graph): Graph that contains the linkedNodes. \n
-        2. getResource (bool, optional): Retrieve the reources. Defaults to False.\n
-
-    Returns:
-        List[Node]
-    """
-    warn("This function is depricated use a SetNode instead")
-    nodelist=[]
-    if getattr(node,'linkedNodes',None) is not None:  
-        for subject in node.linkedNodes:
-            if graph.value(subject=subject,predicate=RDF.type) is not None:
-                nodelist.append(create_node(graph=graph,subject=subject, getResource=getResource, **kwargs)) 
-    return nodelist
-
-def instantiate_nodes_from_graph(graphPath):
-    """
-    Parses RDF graph, finds subjects of type geomapi:*Node, and instantiates corresponding Python classes.
-    
-    :param graph: rdflib.Graph object
-    :return: dict mapping subject URIs to class instances
-    """
-    instances = []
-    graph = Graph().parse(graphPath)
-    # Build a map of class names available in the given module
-    class_map = {name: cls for name, cls in inspect.getmembers(geomapi.nodes, inspect.isclass)}
-
-    for subject in graph.subjects(RDF.type, None):
-        for rdf_type in graph.objects(subject, RDF.type):
-            if str(rdf_type).startswith(str(GEOMAPI_PREFIXES["geomapi"])):
-                class_name = rdf_type.split("#")[-1]
-                cls = class_map.get(class_name)
-                if cls:
-                    instances.append(cls(graph = graph, graphPath = graphPath, subject = subject))
-                else:
-                    print(f"⚠️ No matching class found for RDF type: {class_name}")
-
-    return instances

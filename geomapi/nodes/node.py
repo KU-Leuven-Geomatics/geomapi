@@ -781,19 +781,20 @@ class Node:
             self.convexHull.transform(transformation)
 
         # Let subclass handle resource transformation
-        if(self.resource):
+        if(self.resource is not None):
             self._transform_resource(transformation, rotate_around_center)
 
     def _transform_resource(self, transformation: np.ndarray, rotate_around_center: bool):
         """Optional hook for subclasses to implement their own resource transformation. The base works for all types of open3D geometry"""
-        if rotate_around_center:
-            center = self.resource.get_center()
-            t1 = np.eye(4)
-            t1[:3, 3] = -center
-            t2 = np.eye(4)
-            t2[:3, 3] = center
-            transformation = t2 @ transformation @ t1
-        self.resource.transform(transformation)
+        if(isinstance(self.resource, o3d.geometry.Geometry)):
+            if rotate_around_center:
+                center = self.resource.get_center()
+                t1 = np.eye(4)
+                t1[:3, 3] = -center
+                t2 = np.eye(4)
+                t2[:3, 3] = center
+                transformation = t2 @ transformation @ t1
+            self.resource.transform(transformation)
     
     def show(self):
         """Creates a visualization of the resource (if loaded)

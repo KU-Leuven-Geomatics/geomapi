@@ -845,8 +845,6 @@ class ImageNode(Node):
 
         return cropped_image
         
-
-    
     def show(self):
         super().show()
         # Converts from one colour space to the other. this is needed as RGB

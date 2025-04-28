@@ -194,7 +194,7 @@ class PointCloudNode (Node):
             rotation_matrix=None
             translation=None
             if getattr(header,'rotation',None) is not None:
-                rotation_matrix=header.rotation_matrix
+                rotation_matrix=header.rotation
             if getattr(header,'translation',None) is not None:
                 translation=header.translation
             self.cartesianTransform=gmu.get_cartesian_transform(rotation=rotation_matrix,translation=translation)
