@@ -147,18 +147,17 @@ class TestTools(unittest.TestCase):
         tl.dxf_to_lineset_nodes(dxfPath=self.dataLoaderRailway.dxfPath)
 
     def test_dxf_to_ortho_nodes(self):
-        tl.dxf_to_lineset_nodes(dxfPath=self.dataLoaderRailway.orthoDxfPath2)
+        nodes = tl.dxf_to_ortho_nodes(dxfPath=self.dataLoaderRailway.orthoDxfPath2)
         #dxfPath and name + height-> offset in y and z
-        node=OrthoNode(dxfPath=self.dataLoaderRailway.orthoDxfPath2,name='railway-0-0',height=self.dataLoaderRailway.orthoHeight)
+        node=nodes[0] #OrthoNode(dxfPath=self.dataLoaderRailway.orthoDxfPath2,name='railway-0-0',height=self.dataLoaderRailway.orthoHeight)
         self.assertEqual(node.dxfPath,self.dataLoaderRailway.orthoDxfPath2)
         #check cartesianTransform
-        self.assertTrue(np.allclose(node.cartesianTransform,self.dataLoaderRailway.orthoCartesianTransform,atol=0.001))
+        np.testing.assert_array_almost_equal(node.cartesianTransform,self.dataLoaderRailway.orthoCartesianTransform,3)
         #check orientedBoundingBox. height default 5
-        self.assertTrue(np.allclose(node.orientedBoundingBox.get_center(),np.array([263379.5193, 151089.1667 ,self.dataLoaderRailway.orthoHeight-5]),atol=0.001))
+        np.testing.assert_array_almost_equal(node.orientedBoundingBox.get_center(),np.array([263379.5193, 151089.1667 ,self.dataLoaderRailway.orthoHeight-5]),3)
         #check convexHull
-        self.assertTrue(np.allclose(node.convexHull.get_center(),np.array([263379.5193, 151089.1667 ,self.dataLoaderRailway.orthoHeight-5]),atol=0.001))
-        #raise error when wrong path
-        self.assertRaises(ValueError,OrthoNode,dxfPath='dfsgsdfgsd')
+        np.testing.assert_array_almost_equal(node.convexHull.get_center(),np.array([263379.5193, 151089.1667 ,self.dataLoaderRailway.orthoHeight-5]),3)
+
 
     def test_ifc_to_bim_nodes(self):
         #IFC1

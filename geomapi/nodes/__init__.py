@@ -1,7 +1,7 @@
 """A package to Manage and Work with RDF based Geomatic data"""
 
 from .node import Node
-from .geometrynode import GeometryNode
+#from .geometrynode import GeometryNode
 from .pointcloudnode import PointCloudNode
 from .bimnode import BIMNode
 from .meshnode import MeshNode

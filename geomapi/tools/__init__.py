@@ -431,28 +431,12 @@ def dxf_to_ortho_nodes(dxfPath: Union[str, Path], name_filter: str = None, **kwa
 
         depth = kwargs.get("depth", 10.0)
 
-        convex_vertices = np.array([
-            points[2],
-            points[3],
-            points[1],
-            points[0],
-            points[2] + normal * depth,
-            points[3] + normal * depth,
-            points[1] + normal * depth,
-            points[0] + normal * depth
-        ])
-
-        box = o3d.geometry.TriangleMesh.create_box(width=1.0, height=1.0, depth=1.0)
-        box.vertices = o3d.utility.Vector3dVector(convex_vertices)
-
         image_width = kwargs.get("imageWidth", 1)
         gsd = np.linalg.norm(vec1[0]) / image_width
 
         node = OrthoNode(
             name=name,
             cartesianTransform=cartesian_transform,
-            orientedBoundingBox=g.get_oriented_bounding_box(),
-            convexHull=box,
             dxfPath=dxfPath,
             imageWidth=image_width,
             imageHeight=kwargs.get("imageHeight"),
@@ -646,7 +630,7 @@ def navvis_csv_to_pano_nodes(csvPath :Path,
             depth_filename  = pano_filename.replace(".jpg","_depth.png") #navvis depth images are png
             depth_filenames.append(depth_filename)
         if not depthPath:
-            depthPath = directory.replace("pano", "pano_depth")
+            depthPath = Path(str(directory).replace("pano", "pano_depth"))
     
     #create nodes     
     nodelist=[]
@@ -771,10 +755,10 @@ def select_nodes_within_convex_hull(nodes: List[Node],
     # Directly check if centers are inside
     scene = o3d.t.geometry.RaycastingScene()
     _ = scene.add_triangles(o3d.t.geometry.TriangleMesh.from_legacy(hull))  # we do not need the geometry ID for mesh
-    signed_distance = scene.compute_signed_distance(o3d.cpu.pybind.core.Tensor(centers, dtype=o3d.core.Dtype.Float32))
+    occupancy = scene.compute_occupancy(o3d.cpu.pybind.core.Tensor(centers, dtype=o3d.core.Dtype.Float32))
 
     # Select nodes based on the mask
-    selectedNodeList = [node for idx, node in enumerate(nodes) if signed_distance[idx] < 0]
+    selectedNodeList = [node for idx, node in enumerate(nodes) if occupancy[idx] == 1]
 
     if selectedNodeList:
         return selectedNodeList
@@ -913,198 +897,198 @@ def navvis_decode_depthmap(depth_image):
 
 
 
-#OBSOLETE
-def create_selection_box_from_image_boundary_points(n:ImageNode,roi:Tuple[int,int,int,int],mesh:o3d.geometry.TriangleMesh,z:float=5)->o3d.geometry.OrientedBoundingBox:
-    """Create a selection box from an ImageNode, a region of interest (roi) and a mesh to raycast.
-    A o3d.geometry.OrientedBoundingBox will be created on the location of the intersection of the rays with the mesh.
-    The height of the box is determined by the offset of z in both positive and negative Z-direction
-
-    Args:
-        n (ImageNode): Imagenode used for the raycasting (internal and external camera paramters)
-        roi (Tuple[int,int,int,int]): region of interest (rowMin,rowMax,columnMin,columnMax)
-        mesh (o3d.geometry.TriangleMesh): mesh used for the raycasting
-        z (float, optional): offset in height of the bounding box. Defaults to [-5m:5m].
-
-    Returns:
-        o3d.geometry.OrientedBoundingBox or None (if not all rays hit the mesh)
-    """
-    box=None
-    
-    #create rays for boundaries
-    uvCoordinates=np.array([[roi[0],roi[2]], # top left
-                            [roi[0],roi[3]], # top right
-                            [roi[1],roi[2]], # bottom left
-                            [roi[1],roi[3]] # bottom right
-                            ])
-    # transform uvcoordinates  to world coordinates to rays   
-    rays=n.create_rays(uvCoordinates)
-    
-    # cast rays to 3D mesh 
-    distances,_=gmu.compute_raycasting_collisions(mesh,rays)
-    
-    if all(np.isnan(distances)==False): #if all rays hit
-        #compute endpoints 
-        _,endpoints=gmu.rays_to_points(rays,distances)
-        
-        #create box of projected points
-        points=np.vstack((gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,z],[0,0,0,1]])),
-                        gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,-z],[0,0,0,1]]))))
-        box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.cpu.pybind.utility.Vector3dVector(points))
-        box.color=[1,0,0]     
-    return box 
-
-#### OBSOLETE #####
-
-def ifc_to_nodes_by_guids(path:str, guids:list,getResource : bool=True,**kwargs)-> List[BIMNode]:
-    """
-    Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
-
-    .. image:: ../../../docs/pics/ifc_inheritance.PNG
-
-    Args:
-        1. ifcPath (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
-        2. guids (list of strings): IFC guids you want to parse e.g. [''3saOMnutrFHPtEwspUjESB'',''3saOMnutrFHPtEwspUjESB']. \n  
-    
-    Returns:
-        List[BIMNode]
-    """ 
-    path=Path(path)
-    
-    ifc_file = ifcopenshell.open(path)
-    nodelist=[]   
-    for guid in guids:
-        ifcElements = ifc_file.by_id(guid)
-        ifcElements=ut.item_to_list(ifcElements)
-        for ifcElement in ifcElements:
-            node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
-            node.ifcPath=path
-            nodelist.append(node)
-    return nodelist
-
-def ifc_to_nodes_by_type(path:str, types:list=['IfcBuildingElement'],getResource : bool=True,**kwargs)-> List[BIMNode]:
-    """
-    Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
-
-    **NOTE**: classes are not case sensitive. It is advised to solely focus on IfcBuildingElement classes or inherited classes as these typically have geometry representations that can be used by GEOMAPI.
-
-    **WARNING**: IfcOpenShell strugles with some ifc serializations. In our experience, IFC4 serializations is more robust.
-
-    .. image:: ../../../docs/pics/ifc_inheritance.PNG
-
-    Args:
-        1. ifcPath (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
-        2. types (list of strings, optional): ifcClasses you want to parse e.g. ['IfcWall','IfcSlab','IfcBeam','IfcColumn','IfcStair','IfcWindow','IfcDoor']. Defaults to ['IfcBuildingElement']. \n  
-    
-    Raises:
-        ValueError: 'No valid ifcPath.'
-
-    Returns:
-        List[BIMNode]
-    """   
-    path=Path(path) 
-    
-    try:
-        ifc_file = ifcopenshell.open(path)
-    except:
-        print(ifcopenshell.get_log())
-    else:
-        nodelist=[]   
-        for type in types:
-            ifcElements = ifc_file.by_type(type)
-            ifcElements=ut.item_to_list(ifcElements)
-            for ifcElement in ifcElements:
-                node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
-                node.ifcPath=path
-                nodelist.append(node)
-        return nodelist
-
-
-
-
-def e57path_to_nodes(path:str,percentage:float=1.0) ->List[PointCloudNode]:
-    """Load an e57 file and convert all data to a list of PointCloudNodes.\n
-
-    **NOTE**: lowering the percentage barely affects assignment performance (numpy array assignments are extremely efficient). \n 
-    Only do this to lower computational complexity or free up memory.
-
-    Args:
-        1. e57path(str): absolute path to .e57 file\n
-        2. percentage(float,optional): percentage of points to load. Defaults to 1.0 (100%)\n
-
-    Returns:
-        o3d.geometry.PointCloud
-    """
-    path=Path(path) if path else None
-    
-    e57 = pye57.E57(str(path))
-    gmu.e57_update_point_field(e57)
-    nodes=[]
-    for s in range(e57.scan_count):
-        resource=gmu.e57_to_pcd(e57,e57Index=s,percentage=percentage)
-        node=PointCloudNode(resource=resource,
-                            path=path,
-                            e57Index=s,
-                            percentage=percentage)
-        node.pointCount=len(resource.points)
-        nodes.append(node)
-    return nodes
-
-def e57path_to_nodes_mutiprocessing(path:str,percentage:float=1.0) ->List[PointCloudNode]:
-    """Load an e57 file and convert all data to a list of PointCloudNodes.\n
-
-    **NOTE**: Complex types cannot be pickled (serialized) by Windows. Therefore, a two step parsing is used where e57 data is first loaded as np.arrays with multi-processing.
-    Next, the arrays are passed to o3d.geometry.PointClouds outside of the loop.\n  
-
-    **NOTE**: starting parallel processing takes a bit of time. This method will start to outperform single-core import from 3+ pointclouds.\n
-
-    **NOTE**: lowering the percentage barely affects assignment performance (numpy array assignments are extremely efficient). \n 
-    Only do this to lower computational complexity or free up memory.
-
-    Args:
-        1. e57path(str): absolute path to .e57 file\n
-        2. percentage(float,optional): percentage of points to load. Defaults to 1.0 (100%)\n
-
-    Returns:
-        o3d.geometry.PointCloud
-    """   
-    path=Path(path) if path else None
- 
-    e57 = pye57.E57(path)
-    gmu.e57_update_point_field(e57)
-
-    nodes=[]
-    with concurrent.futures.ProcessPoolExecutor() as executor:
-        # first load all e57 data and output it as np.arrays
-        results=[executor.submit(gmu.e57_to_arrays,e57Path=path,e57Index=s,percentage=percentage) for s in range(e57.scan_count)]
-        # next, the arrays are assigned to point clouds outside the loop.
-        for s,r in enumerate(concurrent.futures.as_completed(results)):
-            resource=gmu.arrays_to_pcd(r.result())
-            node=PointCloudNode(resource=resource,
-                                path=path,
-                                e57Index=s,
-                                percentage=percentage)
-            node.pointCount=len(resource.points)
-            nodes.append(node)
-    return nodes
-
-def e57header_to_nodes(path:str, **kwargs) -> List[PointCloudNode]:
-    """Parse e57 file header that is created with E57lib e57xmldump.exe.
-
-    Args:
-        path (string):  e57 xml file path e.g. "D:\\Data\\2018-06 Werfopvolging Academiestraat Gent\\week 22\\PCD\\week 22 lidar_CC.xml"
-            
-    Returns:
-        A list of pointcloudnodes with the xml metadata 
-    """
-    path=Path(path) if path else None
-    
-    nodelist=[]   
-    e57 = pye57.E57(str(path))   
-    gmu.e57_update_point_field(e57)
-
-    for idx in range(e57.scan_count):
-        nodelist.append(PointCloudNode(path=path,e57Index=idx, **kwargs))
-    return nodelist
+##OBSOLETE
+#def create_selection_box_from_image_boundary_points(n:ImageNode,roi:Tuple[int,int,int,int],mesh:o3d.geometry.TriangleMesh,z:float=5)->o3d.geometry.OrientedBoundingBox:
+#    """Create a selection box from an ImageNode, a region of interest (roi) and a mesh to raycast.
+#    A o3d.geometry.OrientedBoundingBox will be created on the location of the intersection of the rays with the mesh.
+#    The height of the box is determined by the offset of z in both positive and negative Z-direction
+#
+#    Args:
+#        n (ImageNode): Imagenode used for the raycasting (internal and external camera paramters)
+#        roi (Tuple[int,int,int,int]): region of interest (rowMin,rowMax,columnMin,columnMax)
+#        mesh (o3d.geometry.TriangleMesh): mesh used for the raycasting
+#        z (float, optional): offset in height of the bounding box. Defaults to [-5m:5m].
+#
+#    Returns:
+#        o3d.geometry.OrientedBoundingBox or None (if not all rays hit the mesh)
+#    """
+#    box=None
+#    
+#    #create rays for boundaries
+#    uvCoordinates=np.array([[roi[0],roi[2]], # top left
+#                            [roi[0],roi[3]], # top right
+#                            [roi[1],roi[2]], # bottom left
+#                            [roi[1],roi[3]] # bottom right
+#                            ])
+#    # transform uvcoordinates  to world coordinates to rays   
+#    rays=n.create_rays(uvCoordinates)
+#    
+#    # cast rays to 3D mesh 
+#    distances,_=gmu.compute_raycasting_collisions(mesh,rays)
+#    
+#    if all(np.isnan(distances)==False): #if all rays hit
+#        #compute endpoints 
+#        _,endpoints=gmu.rays_to_points(rays,distances)
+#        
+#        #create box of projected points
+#        points=np.vstack((gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,z],[0,0,0,1]])),
+#                        gmu.transform_points(endpoints,transform=np.array([[1,0,0,0],[0,1,0,0],[0,0,1,-z],[0,0,0,1]]))))
+#        box=o3d.geometry.OrientedBoundingBox.create_from_points(o3d.cpu.pybind.utility.Vector3dVector(points))
+#        box.color=[1,0,0]     
+#    return box 
+#
+##### OBSOLETE #####
+#
+#def ifc_to_nodes_by_guids(path:str, guids:list,getResource : bool=True,**kwargs)-> List[BIMNode]:
+#    """
+#    Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
+#
+#    .. image:: ../../../docs/pics/ifc_inheritance.PNG
+#
+#    Args:
+#        1. ifcPath (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
+#        2. guids (list of strings): IFC guids you want to parse e.g. [''3saOMnutrFHPtEwspUjESB'',''3saOMnutrFHPtEwspUjESB']. \n  
+#    
+#    Returns:
+#        List[BIMNode]
+#    """ 
+#    path=Path(path)
+#    
+#    ifc_file = ifcopenshell.open(path)
+#    nodelist=[]   
+#    for guid in guids:
+#        ifcElements = ifc_file.by_id(guid)
+#        ifcElements=ut.item_to_list(ifcElements)
+#        for ifcElement in ifcElements:
+#            node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
+#            node.ifcPath=path
+#            nodelist.append(node)
+#    return nodelist
+#
+#def ifc_to_nodes_by_type(path:str, types:list=['IfcBuildingElement'],getResource : bool=True,**kwargs)-> List[BIMNode]:
+#    """
+#    Parse ifc file to a list of BIMNodes, one for each ifcElement.\n
+#
+#    **NOTE**: classes are not case sensitive. It is advised to solely focus on IfcBuildingElement classes or inherited classes as these typically have geometry representations that can be used by GEOMAPI.
+#
+#    **WARNING**: IfcOpenShell strugles with some ifc serializations. In our experience, IFC4 serializations is more robust.
+#
+#    .. image:: ../../../docs/pics/ifc_inheritance.PNG
+#
+#    Args:
+#        1. ifcPath (string):  absolute ifc file path e.g. "D:\\myifc.ifc"\n
+#        2. types (list of strings, optional): ifcClasses you want to parse e.g. ['IfcWall','IfcSlab','IfcBeam','IfcColumn','IfcStair','IfcWindow','IfcDoor']. Defaults to ['IfcBuildingElement']. \n  
+#    
+#    Raises:
+#        ValueError: 'No valid ifcPath.'
+#
+#    Returns:
+#        List[BIMNode]
+#    """   
+#    path=Path(path) 
+#    
+#    try:
+#        ifc_file = ifcopenshell.open(path)
+#    except:
+#        print(ifcopenshell.get_log())
+#    else:
+#        nodelist=[]   
+#        for type in types:
+#            ifcElements = ifc_file.by_type(type)
+#            ifcElements=ut.item_to_list(ifcElements)
+#            for ifcElement in ifcElements:
+#                node=BIMNode(resource=ifcElement,getResource=getResource, **kwargs)          
+#                node.ifcPath=path
+#                nodelist.append(node)
+#        return nodelist
+#
+#
+#
+#
+#def e57path_to_nodes(path:str,percentage:float=1.0) ->List[PointCloudNode]:
+#    """Load an e57 file and convert all data to a list of PointCloudNodes.\n
+#
+#    **NOTE**: lowering the percentage barely affects assignment performance (numpy array assignments are extremely efficient). \n 
+#    Only do this to lower computational complexity or free up memory.
+#
+#    Args:
+#        1. e57path(str): absolute path to .e57 file\n
+#        2. percentage(float,optional): percentage of points to load. Defaults to 1.0 (100%)\n
+#
+#    Returns:
+#        o3d.geometry.PointCloud
+#    """
+#    path=Path(path) if path else None
+#    
+#    e57 = pye57.E57(str(path))
+#    gmu.e57_update_point_field(e57)
+#    nodes=[]
+#    for s in range(e57.scan_count):
+#        resource=gmu.e57_to_pcd(e57,e57Index=s,percentage=percentage)
+#        node=PointCloudNode(resource=resource,
+#                            path=path,
+#                            e57Index=s,
+#                            percentage=percentage)
+#        node.pointCount=len(resource.points)
+#        nodes.append(node)
+#    return nodes
+#
+#def e57path_to_nodes_mutiprocessing(path:str,percentage:float=1.0) ->List[PointCloudNode]:
+#    """Load an e57 file and convert all data to a list of PointCloudNodes.\n
+#
+#    **NOTE**: Complex types cannot be pickled (serialized) by Windows. Therefore, a two step parsing is used where e57 data is first loaded as np.arrays with multi-processing.
+#    Next, the arrays are passed to o3d.geometry.PointClouds outside of the loop.\n  
+#
+#    **NOTE**: starting parallel processing takes a bit of time. This method will start to outperform single-core import from 3+ pointclouds.\n
+#
+#    **NOTE**: lowering the percentage barely affects assignment performance (numpy array assignments are extremely efficient). \n 
+#    Only do this to lower computational complexity or free up memory.
+#
+#    Args:
+#        1. e57path(str): absolute path to .e57 file\n
+#        2. percentage(float,optional): percentage of points to load. Defaults to 1.0 (100%)\n
+#
+#    Returns:
+#        o3d.geometry.PointCloud
+#    """   
+#    path=Path(path) if path else None
+# 
+#    e57 = pye57.E57(path)
+#    gmu.e57_update_point_field(e57)
+#
+#    nodes=[]
+#    with concurrent.futures.ProcessPoolExecutor() as executor:
+#        # first load all e57 data and output it as np.arrays
+#        results=[executor.submit(gmu.e57_to_arrays,e57Path=path,e57Index=s,percentage=percentage) for s in range(e57.scan_count)]
+#        # next, the arrays are assigned to point clouds outside the loop.
+#        for s,r in enumerate(concurrent.futures.as_completed(results)):
+#            resource=gmu.arrays_to_pcd(r.result())
+#            node=PointCloudNode(resource=resource,
+#                                path=path,
+#                                e57Index=s,
+#                                percentage=percentage)
+#            node.pointCount=len(resource.points)
+#            nodes.append(node)
+#    return nodes
+#
+#def e57header_to_nodes(path:str, **kwargs) -> List[PointCloudNode]:
+#    """Parse e57 file header that is created with E57lib e57xmldump.exe.
+#
+#    Args:
+#        path (string):  e57 xml file path e.g. "D:\\Data\\2018-06 Werfopvolging Academiestraat Gent\\week 22\\PCD\\week 22 lidar_CC.xml"
+#            
+#    Returns:
+#        A list of pointcloudnodes with the xml metadata 
+#    """
+#    path=Path(path) if path else None
+#    
+#    nodelist=[]   
+#    e57 = pye57.E57(str(path))   
+#    gmu.e57_update_point_field(e57)
+#
+#    for idx in range(e57.scan_count):
+#        nodelist.append(PointCloudNode(path=path,e57Index=idx, **kwargs))
+#    return nodelist
 
 
 
@@ -1474,252 +1458,252 @@ def get_loa_class_per_bimnode(BIMNodes:List[BIMNode] , path:str=None):
 #            self._gsd=np.linalg.norm(vec1[0])/self.get_image_width()
 
 # OBSOLETE, every node has a convex hull, and image nodes have frustrums
-def get_mesh_representation(node: Node)->o3d.geometry.TriangleMesh:
-    """Returns the mesh representation of a node resource\n
-    Returns the convex hull if it is a PointCloudNode.\n
-    For ImageNodes, a virtual mesh cone is used with respect to the field of view.
-
-    Args:
-        Node (Node): geomapi node such as a PointCloudNode
-
-    Returns:
-        o3d.geometry.TriangleMesh 
-    """
-    nodeType=str(type(node))
-    resource= node.resource
-   
-    if 'PointCloudNode' in str(type(node)):
-        hull, _ =resource.compute_convex_hull()
-        return hull
-    elif 'ImageNode' in nodeType:
-        return node.convexHull
-    elif 'OrthoNode' in nodeType:
-        #print('not implemented')
-        return node.convexHull
-    else:
-        return resource
-    
-
-def select_nodes_k_nearest_neighbors(node:Node,nodelist:List[Node],k:int=10) -> Tuple[List [Node], o3d.utility.DoubleVector]:
-    """ Select k nearest nodes based on Euclidean distance between centroids.\n
-
-    .. image:: ../../../docs/pics/selection_k_nearest.PNG
-
-    Args:
-        0. node (Node): node to search from\n
-        1. nodelist (List[Node])\n
-        2. k (int, optional): number of neighbors. Defaults to 10.\n
-
-    Returns:
-        List of Nodes
-    """
-    assert k>0, f'k is {k}, but k should be >0.'
-
-    #get node center
-    if node.cartesianTransform is not None:
-        point=gmu.get_translation(node.cartesianTransform)
-        #create pcd from nodelist centers
-        pcd = o3d.geometry.PointCloud()
-        array=np.empty(shape=(len(nodelist),3))
-        for idx,node in enumerate(nodelist):
-            if node.cartesianTransform is not None:
-                array[idx]=gmu.get_translation(node.cartesianTransform)
-            else:
-                array[idx]=[-10000.0,-10000.0,-10000.0]
-        pcd.points = o3d.utility.Vector3dVector(array)
-
-        #Create KDTree from pcd
-        pcdTree = o3d.geometry.KDTreeFlann(pcd)
-
-        #Find 200 nearest neighbors
-        _, idxList, distances = pcdTree.search_knn_vector_3d(point, k)
-        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList]
-
-        if any(selectedNodeList):        
-            return selectedNodeList, distances
-    else:
-        return None,None
-
-def select_nodes_with_centers_in_radius(node:Node,nodelist:List[Node],r:float=0.5) -> Tuple[List [Node] ,List[float]]:
-    """Select nodes within radius of the node centroid based on Euclidean distance between node centroids.\n
-
-    .. image:: ../../../docs/pics/selection_radius_nearest.PNG
-    
-    Args:
-        0. node (Node): node to search from\n
-        1. nodelist (List[Node])\n
-        2. r (float, optional): radius to search. Defaults to 0.5m.\n
-
-    Returns:
-        List of Nodes, List of Distances
-    """
-    
-    assert r >0, f'r is {r}, while it should be >0.'
-    
-    #get node center
-    if node.cartesianTransform is not None:
-        point=gmu.get_translation(node.cartesianTransform)
-        #create pcd from nodelist centers
-        pcd = o3d.geometry.PointCloud()
-        array=np.empty(shape=(len(nodelist),3))
-        for idx,node in enumerate(nodelist):
-            if node.cartesianTransform is not None:
-                array[idx]=gmu.get_translation(node.cartesianTransform)
-            else:
-                array[idx]=[-10000.0,-10000.0,-10000.0]
-        pcd.points = o3d.utility.Vector3dVector(array)
-
-        #Create KDTree from pcd
-        pcdTree = o3d.geometry.KDTreeFlann(pcd)
-
-        #Find 200 nearest neighbors
-        [_, idxList, distances] = pcdTree.search_radius_vector_3d(point, r)
-        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList ]
-        selectedNodeList=[node for i,node in enumerate(selectedNodeList) if distances[i]<=r ]
-        distances = [dist for dist in distances if dist <=r]
-        
-        if any(selectedNodeList):        
-            return selectedNodeList,distances
-    else:
-        return None,None
-
-def select_nodes_with_centers_in_bounding_box(node:Node,nodelist:List[Node],u:float=0.5,v:float=0.5,w:float=0.5) -> List [Node]: 
-    """Select the nodes of which the center lies within the oriented Bounding Box of the source node given an offset.\n
-
-    .. image:: ../../../docs/pics/selection_box_inliers.PNG
-    
-    Args:
-        0. node (Node): source Node \n
-        1. nodelist (List[Node]): target nodelist\n
-        2. u (float, optional): Offset in X. Defaults to 0.5m.\n
-        3. v (float, optional): Offset in Y. Defaults to 0.5m.\n
-        4. w (float, optional): Offset in Z. Defaults to 0.5m.\n
-
-    Returns:
-        List [Node]
-    """
-    #get box source node
-    if node.orientedBoundingBox is not None:
-        box=node.orientedBoundingBox
-        box=gmu.expand_box(box,u=u,v=v,w=w)
-
-        # get centers
-        centers=np.empty((len(nodelist),3),dtype=float)
-        for idx,node in enumerate(nodelist):
-            if node.cartesianTransform is not None:
-                centers[idx]=gmu.get_translation(node.cartesianTransform)
-
-        #points are the centers of all the nodes
-        pcd = o3d.geometry.PointCloud()
-        points = o3d.utility.Vector3dVector(centers)
-        pcd.points=points
-
-        # Find the nodes that lie within the index box 
-        idxList=box.get_point_indices_within_bounding_box(points)
-        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList]
-        if any(selectedNodeList):        
-            return selectedNodeList
-    else:
-        return None
-
-def select_nodes_with_bounding_points_in_bounding_box(node:Node,nodelist:List[Node],u:float=0.5,v:float=0.5,w:float=0.5) -> List [Node]: 
-    """Select the nodes of which atleast one of the bounding points lies within the oriented Bounding Box of the source node given an offset.\n
-
-    .. image:: ../../../docs/pics/selection_BB_intersection.PNG
-    
-    Args:
-        0. node (Node): source Node \n
-        1. nodelist (List[Node]): target nodelist\n
-        2. u (float, optional): Offset in X. Defaults to 0.5m.\n
-        3. v (float, optional): Offset in Y. Defaults to 0.5m.\n
-        4. w (float, optional): Offset in Z. Defaults to 0.5m.\n
-
-    Returns:
-        List [Node]
-    """
-    #get box source node
-    if node.orientedBoundingBox is not None:
-        box=node.orientedBoundingBox
-        box=gmu.expand_box(box,u=u,v=v,w=w)
-
-        # get boxes nodelist
-        boxes=np.empty((len(nodelist),1),dtype=o3d.geometry.OrientedBoundingBox)
-        for idx,node in enumerate(nodelist):
-            boxes[idx]=node.orientedBoundingBox
-
-        # Find the nodes of which the bounding points lie in the source node box
-        idxList=gmu.get_box_inliers(box,boxes)
-        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList]
-        if any(selectedNodeList):        
-            return selectedNodeList
-    else:
-        return None
-    
-def select_nodes_with_intersecting_bounding_box(node:Node,nodelist:List[Node],u:float=0.5,v:float=0.5,w:float=0.5) -> List [Node]: 
-    """Select the nodes of which the bounding boxes intersect.\n
-
-    .. image:: ../../../docs/pics/selection_BB_intersection2.PNG
-
-    Args:
-        0. node (Node): source Node \n
-        1. nodelist (List[Node]): target nodelist\n
-        2. u (float, optional): Offset in X. Defaults to 0.5m.\n
-        3. v (float, optional): Offset in Y. Defaults to 0.5m.\n
-        4. w (float, optional): Offset in Z. Defaults to 0.5m.\n
-
-    Returns:
-        List [Node]
-    """
-    #get box source node
-    if node.orientedBoundingBox is not None:
-        box=node.orientedBoundingBox
-        box=gmu.expand_box(box,u=u,v=v,w=w)
-
-        # get boxes nodelist
-        boxes=np.empty((len(nodelist),1),dtype=o3d.geometry.OrientedBoundingBox)
-        for idx,node in enumerate(nodelist):
-            boxes[idx]=node.orientedBoundingBox
-        
-        # Find the nodes of which the bounding box itersects with the source node box
-        idxList=gmu.get_box_intersections(box,boxes)
-        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList]
-        if any(selectedNodeList):        
-            return selectedNodeList
-    else:
-        return None
-
-def select_nodes_with_intersecting_resources(node:Node,nodelist:List[Node]) -> List [Node]: 
-    """Select the nodes of which the o3d.geometry.TriangleMeshes intersect.\n
-    This method relies on trimesh and fcl libraries for collision detection.\n
-    For PointCloudNodes, the convex hull is used.\n
-    For ImageNodes, a virtual mesh cone is used with respect to the field of view.\n
-
-    .. image:: ../../../docs/pics/collision_5.PNG
-
-    Args:
-        0. node (Node): source Node \n
-        1. nodelist (List[Node]): target nodelist\n
-
-    Returns:
-        List [Node] 
-    """
-    #get geometry source node
-    if node.resource is not None: 
-        mesh=get_mesh_representation(node)
-        # get geometries nodelist        
-        # meshes=np.empty((len(nodelist),1),dtype=o3d.geometry.TriangleMesh)
-        
-        meshes=[None]*len(nodelist)
-        for idx,testnode in enumerate(nodelist):
-            if testnode.resource is not None: 
-                    meshes[idx]=get_mesh_representation(testnode)
-
-        # Find the nodes of which the geometry intersects with the source node box
-        idxList=gmu.get_mesh_inliers(reference=mesh,sources=meshes)
-        print(idxList)
-
-        # idxList=gmu.get_mesh_collisions_trimesh(mesh,meshes)
-        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList]
-        if any(selectedNodeList):        
-            return selectedNodeList
-    return None
+#def get_mesh_representation(node: Node)->o3d.geometry.TriangleMesh:
+#    """Returns the mesh representation of a node resource\n
+#    Returns the convex hull if it is a PointCloudNode.\n
+#    For ImageNodes, a virtual mesh cone is used with respect to the field of view.
+#
+#    Args:
+#        Node (Node): geomapi node such as a PointCloudNode
+#
+#    Returns:
+#        o3d.geometry.TriangleMesh 
+#    """
+#    nodeType=str(type(node))
+#    resource= node.resource
+#   
+#    if 'PointCloudNode' in str(type(node)):
+#        hull, _ =resource.compute_convex_hull()
+#        return hull
+#    elif 'ImageNode' in nodeType:
+#        return node.convexHull
+#    elif 'OrthoNode' in nodeType:
+#        #print('not implemented')
+#        return node.convexHull
+#    else:
+#        return resource
+#    
+#
+#def select_nodes_k_nearest_neighbors(node:Node,nodelist:List[Node],k:int=10) -> Tuple[List [Node], o3d.utility.DoubleVector]:
+#    """ Select k nearest nodes based on Euclidean distance between centroids.\n
+#
+#    .. image:: ../../../docs/pics/selection_k_nearest.PNG
+#
+#    Args:
+#        0. node (Node): node to search from\n
+#        1. nodelist (List[Node])\n
+#        2. k (int, optional): number of neighbors. Defaults to 10.\n
+#
+#    Returns:
+#        List of Nodes
+#    """
+#    assert k>0, f'k is {k}, but k should be >0.'
+#
+#    #get node center
+#    if node.cartesianTransform is not None:
+#        point=gmu.get_translation(node.cartesianTransform)
+#        #create pcd from nodelist centers
+#        pcd = o3d.geometry.PointCloud()
+#        array=np.empty(shape=(len(nodelist),3))
+#        for idx,node in enumerate(nodelist):
+#            if node.cartesianTransform is not None:
+#                array[idx]=gmu.get_translation(node.cartesianTransform)
+#            else:
+#                array[idx]=[-10000.0,-10000.0,-10000.0]
+#        pcd.points = o3d.utility.Vector3dVector(array)
+#
+#        #Create KDTree from pcd
+#        pcdTree = o3d.geometry.KDTreeFlann(pcd)
+#
+#        #Find 200 nearest neighbors
+#        _, idxList, distances = pcdTree.search_knn_vector_3d(point, k)
+#        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList]
+#
+#        if any(selectedNodeList):        
+#            return selectedNodeList, distances
+#    else:
+#        return None,None
+#
+#def select_nodes_with_centers_in_radius(node:Node,nodelist:List[Node],r:float=0.5) -> Tuple[List [Node] ,List[float]]:
+#    """Select nodes within radius of the node centroid based on Euclidean distance between node centroids.\n
+#
+#    .. image:: ../../../docs/pics/selection_radius_nearest.PNG
+#    
+#    Args:
+#        0. node (Node): node to search from\n
+#        1. nodelist (List[Node])\n
+#        2. r (float, optional): radius to search. Defaults to 0.5m.\n
+#
+#    Returns:
+#        List of Nodes, List of Distances
+#    """
+#    
+#    assert r >0, f'r is {r}, while it should be >0.'
+#    
+#    #get node center
+#    if node.cartesianTransform is not None:
+#        point=gmu.get_translation(node.cartesianTransform)
+#        #create pcd from nodelist centers
+#        pcd = o3d.geometry.PointCloud()
+#        array=np.empty(shape=(len(nodelist),3))
+#        for idx,node in enumerate(nodelist):
+#            if node.cartesianTransform is not None:
+#                array[idx]=gmu.get_translation(node.cartesianTransform)
+#            else:
+#                array[idx]=[-10000.0,-10000.0,-10000.0]
+#        pcd.points = o3d.utility.Vector3dVector(array)
+#
+#        #Create KDTree from pcd
+#        pcdTree = o3d.geometry.KDTreeFlann(pcd)
+#
+#        #Find 200 nearest neighbors
+#        [_, idxList, distances] = pcdTree.search_radius_vector_3d(point, r)
+#        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList ]
+#        selectedNodeList=[node for i,node in enumerate(selectedNodeList) if distances[i]<=r ]
+#        distances = [dist for dist in distances if dist <=r]
+#        
+#        if any(selectedNodeList):        
+#            return selectedNodeList,distances
+#    else:
+#        return None,None
+#
+#def select_nodes_with_centers_in_bounding_box(node:Node,nodelist:List[Node],u:float=0.5,v:float=0.5,w:float=0.5) -> List [Node]: 
+#    """Select the nodes of which the center lies within the oriented Bounding Box of the source node given an offset.\n
+#
+#    .. image:: ../../../docs/pics/selection_box_inliers.PNG
+#    
+#    Args:
+#        0. node (Node): source Node \n
+#        1. nodelist (List[Node]): target nodelist\n
+#        2. u (float, optional): Offset in X. Defaults to 0.5m.\n
+#        3. v (float, optional): Offset in Y. Defaults to 0.5m.\n
+#        4. w (float, optional): Offset in Z. Defaults to 0.5m.\n
+#
+#    Returns:
+#        List [Node]
+#    """
+#    #get box source node
+#    if node.orientedBoundingBox is not None:
+#        box=node.orientedBoundingBox
+#        box=gmu.expand_box(box,u=u,v=v,w=w)
+#
+#        # get centers
+#        centers=np.empty((len(nodelist),3),dtype=float)
+#        for idx,node in enumerate(nodelist):
+#            if node.cartesianTransform is not None:
+#                centers[idx]=gmu.get_translation(node.cartesianTransform)
+#
+#        #points are the centers of all the nodes
+#        pcd = o3d.geometry.PointCloud()
+#        points = o3d.utility.Vector3dVector(centers)
+#        pcd.points=points
+#
+#        # Find the nodes that lie within the index box 
+#        idxList=box.get_point_indices_within_bounding_box(points)
+#        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList]
+#        if any(selectedNodeList):        
+#            return selectedNodeList
+#    else:
+#        return None
+#
+#def select_nodes_with_bounding_points_in_bounding_box(node:Node,nodelist:List[Node],u:float=0.5,v:float=0.5,w:float=0.5) -> List [Node]: 
+#    """Select the nodes of which atleast one of the bounding points lies within the oriented Bounding Box of the source node given an offset.\n
+#
+#    .. image:: ../../../docs/pics/selection_BB_intersection.PNG
+#    
+#    Args:
+#        0. node (Node): source Node \n
+#        1. nodelist (List[Node]): target nodelist\n
+#        2. u (float, optional): Offset in X. Defaults to 0.5m.\n
+#        3. v (float, optional): Offset in Y. Defaults to 0.5m.\n
+#        4. w (float, optional): Offset in Z. Defaults to 0.5m.\n
+#
+#    Returns:
+#        List [Node]
+#    """
+#    #get box source node
+#    if node.orientedBoundingBox is not None:
+#        box=node.orientedBoundingBox
+#        box=gmu.expand_box(box,u=u,v=v,w=w)
+#
+#        # get boxes nodelist
+#        boxes=np.empty((len(nodelist),1),dtype=o3d.geometry.OrientedBoundingBox)
+#        for idx,node in enumerate(nodelist):
+#            boxes[idx]=node.orientedBoundingBox
+#
+#        # Find the nodes of which the bounding points lie in the source node box
+#        idxList=gmu.get_box_inliers(box,boxes)
+#        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList]
+#        if any(selectedNodeList):        
+#            return selectedNodeList
+#    else:
+#        return None
+#    
+#def select_nodes_with_intersecting_bounding_box(node:Node,nodelist:List[Node],u:float=0.5,v:float=0.5,w:float=0.5) -> List [Node]: 
+#    """Select the nodes of which the bounding boxes intersect.\n
+#
+#    .. image:: ../../../docs/pics/selection_BB_intersection2.PNG
+#
+#    Args:
+#        0. node (Node): source Node \n
+#        1. nodelist (List[Node]): target nodelist\n
+#        2. u (float, optional): Offset in X. Defaults to 0.5m.\n
+#        3. v (float, optional): Offset in Y. Defaults to 0.5m.\n
+#        4. w (float, optional): Offset in Z. Defaults to 0.5m.\n
+#
+#    Returns:
+#        List [Node]
+#    """
+#    #get box source node
+#    if node.orientedBoundingBox is not None:
+#        box=node.orientedBoundingBox
+#        box=gmu.expand_box(box,u=u,v=v,w=w)
+#
+#        # get boxes nodelist
+#        boxes=np.empty((len(nodelist),1),dtype=o3d.geometry.OrientedBoundingBox)
+#        for idx,node in enumerate(nodelist):
+#            boxes[idx]=node.orientedBoundingBox
+#        
+#        # Find the nodes of which the bounding box itersects with the source node box
+#        idxList=gmu.get_box_intersections(box,boxes)
+#        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList]
+#        if any(selectedNodeList):        
+#            return selectedNodeList
+#    else:
+#        return None
+#
+#def select_nodes_with_intersecting_resources(node:Node,nodelist:List[Node]) -> List [Node]: 
+#    """Select the nodes of which the o3d.geometry.TriangleMeshes intersect.\n
+#    This method relies on trimesh and fcl libraries for collision detection.\n
+#    For PointCloudNodes, the convex hull is used.\n
+#    For ImageNodes, a virtual mesh cone is used with respect to the field of view.\n
+#
+#    .. image:: ../../../docs/pics/collision_5.PNG
+#
+#    Args:
+#        0. node (Node): source Node \n
+#        1. nodelist (List[Node]): target nodelist\n
+#
+#    Returns:
+#        List [Node] 
+#    """
+#    #get geometry source node
+#    if node.resource is not None: 
+#        mesh=get_mesh_representation(node)
+#        # get geometries nodelist        
+#        # meshes=np.empty((len(nodelist),1),dtype=o3d.geometry.TriangleMesh)
+#        
+#        meshes=[None]*len(nodelist)
+#        for idx,testnode in enumerate(nodelist):
+#            if testnode.resource is not None: 
+#                    meshes[idx]=get_mesh_representation(testnode)
+#
+#        # Find the nodes of which the geometry intersects with the source node box
+#        idxList=gmu.get_mesh_inliers(reference=mesh,sources=meshes)
+#        print(idxList)
+#
+#        # idxList=gmu.get_mesh_collisions_trimesh(mesh,meshes)
+#        selectedNodeList=[node for idx,node in enumerate(nodelist) if idx in idxList]
+#        if any(selectedNodeList):        
+#            return selectedNodeList
+#    return None
