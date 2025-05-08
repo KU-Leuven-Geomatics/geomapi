@@ -5,25 +5,22 @@ cadutils - a Python library for validating CAD objects.
 **NOTE**: these tools solely function properly on dxf files with meter units. Format your files appropriately to avoid errors.
 """
 
-import os
-import os.path
 from typing import List, Tuple
 import itertools
 
 
 import geomapi.utils as ut
 import geomapi.utils.geometryutils as gmu
-import matplotlib.pyplot as plt
 import numpy as np
 import open3d as o3d
-from geomapi.nodes import *
 import math
 
 import ezdxf
+from ezdxf.document import Drawing
 from ezdxf.groupby import groupby
 
 
-def ezdxf_to_o3d(dxf,
+def ezdxf_to_o3d(dxf: str | Drawing,
                  dtypes:List[str]=['LINE','ARC','CIRCLE','POINT','SPLINE','POLYLINE','LWPOLYLINE','MESH','ELLIPSE','SOLID','3DFACE'],
                  layers:List[str]=None,
                  join_geometries:bool=True,
@@ -33,7 +30,7 @@ def ezdxf_to_o3d(dxf,
     **NOTE**: be aware of the scale factor!
     
     Args:
-        - dxf (str or ezdxf): directly provide the dxf path or preread the dxf using ezdxf.readfile().
+        - dxf (str or Drawing): directly provide the dxf path or pre-read the dxf using ezdxf.readfile().
         - dtypes (List[str], optional): list of entity names to query. Defaults to the main types in a dxf file i.e. ['LINE','ARC','CIRCLE','POINT','SPLINE','POLYLINE','LWPOLYLINE','MESH','ELLIPSE','SOLID','3DFACE'].
         - layers (List[str], optional): list of layer names to query. If None, all layers are considered
         - join_geometries (bool, optional): merge geometries of the same type. This optimizes their use. Defaults to True.
@@ -44,7 +41,7 @@ def ezdxf_to_o3d(dxf,
         Tuple[List[o3d.geometry.Geometry],List[str]]: _description_
     """
     #open dxf file if not ezdxf entitiy
-    if str(type(dxf)) ==str:
+    if isinstance(dxf, str):
         print(f'Reading dxf file...')
         dxf = ezdxf.readfile(dxf)
     
@@ -168,7 +165,7 @@ def ezdxf_entity_to_o3d(entity:ezdxf.entities.DXFEntity) -> o3d.geometry.Geometr
         print(f'{entity_type} not supported')
         
 
-def calculate_angle_between_lines(line1, line2):
+def calculate_angle_between_lines(line1: tuple | list | np.ndarray, line2: tuple | list | np.ndarray) -> float:
     """Calculate the angle between two lines.
 
     This function takes two lines defined by their endpoints and calculates the angle between them.
@@ -202,7 +199,7 @@ def calculate_angle_between_lines(line1, line2):
     
     return angle_diff
 
-def calculate_perpendicular_distance(line1, line2):
+def calculate_perpendicular_distance(line1: tuple | list | np.ndarray, line2: tuple | list | np.ndarray) -> float:
     """Calculate the perpendicular distance between two lines.
 
     This function takes two lines defined by their endpoints and calculates the minimum perpendicular distance between them.

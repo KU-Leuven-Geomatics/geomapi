@@ -53,7 +53,6 @@ autodoc_mock_imports = [
     "open3d", 
     "opencv-python", 
     "pye57",  
-    "rdflib", 
     "cv2", 
     "typing_extensions", 
     "matplotlib",

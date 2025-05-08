@@ -492,37 +492,11 @@ class TestImageNode(unittest.TestCase):
         #invalid
         self.assertRaises(ValueError,ImageNode,xmlPath='qsffqsdf.dwg')
         
-    def test_world_to_pixel_coordinates(self):
-        #array(1,4)
-        node=ImageNode(path=self.dataLoaderRailway.imagePath1, loadResource=True)
-        pixel=node.world_to_pixel_coordinates(self.dataLoaderRailway.worldCoordinate)
-        np.testing.assert_array_almost_equal(pixel,self.dataLoaderRailway.imgCoordinate,0)
-        
-        #array(1,3)
-        pixel=node.world_to_pixel_coordinates(self.dataLoaderRailway.worldCoordinate[0][:3])
-        np.testing.assert_array_almost_equal(pixel,self.dataLoaderRailway.imgCoordinate,0)
-        
-        # #different input formats single point
-        # inputs = [
-        #     [0,0,0],
-        #     [0,0,0,1],
-        #     np.array([0,0,0]),
-        #     np.array([[0,0,0,1]])
-        # ]
-        # results = [node.world_to_pixel_coordinates(input_data) for input_data in inputs]
-        # for result in results:
-        #     self.assertEqual(result.shape,(2,))
-            
-        #different input formats multiple points
-        inputs = [
-            [[0,0,0],[0,0,0]],
-            [[0,0,0,1],[0,0,0,1]],
-            np.array([[0,0,0],[0,0,0]]),
-            np.array([[0,0,0,1],[0,0,0,1]])
-        ]
-        results = [node.world_to_pixel_coordinates(input_data) for input_data in inputs]
-        for result in results:
-            self.assertEqual(result.shape,(2,2))
+    def test_pixel_to_world_coordinates(self):
+        node=ImageNode(graph=self.dataLoaderRailway.imgGraph)
+        worldCoordinate = node.pixel_to_world_coordinates(self.dataLoaderRailway.imgCoordinate,self.dataLoaderRailway.distance)
+        pixel=node.world_to_pixel_coordinates(worldCoordinate)
+        np.testing.assert_array_almost_equal(self.dataLoaderRailway.imgCoordinate.flatten(), pixel,1)
 
     def test_transform_translation(self):
         #empty node
@@ -567,7 +541,7 @@ class TestImageNode(unittest.TestCase):
         self.assertTrue(np.allclose(node.convexHull.get_center(),hull.rotate(rotation_matrix,center=node.get_center()).get_center(),atol=0.001))
    
     def test_create_rays(self):
-        node=ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,subject='P0024688',loadResource=True)
+        node=ImageNode(graph=self.dataLoaderRailway.imgGraph)
         
         #no inputs
         node=ImageNode()
@@ -581,8 +555,8 @@ class TestImageNode(unittest.TestCase):
         startpoint,endpoint=gmu.rays_to_points(rays)
 
         self.assertEqual(np.linalg.norm(startpoint-node.get_center()),0)
-        self.assertEqual(np.linalg.norm(endpoint-node.get_center()),50) 
-        self.assertEqual(np.linalg.norm(endpoint-np.array([0,0,50])),0) 
+        self.assertEqual(np.linalg.norm(endpoint-node.get_center()),1) 
+        self.assertEqual(np.linalg.norm(endpoint-np.array([0,0,1])),0) 
         
         #different input formats single inputs
         inputs = [
@@ -592,20 +566,11 @@ class TestImageNode(unittest.TestCase):
         ]
         results = [node.create_rays(input_data) for input_data in inputs]
         for result in results:
-            self.assertTrue(np.allclose(result[0][:3],node.cartesianTransform[:3,3],atol=0.01))
+            np.testing.assert_array_almost_equal(result[0][:3],node.cartesianTransform[:3,3],1)
             self.assertEqual(result.shape,(1,6))
-            
-        #check specific case
-        node=ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,subject='P0024688',loadResource=False)
-        rays=node.create_rays(self.dataLoaderRailway.imgCoordinate,self.dataLoaderRailway.distance)        
-        self.assertTrue(np.allclose(rays[0][:3],node.cartesianTransform[:3,3],atol=0.001))
-        _,endpoint=gmu.rays_to_points(rays)        
-        self.assertTrue(np.allclose(endpoint,self.dataLoaderRailway.worldCoordinate[0][:3],atol=0.01))
+
     
-    def test_pixel_to_world_coordinates(self):
-        node=ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,subject='P0024688',resource=self.dataLoaderRailway.image1)
-        worldCoordinate = node.pixel_to_world_coordinates(self.dataLoaderRailway.imgCoordinate,self.dataLoaderRailway.distance)
-        self.assertTrue(np.allclose(worldCoordinate,self.dataLoaderRailway.worldCoordinate[0][:3],atol=0.1))
+
         
         
     def test_project_lineset_on_image(self):

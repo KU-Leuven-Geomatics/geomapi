@@ -2,23 +2,17 @@
 General Basic functions to support other modules.
 """
 import datetime
-import ntpath
 import os
 from pathlib import Path
 import re
 import time
 import dateutil.parser
 import math
-from typing import Callable, List, Optional
+from typing import Callable, List, Optional, Union
 import random
 import importlib
-from re import search
-import open3d as o3d
 import numpy as np
-import PIL.Image
-import rdflib
-from PIL.ExifTags import GPSTAGS, TAGS
-from rdflib import RDF, XSD, Graph, Literal, URIRef, FOAF,Namespace,OWL,RDFS
+from rdflib import RDF, XSD, Graph, Literal, URIRef,Namespace,RDFS
 
 #### GLOBAL VARIABLES ####
 
@@ -29,6 +23,7 @@ PCD_EXTENSIONS = [".PCD", ".E57",".PTS", ".PLY",'.LAS','.LAZ']
 BIM_EXTENSIONS=[".IFC"]
 CAD_EXTENSIONS=[".PLY",".DXF",".TFW"]
 TIME_FORMAT = "%Y-%m-%d %H-%M-%S"
+
 RDFMAPPINGS = {}
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -41,16 +36,6 @@ GEOMAPI_NAMESPACE = Namespace('https://w3id.org/geomapi#')
 
 IFC_GRAPH=Graph().parse("https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL/ontology.ttl")
 IFC_NAMESPACE = Namespace("https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL#")
-
-# exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#')
-# geo=rdflib.Namespace('http://www.opengis.net/ont/geosparql#') #coordinate system information
-# gom=rdflib.Namespace('https://w3id.org/gom#') # geometry representations => this is from mathias
-# omg=rdflib.Namespace('https://w3id.org/omg#') # geometry relations
-# fog=rdflib.Namespace('https://w3id.org/fog#')
-# v4d=rdflib.Namespace('https://w3id.org/v4d/core#')
-# openlabel=rdflib.Namespace('https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#')
-# e57=rdflib.Namespace('http://libe57.org#')
-# xcr=rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
 
 #### BASIC OPERATIONS ####
 
@@ -71,7 +56,6 @@ def time_function(func, *args):
     print("Completed function `" + func.__name__ + "()` in", np.round(end - start,3), "seconds")
     return result
 
-# TODO when do we want a timestamp based on the last modified time of the metafile?
 def get_timestamp(path : str) -> str:
     """Returns the timestamp ('%Y-%m-%dT%H:%M:%S') from a filepath.
 
@@ -87,7 +71,7 @@ def get_timestamp(path : str) -> str:
         return literal_to_datetime(dtime)
     raise ValueError("Path does not exist")
 
-def get_random_color(range:int=1)->np.array:
+def get_random_color(range:int=1) -> np.ndarray:
     """Generate random color (either [0-1] or [0-255]).\n
 
     Args:
@@ -108,7 +92,7 @@ def get_random_color(range:int=1)->np.array:
         raise ValueError('Range should be either 1 or 255.')
     return color
 
-def map_to_2d_array(input_data):
+def map_to_2d_array(input_data: list | np.ndarray) -> np.ndarray:
     """
     Converts the input data into a 2D NumPy array.
 
@@ -145,7 +129,7 @@ def item_to_list(item)-> list:
     else:
         return [item]
 
-def split_list(list, n:int=None,l:int=None):
+def split_list(list, n:int=None,l:int=None) -> list:
     """Split list into approximately equal chunks. Last list might have an unequal number of elements.
 
     Args:
@@ -165,7 +149,7 @@ def split_list(list, n:int=None,l:int=None):
     else:
         raise ValueError('No input provided. Enter n or l.')
 
-def replace_str_index(text:str,index:int,replacement:str='_'):
+def replace_str_index(text:str,index:int,replacement:str='_') -> str:
     """Replace a string character at the location of the index with the replacement. index must be in the range of the string \n
 
     Args:
@@ -185,7 +169,7 @@ def replace_str_index(text:str,index:int,replacement:str='_'):
 
 def get_list_of_files(folder: Path | str , ext: str = None) -> list:
     """
-    Get a list of all filepaths in the folder and subfolders that match the given file extension.
+    Get a list of all filepaths in the folder and sub folders that match the given file extension.
 
     Args:
         folder: The path to the folder as a string or Path object
@@ -208,6 +192,11 @@ def get_list_of_files(folder: Path | str , ext: str = None) -> list:
 ##### Ontology functions #######
 
 def get_geomapi_classes() -> List[URIRef]:
+    """Get all classes from the GEOMAPI graph.
+
+    Returns:
+        - List[URIRef]: A list of ontology classes.
+    """
     query = '''
     SELECT ?class
     WHERE {
@@ -217,7 +206,15 @@ def get_geomapi_classes() -> List[URIRef]:
     result = GEOMAPI_GRAPH.query(query)
     return [row['class'] for row in result]
 
-def get_method_for_datatype(datatype):
+def get_method_for_datatype(datatype : str) -> str:
+    """Get the method associated with a datatype in the GEOMAPI graph.
+
+    Args:
+        - datatype (str): The URI of the datatype. example: "https://w3id.org/geomapi#matrix"
+
+    Returns:
+        - str or None: The URI of the method if found, otherwise None.
+    """
     query = '''
     PREFIX geomapi: <https://w3id.org/geomapi#>
     PREFIX rdfs: <http://www.w3.org/2000/01/rdf-schema#>
@@ -234,18 +231,20 @@ def get_method_for_datatype(datatype):
         return str(row.method)
     return None
 
-def apply_method_to_object(datatype, obj):
+def apply_method_to_object(datatype: str, obj: object) -> object:
     """
     Dynamically run a function from a GEOMAPI datatype.
-    
-    Args:
-        - datatype (URIRef): the datatype of the object
-        - obj: the object to apply the method to
 
+    Args:
+        - datatype (str): The URI of the datatype.
+        - obj (object): The object to apply the method to.
+
+    Returns:
+        - object: The result of applying the method to the object.
     """
     method_name = get_method_for_datatype(datatype)
     if not method_name:
-        method_name = f"geomapi.utils.literal_to_python"
+        method_name = f"geomapi.utils.literal_to_number"
 
     # Dynamically import the method
     components = method_name.split('.')
@@ -264,38 +263,38 @@ def get_subject_name(subject:URIRef) -> str:
         - subject (URIRef)
 
     Returns:
-        str
+        - name (str): the name in the URIRef 
     """
     string=subject.toPython()
     return string.split('/')[-1].split('#')[-1]
 
 def get_subject_graph(graph:Graph, subject:URIRef = None) -> Graph:
-        """Returns a subselection of the full Graph that only contains the triples of one subject.
+    """Returns a subselection of the full Graph that only contains the triples of one subject.
 
-        Args:
-            - graph (Graph) 
-            - subject (URIRef, optional): If no subject is provided, the first one is picked. Defaults to first subject in the graph.
-        
-        Returns:
-            - Graph with the triples of one subject
-        """
-        #input validation       
-        if(subject is not None and subject not in graph.subjects()): 
-            raise ValueError('subject not in graph')
-        elif (not subject): # No subject is defined yet, pick the first one
-            subject=next(graph.subjects())        
+    Args:
+        - graph (Graph) 
+        - subject (URIRef, optional): If no subject is provided, the first one is picked. Defaults to first subject in the graph.
+    
+    Returns:
+        - Graph with the triples of one subject
+    """
+    #input validation       
+    if(subject is not None and subject not in graph.subjects()): 
+        raise ValueError('subject not in graph')
+    elif (not subject): # No subject is defined yet, pick the first one
+        subject=next(graph.subjects())        
 
-        #create graph
-        newGraph = Graph()
-        newGraph += graph.triples((subject, None, None)) 
-        newGraph.namespace_manager = graph.namespace_manager
-        #newGraph._set_namespace_manager(graph._get_namespace_manager())
+    #create graph
+    newGraph = Graph()
+    newGraph += graph.triples((subject, None, None)) 
+    newGraph.namespace_manager = graph.namespace_manager
+    #newGraph._set_namespace_manager(graph._get_namespace_manager())
 
-        #validate output
-        if (len(newGraph) !=0):
-            return newGraph
-        else:
-            return None
+    #validate output
+    if (len(newGraph) !=0):
+        return newGraph
+    else:
+        return None
 
 def get_attribute_from_predicate(graph: Graph, predicate : Literal) -> str:
     """Returns the attribute without the namespace.
@@ -318,7 +317,7 @@ def get_attribute_from_predicate(graph: Graph, predicate : Literal) -> str:
 
 #### CONVERSIONS ####
 
-def literal_to_python(literal:  "str | Literal"):
+def literal_to_number(literal:  "str | Literal") -> float | int:
     """Tries to convert the string to a number
 
     Args:
@@ -440,48 +439,36 @@ def literal_to_list(literal:  "str | Literal")->list:
     except:
         raise ValueError
 
-def literal_to_matrix(input:  "str | Literal") -> np.array:
+def literal_to_matrix(input: Union[str, "Literal"]) -> np.ndarray:
     """
-    Parses a given string representation of a matrix into a NumPy array of floats,
-    while preserving the shape of the matrix.
+    Parse a string representation of a matrix into a NumPy array of floats.
 
-    The input string should be a well-formed matrix with rows of equal length.
-    It can handle different types of whitespace, including spaces, newlines, and carriage returns.
-
-    Parameters:z
-    input_string (str): A string representation of a matrix. Example:
-                        "[[ 3.48110207e-01  9.37407536e-01  9.29487057e-03  2.67476305e+01]
-                        [-9.37341584e-01  3.48204779e-01 -1.20077869e-02  6.17326932e+01]
-                        [-1.44927083e-02 -4.53243552e-03  9.99884703e-01  4.84636987e+00]
-                        [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"
+    Args:
+        - input (str | Literal): A string representing a matrix.
 
     Returns:
-    np.ndarray: A NumPy array representation of the matrix.
+        - np.ndarray: A NumPy array representation of the matrix.
 
     Raises:
-    ValueError: If the input string does not represent a valid matrix or if the rows
-                do not have the same length.
+        - ValueError: If the input does not represent a valid matrix.
     """
     try:
-        input_string=str(input).replace(',', ' ')
-        
+        input_string = str(input).replace(',', ' ')
+
         if input_string.lower() == "none":
             return None
-        
-        
-        # add newlines in between adjacent double carets incase they are missing
+
+        # Insert newlines between adjacent brackets if missing
         cleaned_string = input_string.replace('][', ']\n[')
-        # Remove leading/trailing whitespace, replace multiple spaces/newlines/carriage returns, remove brackets
+
+        # Clean and normalize the string
         cleaned_string = ' '.join(cleaned_string.strip().split())
         cleaned_string = cleaned_string.replace('[', '').replace(']', '')
 
-        # Convert the cleaned string directly to a NumPy array of floats
+        # Convert to NumPy array
         float_array = np.fromstring(cleaned_string, sep=' ')
-        # if only one element in the array, return it
-        #if(len(float_array) == 1):
-        #    return  np.squeeze(float_array)
 
-        # Calculate the number of columns (assume matrix shape is preserved)
+        # Validate row consistency
         rows = input_string.strip().split(']')
         row_lengths = [len(row.replace('[', '').strip().split()) for row in rows if row.strip()]
         if len(set(row_lengths)) != 1:
@@ -489,68 +476,68 @@ def literal_to_matrix(input:  "str | Literal") -> np.array:
         
         n_cols = row_lengths[0]
 
-        # Reshape the array to the correct matrix shape
-        float_array = float_array.reshape(-1, n_cols)
-        
-        return np.squeeze(float_array) #remove redundant dimensions
+        # Reshape and remove redundant dimensions
+        return np.squeeze(float_array.reshape(-1, n_cols))
+
     except Exception as e:
         raise ValueError(f"Error parsing string to float array: {e}")
 
-def literal_to_datetime(input:  "str | Literal", asStr: bool = True, millies: bool = False) -> datetime.datetime | str:
+def literal_to_datetime(input: Union[str, "Literal"], asStr: bool = True, millies: bool = False) -> datetime.datetime | str:
     """
-    Validates and converts various timestamp formats into a standardized datetime format.
+    Validate and convert various timestamp formats into a standardized datetime.
 
-    Parameters:
-    value (str | int | float): The input timestamp, which can be a string, integer, or float.
-    asStr (bool, optional): If True, returns the timestamp as a formatted string. Defaults to True.
-    millies (bool, optional): If True and asStr is True, includes milliseconds in the output. Defaults to False.
+    Args:
+        - input (str | Literal): The input timestamp.
+        - asStr (bool, optional): If True, return as a formatted string. Defaults to True.
+        - millies (bool, optional): If True, include milliseconds in the output. Defaults to False.
 
     Returns:
-    datetime.datetime | str: A datetime object or a formatted string depending on `asStr`.
+        - datetime.datetime | str: A datetime object or formatted string.
 
     Raises:
-    ValueError: If the input cannot be parsed into a valid timestamp.
+        - ValueError: If the input cannot be parsed into a valid timestamp.
     """
 
     def return_as(val: datetime.datetime, asStr: bool, millies: bool):
         if asStr:
-            return val.strftime('%Y-%m-%dT%H:%M:%S.%f' if millies else '%Y-%m-%dT%H:%M:%S')
+            fmt = '%Y-%m-%dT%H:%M:%S.%f' if millies else '%Y-%m-%dT%H:%M:%S'
+            return val.strftime(fmt)
         return val
 
     string = str(input)
 
-    # Special case: Handle timestamps formatted as "YYYY:MM:DD HH:MM:SS"
+    # Handle special format: "YYYY:MM:DD HH:MM:SS"
     try:
         dt = datetime.datetime.strptime(string, "%Y:%m:%d %H:%M:%S")
         return return_as(dt, asStr, millies)
     except ValueError:
         pass
 
-    # General date parser (handles ISO formats, standard datetime strings, etc.)
+    # Handle standard or ISO datetime formats
     try:
         dt = dateutil.parser.parse(string)
         return return_as(dt, asStr, millies)
     except (ValueError, TypeError):
         pass
 
-    # Handle float or integer Unix timestamps
+    # Handle Unix timestamps (float or int)
     try:
         dt = datetime.datetime.fromtimestamp(float(string), tz=datetime.timezone.utc)
         return return_as(dt, asStr, millies)
     except (ValueError, TypeError, OSError):
         pass
 
-    # If no valid format is found, raise an error
+    # No valid format found
     raise ValueError(
-        "No valid time formatting found. Expected formats include:\n"
-        "  1. Tue Dec  7 09:38:13 2021\n"
-        "  2. 1648468136.033126 (Unix timestamp)\n"
-        "  3. 2022:03:13 13:55:30"
+        "No valid time format found. Expected formats include:\n"
+        "  - 'Tue Dec  7 09:38:13 2021'\n"
+        "  - '1648468136.033126' (Unix timestamp)\n"
+        "  - '2022:03:13 13:55:30'"
     )
 
 
 
-def xml_to_float(xml) -> float:
+def xml_to_float(xml: str) -> float:
     """Cast XML string value to float if possible.
 
     Args:
@@ -837,7 +824,13 @@ def get_data_type(value) -> "XSD.ENTITY":
     else:
         return XSD.string
 
-def get_geomapi_data_types():
+def get_geomapi_data_types() -> List[URIRef]:
+    """
+    Get all datatype properties from the GEOMAPI graph.
+
+    Returns:
+        - List[URIRef]: A list of datatype properties.
+    """
     query = f"""
     SELECT ?datatypeProperty
     WHERE {{
@@ -852,17 +845,38 @@ def get_geomapi_data_types():
 
 
 def get_ifcowl_uri(value:str=None) -> URIRef:
-    ifwOwlClasses=list(IFC_GRAPH.subjects(RDFS.subClassOf, IFC_NAMESPACE.IfcBuildingElement))
+    """
+    Get the IFCOWL URI corresponding to a class name.
+
+    Args:
+        - value (str, optional): A string to match an IFCOWL class. Defaults to None.
+
+    Returns:
+        - URIRef: The matched IFCOWL class URI, or IfcBuildingElement by default.
+    """
+    ifc_owl_classes = list(IFC_GRAPH.subjects(RDFS.subClassOf, IFC_NAMESPACE.IfcBuildingElement))
+    
     if value is None:
         return IFC_NAMESPACE.IfcBuildingElement
-    else:
-        lower_value = value.lower()
-        return next((URIRef(row) for row in ifwOwlClasses if lower_value in row.toPython().lower()), IFC_NAMESPACE.IfcBuildingElement)
-
+    
+    lower_value = value.lower()
+    return next(
+        (URIRef(row) for row in ifc_owl_classes if lower_value in row.toPython().lower()),
+        IFC_NAMESPACE.IfcBuildingElement
+    )
 def get_ifcopenshell_class_name(value:URIRef) -> str:
-    # Extract the class name from the URIRef
+    """
+    Get the class name from an IFCOWL URIRef.
+
+    Args:
+        - value (URIRef): The IFCOWL URIRef.
+
+    Returns:
+        - str: The extracted class name.
+    """
     return value.split('#')[-1]
 
+### ONTOLOGY ###
 
 def get_predicate_and_datatype(attribute_name: str):
     """
@@ -895,13 +909,23 @@ def get_predicate_and_datatype(attribute_name: str):
     # Return default predicate and None for datatype if no match is found
     return GEOMAPI_NAMESPACE[attribute_name], None
 
-def get_relative_path(self, value):
-        if (self.graphPath):
-            folderPath= Path(self.graphPath).parent
-            try:
-                return Path(os.path.relpath(value,folderPath)).as_posix()
-            except: pass
-        else: return value.as_posix()
+def get_relative_path(self, value: Path):
+    """
+    Get the relative path of a value with respect to the node graph's folder path.
+
+    Args:
+        - value (Path): The absolute path to convert.
+
+    Returns:
+        - str: The relative path if possible, otherwise the original path as string.
+    """
+    if self.graphPath:
+        folder_path = Path(self.graphPath).parent
+        try:
+            return Path(os.path.relpath(value, folder_path)).as_posix()
+        except Exception:
+            pass
+    return value.as_posix()
 
 def rdf_property(predicate: Optional[str] = None, serializer: Optional[Callable] = None, datatype: Optional[str] = None):
     """
@@ -932,5 +956,4 @@ def rdf_property(predicate: Optional[str] = None, serializer: Optional[Callable]
     
     return decorator
 
-######## OBSOLETE #############
 

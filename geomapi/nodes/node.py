@@ -492,7 +492,7 @@ class Node:
             if datatype is not None:
                 object=ut.apply_method_to_object( datatype, object)
             else:
-                object=ut.literal_to_python(object)
+                object=ut.literal_to_number(object)
 
             if re.search('path', attr, re.IGNORECASE):
                 handle_path(attr, object)            

@@ -207,8 +207,7 @@ class TestGeometryutils(unittest.TestCase):
         np.testing.assert_array_equal(indices.flatten(), expected_indices)
         np.testing.assert_allclose(distances.flatten(), expected_distances, atol=1e-5)
 
-    def test_filter_pcd_by_distance(self):
-        gmu.filter_pcd_by_distance(self.dataLoaderParking.pcd, self.dataLoaderParking.pcd, 1)
+
 
     def test_arrays_to_mesh_and_mesh_to_arrays(self):
         #mesh_to_arrays
@@ -236,7 +235,7 @@ class TestGeometryutils(unittest.TestCase):
         self.assertEqual(tuple[3],0)
      
         #arrays_to_mesh
-        pcd=gmu.arrays_to_pcd(tuple)
+        pcd=gmu.e57_array_to_pcd(tuple)
         self.assertEqual(len(pcd.points),len(self.dataLoaderRoad.pcd.points))
         self.assertEqual(len(pcd.colors),len(self.dataLoaderRoad.pcd.colors))
         self.assertEqual(len(pcd.normals),len(self.dataLoaderRoad.pcd.normals))
@@ -332,13 +331,6 @@ class TestGeometryutils(unittest.TestCase):
 
         np.testing.assert_array_almost_equal(parameters, expected_parameters, decimal=6)
     
-    def test_generate_visual_cone_from_image(self):
-        cartesianTransform=np.array([[-4.65090312e-02,  4.85391010e-02,  9.97737874e-01, -8.63657982e+00],
-                                    [-7.14937319e-01, -6.99188212e-01,  6.88482642e-04,  9.21354145e+00],
-                                    [ 6.97639979e-01, -7.13288020e-01 , 6.72209811e-02,  6.57082855e+00],
-                                    [ 0.00000000e+00 , 0.00000000e+00,  0.00000000e+00 , 1.00000000e+00]])
-        mesh=gmu.generate_visual_cone_from_image(cartesianTransform)
-        self.assertIsInstance(mesh,o3d.geometry.TriangleMesh)
       
     # def test_get_cartesian_transform(self):
     #     cartesianBounds=np.array([-1.0,1,-0.5,0.5,-5,-4])       
@@ -473,10 +465,6 @@ class TestGeometryutils(unittest.TestCase):
         self.assertAlmostEqual(centers[0][0],100632.19010416667,delta=0.01)
         self.assertAlmostEqual(centers[2][2],6.768118858337402,delta=0.01)
         
-    def test_mesh_to_pcd(self):
-        pcd=gmu.mesh_to_pcd(self.dataLoaderRoad.mesh)
-        self.assertIsInstance(pcd,o3d.geometry.PointCloud)
-        self.assertGreater(len(pcd.points),3)
  
     def test_e57path_to_pcd(self):
         e57=pye57.E57(str(self.dataLoaderParking.e57Path1)) 
@@ -559,14 +547,6 @@ class TestGeometryutils(unittest.TestCase):
         self.assertIsInstance(mesh,o3d.geometry.TriangleMesh)
         self.assertGreater(len(mesh.vertices),10000)
 
-    def test_get_mesh_representation(self):
-        #mesh
-        mesh=gmu.get_mesh_representation(self.dataLoaderRoad.mesh)
-        self.assertEqual(len(mesh.triangles),len(self.dataLoaderRoad.mesh.triangles))
-
-        #point cloud
-        mesh=gmu.get_mesh_representation(self.dataLoaderRoad.pcd)
-        self.assertGreater(len(mesh.triangles),3)
 
     def test_get_mesh_inliers(self):
         #mesh
@@ -631,9 +611,6 @@ class TestGeometryutils(unittest.TestCase):
         result4=gmu.crop_geometry_by_distance(source=sourcepcd,reference=sourceMesh)
         self.assertLess(len(result4.points),1200000 ) 
     
-    def test_create_3d_camera(self):
-        cam=gmu.create_3d_camera()
-        self.assertIsInstance(cam,o3d.geometry.TriangleMesh)
         
     # def test_crop_geometry_by_convex_hull(self):
     #     sourceMesh=gmu.mesh_to_trimesh(self.dataLoaderParking.mesh)

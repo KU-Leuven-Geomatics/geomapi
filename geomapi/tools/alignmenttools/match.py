@@ -7,7 +7,7 @@ import numpy as np
 from scipy import optimize
 
 import geomapi.tools.alignmenttools.params as params
-from geomapi.nodes import GeometryNode, ImageNode, Node, SetNode
+from geomapi.nodes import MeshNode, ImageNode, Node, SetNode
 import geomapi.utils.imageutils as iu
 import geomapi.utils.geometryutils as gmu
 
@@ -183,7 +183,7 @@ class Match3d (Match):
     
     _matchType = "3d"
 
-    def __init__(self, geometryNode1: GeometryNode, geometryNode2: GeometryNode) -> None:
+    def __init__(self, geometryNode1: MeshNode, geometryNode2: MeshNode) -> None:
         """The default constructor
 
         Args:
@@ -259,7 +259,7 @@ class PoseEstimation():
         matchErrorFactor = 1        # the error radius of the match
         matchAmountFactor = 1       # the amount of good matches/inliers
 
-        for match in self.matches: #type: Match
+        for match in self.matches:
             if(isinstance(match, Match2d)):
                 matchErrorFactor = 1 - (min(params.MAX_ERROR_2D, match.matchError)/params.MAX_ERROR_2D) #remap from 0-MaxError to 1-0
                 matchAmountFactor = match.matchAmount / params.MAX_2D_MATCHES
@@ -304,13 +304,13 @@ def match_session(testSession : SetNode, refSession : SetNode):
             if(sum(isinstance(e,ImageNode) for e in refSession.linkedNodes) > 1): # we need 2 ref images to match
                 estimations.append(match_crossref(testNode, refSession))
                 estimations.append(match_incremental(testNode, refSession))
-            if(sum(isinstance(e,GeometryNode) for e in refSession.linkedNodes) > 0
+            if(sum(isinstance(e,MeshNode) for e in refSession.linkedNodes) > 0
             and sum(isinstance(e,ImageNode) for e in refSession.linkedNodes) > 0): # we need a mesh to raycast against
                 estimations.append(match_raycast(testNode, refSession))
 
         # Perform the 3D check, only if it is a GeometryNode
-        if(type(testNode) is GeometryNode):
-            if(sum(isinstance(e,GeometryNode) for e in refSession.linkedNodes) > 0): # we at least one other geometry to match against
+        if(type(testNode) is MeshNode):
+            if(sum(isinstance(e,MeshNode) for e in refSession.linkedNodes) > 0): # we at least one other geometry to match against
                 estimations.append(match_fgr(testNode, refSession))
                 estimations.append(match_super4pcs(testNode, refSession))
 
@@ -365,18 +365,18 @@ def match_raycast(testImage: Node , refImages: List[Node], geometry: Node) -> Po
 
 # Different 3D matching methods
 
-def match_fgr(testGeometry: GeometryNode, refSession : SetNode) -> PoseEstimation:
+def match_fgr(testGeometry: MeshNode, refSession : SetNode) -> PoseEstimation:
 
     estimations = []
 
     for node in refSession.linkedNodes:
-        if(type(node) is GeometryNode):
+        if(type(node) is MeshNode):
             #The node is a geometrynode
             newMatch = Match3d(testGeometry, node)
 
     pass
 
-def match_super4pcs(testGeometry: GeometryNode, refSession : SetNode) -> PoseEstimation:
+def match_super4pcs(testGeometry: MeshNode, refSession : SetNode) -> PoseEstimation:
     return None
 
 

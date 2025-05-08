@@ -287,40 +287,40 @@ xsd:float
 
 :adjacent
 	rdf:type owl:SymmetricProperty ;
-	rdfs:comment """Geomatics property: Target and source node convexHull are within each other's proxmity but do not necesserily share borders."""@en  ;
+	rdfs:comment """Geomatics property: The target and source node hull's have a common border in 3D. This is evaluated by comparing the plane equations within the domain of both convex hulls. In the case of a lineset, the line equations will be used instead."""@en  ;
 	rdfs:label "Adjacent"@en ;
 	rdfs:seeAlso bot:adjacentElement,
 				dggs:sfTouches;
 	rdfs:domain :Node;
 	rdfs:range :Node; 
-	:method """"geomapi.tools.select_adjacent_nodes""".
+	:method """"geomapi.tools.select_nodes_adjacent""".
 
-:overlaps
-	rdf:type owl:SymmetricProperty ;
-	rdfs:comment """Geomatics property: Target and source node convexHulls intersect in 3D."""@en  ;
-	rdfs:label "Overlaps"@en ;
-	rdfs:seeAlso bot:intersectingElement,
-				dggs:sfOverlaps,
-				geo:sfOverlap;	
-	rdfs:domain :Node;
-	rdfs:range :Node; 
-	:method """"geomapi.tools.select_overlapping_nodes""".
+# :overlaps
+# 	rdf:type owl:SymmetricProperty ;
+# 	rdfs:comment """Geomatics property: Target and source node oriented bounding boxes intersect in 3D."""@en  ;
+# 	rdfs:label "Overlaps"@en ;
+# 	rdfs:seeAlso bot:intersectingElement,
+# 				dggs:sfOverlaps,
+# 				geo:sfOverlap;	
+# 	rdfs:domain :Node;
+# 	rdfs:range :Node; 
+# 	:method """"geomapi.tools.select_overlapping_nodes""".
 
 :intersects # this goes in two directions
 	rdf:type owl:SymmetricProperty ;
-	rdfs:comment """Geomatics property: Target and source node resources collide geometrically in 3D. This is more strict than overlap."""@en  ;
+	rdfs:comment """Geomatics property: Target and source node convex hulls collide geometrically in 3D."""@en  ;
 	rdfs:label "Intersects"@en ;
 	rdfs:seeAlso bot:intersectingElement,
 				dggs:sfIntersects,
 					geo:sfIntersects;	
 	rdfs:domain :Node;
 	rdfs:range :Node; 	
-	:method """"geomapi.tools.select_intersecting_nodes""";
-	rdfs:subPropertyOf :overlaps .
+	:method """"geomapi.tools.select_nodes_intersecting_convex_hull""".
+	# rdfs:subPropertyOf :overlaps .
 	
 :contains
 	rdf:type owl:ObjectProperty ;
-	rdfs:comment """Geomatics property: Target node convex hull lies completely within source node convex hull in 3D."""@en  ;
+	rdfs:comment """Geomatics property: Target nodes hulls' lies completely within source node convex hull in 3D."""@en ;
 	rdfs:seeAlso bot:containsElement,
 				dggs:sfContains,
 				geo:sfContains ;	
@@ -329,18 +329,18 @@ xsd:float
 	owl:inverseOf :within ;
 	:method """geomapi.tools.select_nodes_within_boundaries""".
 
-:within  
-	rdf:type owl:ObjectProperty ;
-	rdfs:comment """Geomatics property: Source node convex hull lies completely within target node convex hull in 3D. This is inverse to the contain statement"""@en  ;
-	rdfs:seeAlso geo:sfWithin,
-				dggs:sfWithin;	
-	rdfs:domain :Node;
-	rdfs:range :Node; 	
-	:method """geomapi.tools.select_nodes_that_contain_boundaries""".
+# :within  
+# 	rdf:type owl:ObjectProperty ;
+# 	rdfs:comment """Geomatics property: Source node convex hull lies completely within target node convex hull in 3D. This is inverse to the contain statement"""@en  ;
+# 	rdfs:seeAlso geo:sfWithin,
+# 				dggs:sfWithin;	
+# 	rdfs:domain :Node;
+# 	rdfs:range :Node; 	
+# 	:method """geomapi.tools.select_nodes_that_contain_boundaries""".
 
 :disjoint  # this is an inverse relationship that can also be inferred
 	rdf:type owl:SymmetricProperty ;
-	rdfs:comment """Geomatics property: Source Node orientedBounds do not overlap with the target Node orientedBounds in 3D."""@en  ;
+	rdfs:comment """Geomatics property: Source node convex hull does not overlap with the target Nodes' convex hull in 3D."""@en  ;
 	rdfs:seeAlso geo:sfDisjoint,
 				dggs:sfDisjoint;	
 	rdfs:domain :Node; 	

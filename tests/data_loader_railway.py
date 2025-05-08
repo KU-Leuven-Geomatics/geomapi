@@ -75,6 +75,7 @@ class DataLoaderRailway:
         self.focalLength1=21963.0445544689
         self.imageWidth1=11664
         self.imageHeight1=8750
+        self.imageCenter = np.array([[self.imageWidth1/2.0, self.imageHeight1/2.0]])
         self.worldCoordinate= np.array([[263377.98, 151064.413 , 256.92,1]])
         self.imgCoordinate= np.array([[1676, 10007]]) #these are (column,row) coordinates
         self.distance=25.98837076368911

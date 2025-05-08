@@ -149,6 +149,10 @@ class DataLoaderRoad:
         self.imageHeight2=3648
         print(f'    loaded {self.imagePath2}')    
         
+        #Calibration Image
+        self.calibrationPath=self.path / 'img' / "calibrationPhoto.jpg" 
+        self.calibrationImage = cv2.imread(self.calibrationPath)
+
         #RESOURCES temporary folder
         self.resourcePath= self.path / "resources"
         if not os.path.exists(self.resourcePath):

@@ -83,9 +83,7 @@ class PointCloudNode (Node):
                     loadResource = loadResource,
                     **kwargs)  
 
-        #initialisation
-        if (self.path and self.path.suffix =='.e57'):
-            self._set_metadata_from_e57_header()
+        
         
 
 #---------------------PROPERTIES----------------------------
@@ -159,7 +157,7 @@ class PointCloudNode (Node):
 
 #---------------------METHODS----------------------------
 
-    def _set_metadata_from_e57_header(self) -> bool:
+    def _set_metadata_from_e57_header(self, cartesianTransform = None, orientedBoundingBox = None, convexHull = None) -> bool:
         """Sets the metadata from an e57 header. 
 
         Args:
@@ -175,9 +173,9 @@ class PointCloudNode (Node):
         """ 
 
         #TODO dit zorgt voor conflicten aangezien deze waarden altijd een standaardwaarde krijgen in de Node class 
-        #if self._graph:
-        #    print("Graph is already defined, no need to parse values")
-        #    return True
+        if self.graph:
+            print("Graph is already defined, no need to parse values")
+            return True
         
         #if self.cartesianTransform is not None and self.convexHull is not None and self.orientedBoundingBox is not None:
         #    return True
@@ -190,7 +188,7 @@ class PointCloudNode (Node):
             self.name=header['name'].value()
             self.subject=self.name
         
-        if 'pose' in header.scan_fields:
+        if 'pose' in header.scan_fields and cartesianTransform is None:
             rotation_matrix=None
             translation=None
             if getattr(header,'rotation',None) is not None:
@@ -198,8 +196,7 @@ class PointCloudNode (Node):
             if getattr(header,'translation',None) is not None:
                 translation=header.translation
             self.cartesianTransform=gmu.get_cartesian_transform(rotation=rotation_matrix,translation=translation)
-       
-        if 'cartesianBounds' in header.scan_fields:
+        if 'cartesianBounds' in header.scan_fields and orientedBoundingBox is None:
             c=header.cartesianBounds
             cartesianBounds=np.array([c["xMinimum"].value(),
                                             c["xMaximum"].value(), 
@@ -210,13 +207,23 @@ class PointCloudNode (Node):
             #construct 8 bounding points from cartesianBounds
             points=gmu.get_oriented_bounds(cartesianBounds)
             self.orientedBoundingBox=points
-            self.convexHull=points
+            if(convexHull is None): self.convexHull=points
             
         if 'points' in header.scan_fields:
             self.pointCount=header.point_count
         #     return True
         # except:
         #     raise ValueError('e57 header parsing error. perhaps missing scan_fields/point_fields?')
+
+    def _set_geometric_properties(self, _cartesianTransform=None, _convexHull=None, _orientedBoundingBox=None):
+        
+        #initialisation
+        if (self.path and self.path.suffix =='.e57'):
+            self._set_metadata_from_e57_header(cartesianTransform = _cartesianTransform, orientedBoundingBox = _orientedBoundingBox, convexHull = _convexHull)
+        
+        super()._set_geometric_properties(_cartesianTransform if self.cartesianTransform is None else self.cartesianTransform, 
+                                          _convexHull if self.convexHull is None else self.convexHull, 
+                                          _orientedBoundingBox if self.orientedBoundingBox is None else self.orientedBoundingBox)
 
     def _transform_resource(self, transformation: np.ndarray, rotate_around_center: bool):
         """

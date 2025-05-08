@@ -210,7 +210,7 @@ def pcd_to_octree(pcd:o3d.geometry.PointCloud, maDepth:int=7,colorUse:int=0)->o3
             if isinstance(node, o3d.geometry.OctreePointColorLeafNode):               
                 myPcd=pcd.select_by_index(node.indices)
                 colors=np.asarray(myPcd.colors)
-                c=iu.rgb2gray(colors)
+                c=np.dot(colors[...,:3], [0.2989, 0.5870, 0.1140])
                 _, counts = np.unique(c, return_counts=True)
                 color=colors[np.argmax(counts)]
                 node.color=color
@@ -293,11 +293,11 @@ def remap_color_images_to_masks(images:List[np.array],colorList:np.array=None)->
     """
     #validate inputs
     images=images if type(images)==list else [images]    
-    images=[img if img.shape[2]==1 else iu.rgb2gray(img) for img in images]
+    images=[img if img.shape[2]==1 else np.dot(img[...,:3], [0.2989, 0.5870, 0.1140]) for img in images]
     
     #create colors equal to number of unique values if no colorList is provided
     colorList=colorList if colorList is not None else np.reshape(np.unique(images[0]),(len(np.unique(images[0])),1))
-    colorList=colorList if colorList.shape[1]==1 else iu.rgb2gray(colorList)
+    colorList=colorList if colorList.shape[1]==1 else np.dot(colorList[...,:3], [0.2989, 0.5870, 0.1140])
 
     newImages=[]
     for img in images:

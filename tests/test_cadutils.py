@@ -1,20 +1,10 @@
-import copy
-import math
 import os
 import sys
-from pathlib import Path
-import shutil
 import time
 import unittest
-from multiprocessing.sharedctypes import Value
 import itertools
 
-import cv2
-import ifcopenshell
-import numpy as np
 import open3d as o3d
-import pye57
-import ifcopenshell.util.selector
 
 
 #GEOMAPI
@@ -28,26 +18,8 @@ sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
 from data_loader_road import DATALOADERROADINSTANCE 
 from data_loader_railway import DATALOADERRAILWAYINSTANCE 
-from geomapi.utils import GEOMAPI_PREFIXES
-
-
-################################## SETUP/TEARDOWN MODULE ######################
-
-# def setUpModule():
-#     #execute once before the module 
-#     print('-----------------Setup Module----------------------')
-
-# def tearDownModule():
-#     #execute once after the module 
-#     print('-----------------TearDown Module----------------------')
-
-
 
 class TestCadutils(unittest.TestCase):
-
-
-
-
 
 ################################## SETUP/TEARDOWN CLASS ######################
     @classmethod
@@ -85,33 +57,6 @@ class TestCadutils(unittest.TestCase):
         #execute after every test
         t = time.time() - self.startTime
         print('{:50s} {:5s} '.format(self._testMethodName,str(t)))
-        
-        
-
-################################## FIXTURES ######################
-    # # @pytest.fixture(scope='module')
-    # # @pytest.fixture
-    # def test_data(*args):
-    #     here = os.path.split(__file__)[0]
-    #     return os.path.join(here, "testfiles", *args)
-
-    # @pytest.fixture
-    # def e57Path1():
-    #     return test_data("pointcloud.e57")
-
-    # @pytest.fixture
-    # def ifcData():
-    #     ifcPath=os.path.join(os.getcwd(),"testfiles", "ifcfile.ifc")
-    #     classes= '.IfcBeam | .IfcColumn | .IfcWall | .IfcSlab'
-    #     ifc = ifcopenshell.open(ifcPath)   
-    #     selector = Selector()
-    #     dataList=[]
-    #     for ifcElement in selector.parse(ifc, classes): 
-    #         dataList.append(ifcElement)
-    #     return dataList
-    
-    
-    
 
 ################################## TEST FUNCTIONS ######################
 
@@ -131,12 +76,18 @@ class TestCadutils(unittest.TestCase):
         self.assertEqual(angle, cu.calculate_angle_between_lines([point1, point2],[point1, point3]))
 
     def test_calculate_perpendicular_distance(self):
-            point1 = [0,0]
-            point2 = [1,0]
-            point3 = [0,1]
-            point4 = [1,1]
-            distance = 1
-            self.assertEqual(distance, cu.calculate_perpendicular_distance([point1, point2],[point3, point4]))
+        point1 = [0,0]
+        point2 = [1,0]
+        point3 = [0,1]
+        point4 = [1,1]
+        distance = 1
+        self.assertEqual(distance, cu.calculate_perpendicular_distance([point1, point2],[point3, point4]))
+        point1 = [0,0]
+        point2 = [1,1]
+        point3 = [0,2]
+        point4 = [1,2]
+        distance = 2
+        self.assertEqual(distance, cu.calculate_perpendicular_distance([point1, point2],[point3, point4]))
 
     def test_sample_pcd_from_linesets(self):
         points = o3d.utility.Vector3dVector([[0,0,0],[1.0,1,1]])

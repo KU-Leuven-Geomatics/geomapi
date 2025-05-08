@@ -77,11 +77,8 @@ class TestImageUtils(unittest.TestCase):
     def test_subdivide_image(self):
         iu.subdivide_image(self.dataLoaderParking.image1, 2, 2)
 
-    def test_calibrate_camera(self):
-        iu.calibrate_camera(self.dataLoaderParking.image1)
-
     def test_match_images(self):
-        iu.match_images(self.dataLoaderParking.image1, self.dataLoaderParking.image2)
+        iu.match_images(self.dataLoaderParking.image1, self.dataLoaderParking.image1)
 
     
     

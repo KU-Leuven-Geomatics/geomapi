@@ -1,6 +1,7 @@
 """Different tools to Manage RDF data."""
 
 #IMPORT PACKAGES
+import csv
 import inspect
 import cv2
 import numpy as np 
@@ -158,6 +159,7 @@ def e57xml_to_pointcloud_nodes(xmlPath :str, **kwargs) -> List[PointCloudNode]:
                 except:
                     translationVector=np.array([0.0,0.0,0.0])
             cartesianTransform = gmu.get_cartesian_transform(translation=translationVector,rotation=rotationMatrix)
+            print(cartesianTransform)
 
         pointsnode=e57xml.find('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}points')
         if not pointsnode is None:
@@ -415,8 +417,8 @@ def dxf_to_ortho_nodes(dxfPath: Union[str, Path], name_filter: str = None, **kwa
         if not hasattr(g, "points"):
             continue
 
-        height = kwargs.get("height", 0)
-        g.translate(np.array([0, 0, height]))
+        arg_height = kwargs.get("height", 0)
+        g.translate(np.array([0, 0, arg_height]))
 
         points = np.asarray(g.points)
         center = g.get_center()
@@ -429,8 +431,6 @@ def dxf_to_ortho_nodes(dxfPath: Union[str, Path], name_filter: str = None, **kwa
         translation = center
         cartesian_transform = gmu.get_cartesian_transform(translation=translation, rotation=rotation_matrix)
 
-        depth = kwargs.get("depth", 10.0)
-
         image_width = kwargs.get("imageWidth", 1)
         gsd = np.linalg.norm(vec1[0]) / image_width
 
@@ -441,8 +441,6 @@ def dxf_to_ortho_nodes(dxfPath: Union[str, Path], name_filter: str = None, **kwa
             imageWidth=image_width,
             imageHeight=kwargs.get("imageHeight"),
             gsd=gsd,
-            depth=depth,
-            height=height,
             **kwargs
         )
         orthonodes.append(node)
@@ -575,7 +573,7 @@ def navvis_csv_to_pano_nodes(csvPath :Path,
                         directory : Path = None, 
                         includeDepth : bool = True, 
                         depthPath : Path = None, 
-                        skip:int=None, **kwargs) -> List[PanoNode]:
+                        skip:int=1, **kwargs) -> List[PanoNode]:
     """Parse Navvis csv file and return a list of PanoNodes with the csv metadata.
     
     Args:
@@ -593,58 +591,45 @@ def navvis_csv_to_pano_nodes(csvPath :Path,
     assert skip == None or skip >0, f'skip == None or skip '
     assert os.path.exists(csvPath), f'File does not exist.'
     assert csvPath.suffix == '.csv', f'File does not end with csv.'
-    
-    #open csv
-    pano_csv_file = open(csvPath, mode = 'r')
-    pano_csv_data = list(pd.read_csv(pano_csv_file))
-    
-    #get pano information
-    pano_data = []
-    for sublist in pano_csv_data[1:]:
-        pano_data.append(sublist[0].split('; '))
-        
-    pano_filenames = []
-    for sublist in pano_data:
-        pano_filenames.append(sublist[1])
-        
-    pano_timestamps = []
-    for sublist in pano_data:
-        pano_timestamps.append(ut.get_timestamp(sublist[2]))
-        
-    pano_cartesianTransforms = []
-    for sublist in pano_data:
-        r = R.from_quat((float(sublist[7]),float(sublist[8]), float(sublist[9]), float(sublist[6]))).as_matrix()
-        T = np.pad(r, ((0, 1), (0, 1)), mode='constant', constant_values=0)
-        T[0,3] = float(sublist[3])
-        T[1,3] = float(sublist[4])
-        T[2,3] = float(sublist[5])
-        T[3,3] = float(1)
-        pano_cartesianTransforms.append(T)
-        
-    #get pano path
-    directory = csvPath.parent if not directory else directory
-        
-    if includeDepth:
-        depth_filenames = []
-        for pano_filename in pano_filenames:
-            depth_filename  = pano_filename.replace(".jpg","_depth.png") #navvis depth images are png
-            depth_filenames.append(depth_filename)
-        if not depthPath:
-            depthPath = Path(str(directory).replace("pano", "pano_depth"))
-    
-    #create nodes     
-    nodelist=[]
-    for i,pano in enumerate(pano_filenames):
-        if os.path.exists(os.path.join(directory, pano)):
-            if includeDepth:
-                node=PanoNode(name= pano.split(".")[0],
-                            cartesianTransform=pano_cartesianTransforms[i],
-                            timestamp = pano_timestamps[i],
-                            path = directory / pano,
-                            depthPath = depthPath / depth_filenames[i],
-                            **kwargs)
-            nodelist.append(node)
-    return nodelist
+
+    with open(csvPath, 'r') as f:
+        first_line = f.readline()
+        header_line = first_line.split(':', 1)[-1].strip()  # keep only after ':'
+
+    # Now use pandas to read, but without skipping anything
+    df = pd.read_csv(
+        csvPath,
+        sep=';',
+        skiprows=1,  # skip the first weird comment line
+        names=[h.strip() for h in header_line.split(';')],  # use cleaned header
+        skipinitialspace=True  # handle spaces after ;
+    )
+    # Take every nth row
+    df = df.iloc[::skip].reset_index(drop=True)
+
+    if(directory is None):
+        directory = Path(csvPath).parent
+
+    nodes = []
+
+    for idx, row in df.iterrows():
+        pos = (row['pano_pos_x'], row['pano_pos_y'], row['pano_pos_z'])
+        ori = (row['pano_ori_x'], row['pano_ori_y'], row['pano_ori_z'], row['pano_ori_w'])
+
+        cartesian_transform = gmu.get_cartesian_transform(pos, ori)
+        timestamp = ut.literal_to_datetime(row['timestamp'])
+        path = directory / row['filename']
+
+        node = PanoNode(
+            name=str(row['ID']),
+            cartesianTransform=cartesian_transform,
+            timestamp=timestamp,
+            path=path,
+            **kwargs
+        )
+
+        nodes.append(node)
+    return nodes
 
 ##### NODE SELECTION #####
 
@@ -1108,265 +1093,6 @@ def navvis_decode_depthmap(depth_image):
 
 
 
-def get_loaclasses_from_ifcclass(ifcClass:str)->URIRef:
-    """ Return the matching LOA class given a ifcClass e.g. IfcWall -> URIRef('https://B2010_EXTERIOR_WALLS').
-    The returned subjects can be used to retreive the LOAm and LOAr values from the LOA graph.  
-
-    Args:
-        ifcClass (str): class names e.g. IfcWall
-
-    Returns:
-        URIRef: subjects of LOA graph 
-    """
-    if (ifcClass == 'IfcFooting' or
-        ifcClass == 'IfcPile' or
-        ifcClass == 'IfcPlate'):
-        return URIRef('https://A_SUBSTRUCTURE')
-    if (ifcClass == 'IfcWall' or
-        ifcClass == 'IfcCurtainWall' or
-        ifcClass == 'IfcWallStandardCase'):
-        return URIRef('https://B2010_EXTERIOR_WALLS')
-    if (ifcClass == 'IfcBuildingElement' or
-        ifcClass == 'IfcSite' or
-        ifcClass == 'IfcBuilding'):
-        return URIRef('https://B_SHELL')
-    if (ifcClass == 'IfcRoof'):
-        return URIRef('https://B1020_ROOF_CONSTRUCTION')
-    if (ifcClass == 'IfcSlab'):
-        return URIRef('https://B1010_FLOOR_CONSTRUCTION')
-    if (ifcClass == 'IfcBuildingStorey'or 
-        ifcClass == 'IfcSpace' or
-        ifcClass == 'IfcSpatialZone' ):
-        return URIRef('https://C_INTERIORS')
-    if (ifcClass == 'IfcWindow'):
-        return URIRef('https://B2020_EXTERIOR_WINDOWS')
-    if (ifcClass == 'IfcRailing'or 
-        ifcClass == 'IfcStair' or
-        ifcClass == 'IfcStairFlight' ):
-        return URIRef('https://B1080_STAIRS')
-    if (ifcClass == 'IfcDoor'):
-        return URIRef('https://B2020_EXTERIOR_WINDOWS')
-    if (ifcClass == 'IfcOpening'):
-        return URIRef('https://B3060_HORIZONTAL_OPENINGS')
-    if (ifcClass == 'IfcCeiling'):
-        return URIRef('https://C1070_SUSPENDED_CEILING_CONSTRUCTION')
-
-    return URIRef('https://C_INTERIORS')
-
-
-def get_ifcclasses_from_loaclass(loaClass:str)->Literal:
-    """_summary_
-
-    Args:
-        loaClass (str): _description_
-
-    Returns:
-        Literal: _description_
-    """
-    #A-SUBSTRUCTURE
-    if (loaClass == 'A_SUBSTRUCTURE' or 
-        loaClass == 'A10_FOUNDATIONS' or 
-        loaClass == 'A1010_STANDARD_FOUNDATIONS' or 
-        loaClass == 'A1020_SPECIAL_FOUNDATIONS'):
-        return Literal(['IfcFooting','IfcPile','IfcPlate'])
-    if (loaClass == 'A20_SUBGRADE_ENCLOSURES' or 
-        loaClass == 'A2010_WALLS_FOR_SUBGRADE_ENCLOSURES'):
-        return Literal(['IfcFooting','IfcPile','IfcPlate','IfcWall','IfcCurtainWall'])
-    if (loaClass == 'A40_SLABS_ON_GRADE' or 
-        loaClass == 'A4010_STANDARD_SLABS_ON_GRADE' or
-        loaClass == 'A4020_STRUCTURAL_SLABS_ON_GRADE' ):
-        return Literal(['IfcSlab'])
-    
-    #B-SHELL
-    if (loaClass == 'B_SHELL'  ):
-        return Literal(['IfcBuildingElement','IfcSite','IfcRoof','IfcBuildingStorey','IfcSpace','IfcBuilding','IfcBuildingElementProxy','IfcSpatialZone','IfcExternalSpatialStructureElement'])
-    if loaClass == 'B10_SUPERSTRUCTURE':
-        return Literal(['IfcBuildingElement','IfcBuildingStorey','IfcSpace','IfcBuilding','IfcBuildingElementProxy','IfcSpatialZone'])
-    if loaClass == 'B1010_FLOOR_CONSTRUCTION':
-        return Literal(['IfcSlab'])
-    if loaClass == 'B1020_ROOF_CONSTRUCTION':
-        return Literal(['IfcRoof'])
-    if loaClass == 'B1080_STAIRS':
-        return Literal(['IfcRailing','IfcStair','IfcStairFlight'])
-    if loaClass == 'B20_EXTERIOR_VERTICAL_ENCLOSURES':
-        return Literal(['IfcWall','IfcWindow','IfcDoor','IfcChimney','IfcCurtainWall','IfcWallStandardCase'])
-    if (loaClass == 'B2010_EXTERIOR_WALLS' or
-        loaClass == 'B2080_EXTERIOR_WALLS_AND_APPURTENANCES' or
-        loaClass == 'B2090_EXTERIOR_WALLS_SPECIALTIES' ):
-        return Literal(['IfcWall','IfcCurtainWall','IfcWallStandardCase'])
-    if loaClass == 'B2020_EXTERIOR_WINDOWS':
-        return Literal(['IfcWindow'])
-    if loaClass == 'B2050_EXTERIOR_DOORS_AND_GRILLES':
-        return Literal(['IfcDoor'])
-    if loaClass == 'B30_EXTERIOR_HORIZONTAL_ENCLOSURES':
-        return Literal(['IfcSlab','IfcRoof'])
-    if (loaClass == 'B3010_ROOFING' or
-        loaClass ==  'B3020_ROOF_APPERURTENANCES'):
-        return Literal(['IfcRoof'])
-    if loaClass == 'B3040_TRAFFIC_BEARING_HORIZONTAL_ENCLOSURES':
-        return Literal(['IfcSlab'])
-    if loaClass == 'B3060_HORIZONTAL_OPENINGS':
-        return Literal(['IfcOpening'])
-    if loaClass == 'B3080_OVERHEAD_EXTERIOR_ENCLOSURES':
-        return Literal(['IfcSlab','IfcCeiling','IfcCovering'])
-    
-    #C-INTERIOR
-    if loaClass == 'C_INTERIORS':
-        return Literal(['IfcFurniture','IfcCeiling','IfcDoor','IfcWindow','IfcWall'])
-    if loaClass == 'C10_INTERIOR_CONSTRUCTION':
-        return Literal(['IfcFurniture','IfcCeiling','IfcDoor','IfcWindow','IfcWall'])
-    if loaClass == 'C1010_INTERIOR_PARTITIONS':
-        return Literal(['IfcRoom','IfcSpace'])
-    if loaClass == 'C1020_INTERIOR_WINDOWS':
-        return Literal(['IfcWindow'])
-    if loaClass == 'C1030_INTERIOR_DOORS':
-        return Literal(['IfcDoor'])
-    if loaClass == 'C1040_INTERIOR_GRILLES_AND_GATES':
-        return Literal(['IfcFurniture'])
-    if loaClass == 'C1060_RAISED_FLOOR_CONSTRUCTION':
-        return Literal(['IfcSlab'])
-    if loaClass == 'C1070_SUSPENDED_CEILING_CONSTRUCTION':
-        return Literal(['IfcCeiling'])
-    if loaClass == 'C1090_INTERIOR_SPECIALTIES':
-        return Literal(['IfcFurniture'])
-    if loaClass == 'C20_INTERIOR_FINISHES':
-        return Literal(['IfcFurniture'])
-    if loaClass == 'C2010_WALL_FINISHES':
-        return Literal(['IfcWall','IfcCurtainWall'])
-    if loaClass == 'C2020_INTERIOR_FABRICATIONS':
-        return Literal(['IfcFurniture'])
-    if loaClass == 'C2030_FLOORING':
-        return Literal(['IfcSlab'])
-    if loaClass == 'C2040_STAIR_FINISHES':
-        return Literal(['IfcRailing'])
-    if loaClass == 'C2050_CEILING_FINISHES':
-        return Literal(['IfcCeiling'])
-    
-    return Literal(['IfcBuildingElement'])
-
-def create_default_loa_graph(path:str=None)->Graph:
-    """Generates a Graph from the default USIBD_SPC-LOA_C220_2016_ver0_1 specification. This specification contains information on the accuraycy
-    of building documentation and representation. \n
-
-    Example:
-
-        <https://A1010_STANDARD_FOUNDATIONS> a "LOA" ;\n
-        ifc:classes "['IfcFooting', 'IfcPile', 'IfcPlate']" ;\n
-        loa:CSI "A1010" ;\n
-        loa:LOAm 10 ;\n
-        loa:LOAr 20 ;\n
-        loa:validation "B" .\n
-
-    More documentation can be found on https://docplayer.net/131921614-Usibd-level-of-accuracy-loa-specification-guide.html# on how to use this specification.
-
-    Args:
-        path (str, optional): path to CSV with USIBD values
-
-    Returns:
-        Graph: graph with serialized accuracies, to be used in validation procedures
-    """
-    path=Path(path)
-    #load default dataframe
-    if not path:
-        path=os.path.join(os.path.abspath(os.path.join(os.getcwd(), os.pardir)),"geomapi",'tools','validationtools','LOA.csv')
-    LOAdataFrame = pd.read_csv(path,
-                        sep=';')
-    graph=Graph()
-    graph=ut.bind_ontologies(graph)        
-    graph.bind('loa', loa)    
-    for index,row in LOAdataFrame.iterrows():
-        subject=URIRef('https://'+row[0])
-        graph.add((subject, RDF.type, Literal('LOA') ))  
-        graph.add((subject, loa['CSI'], Literal(row[1]) ))  
-        graph.add((subject, loa['LOAm'], Literal(row[2]) ))  
-        graph.add((subject, loa['LOAr'], Literal(row[3]) ))  
-        graph.add((subject, loa['validation'], Literal(row[4]) )) 
-        graph.add((subject, ifc['classes'], get_ifcclasses_from_loaclass(row[0]))) 
-    return graph
-
-def parse_loa_excel(path:str) -> Graph:
-    """Parse an USIBD_SPC-LOA_C220_2016_ver0_1.xlsx spreadsheet that contains meaured/represented accuracy parameters for building documentation procedures.
-    The returned graph can be used by GEOMAPI or other linked data processes to validate remote sensing/BIM models. \n
-
-    More documentation can be found on https://docplayer.net/131921614-Usibd-level-of-accuracy-loa-specification-guide.html# on how to use this specification.
-    If no excel is presented, a graph with standard values will be obtained.
-
-    .. image:: ../../../docs/pics/USIBD.PNG
-
-    Args:
-        excelPath (str): file path to the spreadsheet
-
-    Returns:
-        Graph: graph 
-    """
-    path=Path(path)
-    #read standard LOA graph
-    graph=Graph().parse(os.path.join(os.path.abspath(os.path.join(os.getcwd(), os.pardir)),"geomapi",'tools','validationtools','loaGraph.ttl')) 
-    subjects=[s for s in graph.subjects(RDF.type)]
-
-    #read excel
-    dataFrame = pd.read_excel(path,
-                    header=None,
-                    na_filter=False)
-
-    #change LOA graph
-    for index, row in dataFrame.iterrows():
-        #get excell name
-        s=None
-        if row[3]:
-            s=row[3]
-        elif row[2]:
-            s=row[2]            
-        elif row[1]:
-            s=row[1]       
-        else:
-            continue
-        # get corresponding subject
-        list=[subject for subject in subjects if re.search(s, subject, re.IGNORECASE)]
-     
-        if len(list)>0:
-            subject=subjects[0]
-        else:
-            continue
-
-        # modify graph LOAm value
-        list=[(i+1)*10 for i,value in enumerate(row[5:9]) if value]          
-        if len(list)>0:
-            graph.set((subject,loa['LOAm'], Literal(list[0]) ))
-        # modify graph LOAr value
-        list=[(i+1)*10 for i,value in enumerate(row[13:17]) if value]           
-        if len(list)>0:
-            graph.set((subject,loa['LOAr'], Literal(list[0]) ))
-        # modify graph validation value
-        list=[value for value in [row[10]] if value]            
-        if len(list)>0:
-            graph.set((subject,loa['validation'], Literal(list[0]) ))
-    return graph
-
-def get_loa_class_per_bimnode(BIMNodes:List[BIMNode] , path:str=None):
-    """Assigns the accuracy properties of an LOA Excel spreadsheet to the list of BIMNodes. 
-    The assignment is based on the ifc classNames which are mapped to LOA classes. 
-
-    Features:
-        1. LOAm (measured accuracy)
-        2. LOAr (represented accuracy)
-        3. validation (A, B or C)
-
-    Args:
-        BIMNodes (List[BIMNode]): List of nodes to assign the propteries to. 
-        path (str, optional): Path to Excel spreadsheet. If None, the default LOA properties are assigned.
-    """
-    path=Path(path)
-    #parse Excel if present
-    loaGraph=parse_loa_excel(path)
-
-    #assign LOA properties
-    for n in BIMNodes:
-        loaClass=get_loaclasses_from_ifcclass(n.className)
-        for p,o in loaGraph.predicate_objects(subject=loaClass):
-            attr= ut.get_attribute_from_predicate(loaGraph, p) 
-            if attr not in ['classes','type']:
-                setattr(n,attr,o.toPython()) 
 
 
 

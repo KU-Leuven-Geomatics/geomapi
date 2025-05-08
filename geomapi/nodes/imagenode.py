@@ -607,67 +607,54 @@ class ImageNode(Node):
             # Align with the frustum shape
             self.orientedBoundingBox = gmu.get_oriented_bounding_box(self.convexHull)
     
-    def create_rays(self,imagePoints:np.array=None,depths:np.array=None)->o3d.core.Tensor:
-        """Generate a grid a rays from the camera location to a given set of imagePoints.
-                
-        **NOTE**: This function targets a subselection of imagePoints, use o3d.t.geometry.RaycastingScene.create_rays_pinhole if you want a dense raytracing for the full image.
-        
-        .. image:: ../../../docs/pics/Raycasting_1.PNG
-        
+    def create_rays(self, imagePoints: np.ndarray = None, depths: np.ndarray = None) -> np.ndarray:
+        """
+        Generate a grid of rays from the camera location through given imagePoints.
         Args:
-            - imagePoints (np.array[n,2]) : imagePoints are conform (row,column) image coordinates system. so top left is (0,0). The camera intrinsic matrix is used to map it to the proper image coordinates. Defaults to np.array([[0, 0],[0, self._imageWidth],[self._imageHeight, 0],[self._imageHeight, self._imageWidth]]).
-            - depths (np.array[n,1], optional) : depths of the rays. Defaults to 50m for each point.
-
+            imagePoints (np.ndarray): (n,2) Pixel coordinates (row, column).
+            depths (np.ndarray, optional): NOT used inside this function anymore.
         Returns:
-            rays: o3d.core.Tensor (n,6) [:,0:3] with the camera center and [:,3:6] are the directions of the rays towards the imagePoints.
+            np.ndarray: (n,6) array where [:,0:3] are the camera origins, [:,3:6] are unit direction vectors.
         """
         if imagePoints is None:
-            points=np.array([[0, 0], # top left
-                                  [0, self.imageWidth], # top right
-                                  [self.imageHeight, 0],  # bottom left
-                                  [self.imageHeight, self.imageWidth]]) # bottom right
+            points = np.array([
+                [0, 0],
+                [0, self.imageWidth],
+                [self.imageHeight, 0],
+                [self.imageHeight, self.imageWidth]
+            ])
         else:
-            points=ut.map_to_2d_array(imagePoints)
-            
-        if depths is None:
-            depths=np.full(points.shape[0],self.depth)
-        else:
-             depths = np.asarray(depths).flatten()  # Ensure depths is a 1D array
+            points = ut.map_to_2d_array(imagePoints)
 
-            
-        #validate inputs
-        points=np.reshape(points,(-1,2)) #if len(points.shape) >2 else points
-            
-        f=self.focalLength35mm 
-        k=self.intrinsicMatrix #get_intrinsic_camera_parameters().intrinsic_matrix
-        m=self.cartesianTransform 
-        t=gmu.get_translation(m)  
-        n=points.shape[0]
+        points = np.reshape(points, (-1, 2))  # ensure shape (n,2)
+        n = points.shape[0]
         
-        #transform pixels to image coordinates (rows are first)
-        u=+points[:,1]-self.imageWidth/2
-        v=+points[:,0]-self.imageHeight/2    
-        camera_coordinates=np.vstack((u,v,np.ones(n)))
+        # Camera parameters
+        f = self.focalLength35mm
+        k = self.intrinsicMatrix
+        m = self.cartesianTransform
+        t = gmu.get_translation(m)
+
+        # Convert pixel coordinates to normalized image plane
+        u = +points[:,1] - self.imageWidth / 2
+        v = +points[:,0] - self.imageHeight / 2
+        camera_coords = np.vstack((u, v, np.full(n, f)))
+
+        # Homogeneous coordinates
+        camera_coords = np.vstack((camera_coords, np.ones((1, n))))  # (4,n)
         
-        #transform to world coordinates
-        camera_coordinates=np.vstack((camera_coordinates[0:2,:],np.full(n, f).T,np.ones((n,1)).T))
-        world_coordinates=m @ camera_coordinates
+        # Transform to world coordinates
+        world_coords = m @ camera_coords  # (4,n)
+
+        # Compute ray directions
+        directions = (world_coords[:3, :].T - t)  # (n,3)
+        directions = gmu.normalize_vectors(directions)
+
+        # Build ray (origin + direction)
+        rays = np.hstack((np.tile(t, (n, 1)), directions))  # (n,6)
         
-        #normalize direction
-        displacement=world_coordinates[0:3,:].T-t
-        direction=gmu.normalize_vectors(displacement)
-  
-        if depths is not None:
-            direction=direction * depths[:, np.newaxis]
-          
-        # Create rays [camera.center, direction]
-        rays = np.hstack((np.tile(t, (n, 1)), direction))
-        
-        # #flatten if it is a single point
-        # if rays.shape[0] == 1:
-        #     rays = rays.flatten()
-              
-        return rays 
+        return rays
+
     
     def world_to_pixel_coordinates(self,worldCoordinates: np.ndarray) -> np.ndarray:
         """Converts 3D world coordinates to pixel coordinates in an image.
@@ -686,25 +673,30 @@ class ImageNode(Node):
             - The function performs a series of transformations, including world to camera, camera to image, and image centering.
             - It returns the imageCoordinates as a 2D array.
         """
-        worldCoordinates=gmu.convert_to_homogeneous_3d_coordinates(worldCoordinates)
-        
-        imageCoordinates= np.linalg.inv(self.cartesianTransform) @ worldCoordinates.T
+        # Ensure homogeneous coordinates
+        worldCoordinates = gmu.convert_to_homogeneous_3d_coordinates(worldCoordinates)  # (n,4)
 
-        xy=copy.deepcopy(imageCoordinates)
-        xy[0]= imageCoordinates[0]/imageCoordinates[2]*self.focalLength35mm
-        xy[1]= imageCoordinates[1]/imageCoordinates[2]*self.focalLength35mm
-        xy[2]= imageCoordinates[2]/imageCoordinates[2]*self.focalLength35mm
+        # Transform world coordinates to camera coordinates
+        cameraCoordinates = np.linalg.inv(self.cartesianTransform) @ worldCoordinates.T  # (4,n)
 
-        uv=copy.deepcopy(xy)
-        uv[0]=xy[1]+self.imageHeight/2
-        uv[1]=xy[0]+self.imageWidth/2
-        uv=uv[0:2] #these are (row,column) coordinates
-        
-        #flatten it if it is a single point
-        # if uv.shape[1] == 1:
-        #     uv=uv.flatten()
-                
-        return uv.T
+        # Normalize to 3D (homogeneous division)
+        xy = cameraCoordinates[:3, :] / cameraCoordinates[2, :]
+
+        # Apply focal length scaling
+        xy[:2, :] *= self.focalLength35mm
+
+        # Convert to image coordinates (row, column)
+        uv = np.zeros((2, xy.shape[1]))
+        uv[0, :] = xy[1, :] + self.imageHeight / 2  # row (y)
+        uv[1, :] = xy[0, :] + self.imageWidth / 2   # column (x)
+
+        uv = uv.T  # (n,2)
+
+        # Optionally flatten if it's a single point
+        if uv.shape[0] == 1:
+            uv = uv.flatten()
+
+        return uv
     
     
     def pixel_to_world_coordinates(self, pixels: np.array, depths: np.array = None) -> np.ndarray:
@@ -719,22 +711,22 @@ class ImageNode(Node):
         Returns:
             - worldCoordinates (np.ndarray): A 2D array (n, 3) containing the 3D world coordinates (X, Y, Z).
         """
-        # Generate rays from the pixel coordinates and depths
-        rays = self.create_rays(pixels, depths)
-        
-        # Extract camera center and direction
+        rays = self.create_rays(pixels)  # (n,6)
+    
         if rays.ndim == 1:
             camera_center = rays[:3]
-            direction = rays[3:]
+            direction = gmu.normalize_vectors(rays[3:])
         else:
             camera_center = rays[:, :3]
-            direction = rays[:, 3:]
-        
-        direction=gmu.normalize_vectors(direction)
+            direction = gmu.normalize_vectors(rays[:, 3:])
 
-        # Calculate the world coordinates
         if depths is None:
             depths = np.full((direction.shape[0], 1), self.depth)
+        else:
+            depths = np.asarray(depths)
+            if depths.ndim == 1:
+                depths = depths[:, np.newaxis]
+
         world_coordinates = camera_center + direction * depths
 
         return world_coordinates

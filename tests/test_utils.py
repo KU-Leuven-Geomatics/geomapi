@@ -2,16 +2,11 @@
 from datetime import datetime
 import sys
 import os
-from pathlib import Path
 import time
-import shutil
 import unittest
 import pytest
-from multiprocessing.sharedctypes import Value
 import numpy as np
-import open3d as o3d
 from rdflib import RDF, RDFS, Graph, Literal, URIRef,XSD
-import PIL
 
 
 #GEOMAPI
@@ -24,14 +19,10 @@ import geomapi.utils as ut
 sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
 from data_loader_road import DATALOADERROADINSTANCE 
-from geomapi.utils import GEOMAPI_PREFIXES
 
 
 class TestUtils(unittest.TestCase):
-    
-    
-    
-    
+
  ################################## SETUP/TEARDOWN CLASS ######################
     @classmethod
     def setUpClass(cls):
@@ -55,13 +46,7 @@ class TestUtils(unittest.TestCase):
         #    shutil.rmtree(cls.dataLoader.resourcePath) 
         print('-----------------TearDown Class----------------------')
 
-        
-        
-        
-        
-        
 ################################## SETUP/TEARDOWN ######################
-
     def setUp(self):
         #execute before every test
         self.startTime = time.time()   
@@ -72,21 +57,13 @@ class TestUtils(unittest.TestCase):
         print('{:50s} {:5s} '.format(self._testMethodName,str(t)))
 
 
-
-
-
 ################################## TEST FUNCTIONS ######################
     def test_time_function(self):
         self.assertEqual(ut.time_function(max, 5,6), 6)
-
-    def test_replace_str_index(self):
-        item="rrrr"
-        test=ut.replace_str_index(item,index=0,replacement='_')
-        self.assertEqual(test,'_rrr')
-        test=ut.replace_str_index(item,index=-1,replacement='_')
-        self.assertEqual(test,'rrr_')
-        with pytest.raises(ValueError):
-            ut.replace_str_index(item,index=10,replacement='_')
+    
+    def test_get_timestamp(self):
+        timeStamp=ut.get_timestamp(self.dataLoaderParking.pcdGraphPath) 
+        self.assertEqual(type(timeStamp),str)
 
     def test_random_color(self):
         self.assertLessEqual(np.max(ut.get_random_color()), 1)
@@ -101,6 +78,13 @@ class TestUtils(unittest.TestCase):
         np.testing.assert_array_equal(ut.map_to_2d_array(np.array(vector)),vector2d)
         np.testing.assert_array_equal(ut.map_to_2d_array(vector2d),vector2d)
         np.testing.assert_array_equal(ut.map_to_2d_array(vector3d),vector3d)
+
+    def test_item_to_list(self):
+        listTest = [1,2,3,4]
+        array = np.array([1,2,3,4])
+        self.assertTrue(isinstance(ut.item_to_list(listTest), list))
+        self.assertTrue(isinstance(ut.item_to_list(array), list))
+        self.assertTrue(isinstance(ut.item_to_list("test"), list))
 
     def test_get_geomapi_classes(self):
         classes = ut.get_geomapi_classes()
@@ -129,7 +113,14 @@ class TestUtils(unittest.TestCase):
         self.assertEqual(len(splitList[0]), 11)
         self.assertEqual(len(splitList[-1]), 1) #check last element
 
-
+    def test_replace_str_index(self):
+        item="rrrr"
+        test=ut.replace_str_index(item,index=0,replacement='_')
+        self.assertEqual(test,'_rrr')
+        test=ut.replace_str_index(item,index=-1,replacement='_')
+        self.assertEqual(test,'rrr_')
+        with pytest.raises(ValueError):
+            ut.replace_str_index(item,index=10,replacement='_')
 
     def test_get_list_of_files(self):
         files=ut.get_list_of_files(self.dataLoaderParking.path)
@@ -149,10 +140,6 @@ class TestUtils(unittest.TestCase):
 
         #wrong subject
         self.assertRaises(ValueError,ut.get_subject_graph,graph=self.dataLoaderParking.imgGraph,subject=URIRef('blabla'))
-
-    def test_get_timestamp(self):
-        timeStamp=ut.get_timestamp(self.dataLoaderParking.pcdGraphPath) 
-        self.assertEqual(type(timeStamp),str)
         
     def test_literal_to_matrix_complex(self):
         test_cases = [
@@ -374,21 +361,21 @@ class TestUtils(unittest.TestCase):
         item=Literal('blabla')
         self.assertRaises(ValueError,ut.literal_to_int,item)
 
-    def test_literal_to_python(self):
+    def test_literal_to_number(self):
         item=Literal(0.5)
-        test=ut.literal_to_python(item)
+        test=ut.literal_to_number(item)
         self.assertIsInstance(test,float)
 
         item=Literal(5)
-        test=ut.literal_to_python(item)
+        test=ut.literal_to_number(item)
         self.assertIsInstance(test,int)
 
         item=Literal('5')
-        test=ut.literal_to_python(item)
+        test=ut.literal_to_number(item)
         self.assertIsInstance(test,int)
 
         item=Literal('blabla')
-        test=ut.literal_to_python(item)
+        test=ut.literal_to_number(item)
         self.assertIsInstance(test,str)
 
 
