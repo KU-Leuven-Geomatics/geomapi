@@ -163,8 +163,10 @@ class TestGeometryutils(unittest.TestCase):
 
     def test_mesh_to_trimesh(self):
         triMesh=gmu.mesh_to_trimesh(self.dataLoaderParking.slabMesh)
-        mesh2=triMesh.as_open3d
-        self.assertEqual(len(self.dataLoaderParking.slabMesh.triangles),len(mesh2.triangles))
+        vertices = o3d.utility.Vector3dVector(triMesh.vertices)
+        triangles = o3d.utility.Vector3iVector(triMesh.faces)
+        mesh_o3d = o3d.geometry.TriangleMesh(vertices, triangles)
+        self.assertEqual(len(self.dataLoaderParking.slabMesh.triangles),len(mesh_o3d.triangles))
 
     def test_crop_mesh_by_convex_hull(self):
         """Test cropping inside a convex hull"""

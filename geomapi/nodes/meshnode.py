@@ -123,7 +123,9 @@ class MeshNode (Node):
         elif isinstance(value,o3d.geometry.TriangleMesh) and len(value.triangles) >=1:
             self._resource = value
         elif isinstance(value,trimesh.base.Trimesh):
-            self._resource=value.as_open3d
+            vertices = o3d.utility.Vector3dVector(value.vertices)
+            triangles = o3d.utility.Vector3iVector(value.faces)
+            self._resource = o3d.geometry.TriangleMesh(vertices, triangles)
         else:
             raise ValueError('Resource must be an o3d.geometry.TriangleMesh with len(resource.triangles) >=1 or an trimesh.Trimesh instance.')
 
