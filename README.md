@@ -49,7 +49,7 @@ The master branch is protected and you can only make changes by submitting a mer
 Please create a new branch if you would like to make changes and submit them for approval.
 
 ## Citation
-If you want to cite us, refer to the following publication (accepted). 
+If you want to cite us, refer to the following publication (published). 
 ```
 @article{GEOMAPI,
             title = {GEOMAPI: Processing close-range sensing data of construction scenes with semantic web technologies},

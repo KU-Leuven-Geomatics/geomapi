@@ -71,6 +71,7 @@ class Node:
             
             - convexHull (o3d.geometry.TriangleMesh, optional) : The convex hull of the node.            
             
+            - loadResource (bool, False) : Load the resource at initialization?
         Returns:
             Node: An instance of the Node class.
         """
@@ -101,8 +102,9 @@ class Node:
                 self.graph=ut.get_subject_graph(graph,self.subject)
         if self.graph:
             if(subject is None):
-                self.graph=ut.get_subject_graph(self.graph) 
                 self.subject=next(self.graph.subjects(RDF.type))
+            self.graph=ut.get_subject_graph(self.graph, self.subject) 
+                
             self._set_attributes_from_graph()
         # make sure the node has an identifier when initialised without any data
         if(not graph and not path and not self._name and not subject):

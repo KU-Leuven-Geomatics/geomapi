@@ -10,3 +10,4 @@ colour
 ezdxf
 pyvista
 rdflib
+pyproj

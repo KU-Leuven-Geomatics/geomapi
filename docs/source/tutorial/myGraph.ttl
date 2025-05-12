@@ -1,0 +1,25 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix geomapi: <https://w3id.org/geomapi#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://myNode> a geomapi:Node ;
+    rdfs:label "myNode"^^xsd:string ;
+    dcterms:created "2025-05-12T15:42:31"^^xsd:dateTime ;
+    geomapi:cartesianTransform """[[1. 0. 0. 0.]
+ [0. 1. 0. 0.]
+ [0. 0. 1. 0.]
+ [0. 0. 0. 1.]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[-0.5 -0.5 -0.5]
+ [ 0.5 -0.5 -0.5]
+ [-0.5 -0.5  0.5]
+ [ 0.5 -0.5  0.5]
+ [-0.5  0.5 -0.5]
+ [ 0.5  0.5 -0.5]
+ [-0.5  0.5  0.5]
+ [ 0.5  0.5  0.5]]"""^^geomapi:matrix ;
+    geomapi:myAttr 5e-01 ;
+    geomapi:myAttr2 5 ;
+    geomapi:myAttr3 "[1 2 3]" ;
+    geomapi:orientedBoundingBox "[0. 0. 0. 1. 1. 1. 0. 0. 0.]"^^geomapi:matrix .
+
