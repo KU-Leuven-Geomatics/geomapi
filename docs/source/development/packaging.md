@@ -15,7 +15,7 @@ In order to make it easier to reuse your code, you can put it in a package. Howe
 ### Project Structure
 Here you can find the basic structure to organize your project. [more info](https://docs.python-guide.org/writing/structure/)
 
-```yml
+```yaml
 "project"/            # The root of the repository
 │
 ├─ venv/              # Your virtual environment
@@ -34,7 +34,7 @@ Here you can find the basic structure to organize your project. [more info](http
 
 ### Package Structure
 A package is a folder containing an `__init__.py` file and a collection of modules & subpackages.
-```yml
+```yaml
 "mypackage"/         # The main package
 ├─ __init__.py        # The init file to show python this folder is a package
 ├─ "module1".py        # modules ending in .py
@@ -143,7 +143,7 @@ for example: https://geomatics.pages.gitlab.kuleuven.be/research-projects/geomap
 
 #####  CI/CD File
 Create `.gitlab-ci.yml` in the root of the project with the following content to automatically publish the page after each push using [CI/CD](https://docs.gitlab.com/ee/ci/):
-```yml
+```yaml
 pages:
   stage: deploy
   script:
@@ -162,7 +162,7 @@ Github works with the github actions automation system. a yaml based instruction
 
 ##### workflows File
 Create a `.github/workflows/'name'.yml` file and 
-```yml
+```yaml
 name: Docs
 on: [push, pull_request, workflow_dispatch]
 jobs:
@@ -173,7 +173,7 @@ jobs:
       - uses: actions/setup-python@v2
       - name: Install dependencies
         run: |
-          pip install -r docs/docs_requirements.txt
+          pip install -r docs/docs_requirements.yaml
       - name: Sphinx build
         run: |
           sphinx-build docs/source _build
@@ -263,7 +263,7 @@ by using a `.gitlab-ci.yml`file. This performs a tasks in multiple stages:
 
 #### Stage Preparation
 Set up a virtual environment and instal the dependencies to validate the documentation and package
-``` yml
+``` yamp
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 cache:
@@ -284,7 +284,7 @@ before_script:
 
 #### Pages Stage
 We use  `Moc-imports` in the `conf.py` to import all the dependencies so we don't have to import them all again.
-``` yml
+``` yaml
 pages:
   stage: pages
   script:
@@ -300,7 +300,7 @@ pages:
 
 #### Build Stage
 Next we build the package using `setup.cfg`.
-``` yml
+``` yaml
 build:
   stage: build
   artifacts:
@@ -317,7 +317,7 @@ build:
 
 #### Deploy Stage
 The final step is publishing the package to a CDN, in this case pypi. Use the token from pypi in the environment variables in Gitlab to hide the password.
-``` yml
+``` yaml
 deploy:
   stage: deploy
   script:

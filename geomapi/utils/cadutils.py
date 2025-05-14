@@ -20,7 +20,7 @@ from ezdxf.document import Drawing
 from ezdxf.groupby import groupby
 
 
-def ezdxf_to_o3d(dxf: str | "Drawing",
+def ezdxf_to_o3d(dxf: str | Drawing,
                  dtypes:List[str]=['LINE','ARC','CIRCLE','POINT','SPLINE','POLYLINE','LWPOLYLINE','MESH','ELLIPSE','SOLID','3DFACE'],
                  layers:List[str]=None,
                  join_geometries:bool=True,

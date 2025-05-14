@@ -9,7 +9,7 @@ The [geomapi ontology](http://www.w3id.org/geomapi) defines (1) the close-range 
 ![bg vertical right:50% h:70%](../../pics/ontology2.png)
 
 
-### Table 2
+## Used Ontologies
 Listing of the used existing ontologies and prototype V4D ontology modules.
 
 | Prefix | Namespace |

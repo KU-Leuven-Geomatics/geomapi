@@ -44,7 +44,7 @@ You can layout images using:
 <img src="/imagepath" width = "49%">
 ```
 
-by altring the width, you can put multiple images side by side
+by altering the width, you can put multiple images side by side
 
 ## Equations
 
@@ -61,10 +61,10 @@ progress= 1 \text{  if  } PoC \geq 0.3 \\
 
 $$
 
-## Notebook excecution
+## Notebook execution
 
-By default, to prevent building errors, the notebooks are not executed during documentation building. Therefor, you should save the output in seperate markdown blocks.
+By default, to prevent building errors, the notebooks are not executed during documentation building. Therefor, you should save the output in separate markdown blocks.
 
 ## Content
 
-The noteboook should be structured as if you are starting from scratch and going over the full process, explaining the thinking behind each function and illustrate properly with images if possible.
+The notebook should be structured as if you are starting from scratch and going over the full process, explaining the thinking behind each function and illustrate properly with images if possible.

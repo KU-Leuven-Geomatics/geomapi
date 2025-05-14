@@ -65,7 +65,6 @@ autodoc_mock_imports = [
     "fcl",
     "osgeo",
     "sklearn",
-    "ezdxf",
     "numpy-quaternion",
     "pandas",
     "laspy"

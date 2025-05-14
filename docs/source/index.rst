@@ -8,7 +8,6 @@ Welcome to GEOMAPI's documentation!
 
 .. image:: ../pics/week23-uav4.PNG
    :alt: Overview data
-   :width: auto
    :height: 300px
    :align: center
 
@@ -26,27 +25,13 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
 
    information/nodes
 
-   information/functionality
-
    information/ontology
-
-.. toctree::
-   :maxdepth: 1
-   :caption: API Reference   
-
-   geomapi/geomapi.nodes
-
-   geomapi/geomapi.utils
-
-   geomapi/geomapi.tools
 
 .. toctree::
    :maxdepth: 1
    :caption: Tutorial:
 
    tutorial/tutorial_nodes
-
-   tutorial/tutorial_geometrynodes
 
    tutorial/tutorial_meshnodes
 
@@ -55,6 +40,10 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
    tutorial/tutorial_bimnodes
 
    tutorial/tutorial_imagenodes
+
+   tutorial/tutorial_orthonodes
+
+   tutorial/tutorial_panonodes
 
    tutorial/tutorial_setnodes
 
@@ -76,6 +65,16 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
 
 .. toctree::
    :maxdepth: 1
+   :caption: API Reference   
+
+   geomapi/geomapi.nodes
+
+   geomapi/geomapi.utils
+
+   geomapi/geomapi.tools
+
+.. toctree::
+   :maxdepth: 1
    :caption: Development:
 
    development/environment creation
@@ -91,7 +90,7 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
    :caption: Contribution
 
    team/team
-   `GitHub <https://github.com/KU-Leuven-Geomatics/geomapi>`_
+
 
 Please do refer to the following publication when using GEOMAPI in your projects. 
 
@@ -102,6 +101,7 @@ Please do refer to the following publication when using GEOMAPI in your projects
    :alt: GEOMAPI Paper
 
 .. code-block:: none
+
 @article{GEOMAPI,
             title = {GEOMAPI: Processing close-range sensing data of construction scenes with semantic web technologies},
             journal = {Automation in Construction},

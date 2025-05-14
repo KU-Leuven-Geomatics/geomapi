@@ -621,8 +621,7 @@ class ImageNode(Node):
                 [0, 0],
                 [0, self.imageWidth],
                 [self.imageHeight, 0],
-                [self.imageHeight, self.imageWidth]
-            ])
+                [self.imageHeight, self.imageWidth]])
         else:
             points = ut.map_to_2d_array(imagePoints)
 
