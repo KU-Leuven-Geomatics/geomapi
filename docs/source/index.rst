@@ -39,6 +39,8 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
 
    tutorial/tutorial_bimnodes
 
+   tutorial/tutorial_linesetnodes
+
    tutorial/tutorial_imagenodes
 
    tutorial/tutorial_orthonodes

@@ -133,7 +133,7 @@ def split_list(list, n:int=None,l:int=None) -> list:
     """Split list into approximately equal chunks. Last list might have an unequal number of elements.
 
     Args:
-        list (object): list to split.\n.
+        list (object): list to split.\n
         n (int,optional): number of splits.\n
         l:(int,optional): length of each chunk.\n
 

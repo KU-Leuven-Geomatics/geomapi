@@ -263,7 +263,7 @@ by using a `.gitlab-ci.yml`file. This performs a tasks in multiple stages:
 
 #### Stage Preparation
 Set up a virtual environment and instal the dependencies to validate the documentation and package
-``` yamp
+``` yaml
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 cache:
