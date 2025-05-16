@@ -4,12 +4,12 @@ paginate : true
 headingDivider: 4
 ---
 # Ontology
-The [geomapi ontology](link) defines (1) the close-range sensing nodes with the appropriate metric and non-metric metadata, (2) the relationships to efficiently retrieve the geospatial resources and (3) define the concepts to store multi-modal and multi-temporal analyses and results. The ontology reuses existing concepts wherever possible (see Table) and is validated through GraphDB.
+The [geomapi ontology](http://www.w3id.org/geomapi) defines (1) the close-range sensing nodes with the appropriate metric and non-metric metadata, (2) the relationships to efficiently retrieve the geospatial resources and (3) define the concepts to store multi-modal and multi-temporal analyses and results. The ontology reuses existing concepts wherever possible (see Table) and is validated through GraphDB.
 
 ![bg vertical right:50% h:70%](../../pics/ontology2.png)
 
 
-### Table 2
+## Used Ontologies
 Listing of the used existing ontologies and prototype V4D ontology modules.
 
 | Prefix | Namespace |

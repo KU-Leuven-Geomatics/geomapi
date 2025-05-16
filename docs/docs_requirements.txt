@@ -9,3 +9,5 @@ laspy
 colour
 ezdxf
 pyvista
+rdflib
+pyproj

@@ -8,13 +8,12 @@ Welcome to GEOMAPI's documentation!
 
 .. image:: ../pics/week23-uav4.PNG
    :alt: Overview data
-   :width: 800px
    :height: 300px
    :align: center
 
 Welcome to GEOMAPI, a Python toolbox designed to enhance the processing of close-range sensing observations such as images and point clouds of the built environment. It specializes in jointly utilizing `Building Information Modeling (BIM) <https://en.wikipedia.org/wiki/Building_information_modeling>`_ and sensory data. To achieve this, GEOMAPI employs `Linked Data (LD) <https://en.wikipedia.org/wiki/Linked_data>`_ to create resources of various popular sensory modalities.
 
-If you want to learn more about GEOMAPI's structure, head over to the  `Getting started <testcases/Getting started>`_ section. Similarly, you can check out the `Ontology <testcases/Ontology>`_ to better understand the data management. If you're interested in viewing real test cases solved with GEOMAPI code, visit the `TEST CASES <testcases/alignmenttools>`_ section.
+If you want to learn more about GEOMAPI's structure, head over to the  `Getting started <information/Getting started>`_ section. Similarly, you can check out the `Ontology <information/Ontology>`_ to better understand the data management. If you're interested in viewing real test cases solved with GEOMAPI code, visit the `TEST CASES <testcases/alignmenttools>`_ section.
 
 This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the work of the `GEOMATICS <https://iiw.kuleuven.be/onderzoek/geomatics>`_ research group at KU Leuven, Belgium. If you want to collaborate, visit the team section and let us know.
 
@@ -26,19 +25,7 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
 
    information/nodes
 
-   information/functionality
-
    information/ontology
-
-.. toctree::
-   :maxdepth: 1
-   :caption: API Reference   
-
-   geomapi/geomapi.nodes
-
-   geomapi/geomapi.utils
-
-   geomapi/geomapi.tools
 
 .. toctree::
    :maxdepth: 1
@@ -46,17 +33,21 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
 
    tutorial/tutorial_nodes
 
-   tutorial/tutorial_geometrynodes
+   tutorial/tutorial_meshnodes
 
-   .. tutorial/tutorial_meshnodes
+   tutorial/tutorial_pointcloudnodes
 
-   .. tutorial/tutorial_pointcloudnodes
+   tutorial/tutorial_bimnodes
 
-   .. tutorial/tutorial_bimnodes
+   tutorial/tutorial_linesetnodes
 
    tutorial/tutorial_imagenodes
 
-   tutorial/tutorial_sessionnodes
+   tutorial/tutorial_orthonodes
+
+   tutorial/tutorial_panonodes
+
+   tutorial/tutorial_setnodes
 
    tutorial/tutorial_node_selection
 
@@ -76,6 +67,16 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
 
 .. toctree::
    :maxdepth: 1
+   :caption: API Reference   
+
+   geomapi/geomapi.nodes
+
+   geomapi/geomapi.utils
+
+   geomapi/geomapi.tools
+
+.. toctree::
+   :maxdepth: 1
    :caption: Development:
 
    development/environment creation
@@ -91,7 +92,7 @@ This `Open-Source <https://github.com/KU-Leuven-Geomatics/geomapi>`_ API is the 
    :caption: Contribution
 
    team/team
-   `GitHub <https://github.com/KU-Leuven-Geomatics/geomapi>`_
+
 
 Please do refer to the following publication when using GEOMAPI in your projects. 
 
@@ -102,6 +103,7 @@ Please do refer to the following publication when using GEOMAPI in your projects
    :alt: GEOMAPI Paper
 
 .. code-block:: none
+
 @article{GEOMAPI,
             title = {GEOMAPI: Processing close-range sensing data of construction scenes with semantic web technologies},
             journal = {Automation in Construction},

@@ -1,0 +1,15 @@
+{
+    "class_name": "LineSet",
+    "version_major": 1,
+    "version_minor": 0,
+    "points": [
+        [0.0, 0.0, 0.0],
+        [1.0, 0.0, 0.0]
+    ],
+    "lines": [
+        [0, 1]
+    ],
+    "line_colors": [
+        [1.0, 0.0, 0.0]
+    ]
+}

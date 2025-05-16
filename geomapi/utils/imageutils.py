@@ -12,234 +12,17 @@ from typing import Tuple
 import xml.etree.ElementTree as ET
 from typing import List, Tuple
 import math
-
+import copy
 import matplotlib.pyplot as plt
 import numpy as np
 import geomapi.utils as ut
+import os
 
 from scipy.spatial.transform import Rotation
 from mpl_toolkits.mplot3d import Axes3D
 from PIL import Image
 import cv2
-# NOTE this looks too basic to create a new function
-def image_resize(img:np.array,width:int=None,height:int=None,scale:float=None)->np.array:
-    """Resize an cv2 image (np.array).
-
-    Args:
-        1.img (np.array) \n
-        2.width (int, optional): width in pixels. Defaults to None.\n
-        3.height (int, optional): height in pixels. Defaults to None.\n
-        4.scale (float, optional): percentual scale. Defaults to 0.5.\n
-
-    Returns:
-        np.array: resized image.
-    """
-    if scale:
-        width = math.ceil(img.shape[1] * scale )
-        height = math.ceil(img.shape[0] * scale )
-    elif width and height:
-        width=width
-        height=height
-    dim = (width, height)
-    
-    return cv2.resize(img, dim, interpolation = cv2.INTER_AREA)
-#NOTE these functions already exist in opencv
-def grb01_to_rgb255(image:np.array)->np.array:
-    """Return image RGB [0-1] interval as RGB image [0-255] interval.\n
-    """
-    norm_image = cv2.normalize(image, None, alpha = 0, beta = 255, norm_type = cv2.NORM_MINMAX, dtype = cv2.CV_32F)
-    return norm_image.astype(np.uint8)
-
-def rgb2gray(rgb:np.array)->np.array:
-    return np.dot(rgb[...,:3], [0.2989, 0.5870, 0.1140])
-
-def gray2rgb(gray:np.array)->np.array:
-    rgb = np.zeros((*gray.shape, 3))
-    rgb[..., :] = gray[..., np.newaxis]
-    return rgb
-#NOTE endNote
-
-
-def initiate_hed_line_detection():
-        
-    """Saves images with annotated additional lines (abLines).
-
-    This function takes a list of images (`imgNodes`) and detects additional lines using the LSD algorithm. It annotates the detected additional lines on each image and saves the annotated images to an output directory.
-
-    Args:
-        imgNodes (list): A list of image nodes containing information about images.
-        output_dir (str): The path to the directory containing masked images.
-        output (str): The path to the output directory where images with detected lines will be saved.
-        score_thr (float): The score threshold for line detection.
-        dist_thr (float): The distance threshold for line detection.
-        interpreter: The TensorFlow Lite interpreter for line detection.
-        input_details: Input details for the interpreter.
-        output_details: Output details for the interpreter.
-
-    Returns:
-        list: A list of image nodes with additional line information.
-
-    Example:
-        imgNodes = [ImageNode1, ImageNode2, ...]  # List of image nodes
-        output_dir = "path/to/masked_images_directory"
-        output = "path/to/output_directory"
-        score_thr = 0.5
-        dist_thr = 2.0
-        interpreter = tf.lite.Interpreter(model_path="line_detection_model.tflite")
-        input_details = interpreter.get_input_details()
-        output_details = interpreter.get_output_details()
-        updated_imgNodes = saveImageAbLine(imgNodes, output_dir, output, score_thr, dist_thr, interpreter, input_details, output_details)
-
-    Note:
-        - The function detects additional lines in each image using the LSD algorithm.
-        - It annotates the detected lines on each image and saves the annotated images to the output directory.
-    """
-
-    protoPath = r"O:\Code\hed\examples\hed\deploy.prototxt"
-    modelPath = r"O:\Code\hed\examples\hed\hed_pretrained_bsds.caffemodel"
-    net = cv2.dnn.readNetFromCaffe(protoPath, modelPath)
-    class CropLayer(object):
-        def __init__(self, params, blobs):
-            self.startX = 0
-            self.startY = 0
-            self.endX = 0
-            self.endY = 0
-
-        def getMemoryShapes(self, inputs):
-            (inputShape, targetShape) = (inputs[0], inputs[1])
-            (batchSize, numChannels) = (inputShape[0], inputShape[1])
-            (H, W) = (targetShape[2], targetShape[3])
-
-            self.startX = int((inputShape[3] - targetShape[3]) / 2)
-            self.startY = int((inputShape[2] - targetShape[2]) / 2)
-            self.endX = self.startX + W
-            self.endY = self.startY + H
-
-            return [[batchSize, numChannels, H, W]]
-
-        def forward(self, inputs):
-            return [inputs[0][:, :, self.startY:self.endY,
-                    self.startX:self.endX]]
-
-    cv2.dnn_registerLayer("Crop", CropLayer)
-
-    return(protoPath,modelPath,net)
-
-
-def calculateGSD(imageNode,bimNodes,f=24,Sw=4000):
-    """
-    Calculates the Ground Sampling Distance (GSD) in millimeters.
-
-    Args:
-        imageNode: An object representing the image node.
-        bimNodes (list): A list of BIM nodes.
-        f (float): The focal length of the camera in millimeters. Default is 24mm.
-        Sw (float): The sensor width of the camera in millimeters. Default is 4000mm.
-
-    Returns:
-        float: The Ground Sampling Distance (GSD) in millimeters.
-
-    Note:
-        - The imageNode should have the attribute 'imageWidth' representing the width of the image in pixels.
-        - The imageNode and each bimNode in bimNodes should have the attribute 'cartesianTransform' representing the Cartesian transformation matrix.
-        - Each bimNode in bimNodes should have the attribute 'cartesianBounds' representing the Cartesian bounds of the BIM.
-
-    """
-    if isinstance(bimNodes, list):
-        total_height = sum(bim_node.cartesianBounds[5] for bim_node in bimNodes)
-        mean_height = total_height / len(bimNodes)
-    else:
-        mean_height=bimNodes.cartesianBounds[5]
-    
-    f = f  # in mm
-    imW = imageNode.imageWidth  # in pix
-    Sw = Sw  # in mm
-    H = imageNode.cartesianTransform[2, 3] - mean_height  # in m, the height between the ground and the BIM
-
-    GSD = (Sw * H * 10) / (f * imW)  # GSD in mm
-    GSD = GSD / 1000
-
-    return GSD
-
-def detect_hed_lines(imgNodes,output,net,hom_begin_points_ad,hom_end_points_ad):
-    """Create Holistically-Nested Edge Detection (HED) images and masked HED images.
-
-    This function takes a list of images (`imgNodes`), an HED network (`net`), and information about additional lines (beginning and ending points) in homogeneous coordinates. It processes the images with the HED model to create edge maps and saves both the HED images and masked HED images to the output directory.
-
-    Args:
-        imgNodes (list): A list of image nodes containing information about images.
-        output (str): The path to the output directory where HED images will be saved.
-        net: The initialized HED network.
-        hom_begin_points_ad (list): A list of lists containing the homogeneous coordinates of beginning points of additional lines.
-        hom_end_points_ad (list): A list of lists containing the homogeneous coordinates of ending points of additional lines.
-
-    Returns:
-        None
-
-    Example:
-        imgNodes = [ImageNode1, ImageNode2, ...]  # List of image nodes
-        output = "path/to/output_directory"
-        net = initialized_HED_network
-        hom_begin_points_ad = [[point1, point2, ...], [point1, point2, ...], ...]  # List of homogeneous coordinates of beginning points
-        hom_end_points_ad = [[point1, point2, ...], [point1, point2, ...], ...]  # List of homogeneous coordinates of ending points
-        createHEDs(imgNodes, output, net, hom_begin_points_ad, hom_end_points_ad)
-
-    Note:
-        - The function processes each image with the HED model to create edge maps.
-        - It saves both the HED images and masked HED images to the output directory.
-    """
-        
-    blobs=[]
-    for img in imgNodes:
-        start_list=[]
-        end_list=[]
-        output_dir = os.path.join(output,"Images", "Masked_Image")
-        imgcv=os.path.join(output_dir,'masked_image_'+img.name+'.jpg')
-        if os.path.exists(imgcv):
-            im=cv2.imread(imgcv)
-            H,W=im.shape[0:2]
-            blob = cv2.dnn.blobFromImage(im, scalefactor=1, size=(W, H),
-                                        mean=(100, 180, 100),
-                                        swapRB= False, crop=False)
-            blobs.append(blob)
-    heds=[]
-    for blob in blobs:
-        net.setInput(blob)
-        hed = net.forward()
-        hed = hed[0,0,:,:]  
-        threshold = 0.85  
-        hed = (hed > threshold) * 255  
-        hed = hed.astype("uint8")
-        heds.append(hed)
-
-    output_dir1 = os.path.join(output,"Images","HED", "Image_HED")
-    if not os.path.exists(output_dir1):
-        os.makedirs(output_dir1)
-
-    for count,hed in enumerate(heds):
-        output_image_name = os.path.join(output_dir1, f"image_HED_{imgNodes[count].name}.jpg")
-        cv2.imwrite(output_image_name, hed)
-    
-    for tel,hed in enumerate(heds):
-        mask = np.zeros(hed.shape[:2], dtype="uint8")
-        for count, start_list in enumerate(hom_begin_points_ad):
-            for i,start in enumerate (start_list):
-                stop_list = hom_end_points_ad[count]
-                stop = stop_list[i]
-                imgNodes[tel].uvCoordinates_start = world_to_pixel(imgNodes[tel],start)
-                imgNodes[tel].uvCoordinates_stop = world_to_pixel(imgNodes[tel],stop)
-                u_start, v_start = int(imgNodes[tel].uvCoordinates_start[0]), int(imgNodes[tel].uvCoordinates_start[1])
-                u_stop, v_stop = int(imgNodes[tel].uvCoordinates_stop[0]), int(imgNodes[tel].uvCoordinates_stop[1])
-
-                cv2.line(mask, (u_start,v_start),(u_stop,v_stop), (255, 255, 255, 255), thickness=60)
-        output_dir2 = os.path.join(output,"Images","HED", "Masked_Image_HED")
-        if not os.path.exists(output_dir2):
-            os.makedirs(output_dir2)
-
-        masked_img = cv2.bitwise_and(hed, hed, mask=mask)
-        output_image_name = os.path.join(output_dir2, f"masked_image_HED_{imgNodes[tel].name}.jpg")
-        cv2.imwrite(output_image_name, masked_img)
-
+import open3d as o3d
 
 def fill_black_pixels(image:np.array,region:int=5)->np.array:
     """Fill in the black pixels in an RGB image given a search distance.\n
@@ -291,83 +74,59 @@ def subdivide_image(image:np.array,m:int=None,n:int=None,width:int=None,height:i
             roiBounds.append((row[0],row[-1],col[0],col[-1])) 
     return roiList,roiBounds   
 
-def calibrate_camera(images, CheckerBoardPattern = (7,7), squareSize: float = 1, drawImages:bool = False):
-    """Calibrates a camera and determines the intrinsic matrix and distortion coëfficients using a list of images of a chessboard pattern.
 
-    Args:\n
-        images (list(np.array)): a list of cv2 images\n
-        CheckerBoardPattern (tuple, optional): The pattern of the checkerboard. Count the inner crosses. Defaults to (7,7).\n
-        squareSize (float, optional): The size of 1 scuare of the checkerboard. Defaults to 1.\n
-        drawImages (bool, optional): Display checker image after each itteration. Defaults to False.\n
-
-    Returns:
-        bool: The success of the calculation
-        np.array(): The intrinsic matrix
-        np.array(): The distortion coëfficients
-        np.array(): The rotation vectors
-        np.array(): The translation vectors
-    """
-
-    # Defining the Matching criteria
-    criteria = (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
-    # Creating vector to store vectors of 3D points for each checkerboard image
-    objpoints = []
-    # Creating vector to store vectors of 2D points for each checkerboard image
-    imgpoints = [] 
     
-    # Defining the world coordinates for 3D points
-    objp = np.zeros((1, CheckerBoardPattern[0] * CheckerBoardPattern[1], 3), np.float32)
-    objp[0,:,:2] = np.mgrid[0:CheckerBoardPattern[0], 0:CheckerBoardPattern[1]].T.reshape(-1, 2) * squareSize
-    prev_img_shape = None
-    
-    for i, image in enumerate(images):
-        gray = cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
-        # Find the chess board corners
-        ret, corners = cv2.findChessboardCorners(gray, CheckerBoardPattern, cv2.CALIB_CB_ADAPTIVE_THRESH + cv2.CALIB_CB_FAST_CHECK + cv2.CALIB_CB_NORMALIZE_IMAGE)
-        if ret == True:
-            objpoints.append(objp)
-            # refining pixel coordinates for given 2d points.
-            corners2 = cv2.cornerSubPix(gray, corners, (11,11),(-1,-1), criteria)
-            imgpoints.append(corners2)
-
-            if(drawImages):
-                # Draw and display the corners
-                img = cv2.drawChessboardCorners(img, CheckerBoardPattern, corners2, ret)
-                cv2.imshow(str("image " + str(i)),img)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
-    # Perform the camera calibration    
-    ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
-
-    return ret, mtx, dist, rvecs, tvecs
-    
-def get_features(img : np.array, featureType : str = "Orb", max : int = 1000):
+def get_features(img : np.array, featureType : str = "orb", max : int = 1000):
     """Compute the image features and descriptors
 
     Args:
-        img (np.array): The source image
-        method (str, optional): The type of features to detect, choose between: orb, sift or fast. Defaults to "Orb".
-        max (int, optional): The destection treshold. Defaults to 1000.
+        - img (np.array): The source image
+        - method (str, optional): The type of features to detect, choose between: orb, sift or fast. Defaults to "Orb".
+        - max (int, optional): The destection treshold. Defaults to 1000.
 
     Raises:
-        ValueError: If the provided method is incorrect
+        - ValueError: If the provided method is incorrect
 
     Returns:
-        Keypoints, descriptors: The detected keypoints and descritors of the source image
+        - Keypoints, descriptors: The detected keypoints and descritors of the source image
     """
 
     im1Gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
     if(featureType.lower() == "orb"):
         detector = cv2.ORB_create(max)
-    if(featureType.lower() == "sift"):
+    elif(featureType.lower() == "sift"):
         detector = cv2.SIFT_create(max)
-    if(featureType.lower() == "fast"):
+    elif(featureType.lower() == "fast"):
         detector = cv2.FastFeatureDetector_create(max)
     else:
         raise ValueError("Invalid method name, please use one of the following: orb, sift, fast")
     
     return detector.detectAndCompute(im1Gray, None)
+
+def draw_keypoints_on_image(image: np.array, featureType: str = "orb", max_features: int = 1000,keypoint_size: int = 200, overwrite:bool=True):
+    """
+    Detect and show keypoints on the image.
+
+    Args:
+        img (np.array): The input image.
+        featureType (str): The type of features to detect ('orb', 'sift', 'fast').
+        max_features (int): The maximum number of features to detect.
+
+    Returns:
+        np.array: The image with keypoints drawn.
+    """
+    # Detect features
+    keypoints, _ = get_features(image, featureType, max_features)
+    
+    # Increase the size of keypoints
+    for kp in keypoints:
+        kp.size = keypoint_size
+    # Draw keypoints on the image
+    image=image if overwrite else copy.deepcopy(image)
+    img_with_keypoints = cv2.drawKeypoints(image, keypoints, None, color=(0, 255, 0),flags=cv2.DRAW_MATCHES_FLAGS_DRAW_RICH_KEYPOINTS)
+
+    return img_with_keypoints
 
 def match_features(des1: np.array, des2: np.array, matchMethod: str = "bfm_orb", 
                     k: int = 2, goodPercent: float = 0.75, checks: int = 100, 
@@ -400,7 +159,7 @@ def match_features(des1: np.array, des2: np.array, matchMethod: str = "bfm_orb",
         # Sort them in the order of their distance.
         matches = sorted(matches, key = lambda x:x.distance)
     
-    if(matchMethod.lower() == "bfm_sift"):
+    elif(matchMethod.lower() == "bfm_sift"):
         # BFMatcher with default params
         bf = cv2.BFMatcher()
         matches = bf.knnMatch(des1,des2,k=k)
@@ -411,7 +170,7 @@ def match_features(des1: np.array, des2: np.array, matchMethod: str = "bfm_orb",
                 good.append([m])
         matches = good
     
-    if(matchMethod.lower() == "flann_sift"):
+    elif(matchMethod.lower() == "flann_sift"):
         # FLANN parameters
         FLANN_INDEX_KDTREE = 1
         index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
@@ -425,7 +184,7 @@ def match_features(des1: np.array, des2: np.array, matchMethod: str = "bfm_orb",
                 good.append([m])
         matches = good
     
-    if(matchMethod.lower() == "flann_orb"):
+    elif(matchMethod.lower() == "flann_orb"):
         # FLANN parameters
         FLANN_INDEX_LSH = 6
         index_params= dict(algorithm = FLANN_INDEX_LSH,
@@ -471,8 +230,7 @@ def match_images(img1: np.array, img2: np.array, featureType: str = "orb", match
         if(matchMethod.lower() == "flann"):
             return match_features(des1, des2, "flann_orb")
         raise ValueError("Invalid method name, please use one of the following: bfm, flann")
-    
-    if(featureType.lower() == "sift"):
+    elif(featureType.lower() == "sift"):
         kp1, des1 = get_features(img1, "sift")
         kp2, des2 = get_features(img2, "sift")
         if(matchMethod.lower() == "bfm"):
@@ -483,437 +241,60 @@ def match_images(img1: np.array, img2: np.array, featureType: str = "orb", match
     
     raise ValueError("Invalid feature name, please use one of the following: orb, sift")
 
-# NOTE Utils function cannot be found -> should be named better
-def create_transformation_matrix(R: np.array, t: np.array) -> np.array:
-    """Combines a rotation matrix and translation vector into a 4x4 transformation matrix
-    
-    **NOTE**: this function should be in utils and is already present
+
+def load_navvis_depth_map(self):        
+    """Returns the full path of the depthMap from this Node. If no path is present, it is gathered from the following inputs.
 
     Args:
-        R (np.array): 3x3 rotation matrix
-        t (np.array): 3x1 translation vector
-
-    Returns:
-        np.array: 4x4 transformation matrix
-    """
-
-    return np.vstack((np.hstack((R,np.reshape(t,[3,1]))), np.array([0,0,0,1])))
-
-# NOTE the name of the function should imply the returned values if named GET_
-def split_transformation_matrix(T:np.array):
-    """Splits a transformation matrix into a rotation and translationmatrix
-
-    **NOTE**: this function should be in utils and is already present in get_translation
-    
-    Args:
-        T (np.array): The 4x4 transormationmatrix
-
-    Returns:
-        np.array, np.array: 3x3 rotationmatrix R, 3x1 translationmatrix t
-    """
-    return T[:3,:3], T[:3,3]
-# NOTE remove obsolete classes -> ImageNodes
-class AlignmentPose():
-    """
-    An alignment pose is used to transform a collection of pano poses.
-    """
-
-    def __init__(self, x :float, y: float, z: float, orientation: tuple, name: str = None, validate : bool = True):
-        """Creation of the alignmentpose
-
-        Args:\n
-            x (float): x-coordinate\n
-            y (float): y-coordinate\n
-            z (float): z-coordinate\n
-            orientation (tuple): rotation quaternion\n
-            name (str, optional): the name of the pose. Defaults to None.\n
-            validate (bool, optional): check if the rotation is a valid quaternion. Defaults to True.\n
-        """
-        if validate is True:
-            assert(isinstance(orientation, tuple) and len(orientation) == 4)
-
-        self.x = x
-        self.y = y
-        self.z = z
-        self.orientation = orientation
-        self.name = name
-
-
-class PanoPose(AlignmentPose):
-    """
-    A pano pose gives the position, orientation and optionally time and name of
-    a pano.
-    """
-
-    def __init__(self, x, y, z, orientation, time=None, name=None, validate=True):
-        """
-        """
-        if validate is True:
-            if time is not None:
-                assert(isinstance(time, datetime))
-
-        super().__init__(x, y, z, orientation, name)
-
-        self.time = time
-
-    @property
-    def heading(self):
-        """
-        Heading measured as angle from x to y axis. In equirectangular format
-        this is the center of the pano. Headings are always positive to
-        simplify subsequent calculations.
-
-        See 'https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.html'
-        """
-        heading = Rotation.from_quat(
-                self.orientation).as_euler('xyz', degrees=True)[-1]
-
-        if heading < 0:
-            heading = 360 + heading
-
-        return heading
-
-    @property
-    def zenit(self):
-        """
-        Angle with the vertical
-        """
-        zenit = Rotation.from_quat(
-                self.orientation).as_euler('xyz', degrees=True)[0]
-
-        return zenit
-
-
-    def get_direction_to_other_pose(self, other_pose, validate=True):
-        """
-        Angle from x to y with 'self' in the origin. Angles are always positive
-        to simplify subsequent calculations.
-
-        other_pose: instance of 'self'
-        """
-        if validate is True:
-            assert(isinstance(self, self.__class__))
-
-        x = other_pose.x - self.x
-        y = other_pose.y - self.y
-        angle = np.degrees(np.arctan2(y, x))
-
-        if angle < 0:
-            angle = 360 + angle
-
-        return angle
-
-
-class PanoPoseCollection():
-    """
-    A collection of pano poses with position, orientation and time.
-    """
-
-    def __init__(self, pos_xs, pos_ys, pos_zs, ori_xs, ori_ys, ori_zs,
-        ori_ws, times=None, validate=True):
-        """
-        """
-        if validate is True:
-            assert(len(pos_xs) == len(pos_ys) == len(pos_zs) == len(ori_xs) ==
-                len(ori_ys) == len(ori_zs) == len(ori_ws))
-            if times is not None:
-                assert(len(times) == len(ori_ws))
-
-        self.pos_xs = pos_xs
-        self.pos_ys = pos_ys
-        self.pos_zs = pos_zs
-        self.ori_xs = ori_xs
-        self.ori_ys = ori_ys
-        self.ori_zs = ori_zs
-        self.ori_ws = ori_ws
-        self.times = times
-
-    def __len__(self):
-        """
-        """
-        return len(self.ori_ws)
-
-    def __getitem__(self, i):
-        """
-        """
-        pano_pose = PanoPose(self.pos_xs[i], self.pos_ys[i], self.pos_zs[i],
-            (self.ori_xs[i], self.ori_ys[i], self.ori_zs[i], self.ori_ws[i]),
-            self.times[i], name=str(i), validate=False)
-
-        return pano_pose
-
-    def __iter__(self):
-        """
-        """
-        for i in range(len(self)):
-            yield self[i]
-
-    @property
-    def headings(self):
-        """
-        """
-        return [p.heading for p in self]
-
-    @property
-    def zenits(self):
-        """
-        """
-        return [p.zenit for p in self]
-
-    @property
-    def box(self):
-        """
-        Give bounding box of pano collection.
-        """
-        x_min, x_max = self.pos_xs.min(), self.pos_xs.max()
-        y_min, y_max = self.pos_ys.min(), self.pos_ys.max()
-
-        return x_min, x_max, y_min, y_max
-
-    def transform(self, aligment_pose, validate=True):
-        """
-        """
-        if validate is True:
-            assert(isinstance(aligment_pose, AlignmentPose))
-
-        r = Rotation.from_quat(aligment_pose.orientation)
-        coordinates = np.matmul(
-            r.as_matrix(), np.array([self.pos_xs, self.pos_ys, self.pos_zs]))
-        pos_xs = coordinates[0] + aligment_pose.x
-        pos_ys = coordinates[1] + aligment_pose.y
-        pos_zs = coordinates[2] + aligment_pose.z
-
-        # TODO: Optimise this part so operation is performed at once
-        ori_xs, ori_ys, ori_zs, ori_ws = [], [], [], []
-        for p in self:
-            pr = r * Rotation.from_quat(p.orientation)
+        - self._depthPath
         
-            ori_x, ori_y, ori_z, ori_w = pr.as_quat()
-            ori_xs.append(ori_x)
-            ori_ys.append(ori_y)
-            ori_zs.append(ori_z)
-            ori_ws.append(ori_w)
-
-        ppc = PanoPoseCollection(
-            pos_xs, pos_ys, pos_zs, ori_xs, ori_ys, ori_zs, ori_ws, self.times)
-
-        return ppc
-
-    def plot(self, headings=False, size=None):
-        """
-        headings: boolean (default: False) - plots headings as vectors
-        with size 1.
-        """
-        plot_pose_collections_3D(
-            [self], colors=['k'], headings=headings, size=size)
-
-
-def read_leica_pano_poses_xml(filespec):
+    Returns:
+        - np.array: depthMap
     """
-    Read xml file from .e57 exported with Leica Cyclone.
+    # Load depthmap image
+    if(self.depthPath):
+        depthmap = np.asarray(Image.open(self.depthPath)).astype(float)
+        
+        # Vectorized calculation for the depth values
+        depth_value = (depthmap[:, :, 0] / 256) * 256 + \
+                    (depthmap[:, :, 1] / 256) * 256 ** 2 + \
+                    (depthmap[:, :, 2] / 256) * 256 ** 3 + \
+                    (depthmap[:, :, 3] / 256) * 256 ** 4
+
+        # Assign the computed depth values to the class attribute _depthMap
+        self.depthMap = depth_value
+        return self._depthMap 
+    
+def get_pcd_from_depth_map(self)->o3d.geometry.PointCloud:
     """
-    root = ET.parse(filespec).getroot()
-
-    ns = '{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}'
-
-    datetimes = []
-    pos_xs, pos_ys, pos_zs = [], [], []
-    ori_xs, ori_ys, ori_zs = [], [], []
-    ori_ws = []
-
-    for i, pano in enumerate(root.findall('.//{}vectorChild'.format(ns))):
-        datetimes.append(datetime.fromtimestamp(float(
-            pano.find('{}acquisitionDateTime'.format(ns)).find(
-                '{}dateTimeValue'.format(ns)).text)))
-
-        pose = pano.find('{}pose'.format(ns))
-        if pose is None and i == 0: ## no translation and rotation given for first point
-            ori_x, ori_y, ori_z = 0, 0, 0
-            ori_w = 1
-            pos_x, pos_y, pos_z = 0, 0, 0
-        else:
-            rotation = pose.find('{}rotation'.format(ns))
-            ori_x = rotation.find('{}x'.format(ns)).text
-            ori_y = rotation.find('{}y'.format(ns)).text
-            ori_z = rotation.find('{}z'.format(ns)).text
-            ori_w = rotation.find('{}w'.format(ns)).text
-            if ori_x is None:
-                ori_x = 0
-            if ori_y is None:
-                ori_y = 0
-            if ori_z is None:
-                ori_z = 0
-            if ori_w is None:
-                ori_w = 1
-            
-            ori_x = float(ori_x)
-            ori_y = float(ori_y)
-            ori_z = float(ori_z)
-
-            translation = pose.find('{}translation'.format(ns))
-            pos_x = float(translation.find('{}x'.format(ns)).text)
-            pos_y = float(translation.find('{}y'.format(ns)).text)
-            pos_z = float(translation.find('{}z'.format(ns)).text)
-
-        ## Correct for Leica pano's (at least export from Cyclone) pointing
-        ## towards positive y axis with center. This should be the positive
-        ## x-axis so have to rotate 90 degrees.
-        r = (Rotation.from_quat((ori_x, ori_y, ori_z, ori_w)) *
-            Rotation.from_euler('z', 90, degrees=True))
-        ori_x, ori_y, ori_z, ori_w = r.as_quat()
-
-        ori_xs.append(ori_x)
-        ori_ys.append(ori_y)
-        ori_zs.append(ori_z)
-        ori_ws.append(ori_w)
-        pos_xs.append(pos_x)
-        pos_ys.append(pos_y)
-        pos_zs.append(pos_z)
-
-    ppc = PanoPoseCollection(
-        np.array(pos_xs), np.array(pos_ys), np.array(pos_zs),
-        np.array(ori_xs), np.array(ori_ys), np.array(ori_zs),
-        np.array(ori_ws),
-        np.array(datetimes), validate=False)
-
-    return ppc
-
-
-def read_navvis_pano_poses_csv(filespec):
+    Convert a depth map and resource colors to a 3D point cloud.
+    
+    Args:
+        - self._depthMap: 2D numpy array containing depth values 
+        - self._resource: 2D numpy array containing color values 
+        - self._intrinsic_matrix: 3x3 numpy array containing camera intrinsics
+    
+    Returns:
+        - An Open3D point cloud object
     """
-    NavVis provides a pano-poses.csv file in each post-processed dataset. It
-    holds the timestamp, position and orientation of each pano in the dataset.
-    """
-    with open(filespec) as f:
-        data = f.read().split('\n')
+    # Create Open3D image from depth map
+    depth_o3d = o3d.geometry.Image(self._depthMap)
 
-    n = len(data) - 2
+    # Check if the color image and depth map have the same dimensions
+    resource=cv2.resize(self._resource,self._depthMap.shape) if self._resource and not self._resource.shape == self._depthMap.shape else self._resource
 
-    datetimes = []
-    pos_xs, pos_ys, pos_zs = np.zeros(n), np.zeros(n), np.zeros(n)
-    ori_xs, ori_ys, ori_zs = np.zeros(n), np.zeros(n), np.zeros(n)
-    ori_ws = np.zeros(n)
-    for i, l in enumerate(data[1:-1]):
-        r = l.split('; ')
-        datetimes.append(datetime.fromtimestamp(float(r[2])))
-        pos_xs[i] = r[3]
-        pos_ys[i] = r[4]
-        pos_zs[i] = r[5]
-        ori_xs[i] = r[7]
-        ori_ys[i] = r[8]
-        ori_zs[i] = r[9]
-        ori_ws[i] = r[6]
+    # Create point cloud from the depth image using the camera intrinsics
+    pcd = o3d.geometry.PointCloud.create_from_depth_image(
+                                            depth_o3d, 
+                                            self._intrinsic_matrix, 
+                                            project_valid_depth_only=True
+                                            )
+    
+    # Flatten the color image to correspond to the points
+    colors = resource.reshape(-1, 3) if resource is not None else None
+    pcd.colors = o3d.utility.Vector3dVector(colors) if colors is not None else None
 
-    ppc = PanoPoseCollection(pos_xs, pos_ys, pos_zs, ori_xs, ori_ys, ori_zs,
-        ori_ws, np.array(datetimes), validate=False)
-
-    return ppc
-
-
-def read_navvis_alignment_xml(filespec):
-    """
-    Read xml file generated by NavVis aligment tool.
-    """
-    root = ET.parse(filespec).getroot()
-
-    alignment_poses = []
-    for dataset in root.findall('.//dataset'):
-        name = dataset.find('name').text
-        position = dataset.find('.//position')
-        pos_x = float(position.find('x').text)
-        pos_y = float(position.find('y').text)
-        pos_z = float(position.find('z').text)
-        orientation = dataset.find('.//orientation')
-        ori_x = float(orientation.find('x').text)
-        ori_y = float(orientation.find('y').text)
-        ori_z = float(orientation.find('z').text)
-        ori_w = float(orientation.find('w').text)
-
-        alignment_poses.append(AlignmentPose(
-            pos_x, pos_y, pos_z, (ori_x, ori_y, ori_z, ori_w), name))
-
-    return alignment_poses
-
-
-def plot_pose_collections(ppcs, colors=None, headings=False, size=None):
-    """
-    ppcs: list of PanoPoseCollection
-    headings: boolean (default: False) - plots headings as vectors
-    with size 1.
-    """
-    _, ax = plt.subplots(figsize=size)
-
-    for i, ppc in enumerate(ppcs):
-        kwargs = {}
-        if colors is not None:
-            kwargs['c'] = colors[i]
-        ax.scatter(ppc.pos_xs, ppc.pos_ys, **kwargs)
-
-        if headings is True:
-            pc_headings = ppc.headings
-            xs = np.cos(np.radians(pc_headings))
-            ys = np.sin(np.radians(pc_headings))
-            ax.quiver(ppc.pos_xs, ppc.pos_ys, xs, ys, color='k')
-
-    ax.axis('equal')
-
-    plt.show()
-
-def plot_pose_collections_3D(ppcs, colors=None, headings=False, size=None):
-    """
-    ppcs: list of PanoPoseCollection
-    headings: boolean (default: False) - plots headings as vectors
-    with size 1.
-    """
-    fig = plt.figure()
-    ax = fig.add_subplot(projection='3d')
-
-    for i, ppc in enumerate(ppcs):
-        kwargs = {}
-        if colors is not None:
-            kwargs['c'] = colors[i]
-        ax.scatter(ppc.pos_xs, ppc.pos_ys, ppc.pos_zs, **kwargs)
-
-        if headings is True:
-            pc_headings = ppc.headings
-            pc_zenits = ppc.zenits
-            xs = np.cos(np.radians(pc_headings))
-            ys = np.sin(np.radians(pc_headings))
-            zs = np.sin(np.radians(pc_zenits))
-
-            ax.quiver(ppc.pos_xs, ppc.pos_ys,ppc.pos_zs, xs, ys, zs,color='k')
-
-    ax.axis('auto')
-
-    plt.show()
-def decode_depthmap(source, resize = True, size = (8192,4096), show = False):
-    """
-    Function to decode the depthmaps generated by the navvis processing
-    source: Location of the PNG files containing the depthmap
-    resize(bool): If the resulting dethmap needs to be resized to match the size of the corresponding pano, by default True
-    size: size of the corresponding pano, by default 8192x4096
-    show: if true the result wil be shown, by default False
-    """
-    depthmap = np.asarray(Image.open(source)).astype(float)
-    converted_depthmap = np.empty([np.shape(depthmap)[0], np.shape(depthmap)[1]])
-    r = 0
-    while r < np.shape(depthmap)[0]:
-        c = 0
-        while c < np.shape(depthmap)[1]:
-            value = depthmap[r,c]
-            depth_value = value[0] / 256 * 256 + value[1] / 256 * 256 * 256 + value[2] / 256 * 256 * 256 * 256 + value[3] / 256 * 256 * 256 * 256 * 256
-            converted_depthmap[r,c] = depth_value
-            c = c + 1
-        r = r + 1
-    if resize:
-        resized_depthmap = cv2.resize(converted_depthmap,size)
-        if show:
-            plt.imshow(resized_depthmap, cmap="plasma")
-            plt.show()
-        return resized_depthmap
-    else:
-        if show:
-            plt.imshow(converted_depthmap, cmap="plasma")
-            plt.show()
-        return converted_depthmap
-
+    #transform to the cartesianTransform
+    pcd.transform(self._cartesianTransform)
+    
+    return pcd

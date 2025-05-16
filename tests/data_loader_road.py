@@ -10,48 +10,55 @@ import ezdxf as cad
 import pye57 
 import time
 import ifcopenshell
+from rdflib import Graph, URIRef,Namespace, Literal, OWL,RDFS, RDF, XSD
+import ezdxf 
+from PIL import Image
 
 # import geomapi
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 import geomapi.utils.geometryutils as gmu
+import geomapi.utils.cadutils as cadu
 import geomapi.utils as ut
-import geomapi.tools as tl 
+import geomapi.tools as tl
+from geomapi.utils import GEOMAPI_PREFIXES
+
+# path= os.path.join(parent_dir, 'geomapi','ontology', 'geomapi_ontology.ttl')
+# GEOMAPI=Graph().parse(path)
+# GEOMAPI_PREFIXES = {prefix: Namespace(namespace) for prefix, namespace in GEOMAPI.namespace_manager.namespaces()}
+# GEOMAPI_NAMESPACE = Namespace('https://w3id.org/geomapi#')
 
 class DataLoaderRoad:
     def __init__(self,path=None):
         st = time.time()
         print(f'Creating Road DataLoader:')
         
-        #ONTOLOGIES
-        self.exif = rdflib.Namespace('http://www.w3.org/2003/12/exif/ns#')
-        self.geo=rdflib.Namespace('http://www.opengis.net/ont/geosparql#') 
-        self.gom=rdflib.Namespace('https://w3id.org/gom#') 
-        self.omg=rdflib.Namespace('https://w3id.org/omg#') 
-        self.fog=rdflib.Namespace('https://w3id.org/fog#')
-        self.v4d=rdflib.Namespace('https://w3id.org/v4d/core#')
-        self.openlabel=rdflib.Namespace('https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#')
-        self.e57=rdflib.Namespace('http://libe57.org#')
-        self.xcr=rdflib.Namespace('http://www.w3.org/1999/02/22-rdf-syntax-ns#')
-        self.ifc=rdflib.Namespace('http://ifcowl.openbimstandards.org/IFC2X3_Final#')
-        
-            
+           
         #PATH
         self.path= Path.cwd() / "tests" / "testfiles"  if not path else path
-        PATH=self.path
         
-        # #SESSION
-        # self.sessionGraphPath=self.path /  'graphs' / 'road_session_graph.ttl'
-        # self.sessionGraph=Graph().parse(str(self.sessionGraphPath))
-        # print(f'    loaded {self.sessionGraphPath}')
+        #Rotation
+        rotation_matrix_90_z=   np.array( [[ 0, -1 , 0.        ],
+                                [ 1,  0,  0.        ],
+                                [ 0.   ,       0.    ,      1.        ]])  
+        rotation_matrix_90_x=   np.array( [[ 1, 0 , 0.        ],
+                                        [ 0,  0,  -1        ],
+                                        [ 0.   ,       1    ,      0        ]])  
+        rotation_matrix_90_y=   np.array( [[ 0, 0 , 1        ],
+                                        [ 0,  1,  0.        ],
+                                        [ -1   ,       0.    ,      1.        ]])  
         
         #CAD
-        # self.cadPath= self.path / 'cad' / "road.dxf"
-        # self.cad=cad.readfile(self.cadPath)
-        # self.cadGraphPath=self.path /  'graphs' / 'road_cad_graph.ttl'
-        # self.cadGraph=Graph().parse(self.cadGraphPath)
-        # print(f'loaded {self.cad}')
+        self.dxfPath= self.path / 'cad' / "road.dxf"
+        self.cadPath= self.path / 'cad' / "line.ply"                
+        self.dxf=ezdxf.readfile(self.dxfPath)
+        self.entity = next(entity for entity in self.dxf.modelspace().query("INSERT"))
+        self.insert=cadu.ezdxf_entity_to_o3d(self.entity)
+        self.line=o3d.io.read_line_set(str(self.cadPath))
+        self.cadGraphPath=self.path /  'graphs' / 'cad_graph.ttl'
+        self.cadGraph=Graph().parse(self.cadGraphPath)
+        print(f'loaded {self.dxf}')
 
         #IFC
         self.ifcPath=self.path / 'ifc' / "road.ifc"
@@ -81,6 +88,7 @@ class DataLoaderRoad:
    
         self.ifcGraphPath=self.path /  'graphs' / 'road_ifc_graph.ttl'
         self.ifcGraph=Graph().parse(self.ifcGraphPath)
+        self.ifcSubject=next(s for s in self.ifcGraph.subjects(RDF.type) )
         print(f'    loaded {self.ifcGraphPath}')    
 
         #POINTCLOUD
@@ -96,7 +104,7 @@ class DataLoaderRoad:
         
         self.pcdGraphpath=self.path / 'graphs' /  'pcd_graph.ttl'
         self.pcdGraph=Graph().parse(str(self.pcdGraphpath))
-        self.pcdSubject=next(s for s in self.pcdGraph.subjects() if 'road' in s.toPython() )
+        self.pcdSubject=next(s for s in self.pcdGraph.subjects(RDF.type) if 'road' in s.toPython() )
         print(f'    loaded {self.pcdGraphpath}')
         
         #MESH
@@ -106,11 +114,11 @@ class DataLoaderRoad:
             
         self.meshGraphPath=self.path / 'graphs' /  'mesh_graph.ttl'
         self.meshGraph=Graph().parse(self.meshGraphPath)
-        self.meshSubject= next(s for s in self.meshGraph.subjects() if 'road' in s.toPython() )
+        self.meshSubject= next(s for s in self.meshGraph.subjects(RDF.type) if 'road' in s.toPython() )
         print(f'    loaded {self.meshGraphPath}')    
         
         #IMG
-        self.imgGraphPath=self.path /  'graphs' / 'road_img_graph.ttl'
+        self.imgGraphPath=self.path /  'graphs' / 'img_graph.ttl'
         self.imgGraph=Graph().parse(str(self.imgGraphPath))
         print(f'    loaded {self.imgGraphPath}')    
         
@@ -122,7 +130,7 @@ class DataLoaderRoad:
                                                 [-5.99164887e-01,  8.00618459e-01,  3.39417250e-03 , 1.96282855e+05],
                                                 [ 3.24942709e-02 , 2.85534531e-02, -9.99063973e-01,  3.19272496e+01],
                                                 [ 0.00000000e+00 , 0.00000000e+00,  0.00000000e+00 , 1.00000000e+00]])
-        self.imageSubject1=next(s for s in self.imgGraph.subjects() if '101_0367_0007' in s.toPython() )
+        self.imageSubject1=next((s for s in self.imgGraph.subjects(RDF.type) if '101_0367_0007' in s.toPython()),None )
         self.focalLength1=3693.1569475809993
         self.imageWidth1=5472
         self.imageHeight1=3648
@@ -130,17 +138,21 @@ class DataLoaderRoad:
         
         
         self.imagePath2=self.path / 'img' / "101_0367_0055.JPG" 
-        self.image2=cv2.imread(str(self.imagePath2))
+        self.image2=Image.open(self.imagePath2)
         self.imageCartesianTransform2= np.array([[ 8.16701918e-01,  5.76783553e-01,  1.78524640e-02,  1.00585779e+05],
                                                 [ 5.76947600e-01, -8.16762274e-01, -5.55470424e-03,  1.96265377e+05],
                                                 [ 1.13773570e-02 , 1.48364739e-02, -9.99825202e-01,  3.19327009e+01],
                                                 [ 0.00000000e+00, 0.00000000e+00 , 0.00000000e+00 , 1.00000000e+00]])
-        self.imageSubject2=next(s for s in self.imgGraph.subjects() if '101_0367_0055' in s.toPython() )
+        self.imageSubject2=next((s for s in self.imgGraph.subjects(RDF.type) if '101_0367_0055' in s.toPython()),None )
         self.focalLength2=3693.1569475809993
         self.imageWidth2=5472
         self.imageHeight2=3648
         print(f'    loaded {self.imagePath2}')    
         
+        #Calibration Image
+        self.calibrationPath=self.path / 'img' / "calibrationPhoto.jpg" 
+        self.calibrationImage = cv2.imread(self.calibrationPath)
+
         #RESOURCES temporary folder
         self.resourcePath= self.path / "resources"
         if not os.path.exists(self.resourcePath):
@@ -153,6 +165,28 @@ class DataLoaderRoad:
         print(f'DataLoader succesfully loaded in {et-st} seconds!')
 
 
+def create_line():
+    """
+    Creates line
+    """
+    points = np.array([
+    [0, 0, 0],  # Start point
+    [1, 0, 0],  # End point
+    ])
+
+    lines = np.array([
+        [0, 1],
+    ])
+
+    colors = np.array([
+        [1, 0, 0],  # Red color
+    ])
+    line_set = o3d.geometry.LineSet()
+    line_set.points = o3d.utility.Vector3dVector(points)
+    line_set.lines = o3d.utility.Vector2iVector(lines)  
+    line_set.colors = o3d.utility.Vector3dVector(colors)
+    return line_set
+    
 #LOAD DATA -> reference this instance to load data only once
 try:
     DATALOADERROADINSTANCE = DataLoaderRoad()

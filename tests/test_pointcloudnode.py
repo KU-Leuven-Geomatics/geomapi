@@ -4,7 +4,7 @@ import shutil
 import time
 import unittest
 from multiprocessing.sharedctypes import Value
-
+import numpy as np
 import cv2
 import open3d as o3d
 import pye57
@@ -18,14 +18,15 @@ parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 import geomapi.utils as ut
 import geomapi.utils.geometryutils as gmu
-from geomapi.nodes import *
+from geomapi.nodes import PointCloudNode
 
 #DATA
 sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
 from data_loader_road import DATALOADERROADINSTANCE 
+from geomapi.utils import GEOMAPI_PREFIXES
 
-class TestNode(unittest.TestCase):
+class TestPointcloudNode(unittest.TestCase):
 
 
 
@@ -67,89 +68,124 @@ class TestNode(unittest.TestCase):
         
 ################################## TEST FUNCTIONS ######################
 
-    def test_PointCloudNode_creation_from_subject(self):
-        #subject
-        subject='myNode'
-        node= PointCloudNode(subject=subject)
-        self.assertEqual(node.subject.toPython(),'file:///'+subject)
-
-        #http://
-        subject='http://session_2022_05_20'
-        node= PointCloudNode(subject=subject)
-        self.assertEqual(node.subject.toPython(),subject)
+    def test_node_creation_from_graph(self):
+        node= PointCloudNode(graph=self.dataLoaderParking.pcdGraph, subject= self.dataLoaderParking.pcdSubject)
         
-        #erroneous char       
-        subject='[[http://ses>sion_2022_<05_20]]'
-        node= PointCloudNode(subject=subject)
-        self.assertEqual(node.subject.toPython(),'http://__ses_sion_2022__05_20__')
-
-    def test_PointCloudNode_creation_from_graph(self):
-        node= PointCloudNode(graph=self.dataLoaderParking.pcdGraph, subject=self.dataLoaderParking.pcdSubject)
-        self.assertEqual(node.subject.toPython(),self.dataLoaderParking.pcdSubject.toPython())
-        object=self.dataLoaderParking.pcdGraph.value(self.dataLoaderParking.pcdSubject,self.dataLoaderParking.e57['pointCount'])
-        self.assertEqual(node.pointCount,object.toPython())
+        #check if the graph is correctly parsed
+        for s, p, o in self.dataLoaderParking.pcdGraph.triples(( self.dataLoaderParking.pcdSubject, None, None)):
+            if 'path' in p.toPython():
+                self.assertEqual(Path(o.toPython()).resolve(),os.getcwd()/node.path) #not sure
+            if 'cartesianTransform' in p.toPython():
+                matrix=ut.literal_to_matrix(o)
+                #check if matrix elements are the same as the node cartesianTransform
+                self.assertTrue(np.allclose(matrix,node.cartesianTransform))
+            if 'orientedBoundingBox' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                node_param=gmu.get_oriented_bounding_box_parameters(node.orientedBoundingBox)
+                self.assertTrue(np.allclose(graph_param,node_param))
+            if 'convexHull' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                graph_volume=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(graph_param)).compute_convex_hull()[0].get_volume()
+                node_volume=node.convexHull.get_volume()
+                self.assertAlmostEqual(graph_volume,node_volume,delta=0.01)
         
     def test_PointCloudNode_creation_from_graph_path(self):
         node= PointCloudNode(graphPath=self.dataLoaderParking.pcdGraphPath, subject=self.dataLoaderParking.pcdSubject)
-        self.assertEqual(node.subject.toPython(),self.dataLoaderParking.pcdSubject.toPython())
-        object=self.dataLoaderParking.pcdGraph.value(self.dataLoaderParking.pcdSubject,self.dataLoaderParking.e57['pointCount'])
-        self.assertEqual(node.pointCount,object.toPython())
+        
+        #check if the graph is correctly parsed
+        for s, p, o in self.dataLoaderParking.pcdGraph.triples(( self.dataLoaderParking.pcdSubject, None, None)):
+            if 'path' in p.toPython():
+                self.assertEqual((self.dataLoaderParking.pcdGraphPath.parent/Path(o.toPython())).resolve(),node.path) #not sure
+            if 'cartesianTransform' in p.toPython():
+                matrix=ut.literal_to_matrix(o)
+                #check if matrix elements are the same as the node cartesianTransform
+                self.assertTrue(np.allclose(matrix,node.cartesianTransform))
+
         
     def test_PointCloudNode_creation_from_path(self):
-        #path1 without getResource
+        #path1 without loadResource
         node= PointCloudNode(path=self.dataLoaderRoad.pcdPath)
-        self.assertEqual(node.name,ut.get_filename(self.dataLoaderRoad.pcdPath))
+        self.assertEqual(node.name,self.dataLoaderRoad.pcdPath.stem)
 
-        #path2 with getResource
-        node= PointCloudNode(path=self.dataLoaderRoad.pcdPath,getResource=True)        
-        self.assertEqual(node.name,ut.get_filename(self.dataLoaderRoad.pcdPath))
+        #path2 with loadResource
+        node= PointCloudNode(path=self.dataLoaderRoad.pcdPath,loadResource=True)        
+        self.assertEqual(node.name,self.dataLoaderRoad.pcdPath.stem)
         self.assertEqual(node.pointCount,len(self.dataLoaderRoad.pcd.points))
 
         #path3 
-        node= PointCloudNode(path=self.dataLoaderRoad.e57Path,getResource=True)
+        node= PointCloudNode(path=self.dataLoaderRoad.e57Path,loadResource=True)
         self.assertEqual(node.pointCount,self.dataLoaderRoad.e57.get_header(0).point_count)
 
     def test_PointCloudNode_creation_from_resource(self):
-        #pcd1
+        #pcd
         node= PointCloudNode(resource=self.dataLoaderRoad.pcd)
         self.assertEqual(node.pointCount,len(self.dataLoaderRoad.pcd.points))
+        self.assertTrue(isinstance(node.resource,o3d.geometry.PointCloud))        
 
-        #pcd2 -> e57 file
+        #e57 with header
         node= PointCloudNode(resource=self.dataLoaderParking.e572)
         self.assertEqual(node.pointCount,self.dataLoaderParking.e572.get_header(0).point_count)
+        self.assertTrue(isinstance(node.resource,o3d.geometry.PointCloud))
+        
+        #e57 without header
+        node= PointCloudNode(resource=self.dataLoaderRoad.e57)
+        self.assertEqual(node.pointCount,self.dataLoaderRoad.e57.get_header(0).point_count)
+        self.assertTrue(isinstance(node.resource,o3d.geometry.PointCloud))
+        
+        #e57 dict
+        node= PointCloudNode(resource=self.dataLoaderParking.e572Data)
+        self.assertEqual(node.pointCount,self.dataLoaderParking.e572.get_header(0).point_count)
+        self.assertTrue(isinstance(node.resource,o3d.geometry.PointCloud))
+        
+        #las
+        node= PointCloudNode(resource=self.dataLoaderParking.las)
+        self.assertEqual(node.pointCount,len(self.dataLoaderParking.las.xyz))
+        self.assertTrue(isinstance(node.resource,o3d.geometry.PointCloud))
+        
 
     def test_creation_from_subject_and_graph_and_graphPath(self):        
         subject=self.dataLoaderParking.pcdSubject
         node= PointCloudNode(subject=subject,
                              graph=self.dataLoaderParking.pcdGraph,
                              graphPath=self.dataLoaderParking.pcdGraphPath)
-        self.assertEqual(node.subject.toPython(),subject.toPython())
-        node.to_graph()
-        self.assertTrue((subject, self.dataLoaderParking.e57['pointCount'], Literal(node.pointCount)) in self.dataLoaderParking.pcdGraph)
+
+        #check if the graph is correctly parsed
+        for s, p, o in self.dataLoaderParking.pcdGraph.triples((subject, None, None)):
+            if 'path' in p.toPython():
+                self.assertEqual((self.dataLoaderParking.pcdGraphPath.parent/Path(o.toPython())).resolve(),node.path) 
+            if 'cartesianTransform' in p.toPython():
+                matrix=ut.literal_to_matrix(o)
+                #check if matrix elements are the same as the node cartesianTransform
+                self.assertTrue(np.allclose(matrix,node.cartesianTransform,atol=0.001))
+            if 'orientedBoundingBox' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                node_param=gmu.get_oriented_bounding_box_parameters(node.orientedBoundingBox)
+                self.assertTrue(np.allclose(graph_param,node_param,atol=0.001))
+            if 'convexHull' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                graph_volume=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(graph_param)).compute_convex_hull()[0].get_volume()
+                node_volume=node.convexHull.get_volume()
+                self.assertAlmostEqual(graph_volume,node_volume,delta=0.01)
 
     def test_creation_from_subject_and_path(self):        
         node= PointCloudNode(subject=self.dataLoaderParking.pcdSubject,
                              path=self.dataLoaderParking.pcdPath,
-                             getResource=True)
+                             loadResource=True)
         self.assertEqual(node.subject.toPython(),self.dataLoaderParking.pcdSubject.toPython())
-        #box= self.pcd2.get_oriented_bounding_box()
-        #min=np.asarray(box.get_box_points())
-        #self.assertAlmostEqual(node.orientedBounds[0,0],min[0,0],delta=0.01)
 
     def test_creation_from_subject_and_path_and_graph(self):        
-        node= PointCloudNode(subject=self.dataLoaderParking.pcdSubject,
-                             path=self.dataLoaderParking.pcdPath,
-                             graph=self.dataLoaderParking.pcdGraph,
-                             getResource=True)
-        self.assertEqual(node.subject.toPython(),self.dataLoaderParking.pcdSubject.toPython())
-        node.to_graph()
-        initialGraph=ut.get_subject_graph(self.dataLoaderParking.pcdGraph,subject=self.dataLoaderParking.pcdSubject)
+        node= PointCloudNode(subject=self.dataLoaderRoad.pcdSubject,
+                             path=self.dataLoaderRoad.pcdPath,
+                             graph=self.dataLoaderRoad.pcdGraph)
+        self.assertEqual(node.subject.toPython(),self.dataLoaderRoad.pcdSubject.toPython())
+        node.get_graph()
+        initialGraph=ut.get_subject_graph(self.dataLoaderRoad.pcdGraph,subject=self.dataLoaderRoad.pcdSubject)
         self.assertEqual(len(node.graph),len(initialGraph)) 
 
     def test_creation_from_resource_and_path(self):        
         node= PointCloudNode(resource=self.dataLoaderParking.pcd,
                             path=self.dataLoaderParking.pcdPath)
-        self.assertEqual(node.subject.toPython(),'file:///'+ut.validate_string(ut.get_filename(self.dataLoaderParking.pcdPath)) )
+        self.assertEqual(node.subject.toPython(),'http://'+ut.validate_string(Path(self.dataLoaderParking.pcdPath).stem) )
 
     def test_creation_from_subject_resource_and_path(self):        
         node= PointCloudNode(subject=self.dataLoaderRoad.pcdSubject,
@@ -163,41 +199,35 @@ class TestNode(unittest.TestCase):
                              path=self.dataLoaderRoad.pcdPath,
                              graph=self.dataLoaderRoad.pcdGraph)
         self.assertEqual(node.subject.toPython(),self.dataLoaderRoad.pcdSubject.toPython() )
-        node.to_graph()
-        object=node.graph.value(node.subject,self.dataLoaderRoad.v4d['path'])
-        self.assertEqual(ut.parse_path(object.toPython()) ,'../pcd/road.pcd' )
+        node.get_graph()
+        object=node.graph.value(node.subject,GEOMAPI_PREFIXES['geomapi'].path)
+        self.assertEqual(Path(object.toPython()),Path(self.dataLoaderRoad.pcdPath) )
 
     def test_node_creation_with_get_resource(self):
         #pcd
-        node= PointCloudNode(resource=self.dataLoaderRoad.pcd)
-        self.assertIsNotNone(node.resource)
-
-        #path without getResource
-        node= PointCloudNode(path=self.dataLoaderRoad.pcdPath)
-        self.assertIsNone(node._resource)
-
-        #path with getResource
-        node= PointCloudNode(path=self.dataLoaderRoad.pcdPath,getResource=True)
-        self.assertIsNotNone(node.resource)
-
-        #graph with get resource
-        node= PointCloudNode(subject=self.dataLoaderParking.pcdSubject,
-                             graph=self.dataLoaderParking.pcdGraph,
-                             getResource=True)
-        self.assertIsNone(node.resource)
+        node= PointCloudNode(path=self.dataLoaderRoad.pcdPath,loadResource=True)
+        self.assertEqual(node.pointCount,len(self.dataLoaderRoad.pcd.points))
         
+        #e57
+        node= PointCloudNode(path=self.dataLoaderRoad.e57Path,loadResource=True)
+        self.assertEqual(node.pointCount,self.dataLoaderRoad.e57.get_header(0).point_count)
+        
+        #las
+        node= PointCloudNode(path=self.dataLoaderParking.lasPath,loadResource=True)
+        self.assertEqual(node.pointCount,len(self.dataLoaderParking.las.xyz))
+
         #graphPath with get resource
         node= PointCloudNode(subject=self.dataLoaderParking.pcdSubject,
                              graphPath=self.dataLoaderParking.pcdGraphPath,
-                             getResource=True)
+                             loadResource=True)
         self.assertIsNotNone(node.resource)
 
     def test_delete_resource(self):
         #pcd
         node= PointCloudNode(resource=self.dataLoaderParking.pcd)
-        self.assertIsNotNone(node._resource)
+        self.assertIsNotNone(node.resource)
         del node.resource
-        self.assertIsNone(node._resource)
+        self.assertIsNone(node.resource)
 
     def test_save_resource(self):
         #no pcd -> False
@@ -206,6 +236,7 @@ class TestNode(unittest.TestCase):
 
         #directory
         node= PointCloudNode(resource=self.dataLoaderParking.pcd)
+        self.assertIsNotNone(node.resource)
         self.assertTrue(node.save_resource(self.dataLoaderParking.resourcePath))
 
         # #graphPath        
@@ -236,7 +267,7 @@ class TestNode(unittest.TestCase):
         #self.assertEqual(node.path,os.path.join(self.resourcePath,node.name+'.e57'))
         #
         ##path -> new name
-        #node= PointCloudNode(subject=URIRef('mypcd'),path=self.path2,getResource=True)
+        #node= PointCloudNode(subject=URIRef('mypcd'),path=self.path2,loadResource=True)
         #self.assertTrue(node.save_resource())
         #
         ##graphPath with directory
@@ -251,34 +282,18 @@ class TestNode(unittest.TestCase):
     def test_get_resource(self):
         #pcd
         node=PointCloudNode(resource=self.dataLoaderParking.e571)  
-        self.assertIsNotNone(node.get_resource())
+        self.assertIsNotNone(node.load_resource())
 
         #no pcd
         del node.resource
-        self.assertIsNone(node.get_resource())
+        self.assertIsNone(node.load_resource())
 
-        #graphPath with getResource
+        #graphPath with loadResource
         node=PointCloudNode(graphPath=self.dataLoaderParking.pcdGraphPath,
                             subject=self.dataLoaderParking.pcdSubject,
-                            getResource=True)
-        self.assertIsNotNone(node.get_resource())
+                            loadResource=True)
+        self.assertIsNotNone(node.load_resource())
 
-    def test_get_metadata_from_resource(self):
-        #pcd
-        node=PointCloudNode(resource=self.dataLoaderParking.e572)  
-        self.assertIsNotNone(node.orientedBounds)
-        self.assertIsNotNone(node.cartesianBounds)
-        self.assertIsNotNone(node.cartesianTransform)
-        self.assertIsNotNone(node.pointCount)
-
-        #graphPath
-        node=PointCloudNode(graphPath=self.dataLoaderParking.pcdGraphPath,
-                            subject=self.dataLoaderParking.pcdSubject,
-                            getResource=True)
-        self.assertIsNotNone(node.orientedBounds)
-        self.assertIsNotNone(node.cartesianBounds)
-        self.assertIsNotNone(node.cartesianTransform)
-        self.assertIsNotNone(node.pointCount)
 
 if __name__ == '__main__':
     unittest.main()

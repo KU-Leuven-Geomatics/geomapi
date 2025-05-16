@@ -1,702 +1,579 @@
 """
-Panonode is a Python Class to govern the data and metadata of panoramic data (OpenCV, PIL). 
+**PanoNode** is a Python Class to govern the data and metadata of panoramic image data. 
 
-This node builds upon the OpenCV and PIL API for the image definitions.
-It directly inherits from Node.
-Be sure to check the properties defined in the above classes to initialise the Node.
+This node builds upon the [OpenCV](https://opencv.org/), [Open3D](https://www.open3d.org/) and [PIL](https://pillow.readthedocs.io/en/stable/) API for the image definitions.
+Be sure to check the properties defined in those abstract classes to initialise the Node.
+
+.. image:: ../../../docs/pics/graph_img_1.png
+
+**IMPORTANT**: This Node class is designed to manage geolocated imagery. It works best when the heading is known. The class can be used to generate virtual images, raycasting, and other geometric operations.
+
 """
 #IMPORT PACKAGES
-from ast import Raise
-from distutils import extension
 from pathlib import Path
-from typing import Tuple
 import xml.etree.ElementTree as ET
 import cv2
 import PIL
-from rdflib import Graph, URIRef
+from rdflib import XSD, Graph, URIRef
 import numpy as np
 import os
 import open3d as o3d
-import math
-import uuid
-from scipy.spatial.transform import Rotation as R
+import json
+import pandas as pd
+
+
+
 import matplotlib.pyplot as plt
+import copy
+from typing import List, Optional,Tuple,Union
+from PIL import Image
 
 
 #IMPORT MODULES
 from geomapi.nodes import Node
-from geomapi.nodes import ImageNode
 import geomapi.utils as ut
+from geomapi.utils import rdf_property, GEOMAPI_PREFIXES
 import geomapi.utils.geometryutils as gmu
-import geomapi.utils.imageutils as it
+import geomapi.utils.imageutils as iu
+import geomapi.utils.geospatialutils as gsu
 
 
 
-
-class PanoNode(ImageNode):
+class PanoNode(Node):
     # class attributes
     
-    def __init__(self,  graph : Graph = None, 
-                        graphPath:str=None,
-                        subject : URIRef = None,
-                        path : str=None, 
-                        depthPath: str = None,
-                        getResource : bool = False,
-                        getDepth : bool = False,
-                        **kwargs): 
-        """Creates a Node from one or more of the following inputs. 
+    def __init__(self, 
+                subject: Optional[URIRef] = None,
+                graph: Optional[Graph] = None,
+                graphPath: Optional[Path] = None,
+                name: Optional[str] = None,
+                path: Optional[Path] = None,
+                timestamp: Optional[str] = None,
+                resource = None,
+                cartesianTransform: Optional[np.ndarray] = None,
+                orientedBoundingBox: Optional[o3d.geometry.OrientedBoundingBox] = None,
+                convexHull: Optional[o3d.geometry.TriangleMesh] =None,
+                loadResource: bool = False,
+                jsonPath: Path = None,
+                imageWidth:int = None,
+                imageHeight:int = None, 
+                depth: float= None,
+                **kwargs): 
+        """Creates an PanoNode. Overloaded function.
+                
+        This Node can be initialised from one or more of the inputs below.
         By default, no data is imported in the Node to speed up processing.
-        If you also want the data, call node.get_resource() or set getResource() to True.\n
-
-        Args: \n
-            1. graph (RDFlib Graph) : Graph with a single subject (if multiple subjects are present, only the first will be used to initialise the MeshNode)\n
-            2. graphPath (str):  Graph file path with a single subject (if multiple subjects are present, only the first will be used to initialise the MeshNode)\n
-            3. path (str) : path to image file (Note that this node will also contain the data) \n
-            4. resource (ndarray, PIL Image,Open3D) : OpenCV, PIL (Note that this node will also contain the data)\n
-            5. xmlPath (str) : Xml file path from Agisoft Metashape\n
-            6. xmpPath (str) :  xmp file path from RealityCapture
-            \n
-            - getResource (bool, optional= False): If True, the node will search for its physical resource on drive \n
-            - getMetaData (bool, optional= True): If True, the node will attempt to extract metadata from the resource if present \n
-
+        If you also want the data, call node.get_resource() or set getResource() to
+        
+        Args:
+            - subject (RDFlib URIRef) : subject to be used as the main identifier in the RDF Graph
+            
+            - graph (RDFlib Graph) : Graph with a single subject (if multiple subjects are present, only the first will be used to initialise the Node)
+            
+            - graphPath (Path) :  Graph file path with a single subject (if multiple subjects are present, only the first will be used to initialise the Node)
+            
+            - path (Path) : Path to an image .jpg, jpeg, .png file (data is not automatically loaded)
+            
+            - resource (ndarray, PIL, Open3D) : Image data from [Open3D](https://www.open3d.org/), [OpenCV](https://opencv.org/) or [PIL](https://pillow.readthedocs.io/en/stable/). 
+                                    
+            - getResource (bool, optional= False) : If True, the node will search for its physical resource on drive. In this case, that includes the image and the depthmap. Defaults to False
+            
+            - imageWidth (int, optional) : Width of the image in pixels (u). 
+            
+            - imageHeight (int, optional) : Height of the image in pixels (v). 
+                                    
+            - depthMap (np.array, optional) : The depthmap of the image. Defaults to None
+            
+            - depthPath (Path, optional) : Path to the depthmap of the image. Defaults to None
+            
         Returns:
-            An ImageNode with metadata 
+            ImageNode : An ImageNode with metadata 
         """  
-        #private attributes 
-        self.depthPath=None
-        self._orientedBoundingBox=None
-        self.imageWidth = None # (int) number of pixels
-        self.imageHeight = None  # (int) number of pixels 
-        self.depth = None
-        self.linkedNodes = []
-
-        super().__init__(   graph= graph,
-                            graphPath= graphPath,
-                            subject= subject,
-                            path=path,
-                            **kwargs)   
 
         #instance variables
+        self.jsonPath=jsonPath
+        self.imageWidth=imageWidth
+        self.imageHeight=imageHeight
+        self.depth = depth
+
+        super().__init__(   subject = subject,
+                            graph = graph,
+                            graphPath = graphPath,
+                            name = name,
+                            path = path,
+                            timestamp = timestamp,
+                            resource = resource,
+                            cartesianTransform = cartesianTransform,
+                            orientedBoundingBox = orientedBoundingBox,
+                            convexHull = convexHull,
+                            loadResource = loadResource,
+                            **kwargs) 
+        
+        #initialise functionality
+        self.get_metadata_from_json_path() if self.jsonPath is not None else None
+        self.get_metadata_from_exif_data(path) if self.path is not None else None
         
 
-        #initialisation functionality
-        if getResource:
-            self.get_resource()
+#---------------------PROPERTIES----------------------------
+
+    #---------------------jsonPath----------------------------
+    @property
+    @rdf_property(datatype=XSD.string)
+    def jsonPath(self): 
+        """Get the jsonPath (Path) of the node."""
+        return self._jsonPath
+
+    @jsonPath.setter
+    def jsonPath(self,value:Path):
+        if value is None:
+            self._jsonPath = None
+        elif Path(value).suffix.upper() ==".JSON":
+            self._jsonPath=Path(value)
+        else:
+            raise ValueError('self.jsonPath has invalid type, path or extension.')    
         
-        if self._resource is not None:
-            self.get_metadata_from_resource()
-
-        if getDepth and depthPath is None:
-            depthPath = path.replace("pano", "pano_depth")
-            self.depthPath = depthPath.replace("jpg", "PNG")
-        elif depthPath is not None:
-            self.depthPath = depthPath
+    #---------------------imageWidth----------------------------
+    #---------------------imageWidth----------------------------
+    @property
+    @rdf_property(predicate= GEOMAPI_PREFIXES['exif'].imageWidth, datatype=XSD.int)
+    def imageWidth(self):
+        """Get the imageWidth (int) or number of columns of the resource of the node."""
+        if self._imageWidth is None:
+            self._imageWidth = 2000
+            if self.resource is not None:
+                self._imageWidth=self._resource.shape[1]
+        return self._imageWidth
+    
+    @imageWidth.setter
+    def imageWidth(self,value:int):
+        if value is None:
+            self._imageWidth = None
+        elif type(int(value)) is int:
+            self._imageWidth=int(value)
+        else:
+            raise ValueError('self.imageWidth must be an integer')
         
-        if getResource or self._resource is not None:
-            self.get_metadata_from_resource()
-            if getDepth and self.imageWidth is not None and self.imageHeight is not None:
-                self.depth = self.get_depth()
-            
+    #---------------------imageHeight----------------------------
+    @property
+    @rdf_property(predicate= GEOMAPI_PREFIXES['exif'].imageLength, datatype=XSD.int)
+    def imageHeight(self):
+        """Get the imageHeight (int) or number of rows of the resource of the node."""
+        if self._imageHeight is None:
+            self._imageHeight = 1000
+            if self.resource is not None:
+                self._imageHeight=self.resource.shape[0]
+        return self._imageHeight
+    
+    @imageHeight.setter
+    def imageHeight(self,value:int):
+        if value is None:
+            self._imageHeight = None
+        elif type(int(value)) is int:
+            self._imageHeight=int(value)
+        else:
+            raise ValueError('self.imageHeight must be an integer')
 
+    #---------------------Depth----------------------------
+    @property
+    @rdf_property(datatype=XSD.float)
+    def depth(self):
+        """Get the maximum depth of the image, defaults to one"""
+        if self._depth is None:
+            self._depth = 1
+        return self._depth
+    
+    @depth.setter
+    def depth(self,value:float):
+        if value is None:
+            self._depth = None
+        elif type(float(value)) is float:
+            self._depth=float(value)
+        else:
+            raise ValueError('depth must be a float')
 
-# #---------------------PROPERTIES----------------------------
-
-#     #---------------------xmlPath----------------------------
-#     @property
-#     def xmlPath(self): 
-#         """Get the xmlPath (str) of the node."""
-#         return ut.parse_path(self._xmlPath)
-
-#     @xmlPath.setter
-#     def xmlPath(self,value):
-#         if value is None:
-#             return None
-#         elif (str(value).endswith('xml') ):
-#             self._xmlPath=str(value)
-#         else:
-#             raise ValueError('self.xmlPath has invalid type, path or extension.')    
-
-#   #---------------------xmpPath----------------------------
-#     @property
-#     def xmpPath(self): 
-#         """Get the xmpPath (str) of the node."""
-#         return ut.parse_path(self._xmpPath)
-
-#     @xmpPath.setter
-#     def xmpPath(self,value):
-#         if value is None:
-#             return None
-#         elif (str(value).endswith('xmp') ):
-#             self._xmpPath=str(value)
-#         else:
-#             raise ValueError('self.xmpPath has invalid type, path or extension.')    
-
-# #---------------------orientedBoundingBox----------------------------
-#     @property
-#     def orientedBoundingBox(self): 
-#         """Get the orientedBoundingBox of the Node from various inputs. \n
-
-#         Args:
-#             1. Open3D.geometry.OrientedBoundingBox \n
-#             2. Open3D geometry\n
-
-#         Returns:
-#             orientedBoundingBox (o3d.geometry.OrientedBoundingBox) 
-#         """
-#         return self._orientedBoundingBox
-
-#     @orientedBoundingBox.setter
-#     def orientedBoundingBox(self,value):
-#         if value is None:
-#             return None
-#         if 'orientedBoundingBox' in str(type(value)):
-#             self._orientedBoundingBox=value
-#         else:    
-#             try: #geometry
-#                 self._orientedBoundingBox=value.get_oriented_bounding_box()
-#             except:
-#                 raise ValueError('Input must be orientedBoundingBox (o3d.geometry.OrientedBoundingBox) or an Open3D Geometry.')
-
-# #---------------------METHODS----------------------------
-
-    def get_depth(self):
-        """
-        Function to decode the depthmaps generated by the navvis processing
-        source: Location of the PNG files containing the depthmap
-        resize(bool): If the resulting dethmap needs to be resized to match the size of the corresponding pano, by default True
-        size: size of the corresponding pano, by default 8192x4096
-        """
-
-        depthmap = np.asarray(PIL.Image.open(self.depthPath)).astype(float)
-        converted_depthmap = np.empty([np.shape(depthmap)[0], np.shape(depthmap)[1]])
-        r = 0
-        while r < np.shape(depthmap)[0]:
-            c = 0
-            while c < np.shape(depthmap)[1]:
-                value = depthmap[r,c]
-                depth_value = value[0] / 256 * 256 + value[1] / 256 * 256 * 256 + value[2] / 256 * 256 * 256 * 256 + value[3] / 256 * 256 * 256 * 256 * 256
-                converted_depthmap[r,c] = depth_value
-                c = c + 1
-            r = r + 1
-
-            # resized_depthmap = cv2.resize(converted_depthmap,(self.imageWidth, self.imageHeight))
-        self.depth = converted_depthmap
-
-
-
-    def set_resource(self,value):
-        """Set the resource of the Node from various inputs.\n
+#---------------------PROPERTY OVERRIDES----------------------------
+   
+    @Node.resource.setter
+    def resource(self,value):
+        """Set the resource of the Node from various inputs.
 
         Args:
-            1. np.ndarray (OpenCV) \n
-            2. PIL Image\n
-            3. Open3D Image\n
+            - np.ndarray (OpenCV)
+            - PIL Image
+            - Open3D Image
 
         Raises:
             ValueError: Resource must be np.ndarray (OpenCV), PIL Image or Open3D Image.
         """
-
-        if type(value) is np.ndarray : #OpenCV
-            self._resource = value
-        elif 'Image' in str(type(value)): # PIL
-            self._resource=  cv2.cvtColor(np.array(value), cv2.COLOR_RGB2BGR)
+        if(value is None):
+            self._resource = None
+        elif isinstance(np.asarray(value),np.ndarray) : #OpenCV
+            self._resource = np.asarray(value)
+        elif isinstance(value,PIL.MpoImagePlugin.MpoImageFile): 
+            self._resource=  np.array(value)#cv2.cvtColor(np.array(value), cv2.COLOR_RGB2BGR) #not sure if this is needed
+        elif isinstance(value,PIL.Image.Image): 
+            self._resource=  np.array(value)#cv2.cvtColor(np.array(value), cv2.COLOR_RGB2BGR)
+        elif isinstance(value,o3d.geometry.Image):
+            self._resource = np.array(value)
         else:
             raise ValueError('Resource must be np.ndarray (OpenCV) or PIL Image')
+# #---------------------METHODS----------------------------
 
-    def get_resource(self)->np.ndarray: 
-        """Returns the resource (image) in the node. 
-        If none is present, it will search for the data on drive from the following inputs. \n
-
-        Args:
-            1. self.path\n
-            2. self.graphPath\n
-            3. self.name or self.subject
+    def load_resource(self)->np.ndarray: 
+        """Loads the resource from the path
 
         Returns:
             np.ndarray or None
         """
-        if self._resource is not None :
-            return self._resource
-        elif self.get_path(): 
-            self._resource   = cv2.imread(self.path)
-            self.get_metadata_from_resource()
+        # Perform path checks
+        if(not super().load_resource()):
+            return None
+
+        if self.path:
+            self.resource = np.array(Image.open(self.path)) # PIL is 5% faster than OpenCV cv2.imread(self.path)
         return self._resource 
-    
-    def save_resource(self, directory:str=None,extension :str = '.png') ->bool:
-        """Export the resource of the Node.\n
+
+    def save_resource(self, directory:Path |str=None,extension :str = '.jpg') ->bool:
+        """Export the resource of the Node.
 
         Args:
-            1. directory (str, optional): directory folder to store the data.\n
-            2. extension (str, optional): file extension. Defaults to '.png'.\n
+            - directory (str, optional) : directory folder to store the data.
+            - extension (str, optional) : file extension. Defaults to '.jpg'.
 
         Raises:
-            ValueError: Unsuitable extension. Please check permitted extension types in utils._init_.\n
+            ValueError: Unsuitable extension. Please check permitted extension types in utils._init_.
 
         Returns:
-            bool: return True if export was succesful
+            bool: return True if export was succesfull
         """     
-        #check path
-        if self.resource is None:
+                # perform the path check and create the directory
+        if not super().save_resource(directory, extension):
             return False
         
-        #validate extension
-        if extension not in ut.IMG_EXTENSIONS:
-            raise ValueError('Invalid extension')
-
-        # check if already exists
-        if directory and os.path.exists(os.path.join(directory,self.get_name() + extension)):
-            self.path=os.path.join(directory,self.get_name() + extension)
-            return True
-        elif not directory and self.get_path() and os.path.exists(self.path) and extension in ut.IMG_EXTENSIONS:
-            return True    
-          
-        #get directory
-        if (directory):
-            pass    
-        elif self.path is not None and os.path.exists(self.path):    
-            directory=ut.get_folder(self.path)            
-        elif(self.graphPath): 
-            dir=ut.get_folder(self.graphPath)
-            directory=os.path.join(dir,'IMG')   
-        else:
-            directory=os.path.join(os.getcwd(),'IMG')
-        # create directory if not present
-        if not os.path.exists(directory):                        
-            os.mkdir(directory)   
-
         #write files
-        if cv2.imwrite(self.path, self.resource):
-            return True
-        return False
-    
-    # def get_depth(self)->np.ndarray: 
-    #     """Returns the resource (image) in the node. 
-    #     If none is present, it will search for the data on drive from the following inputs. \n
-
-    #     Args:
-    #         1. self.path\n
-    #         2. self.graphPath\n
-    #         3. self.name or self.subject
-
-    #     Returns:
-    #         np.ndarray or None
-    #     """
-    #     if self._depth is not None :
-    #         return self._depth
-    #     elif self.get_path():
-    #         self._depth   = cv2.imread(self.depthPath)
-    #     return self._depth
-
-    def save_depthmap(self, directory:str=None,extension :str = '.png') ->bool:
-        """Export the resource of the Node.\n
-
-        Args:
-            1. directory (str, optional): directory folder to store the data.\n
-            2. extension (str, optional): file extension. Defaults to '.png'.\n
-
-        Raises:
-            ValueError: Unsuitable extension. Please check permitted extension types in utils._init_.\n
-
-        Returns:
-            bool: return True if export was succesful
-        """     
-        #check path
-        if self.depth is None:
-            return False
-        
-        #validate extension
-        if extension not in ut.IMG_EXTENSION:
-            raise ValueError('Invalid extension')
-
-        # check if already exists
-        if directory and os.path.exists(self.depthPath):
-            return True
-          
-        #get directory
-        if (directory):
-            pass    
-        elif self.depthPath is not None and os.path.exists(self.depthPath):    
-            directory=ut.get_folder(self.depthPath)            
-        elif(self.graphPath): 
-            dir=ut.get_folder(self.graphPath)
-            directory=os.path.join(dir,'IMG')   
-        else:
-            directory=os.path.join(os.getcwd(),'IMG')
-        # create directory if not present
-        if not os.path.exists(directory):                        
-            os.mkdir(directory)
-        #write files
-        if plt.imsave(self.depthPath, self.depth):
-            return True
-        return False
-       
-#     def get_oriented_bounding_box(self)->o3d.geometry.OrientedBoundingBox:
-#         """Gets the Open3D OrientedBoundingBox of the node from the conical mesh representation based on the 
-#         cartesianTransform, the focal length at 35mm and a viewing range. \n
-
-#         Returns:
-#             o3d.geometry.orientedBoundingBox
-#         """    
-#         if self._orientedBoundingBox is not None:
-#             pass
-#         elif self._cartesianTransform is not None:
-#             mesh=self.get_mesh_geometry()
-#             self._orientedBoundingBox=mesh.get_oriented_bounding_box()            
-#         else:
-#             return None
-#         return self._orientedBoundingBox
-
-    def get_metadata_from_resource(self) ->bool:
-        """Returns the metadata from a resource. \n
-
-        Features:
-            1. imageHeight\n
-            2. imageWidth\n
-
-        Returns:
-            bool: True if exif data is successfully parsed
-        """
-        if self._resource is None:
-            return False   
-              
         try:
-            if getattr(self,'imageHeight',None) is None:
-                self.imageHeight=self.resource.shape[0]
-            if getattr(self,'imageWidth',None) is None:
-                self.imageWidth=self.resource.shape[1]
+            img = Image.fromarray(self._resource) # if cv2.imwrite(self.path, self.resource) is 5 times slower
+            img.save(self._path)        
             return True
         except:
-            raise ValueError('Metadata extraction from resource failed')
+            return False
+            
+    def get_metadata_from_exif_data(self,path) -> bool:
+        """Returns the metadata from a resource. 
+
+        Args:
+            - GPSInfo (geospatialTransform (np.array(3,1))
+            - coordinateSystem (str) 
+            - DateTime ('%Y-%m-%dT%H:%M:%S')
+            - XResolution (int)
+            - YResolution (int)
+            - ResolutionUnit (int)
+            - ExifImageWidth (int)
+            - ExifImageHeight (int)
+
+        Returns:
+            - bool: True if meta data is successfully parsed
+        """
+        
+        if hasattr(self,'graph'):
+            return True
+        
+        if getattr(self,'timestamp',None) is None :
+            self.timestamp=ut.get_timestamp(path)
+        
+        if getattr(self,'name',None) is None:
+            self.name=path.stem
+
+        if (getattr(self,'imageWidth',None) is not None and
+            getattr(self,'imageHeight',None) is not None and
+            getattr(self,'geospatialTransform',None) is not None):
+            return True
+
+        # pix = PIL.Image.open(self.path) 
+        with Image.open(path) as pix:
+            exifData=gsu.get_exif_data(pix)
+
+        if exifData is not None:
+            self.timestamp=exifData.get("DateTime")
+            # self.resolutionUnit=exifData.get("ResolutionUnit")
+            self.imageWidth=exifData.get("ExifImageWidth")
+            self.imageHeight=exifData.get("ExifImageHeight")
+            
+            if 'GPSInfo' in exifData:
+                gps_info = exifData["GPSInfo"]
+                if gps_info is not None:
+                    # self.GlobalPose=GlobalPose # (structure) SphericalTranslation(lat,long,alt), Quaternion(qw,qx,qy,qz)
+                    latitude=gps_info.get("GPSLatitude")
+                    latReference=gps_info.get("GPSLatitudeRef")
+                    newLatitude=gsu.parse_exif_gps_data(latitude,latReference)
+                    longitude=gps_info.get( "GPSLongitude")
+                    longReference=gps_info.get("GPSLongitudeRef")
+                    newLongitude=gsu.parse_exif_gps_data(longitude,longReference)
+                    if newLatitude is not None and newLongitude is not None:
+                        self.geospatialTransform=[  newLatitude, 
+                                                    newLongitude,
+                                                    gps_info.get("GPSAltitude")]
+                        self.coordinateSystem='geospatial-wgs84'
+            
+            return True
+        else:
+            return False
     
-#     # def get_oriented_bounding_box(self)->o3d.geometry.OrientedBoundingBox:
-#     #     """Gets the Open3D geometry from cartesianTransform
+    def get_metadata_from_json_path(self)->bool:
+        """Read Metadata from Navvis json.
 
-#     #     Returns:
-#     #         o3d.geometry.orientedBoundingBox
-#     #     """
-#     #     if getattr(self,'orientedBoundingBox',None) is None:                
-#     #         if getattr(self,'cartesianTransform',None) is not None:
-#     #             box=o3d.geometry.create_mesh_box(width=1.0, height=1.0, depth=1.0)
-#     #             self.orientedBoundingBox= box.transform(self.cartesianTransform)
-#     #         else:
-#     #             return None
-#     #     return self.orientedBoundingBox
+        Args:
+            - geospatialTransform (np.array(3x1))
+            - coordinateSystem (str)
+            - focalLength35mm (float)
+            - principalPointU (float)
+            - principalPointV (float)
+            - cartesianTransform (np.array(4x4))
 
-#     def get_metadata_from_exif_data(self) -> bool:
-#         """Returns the metadata from a resource. \n
-
-#         Features:
-#             1. GPSInfo (geospatialTransform (np.array(3,1))
-#             2. coordinateSystem (str) \n
-#             2. DateTime ('%Y-%m-%dT%H:%M:%S')\n
-#             3. XResolution (int)\n
-#             4. YResolution (int)\n
-#             5. ResolutionUnit (int)\n
-#             6. ExifImageWidth (int)\n
-#             7. ExifImageHeight (int)\n
-
-#         Returns:
-#             bool: True if meta data is successfully parsed
-#         """
-#         if  self.get_path() is None or not os.path.exists(self.get_path()) :
-#             return False
+        Returns:
+            - bool: True if metadata is sucesfully parsed
+        """
+        if self.jsonPath is None or not os.path.exists(self.jsonPath):
+            return False
         
-#         if getattr(self,'timestamp',None) is None :
-#             self.timestamp=ut.get_timestamp(self.path)
+        if hasattr(self,'graph'):
+            return True
         
-#         if getattr(self,'name',None) is None:
-#             self.name=ut.get_filename(self.path)
+        # Load JSON data
+        with open(self.jsonPath, 'r') as file:
+            data= json.load(file)
 
-#         if (getattr(self,'imageWidth',None) is not None and
-#             getattr(self,'imageHeight',None) is not None and
-#             getattr(self,'geospatialTransform',None) is not None):
-#             return True
+        # Extract the necessary data
+        footprint_position = data.get('footprint', {}).get('position', [])
+        footprint_quaternion = data.get('footprint', {}).get('quaternion', [])
+        timestamp = data.get('timestamp', None)
+        self.subject=self.jsonPath.stem
+        self.name=self.jsonPath.stem
+                            
+        #convert to the right format
+        self.timestamp=ut.get_timestamp(timestamp)
+        self.cartesianTransform=gmu.get_cartesian_transform(translation=footprint_position,rotation=footprint_quaternion)
+        #reset the bb and convex hull
+        self._set_geometric_properties(self.cartesianTransform)
 
-#         # pix = PIL.Image.open(self.path) 
-#         with PIL.Image.open(self.path) as pix:
-#             exifData=ut.get_exif_data(pix)
-
-#         if exifData is not None:
-#             self.timestamp=ut.get_if_exist(exifData, "DateTime")
-#             self.resolutionUnit=ut.get_if_exist(exifData,"ResolutionUnit")
-#             self.imageWidth=ut.get_if_exist(exifData,"ExifImageWidth")
-#             self.imageHeight=ut.get_if_exist(exifData,"ExifImageHeight")
-            
-#             if 'GPSInfo' in exifData:
-#                 gps_info = exifData["GPSInfo"]
-#                 if gps_info is not None:
-#                     # self.GlobalPose=GlobalPose # (structure) SphericalTranslation(lat,long,alt), Quaternion(qw,qx,qy,qz)
-#                     latitude=ut.get_if_exist(gps_info, "GPSLatitude")
-#                     latReference=ut.get_if_exist(gps_info, "GPSLatitudeRef")
-#                     newLatitude=ut.filter_exif_gps_data(latitude,latReference)
-#                     longitude= ut.get_if_exist(gps_info, "GPSLongitude")
-#                     longReference=ut.get_if_exist(gps_info, "GPSLongitudeRef")
-#                     newLongitude=ut.filter_exif_gps_data(longitude,longReference)
-#                     self.geospatialTransform=[  newLatitude, 
-#                                                 newLongitude,
-#                                                 ut.get_if_exist(gps_info, "GPSAltitude")]
-#                     self.coordinateSystem='geospatial-wgs84'
-            
-#             return True
-#         else:
-#             return False
+        return True   
     
-    # def get_metadata_from_xmp_path(self)->bool:
-    #     """Read Metadata from .xmp file generated by https://www.capturingreality.com/.
-
-    #     Features:
-    #         1. geospatialTransform (np.array(3x1))\n
-    #         2. coordinateSystem (str)\n
-    #         3. focalLength35mm (float)\n
-    #         4. principalPointU (float)\n
-    #         5. principalPointV (float)\n
-    #         6. cartesianTransform (np.array(4x4))\n
-
-    #     Returns:
-    #         bool: True if metadata is sucesfully parsed
-    #     """
-    #     if self.xmpPath is None or not os.path.exists(self.xmpPath):
-    #         return False
-
-    #     if (getattr(self,'principalPointU',None) is not None and
-    #         getattr(self,'principalPointV',None) is not None and
-    #         getattr(self,'distortionCoeficients',None) is not None and
-    #         getattr(self,'geospatialTransform',None) is not None ):         
-    #         return True
-        
-    #     mytree = ET.parse(self.xmpPath)
-    #     root = mytree.getroot()                       
-        
-    #     self.timestamp=ut.get_timestamp(self.xmpPath)
-    #     self.name=ut.get_filename(self.xmpPath)
-    #     self.subject=self.name
-    #     for child in root.iter('{http://www.w3.org/1999/02/22-rdf-syntax-ns#}Description'):
-
-    #         #Attributes
-    #         for attribute in child.attrib:
-    #             if ('latitude' in attribute and
-    #                 'longitude'in attribute and
-    #                 'altitude' in attribute):
-    #                 lat=ut.xcr_to_lat(child.attrib['{http://www.capturingreality.com/ns/xcr/1.1#}latitude'])
-    #                 long=ut.xcr_to_long(child.attrib['{http://www.capturingreality.com/ns/xcr/1.1#}longitude'])
-    #                 alt=ut.xcr_to_alt(child.attrib['{http://www.capturingreality.com/ns/xcr/1.1#}altitude'])
-    #                 self.geospatialTransform=np.array([lat, long, alt])
-    #             if 'Coordinates' in attribute:
-    #                 self.coordinateSystem=child.attrib[attribute]
-    #             if 'FocalLength35mm' in attribute:
-    #                 self.focalLength35mm=ut.xml_to_float(child.attrib[attribute])
-    #             if 'PrincipalPointU' in attribute:
-    #                 self.principalPointU=ut.xml_to_float(child.attrib[attribute])
-    #             if 'PrincipalPointV' in attribute:
-    #                 self.principalPointV=ut.xml_to_float(child.attrib[attribute])
-
-    #         #Nodes
-    #         rotationnode=child.find('{http://www.capturingreality.com/ns/xcr/1.1#}Rotation')
-    #         rotation=None
-    #         if rotationnode is not None:
-    #             rotation=ut.string_to_rotation_matrix(rotationnode.text)
-
-    #         positionnode=child.find('{http://www.capturingreality.com/ns/xcr/1.1#}Position')
-    #         translation=None
-    #         if positionnode is not None:
-    #             translation=np.asarray(ut.string_to_list(positionnode.text))
-             
-    #         self.cartesianTransform=gmu.get_cartesian_transform(translation=translation,rotation=rotation)
-            
-    #         coeficientnode=child.find('{http://www.capturingreality.com/ns/xcr/1.1#}DistortionCoeficients')
-    #         if coeficientnode is not None:
-    #             self.distortionCoeficients=ut.string_to_list(coeficientnode.text)  
-    #     return True   
-
-#     def get_metadata_from_xml_path(self) ->bool:
-#         """Extract image metadata from XML Node generated by Agisoft Metashape (self.xmlData and self.subject should be present).
-
-#         Features:
-#             1. cartesianTransform (np.array(4x4))\n
-#             2. sxy: accuracy in XY (m)\n
-#             3. sz: accuracy in Z (m) \n
-
-#         Returns:
-#             bool: True if metadata is successfully parsed
-#         """
-#         if self.xmlPath is None or not os.path.exists(self.xmlPath):
-#             return False
-
-#         if (getattr(self,'cartesianTransform',None) is not None and
-#             getattr(self,'sxy',None) is not None and
-#             getattr(self,'sz',None) is not None ):
-#             return True
-        
-#         self.timestamp=ut.get_timestamp(self.xmlPath)        
-#         mytree = ET.parse(self.xmlPath)
-#         root = mytree.getroot()          
-#         xmlNode = next(cam for cam in root.findall('.//camera') if (ut.get_filename(cam.get('label')) == self.name or ut.get_filename(cam.get('label')) == ut.get_subject_name(self.subject) ))
-        
-#         if xmlNode:
-#             #AGISOFT PARSING 1
-#             for child in xmlNode.iter('reference'):  
-#                 #get translation
-#                 x =  child.get('x')
-#                 y =  child.get('y')
-#                 z =  child.get('z')
-#                 if x and y and z:
-#                     translation=np.array([float(x),float(y),float(z)])
-#                     self.cartesianTransform= gmu.get_cartesian_transform(translation=translation)
-#                 #get rotations
-#                 yaw =  child.get('yaw')
-#                 pitch =  child.get('pitch')
-#                 roll =  child.get('roll')
-#                 if yaw and pitch and roll:
-#                     rotation = gmu.get_rotation_matrix(np.array([float(yaw),float(pitch),float(roll)]))
-#                     self.cartesianTransform=gmu.get_cartesian_transform(translation=translation, rotation=rotation)
-#                 #get accuracies
-#                 sxy =  child.get('sxy')
-#                 if sxy:
-#                     self.sxy=float(sxy)
-#                 sz =  child.get('sz')
-#                 if sz:
-#                     self.sz=float(sz)
-            
-#             #AGISOFT PARSING 2
-#             transform=xmlNode.find('transform')
-#             if transform is not None:
-#                 self.cartesianTransform=ut.string_to_list(transform.text)
-#         #! this exception breaks the code
-#         # else:
-#         #     raise ValueError ('subject not in xml file') 
-
-#     def set_cartesian_transform(self,value):
-#         """Set the cartesianTransform of the ImageNode from various inputs.
-        
-#         Args:
-#             1. cartesianTransform(np.ndarray(4x4))\n
-#             2. np.ndarray or Vector3dVector (1x3)  \n
-#             3. cartesianBounds (np.ndarray (6x1))\n
-#             4. np.ndarray or Vector3dVector (8x3 or nx3)\n
-#             5. Open3D.geometry
-#         """        
-#         try: #np.ndarray (4x4) 
-#             self._cartesianTransform=np.reshape(value,(4,4))
-#         except:
-#             try: #np.ndarray or Vector3dVector (1x3)  
-#                 self._cartesianTransform=gmu.get_cartesian_transform(translation=np.asarray(value))
-#             except:  
-#                 try: # cartesianBounds (np.ndarray (6x1))
-#                     self._cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=np.asarray(value))
-#                 except:
-#                     try: # np.ndarray or Vector3dVector (8x3 or nx3)
-#                         center=np.mean(np.asarray(value),0)
-#                         self._cartesianTransform=gmu.get_cartesian_transform(translation=center)
-#                     except:
-#                         try: # Open3D.geometry
-#                             self._cartesianTransform=gmu.get_cartesian_transform(translation=value.get_center())
-#                         except:
-#                             raise ValueError('Input must be np.ndarray(6x1,4x4,3x1,nx3), an Open3D geometry or a list of Vector3dVector objects.')
-
-
-#     def get_cartesian_transform(self) -> np.ndarray:
-#         """Get the cartesianTransform from various inputs.
-        
-#         Args:
-#             1. self.cartesianBounds (np.array(6x1))  \n
-#             2. self.orientedBounds (np.array(8x3)) or a list of Vector3dVector objects  \n
-#             3. orientedBoundingBox\n
-#             4. Open3D.geometry
-
-#         Returns:
-#             cartesianTransform(np.ndarray(4x4))
-#         """
-#         if self._cartesianTransform is not None:
-#             pass
-#         elif getattr(self,'cartesianTransform',None) is not None:
-#             self._cartesianTransform = np.reshape(self.cartesianTransform, (4,4))
-#         elif getattr(self,'_cartesianBounds',None) is not None:
-#             self._cartesianTransform=gmu.get_cartesian_transform(cartesianBounds=self._cartesianBounds)
-#         elif getattr(self,'_orientedBounds',None) is not None:
-#             center=np.mean(self._orientedBounds,0)
-#             self._cartesianTransform=gmu.get_cartesian_transform(translation=center)
-#         elif getattr(self,'_orientedBoundingBox',None) is not None:
-#             self._cartesianTransform=gmu.get_cartesian_transform(translation=self._orientedBoundingBox.get_center())
-#         elif self._resource is not None:
-#             self._cartesianTransform=gmu.get_cartesian_transform(translation=self._resource.get_center())
-#         else:
-#             return None
-#         return self._cartesianTransform
+   
+    def _set_geometric_properties(self, _cartesianTransform=None, _convexHull=None, _orientedBoundingBox=None):
     
-    def create_rays(self,imagePoints:np.array,depths:np.array=None)->o3d.core.Tensor:
-        """Generate a grid a rays from the camera location to a given set of imagePoints.\n
+        self.cartesianTransform = _cartesianTransform
+        self.convexHull = _convexHull
+        self.orientedBoundingBox = _orientedBoundingBox
+
+        # --- Handle Transform ---
+        if self.cartesianTransform is None:
+            if self.convexHull is not None:
+                self.cartesianTransform = gmu.get_cartesian_transform(translation = self.convexHull.get_center())
+            elif self.orientedBoundingBox is not None:
+                self.cartesianTransform = gmu.get_cartesian_transform(translation=self.orientedBoundingBox.get_center(), rotation=self.orientedBoundingBox.R)
+            else:
+                self.cartesianTransform = np.eye(4)  # Default to identity transform
+
+        # --- Handle Convex Hull ---
+        if self.convexHull is None:
+            if self.orientedBoundingBox is not None:
+                self.convexHull = o3d.geometry.TriangleMesh.create_sphere(
+                    center = self.orientedBoundingBox.get_center(),
+                    radius = max(self.orientedBoundingBox.extend)/2)
+            else:
+                self.convexHull = o3d.geometry.TriangleMesh.create_sphere(radius=self.depth)
+    
+        # --- Handle Oriented Bounding Box ---
+        if self.orientedBoundingBox is None:
+            # Align with the frustum shape
+            self.orientedBoundingBox = gmu.get_oriented_bounding_box(self.convexHull)
+
+    def create_rays(self,imagePoints:np.array=None,depths:np.array=None)->o3d.core.Tensor:
+        """Generate a grid a rays from the camera location to a given set of imagePoints.
                 
         **NOTE**: This function targets a subselection of imagePoints, use o3d.t.geometry.RaycastingScene.create_rays_pinhole if you want a dense raytracing for the full image.
         
         .. image:: ../../../docs/pics/Raycasting_1.PNG
         
         Args:
-            imagePoints (np.array[n,2]): imagePoints are conform uv image coordinates system. so top left is (0,0). The camera intrinsic matrix is used to map it to the proper image coordinates.\n
+            - imagePoints (np.array[n,2]) : imagePoints are conform (row, column) image coordinates system. so top left is (0,0). The camera intrinsic matrix is used to map it to the proper image coordinates. Defaults to np.array([[0, 0],[0, self._imageWidth],[self._imageHeight, 0],[self._imageHeight, self._imageWidth]]).
+            - depths (np.array[n,1], optional) : depths of the rays. Defaults to 50m for each point.
 
         Returns:
-            o3d.core.Tensor (n,6): [:,0:3] is the camera center and [:,3:6] are the directions of the rays towards the imagePoints.
+            rays: o3d.core.Tensor (n,6) [:,0:3] with the camera center and [:,3:6] are the directions of the rays towards the imagePoints.
         """
-        points=imagePoints
-        #validate inputs
-        assert points.shape[-1]==2        
-        points=np.reshape(points,(-1,2)) if len(points.shape) >2 else points
+        width=self.imageWidth
+        height=self.imageHeight
+        if imagePoints is None: # watch out near poles as cos and sin are highly sensitive in those areas.
+            points=np.array([[height/2,width/2 ],   # front     [0,0,1]
+                            [0,width/2],            # top       [0,1,0]
+                            [ height/2,width/4],    # left      [-1,0,0]
+                            [height/2,width*3/4 ],  # right     [1,0,0]
+                            [height/2,0],           # back      [0,0,-1]
+                            [height,width/2]])      # bottom    [0,-1,0]
+        else:
+            points=ut.map_to_2d_array(imagePoints)
             
-        f=self.focalLength35mm 
-        k=self.get_intrinsic_camera_parameters().intrinsic_matrix
-        m=self.cartesianTransform 
-        t=gmu.get_translation(m)  
-        n=points.shape[0]
+        if depths is None:
+            depths=np.full(points.shape[0],self.depth)
+        else:
+             depths = np.asarray(depths).flatten()  # Ensure depths is a 1D array
+        
+        #validate inputs
+        points=np.reshape(points,(-1,2)) #if len(points.shape) >2 else points
         
         #transform pixels to image coordinates (rows are first)
-        u=+points[:,1]-self.imageWidth/2
-        v=+points[:,0]-self.imageHeight/2    
-        camera_coordinates=np.vstack((u,v,np.ones(n)))
+        u=+points[:,1]
+        v=+points[:,0]  
         
-        #transform to world coordinates
-        camera_coordinates=np.vstack((camera_coordinates[0:2,:],np.full(n, f).T,np.ones((n,1)).T))
-        world_coordinates=m @ camera_coordinates
+        # Field of view in radians
+        fov_horizontal_rad = 2 * np.pi  # 360 degrees
+        fov_vertical_rad = np.pi        # 180 degrees
         
-        #normalize direction
-        displacement=world_coordinates[0:3,:].T-t
-        direction=gmu.normalize_vectors(displacement)
-  
-        if depths is not None:
-            direction=direction * depths[:, np.newaxis]
-  
+        # Calculate azimuth (theta) and elevation (phi)
+        theta = (u / (width - 1)) * fov_horizontal_rad - np.pi  # Maps [0, width] to [-pi, pi]
+        phi = (v / (height - 1)) * fov_vertical_rad - (np.pi / 2)  # Maps [0, height] to [-pi/2, pi/2]
+
+
+        # Spherical to Cartesian conversion in camera coordinate system (z-forward, y-up)
+        x = np.cos(phi) * np.sin(theta)  # x-axis (left-right in pinhole model)
+        y = -np.sin(phi)                   # y-axis (up-down in pinhole model)
+        z = np.cos(phi) * np.cos(theta)   # z-axis (forward-backward in pinhole model)
+
+        # Stack x, y, z to form 3D coordinates (on the unit sphere)
+        unit_sphere_coords = np.stack((x, y, z), axis=-1)
+
+        # Scale the unit sphere coordinates by the depth values
+        world_coords = unit_sphere_coords * depths[:, np.newaxis] if depths is not None else unit_sphere_coords
         
-        #create rays [camera.center, direction]
-        rays=np.hstack((np.full((n,3), t),direction))         
+        #note that Z goes through the center of the image, so we need to rotate the point cloud 90° clockwise around the x-axis
+        # #rotation matrix for 90° around the x-axis
+        # r = R.from_euler('x', 90, degrees=True).as_matrix()
+        # #apply rotation
+        # world_coords = (r @ world_coords.T).T        
+
+        # Get the transformation matrix (4x4), and extract rotation and translation
+        transformation = self._cartesianTransform
+        r = transformation[:3, :3]  # Rotation matrix (3x3)
+        t = transformation[:3, 3]   # Translation vector (3x1)
+
+        # Transform the world coordinates by applying the transformation matrix
+        directions = (r @ world_coords.T).T 
+
+        # Camera origin is the translation vector (assume camera at t)
+        camera_origin = np.tile(t, (directions.shape[0], 1))
+
+        # Combine camera origin and directions into the final ray tensor (n, 6)
+        rays = np.hstack((camera_origin, directions))
+              
         return rays 
+    
+    def world_to_pixel_coordinates(self,worldCoordinates: np.ndarray) -> np.ndarray:
+        """
+        Project 3D world coordinates to panoramic (equirectangular) image coordinates.
 
+        Args:
+            - worldCoords (np.ndarray): The world coordinates (n, 3) as an Nx3 numpy array (X, Y, Z).
 
-##==========================TO REMOVE
-    # def get_path(self) -> str:
-    #         """Returns the full path of the resource from this Node.\n
+        Returns:
+            - panoramicCoords (np.ndarray): The corresponding panoramic coordinates (n, 2) in (u, v) format (row,column).
+        """
+        # Extract X, Y, Z components of the world coordinates
+        x = worldCoordinates[:, 0]
+        y = worldCoordinates[:, 1]
+        z = worldCoordinates[:, 2]
 
-    #         Features:
-    #             1. self.graphPath\n
-    #             2. self._name or self._subject\n
+        # Convert Cartesian (x, y, z) to spherical coordinates
+        # Compute azimuth (longitude) and elevation (latitude)
+        azimuth = np.arctan2(y, x)  # Azimuth angle [-pi, pi]
+        elevation = np.arcsin(z / np.linalg.norm(worldCoordinates, axis=1))  # Elevation angle [-pi/2, pi/2]
 
-    #         Returns:
-    #             path (str)
-    #         """      
-    #         if self._path and os.path.exists(self._path):
-    #             return self._path
-            
-    #         elif self._graphPath and (self._name or self._subject):
-    #             folder=ut.get_folder_path(self._graphPath)
-    #             nodeExtensions=ut.get_node_resource_extensions(str(type(self)))
-    #             allSessionFilePaths=ut.get_list_of_files(folder) 
-    #             for path in allSessionFilePaths:
-    #                 if ut.get_extension(path) in nodeExtensions:
-    #                     if self.get_name() in path or self.get_subject() in path :
-    #                         self._path = path    
-    #                         return self._path
-    #             if self._name:
-    #                 self._path=os.path.join(folder,self._name+nodeExtensions[0])
-    #             else:
-    #                 self._path=os.path.join(folder,self._subject+nodeExtensions[0])
-    #             return self._path
-    #         else:
-    #             # print("No file containing this object's name and extension is found in the graphPath folder")
-    #             return None
+        # Map azimuth and elevation to 2D panoramic image coordinates -> not sure if this is correct
+        u = (azimuth + np.pi) / (2 * np.pi)  # Normalize azimuth to [0, 1]
+        v = (np.pi / 2 - elevation) / np.pi  # Normalize elevation to [0, 1]
+
+        # Scale to image size
+        u = u * self._imageWidth   # Map to pixel coordinates in the range [0, image_width]
+        v = v * self._imageHeight  # Map to pixel coordinates in the range [0, image_height]
+
+        # Combine u and v into final 2D coordinates
+        panoramic_coords = np.stack((u, v), axis=-1)
+
+        return panoramic_coords
+    
+    
+    def pixel_to_world_coordinates(self, pixels: np.array, depths: np.array = None) -> np.ndarray:
+        """Converts pixel coordinates in an panoramic image to 3D world coordinates.
+
+        This function takes pixel coordinates and optional depths and converts them to 3D world coordinates. The function assumes that the camera is at the origin and the image is projected onto a unit sphere.
+
+        Args:
+            - pixels (np.ndarray) : Pixel coordinates (n, 2) in the image (row, column).
+            - depths (np.ndarray, optional) : Depths (n, 1) for the corresponding pixel coordinates. Defaults to 50m for each point.
+
+        Returns:
+            - worldCoordinates (np.ndarray): A 2D array (n, 3) containing the 3D world coordinates (X, Y, Z).
+        """
+        # Generate rays from the pixel coordinates and depths
+        rays = self.create_rays(pixels, depths)
+        
+        # Extract camera center and direction
+        if rays.ndim == 1:
+            camera_center = rays[:3]
+            direction = rays[3:]
+        else:
+            camera_center = rays[:, :3]
+            direction = rays[:, 3:]
+        
+        direction=gmu.normalize_vectors(direction)
+
+        # Calculate the world coordinates
+        if depths is None:
+            depths = np.full((direction.shape[0], 1), self.depth)
+        world_coordinates = camera_center + direction * depths
+
+        return world_coordinates
+    
+
+    
+    def project_lineset_on_image(self,linesets:List[o3d.geometry.LineSet],thickness:int=2,overwrite=True) ->np.ndarray:
+        """Project Opend3D linesets onto the resource of the node.
+        
+        **NOTE**: WORK IN PROGRESS
+
+        **NOTE**: this affects the original image if overwrite is True.
+        
+        .. image:: ../../../docs/pics/image_projection_1.png
+
+        Args:
+            - linesets (List[o3d.LineSet]): List of linesets. Note that the color of the lines is stored in the lineset.
+            - thickness (int) : Thickness of the projected lines
+            - overwrite (bool) : If True, the original image is overwritten. If False, a new image is created.
+
+        Returns:
+            resource : The resource of the ImageNode with the projected lines.
+        """
+        return
+    
+
+    
+    def show(self, subsample = None):
+        super().show()
+        # Converts from one colour space to the other. this is needed as RGB
+        # is not the default colour space for OpenCV
+        image = cv2.cvtColor(self.resource, cv2.COLOR_BGR2RGB)
+        if not subsample == None:
+            image = cv2.resize(image,[int(self.imageWidth/subsample),int(self.imageHeight/subsample)])
+
+        # Show the image
+        plt.imshow(image)
+
+        # remove the axis / ticks for a clean looking image
+        plt.xticks([])
+        plt.yticks([])
+
+        # if a title is provided, show it
+        plt.title(self.name)
+
+        plt.show()
+        

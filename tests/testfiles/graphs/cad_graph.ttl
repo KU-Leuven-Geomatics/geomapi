@@ -1,0 +1,184 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix geomapi: <https://w3id.org/geomapi#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+
+@prefix inst: <http://drawing#> .
+
+
+inst:B02F a geomapi:LineSetNode ;
+    rdfs:label "railway"^^xsd:string ;
+    dcterms:created "2024-08-05T09:53:31"^^xsd:dateTime ;
+    geomapi:cartesianTransform """[[1.00000000e+00 0.00000000e+00 0.00000000e+00 2.63427359e+05]
+ [0.00000000e+00 1.00000000e+00 0.00000000e+00 1.51076754e+05]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00 2.56326600e+02]
+ [0.00000000e+00 0.00000000e+00 0.00000000e+00 1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:color "[0. 0. 0.]"^^xsd:string ;
+    geomapi:convexHull """[[2.63441312e+05 1.51078111e+05 2.56306399e+02]
+ [2.63413420e+05 1.51075445e+05 2.56311399e+02]
+ [2.63413413e+05 1.51075421e+05 2.56329101e+02]
+ [2.63441305e+05 1.51078087e+05 2.56324100e+02]
+ [2.63441313e+05 1.51078093e+05 2.56341992e+02]
+ [2.63441320e+05 1.51078118e+05 2.56324290e+02]
+ [2.63413420e+05 1.51075427e+05 2.56346992e+02]
+ [2.63413427e+05 1.51075452e+05 2.56329291e+02]]"""^^geomapi:matrix ;
+    geomapi:dxfType "LINE"^^xsd:string ;
+    geomapi:handle "B02F"^^xsd:string ;
+    geomapi:layer "_HTAN"^^xsd:string ;
+    geomapi:lineCount 1 ;
+    geomapi:orientedBoundingBox """[2.63427357e+05 1.51076756e+05 2.56314536e+02 2.80337050e+01
+ 4.57833497e-02 9.97465164e-03 1.26724562e+02 1.02054251e-02
+ 5.45989567e+00]"""^^geomapi:matrix ;
+    geomapi:path "../cad/railway.dxf"^^xsd:string ;
+    geomapi:pointCount 2 .
+	
+inst:Terrain_Tree_Semicircle_104C7BE a geomapi:LineSetNode ;
+    rdfs:label "Terrain_Tree_Semicircle"^^xsd:string ;
+    dcterms:created "2024-07-31T09:46:19"^^xsd:dateTime ;
+    geomapi:cartesianTransform """[[ 1.00000000e+00  0.00000000e+00  0.00000000e+00  1.01662283e+08]
+ [ 0.00000000e+00  1.00000000e+00  0.00000000e+00 -1.95547530e+08]
+ [ 0.00000000e+00  0.00000000e+00  1.00000000e+00  7.87789404e+06]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[ 1.01662789e+08 -1.95548029e+08  7.87839363e+06]
+ [ 1.01661810e+08 -1.95547007e+08  7.87839363e+06]
+ [ 1.01662810e+08 -1.95547029e+08  7.87839363e+06]
+ [ 1.01661789e+08 -1.95548007e+08  7.87839363e+06]
+ [ 1.01662756e+08 -1.95548052e+08  7.87739444e+06]
+ [ 1.01661756e+08 -1.95548030e+08  7.87739444e+06]
+ [ 1.01661778e+08 -1.95547031e+08  7.87739444e+06]
+ [ 1.01662777e+08 -1.95547052e+08  7.87739444e+06]]"""^^geomapi:matrix ;
+    geomapi:dxfPath "../cad/road.dxf"^^xsd:string ;
+    geomapi:dxfType "INSERT"^^xsd:string ;
+    geomapi:handle "104C7BE"^^xsd:string ;
+    geomapi:layer "IFC$1$BT8_Loofboom_Laag_WGI2"^^xsd:string ;
+    geomapi:lineCount 18 ;
+    geomapi:orientedBoundingBox """[ 1.01662283e+08 -1.95547530e+08  7.87789404e+06  1.73012413e+03
+  1.39985171e+03  1.66214560e+03 -1.79946614e+02 -4.38542539e+01
+  3.53641799e+01]"""^^geomapi:matrix ;
+    geomapi:pointCount 8 .
+
+inst:Terrain_Tree_Semicircle_104C7ED a geomapi:LineSetNode ;
+    rdfs:label "Terrain_Tree_Semicircle"^^xsd:string ;
+    dcterms:created "2024-07-31T09:46:20"^^xsd:dateTime ;
+    geomapi:cartesianTransform """[[ 1.00000000e+00  0.00000000e+00  0.00000000e+00  1.01670052e+08]
+ [ 0.00000000e+00  1.00000000e+00  0.00000000e+00 -1.95547697e+08]
+ [ 0.00000000e+00  0.00000000e+00  1.00000000e+00  7.87790078e+06]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[ 1.01670557e+08 -1.95548196e+08  7.87840037e+06]
+ [ 1.01669579e+08 -1.95547175e+08  7.87840037e+06]
+ [ 1.01670579e+08 -1.95547196e+08  7.87840037e+06]
+ [ 1.01669557e+08 -1.95548175e+08  7.87840037e+06]
+ [ 1.01670524e+08 -1.95548219e+08  7.87740118e+06]
+ [ 1.01669525e+08 -1.95548198e+08  7.87740118e+06]
+ [ 1.01669546e+08 -1.95547198e+08  7.87740118e+06]
+ [ 1.01670546e+08 -1.95547220e+08  7.87740118e+06]]"""^^geomapi:matrix ;
+    geomapi:dxfPath "../cad/road.dxf"^^xsd:string ;
+    geomapi:dxfType "INSERT"^^xsd:string ;
+    geomapi:handle "104C7ED"^^xsd:string ;
+    geomapi:layer "IFC$1$BT8_Loofboom_Laag_WGI2"^^xsd:string ;
+    geomapi:lineCount 18 ;
+    geomapi:orientedBoundingBox """[ 1.01670052e+08 -1.95547697e+08  7.87790078e+06  1.73024482e+03
+  1.39935104e+03  1.66202831e+03 -1.79986808e+02 -4.38450546e+01
+  3.53935734e+01]"""^^geomapi:matrix ;
+    geomapi:pointCount 8 .
+
+inst:Terrain_Tree_Semicircle_104C7EE a geomapi:LineSetNode ;
+    rdfs:label "Terrain_Tree_Semicircle"^^xsd:string ;
+    dcterms:created "2024-07-31T09:46:20"^^xsd:dateTime ;
+    geomapi:cartesianTransform """[[ 1.00000000e+00  0.00000000e+00  0.00000000e+00  1.01678050e+08]
+ [ 0.00000000e+00  1.00000000e+00  0.00000000e+00 -1.95547869e+08]
+ [ 0.00000000e+00  0.00000000e+00  1.00000000e+00  7.87790772e+06]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[ 1.01678555e+08 -1.95548369e+08  7.87840731e+06]
+ [ 1.01677577e+08 -1.95547347e+08  7.87840731e+06]
+ [ 1.01678577e+08 -1.95547369e+08  7.87840731e+06]
+ [ 1.01677556e+08 -1.95548347e+08  7.87840731e+06]
+ [ 1.01678523e+08 -1.95548392e+08  7.87740812e+06]
+ [ 1.01677523e+08 -1.95548370e+08  7.87740812e+06]
+ [ 1.01678544e+08 -1.95547392e+08  7.87740812e+06]
+ [ 1.01677544e+08 -1.95547370e+08  7.87740812e+06]]"""^^geomapi:matrix ;
+    geomapi:dxfPath "../cad/road.dxf"^^xsd:string ;
+    geomapi:dxfType "INSERT"^^xsd:string ;
+    geomapi:handle "104C7EE"^^xsd:string ;
+    geomapi:layer "IFC$1$BT8_Loofboom_Laag_WGI2"^^xsd:string ;
+    geomapi:lineCount 18 ;
+    geomapi:orientedBoundingBox """[ 1.01678050e+08 -1.95547869e+08  7.87790772e+06  1.73029381e+03
+  1.39941107e+03  1.66197387e+03  1.83237171e-02  4.38462575e+01
+ -1.44585253e+02]"""^^geomapi:matrix ;
+    geomapi:pointCount 8 .
+
+inst:Terrain_Tree_Semicircle_104C7EF a geomapi:LineSetNode ;
+    rdfs:label "Terrain_Tree_Semicircle"^^xsd:string ;
+    dcterms:created "2024-07-31T09:46:21"^^xsd:dateTime ;
+    geomapi:cartesianTransform """[[ 1.00000000e+00  0.00000000e+00  0.00000000e+00  1.01686048e+08]
+ [ 0.00000000e+00  1.00000000e+00  0.00000000e+00 -1.95548042e+08]
+ [ 0.00000000e+00  0.00000000e+00  1.00000000e+00  7.87791466e+06]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[ 1.01686553e+08 -1.95548541e+08  7.87841425e+06]
+ [ 1.01685575e+08 -1.95547520e+08  7.87841425e+06]
+ [ 1.01686575e+08 -1.95547541e+08  7.87841425e+06]
+ [ 1.01685554e+08 -1.95548519e+08  7.87841425e+06]
+ [ 1.01686521e+08 -1.95548564e+08  7.87741506e+06]
+ [ 1.01685521e+08 -1.95548543e+08  7.87741506e+06]
+ [ 1.01685542e+08 -1.95547543e+08  7.87741506e+06]
+ [ 1.01686542e+08 -1.95547564e+08  7.87741506e+06]]"""^^geomapi:matrix ;
+    geomapi:dxfPath "../cad/road.dxf"^^xsd:string ;
+    geomapi:dxfType "INSERT"^^xsd:string ;
+    geomapi:handle "104C7EF"^^xsd:string ;
+    geomapi:layer "IFC$1$BT8_Loofboom_Laag_WGI2"^^xsd:string ;
+    geomapi:lineCount 18 ;
+    geomapi:orientedBoundingBox """[ 1.01686048e+08 -1.95548042e+08  7.87791466e+06  1.73022367e+03
+  1.39933097e+03  1.66205051e+03 -1.15897212e-02  4.38500520e+01
+ -1.44605283e+02]"""^^geomapi:matrix ;
+    geomapi:pointCount 8 .
+
+inst:Terrain_Tree_Semicircle_104C7F0 a geomapi:LineSetNode ;
+    rdfs:label "Terrain_Tree_Semicircle"^^xsd:string ;
+    dcterms:created "2024-07-31T09:46:21"^^xsd:dateTime ;
+    geomapi:cartesianTransform """[[ 1.00000000e+00  0.00000000e+00  0.00000000e+00  1.01694046e+08]
+ [ 0.00000000e+00  1.00000000e+00  0.00000000e+00 -1.95548214e+08]
+ [ 0.00000000e+00  0.00000000e+00  1.00000000e+00  7.87792159e+06]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[ 1.01694552e+08 -1.95548713e+08  7.87842119e+06]
+ [ 1.01693573e+08 -1.95547692e+08  7.87842119e+06]
+ [ 1.01694573e+08 -1.95547714e+08  7.87842119e+06]
+ [ 1.01693552e+08 -1.95548692e+08  7.87842119e+06]
+ [ 1.01694519e+08 -1.95548737e+08  7.87742200e+06]
+ [ 1.01693519e+08 -1.95548715e+08  7.87742200e+06]
+ [ 1.01693541e+08 -1.95547715e+08  7.87742200e+06]
+ [ 1.01694540e+08 -1.95547737e+08  7.87742200e+06]]"""^^geomapi:matrix ;
+    geomapi:dxfPath "../cad/road.dxf"^^xsd:string ;
+    geomapi:dxfType "INSERT"^^xsd:string ;
+    geomapi:handle "104C7F0"^^xsd:string ;
+    geomapi:layer "IFC$1$BT8_Loofboom_Laag_WGI2"^^xsd:string ;
+    geomapi:lineCount 18 ;
+    geomapi:orientedBoundingBox """[ 1.01694046e+08 -1.95548214e+08  7.87792159e+06  1.73027032e+03
+  1.39926003e+03  1.66199824e+03  1.79993680e+02 -4.38466569e+01
+  3.54064072e+01]"""^^geomapi:matrix ;
+    geomapi:pointCount 8 .
+
+inst:Terrain_Tree_Semicircle_104C7F1 a geomapi:LineSetNode ;
+    rdfs:label "Terrain_Tree_Semicircle"^^xsd:string ;
+    dcterms:created "2024-07-31T09:46:21"^^xsd:dateTime ;
+    geomapi:cartesianTransform """[[ 1.00000000e+00  0.00000000e+00  0.00000000e+00  1.01702044e+08]
+ [ 0.00000000e+00  1.00000000e+00  0.00000000e+00 -1.95548387e+08]
+ [ 0.00000000e+00  0.00000000e+00  1.00000000e+00  7.87792853e+06]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[ 1.01702550e+08 -1.95548886e+08  7.87842813e+06]
+ [ 1.01701572e+08 -1.95547864e+08  7.87842813e+06]
+ [ 1.01702571e+08 -1.95547886e+08  7.87842813e+06]
+ [ 1.01701550e+08 -1.95548864e+08  7.87842813e+06]
+ [ 1.01702517e+08 -1.95548909e+08  7.87742894e+06]
+ [ 1.01701517e+08 -1.95548887e+08  7.87742894e+06]
+ [ 1.01702539e+08 -1.95547909e+08  7.87742894e+06]
+ [ 1.01701539e+08 -1.95547888e+08  7.87742894e+06]]"""^^geomapi:matrix ;
+    geomapi:dxfPath "../cad/road.dxf"^^xsd:string ;
+    geomapi:dxfType "INSERT"^^xsd:string ;
+    geomapi:handle "104C7F1"^^xsd:string ;
+    geomapi:layer "IFC$1$BT8_Loofboom_Laag_WGI2"^^xsd:string ;
+    geomapi:lineCount 18 ;
+    geomapi:orientedBoundingBox """[ 1.01702044e+08 -1.95548387e+08  7.87792853e+06  1.73038457e+03
+  1.39990150e+03  1.66190932e+03  5.53473111e-02  4.38442835e+01
+ -1.44553765e+02]"""^^geomapi:matrix ;
+    geomapi:pointCount 8 .

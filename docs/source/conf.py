@@ -53,7 +53,6 @@ autodoc_mock_imports = [
     "open3d", 
     "opencv-python", 
     "pye57",  
-    "rdflib", 
     "cv2", 
     "typing_extensions", 
     "matplotlib",
@@ -66,7 +65,6 @@ autodoc_mock_imports = [
     "fcl",
     "osgeo",
     "sklearn",
-    "ezdxf",
     "numpy-quaternion",
     "pandas",
     "laspy"
@@ -113,11 +111,12 @@ html_theme_options = {
     'logo_only': True,
 }
 
-#Build instructions:
+# initial Build instructions:
 # cd ./docs 
 # sphinx-quickstart 
 # sphinx-apidoc -o . ../geomapi/
 # ./make html
 
-# sphinx-apidoc -o ./docs/source/geomapi ./geomapi/ -e -t ./docs/source/_templates
+# 
+# sphinx-apidoc -o . ../geomapi/
 # sphinx-build -b html docs/source/ docs/_build

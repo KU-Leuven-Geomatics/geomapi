@@ -10,16 +10,13 @@ from typing import List,Tuple
 from colour import Color
 from geomapi.nodes import ImageNode
 import copy 
-import os
-import laspy
 import pandas as pd
 
 import pyvista as pv
-from vtk.util.numpy_support import numpy_to_vtk, vtk_to_numpy
 from vtk import vtkCellArray, vtkPoints, vtkPolyData, vtkTriangle
 
 def create_voxel_block_grid_and_raytrace(pcd,imageNode):
-    """THIS CURRENTLY DOESNT WORK BUT IS A PLACEHOLDER.
+    """THIS CURRENTLY DOESN'T WORK BUT IS A PLACEHOLDER.
 
     Args:
         pcd (_type_): _description_
@@ -213,7 +210,7 @@ def pcd_to_octree(pcd:o3d.geometry.PointCloud, maDepth:int=7,colorUse:int=0)->o3
             if isinstance(node, o3d.geometry.OctreePointColorLeafNode):               
                 myPcd=pcd.select_by_index(node.indices)
                 colors=np.asarray(myPcd.colors)
-                c=iu.rgb2gray(colors)
+                c=np.dot(colors[...,:3], [0.2989, 0.5870, 0.1140])
                 _, counts = np.unique(c, return_counts=True)
                 color=colors[np.argmax(counts)]
                 node.color=color
@@ -296,11 +293,11 @@ def remap_color_images_to_masks(images:List[np.array],colorList:np.array=None)->
     """
     #validate inputs
     images=images if type(images)==list else [images]    
-    images=[img if img.shape[2]==1 else iu.rgb2gray(img) for img in images]
+    images=[img if img.shape[2]==1 else np.dot(img[...,:3], [0.2989, 0.5870, 0.1140]) for img in images]
     
     #create colors equal to number of unique values if no colorList is provided
     colorList=colorList if colorList is not None else np.reshape(np.unique(images[0]),(len(np.unique(images[0])),1))
-    colorList=colorList if colorList.shape[1]==1 else iu.rgb2gray(colorList)
+    colorList=colorList if colorList.shape[1]==1 else np.dot(colorList[...,:3], [0.2989, 0.5870, 0.1140])
 
     newImages=[]
     for img in images:
@@ -939,7 +936,7 @@ def get_mesh_intersection_with_grid(geometry: o3d.geometry.Geometry, grid: np.ar
         1. geometry (o3d.geometry.Geometry): The mesh to intersect with the rays.
         2. grid (np.array): A 2D numpy array representing the rays to cast. Each row should contain the origin and direction of a ray.
 
-    .. image:: ../../../docs/pics/2dGrid.PNG
+    .. image:: ../../../docs/pics/2dGrid.JPG
 
 
     Returns:
@@ -1066,7 +1063,9 @@ def determine_percentage_of_coverage(sources: List[o3d.geometry.TriangleMesh], r
     """Returns the Percentage-of-Coverage (PoC) of every source geometry when compared to a reference geometry. The PoC is defined as the ratio of points on the boundary surface of the source that lie within a Euclidean distance threshold hold of the reference geometry. sampled point cloud on the boundary surface of the sources with a resolution of e.g. 0.1m. \n
 
     .. math::
-        P_{i'} = \\{ p \mid \forall p \in P_i : p_i \cap N \backslash n_i \\}
+    
+        p_{i'} = \{ p \mid ∀ p \in p_i : p_i \cap n_i \}
+        
         c_i = \\frac{{|P_{i'}|}}{{|P_i|}}
 
     

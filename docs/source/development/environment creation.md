@@ -5,10 +5,10 @@ headingDivider: 4
 ---
 
 For the installation of the user and development Python environment, we use [Anaconda](https://www.anaconda.com/).
-As of now, GEOMAPI requires Python version 3.10 due to dependency restrictions (specifically due to Opend3D). Below, you find a detailed explenation to set up both the user environment and the developer environment 
+As of now, GEOMAPI requires Python version 3.10 due to dependency restrictions (specifically due to opend3d). Below, you find a detailed explanation to set up both the user environment and the developer environment 
 
 # User environment
-To use geomapi as a package, we will create a Python 3.10 environment and intall geomapi. Open a command line (cmd) and type the following command.
+To use geomapi as a package, we will create a Python 3.10 environment and install geomapi. Open a command line (cmd) and type the following command.
 
 ```bash
 conda create --name geomapi_user python=3.10
@@ -36,4 +36,4 @@ Type the following command to install the dependencies.
 pip install -r requirements.txt
 ```
 
-Note that contributions are subjected to unittests. If these fail, the code will not be updated.
+Note that contributions are subjected to unittest. If these fail, the code will not be updated.

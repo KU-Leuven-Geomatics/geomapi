@@ -10,23 +10,26 @@ import cv2
 import numpy as np
 import open3d as o3d
 import rdflib
-from geomapi.nodes import *
+from geomapi.nodes import MeshNode
 from rdflib import RDF, RDFS, Graph, Literal, URIRef
+import trimesh
 
 #GEOMAPI
 current_dir = os.path.dirname(os.path.abspath(__file__))
 parent_dir = os.path.dirname(current_dir)
 sys.path.append(parent_dir)
 import geomapi.utils as ut
+import geomapi.utils.geometryutils as gmu
 
 #DATA
 sys.path.append(current_dir)
 from data_loader_parking import DATALOADERPARKINGINSTANCE 
 from data_loader_road import DATALOADERROADINSTANCE 
+from geomapi.utils import GEOMAPI_PREFIXES
 
 
 
-class TestNode(unittest.TestCase):
+class TestMeshNode(unittest.TestCase):
 
 
 
@@ -78,7 +81,7 @@ class TestNode(unittest.TestCase):
         #subject
         subject='myNode'
         node= MeshNode(subject=subject)
-        self.assertEqual(node.subject.toPython(),'file:///'+subject)
+        self.assertEqual(node.subject.toPython(),'http://'+subject)
 
         #http://
         subject='http://session_2022_05_20'
@@ -94,27 +97,27 @@ class TestNode(unittest.TestCase):
         subject=next(self.dataLoaderParking.meshGraph.subjects(RDF.type))
         node= MeshNode(graph=self.dataLoaderParking.meshGraph, subject=subject)
         self.assertEqual(node.subject.toPython(),subject.toPython())
-        object=self.dataLoaderParking.meshGraph.value(subject,self.dataLoaderParking.v4d['faceCount'])
+        object=self.dataLoaderParking.meshGraph.value(subject,GEOMAPI_PREFIXES['geomapi'].faceCount)
         self.assertEqual(node.faceCount,object.toPython())
         
     def test_meshnode_creation_from_graph_path(self):
         subject=next(self.dataLoaderRoad.meshGraph.subjects(RDF.type))
         node= MeshNode(graphPath=self.dataLoaderRoad.meshGraphPath, subject=subject)
         self.assertEqual(node.subject.toPython(),subject.toPython())
-        object=self.dataLoaderRoad.meshGraph.value(subject,self.dataLoaderRoad.v4d['faceCount'])
+        object=self.dataLoaderRoad.meshGraph.value(subject,GEOMAPI_PREFIXES['geomapi'].faceCount)
         self.assertEqual(node.faceCount,object.toPython())
         
     def test_meshnode_creation_from_path(self):
-        #path1 without getResource
+        #path1 without loadResource
         node= MeshNode(path=self.dataLoaderParking.meshPath)
-        self.assertEqual(node.name,ut.get_filename(self.dataLoaderParking.meshPath))
-        #path2 with getResource
-        node= MeshNode(path=self.dataLoaderParking.meshPath,getResource=True)        
-        self.assertEqual(node.name,ut.get_filename(self.dataLoaderParking.meshPath))
+        self.assertEqual(node.name,self.dataLoaderParking.meshPath.stem)
+        #path2 with loadResource
+        node= MeshNode(path=self.dataLoaderParking.meshPath,loadResource=True)        
+        self.assertEqual(node.name,self.dataLoaderParking.meshPath.stem)
         self.assertEqual(node.faceCount,len(self.dataLoaderParking.mesh.triangles))
         #path3 
-        node= MeshNode(path=self.dataLoaderRoad.meshPath,getResource=True)
-        self.assertEqual(node.name,ut.get_filename(self.dataLoaderRoad.meshPath))
+        node= MeshNode(path=self.dataLoaderRoad.meshPath,loadResource=True)
+        self.assertEqual(node.name,self.dataLoaderRoad.meshPath.stem)
         self.assertEqual(node.faceCount,len(self.dataLoaderRoad.mesh.triangles))
 
     def test_meshnode_creation_from_resource(self):
@@ -127,6 +130,12 @@ class TestNode(unittest.TestCase):
         #mesh3
         node= MeshNode(resource=self.dataLoaderRoad.pipeMesh)
         self.assertEqual(node.faceCount,len(self.dataLoaderRoad.pipeMesh.triangles))
+        
+        #trimesh
+        mesh = trimesh.load(self.dataLoaderParking.meshPath)
+        node= MeshNode(resource=    mesh)
+        self.assertEqual(node.faceCount,len(np.asarray(self.dataLoaderRoad.mesh.triangles)))
+
 
     def test_creation_from_subject_and_graph_and_graphPath(self):        
         subject=next(self.dataLoaderParking.meshGraph.subjects(RDF.type))
@@ -134,39 +143,50 @@ class TestNode(unittest.TestCase):
                        graph=self.dataLoaderParking.meshGraph,
                        graphPath=self.dataLoaderParking.meshGraphPath)
         self.assertEqual(node.subject.toPython(),subject.toPython())
-        node.to_graph()
-        self.assertTrue((subject, self.dataLoaderParking.v4d['faceCount'], Literal(node.faceCount)) in self.dataLoaderParking.meshGraph)
+        node.get_graph()
+        self.assertTrue((subject, GEOMAPI_PREFIXES['geomapi'].faceCount, Literal(node.faceCount)) in self.dataLoaderParking.meshGraph)
 
     def test_creation_from_subject_and_path(self):        
         node= MeshNode(subject='myMesh',
                        path=self.dataLoaderParking.meshPath,
-                       getResource=True)
-        self.assertEqual(node.subject.toPython(),'file:///myMesh')
-        node.to_graph()
-        box= self.dataLoaderParking.mesh.get_oriented_bounding_box()
-        min=box.get_min_bound()
-        self.assertAlmostEqual(np.asarray(node.orientedBounds)[0,0],min[0],delta=0.01)
-
+                       loadResource=True)
+        self.assertEqual(node.subject.toPython(),'http://myMesh')
+        node.get_graph()
+        
+        for s, p, o in node.get_graph().triples((None, None, None)):
+            if 'cartesianTransform' in p.toPython():
+                    matrix=ut.literal_to_matrix(o)
+                    #check if matrix elements are the same as the node cartesianTransform
+                    self.assertTrue(np.allclose(matrix,node.cartesianTransform,atol=0.001))
+            if 'orientedBoundingBox' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                node_param=gmu.get_oriented_bounding_box_parameters(node.orientedBoundingBox)
+                self.assertTrue(np.allclose(graph_param,node_param,atol=0.001))
+            if 'convexHull' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                graph_volume=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(graph_param)).compute_convex_hull()[0].get_volume()
+                node_volume=node.convexHull.get_volume()
+                self.assertAlmostEqual(graph_volume,node_volume,delta=0.01)
+                
     def test_creation_from_subject_and_path_and_graph(self):        
         node= MeshNode(subject=self.dataLoaderRoad.meshSubject,
                        path=self.dataLoaderRoad.meshPath,
                        graph=self.dataLoaderRoad.meshGraph,
-                       getResource=True)
+                       loadResource=True)
         self.assertEqual(node.subject,self.dataLoaderRoad.meshSubject)
-        node.to_graph()
+        node.get_graph()
         initialGraph=ut.get_subject_graph(self.dataLoaderRoad.meshGraph,subject=self.dataLoaderRoad.meshSubject)
         self.assertEqual(len(node.graph),len(initialGraph))
-        box= self.dataLoaderRoad.mesh.get_axis_aligned_bounding_box()
-        min=box.get_min_bound()
-        self.assertAlmostEqual(node.cartesianBounds[0],min[0],delta=0.01)
+        
 
     def test_creation_from_resource_and_path(self):        
         node= MeshNode(resource=self.dataLoaderParking.mesh,path=self.dataLoaderParking.meshPath)
-        self.assertEqual(node.subject.toPython(),'file:///'+ut.get_filename(self.dataLoaderParking.meshPath) )
+        node.get_graph(base='http://meshes#')
+        self.assertEqual(node.subject,self.dataLoaderParking.meshSubject )
 
     def test_creation_from_subject_resource_and_path(self):        
-        node= MeshNode(subject='file:///road',resource=self.dataLoaderRoad.mesh,path=self.dataLoaderRoad.meshPath)
-        self.assertEqual(node.subject.toPython(),'file:///road' )
+        node= MeshNode(subject=self.dataLoaderRoad.meshSubject,resource=self.dataLoaderRoad.mesh,path=self.dataLoaderRoad.meshPath)
+        self.assertEqual(node.subject,self.dataLoaderRoad.meshSubject )
         
     def test_creation_from_subject_resource_and_path_and_graph(self):        
         node= MeshNode(subject=self.dataLoaderRoad.meshSubject,
@@ -174,29 +194,29 @@ class TestNode(unittest.TestCase):
                        path=self.dataLoaderRoad.meshPath, 
                        graph=self.dataLoaderRoad.meshGraph)
         self.assertEqual(node.subject,self.dataLoaderRoad.meshSubject)
-        node.to_graph()
-        object=node.graph.value(node.subject,self.dataLoaderRoad.v4d['path'])
-        self.assertEqual(ut.parse_path(object.toPython()),'../mesh/road.ply')
+        node.get_graph()
+        object=node.graph.value(node.subject,GEOMAPI_PREFIXES['geomapi'].path)
+        self.assertEqual(Path(object.toPython()),Path(self.dataLoaderRoad.meshPath))
 
     def test_node_creation_with_get_resource(self):
         #mesh
         node= MeshNode(resource=self.dataLoaderParking.mesh)
         self.assertIsNotNone(node._resource)
 
-        #path without getResource
+        #path without loadResource
         node= MeshNode(path=self.dataLoaderParking.meshPath)
         self.assertIsNone(node._resource)
 
-        #path with getResource
-        node= MeshNode(path=self.dataLoaderParking.meshPath,getResource=True)
+        #path with loadResource
+        node= MeshNode(path=self.dataLoaderParking.meshPath,loadResource=True)
         self.assertIsNotNone(node._resource)
 
         #graph with get resource
-        node= MeshNode(subject='file:///parking',graph=self.dataLoaderParking.meshGraph,getResource=True)
+        node= MeshNode(subject=self.dataLoaderParking.meshSubject,graph=self.dataLoaderParking.meshGraph,loadResource=True)
         self.assertIsNone(node._resource)
 
         #graphPath with get resource
-        node= MeshNode(subject='file:///parking',graphPath=self.dataLoaderParking.meshGraphPath,getResource=True)
+        node= MeshNode(subject=self.dataLoaderParking.meshSubject,graphPath=self.dataLoaderParking.meshGraphPath,loadResource=True)
         self.assertIsNotNone(node._resource)
 
     def test_delete_resource(self):
@@ -238,7 +258,7 @@ class TestNode(unittest.TestCase):
 
         
     #     #path -> new name
-    #     node= MeshNode(subject=URIRef('myMesh'),path=self.dataLoaderParking.meshPath,getResource=True)
+    #     node= MeshNode(subject=URIRef('myMesh'),path=self.dataLoaderParking.meshPath,loadResource=True)
     #     self.assertTrue(node.save_resource())
         
     #     #graphPath with directory
@@ -255,32 +275,50 @@ class TestNode(unittest.TestCase):
     def test_get_resource(self):
         #mesh
         node=MeshNode(resource=self.dataLoaderRoad.mesh)  
-        self.assertIsNotNone(node.get_resource())
+        self.assertIsNone(node.load_resource()) # no path is given, cannot reload resource
 
         #no mesh
         node=MeshNode()
-        self.assertIsNone(node.get_resource())
+        self.assertIsNone(node.load_resource())
 
-        #graphPath with getResource
-        node=MeshNode(graphPath=self.dataLoaderParking.meshGraphPath,subject='file:///parking',getResource=True)
-        self.assertIsNotNone(node.get_resource())
+        #graphPath with loadResource
+        node=MeshNode(graphPath=self.dataLoaderParking.meshGraphPath,subject=self.dataLoaderParking.meshSubject,loadResource=True)
+        self.assertIsNotNone(node.load_resource())
 
     def test_get_metadata_from_resource(self):
         #mesh
         node=MeshNode(resource=self.dataLoaderParking.mesh)  
-        self.assertIsNotNone(node.orientedBounds)
-        self.assertIsNotNone(node.cartesianBounds)
-        self.assertIsNotNone(node.cartesianTransform)
-        self.assertIsNotNone(node.faceCount)
-        self.assertIsNotNone(node.pointCount)
+        for s, p, o in self.dataLoaderParking.meshGraph.triples((self.dataLoaderParking.meshSubject, None, None)):
+            if 'cartesianTransform' in p.toPython():
+                    matrix=ut.literal_to_matrix(o)
+                    #check if matrix elements are the same as the node cartesianTransform
+                    self.assertTrue(np.allclose(matrix,node.cartesianTransform,atol=0.001))
+            if 'orientedBoundingBox' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                node_param=gmu.get_oriented_bounding_box_parameters(node.orientedBoundingBox)
+                np.testing.assert_array_almost_equal(graph_param,node_param,2)
+            if 'convexHull' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                graph_volume=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(graph_param)).compute_convex_hull()[0].get_volume()
+                node_volume=node.convexHull.get_volume()
+                self.assertAlmostEqual(graph_volume,node_volume,delta=0.01)
 
         #graphPath
-        node=MeshNode(graphPath=self.dataLoaderParking.meshGraphPath,subject='file:///parking',getResource=True)
-        self.assertIsNotNone(node.orientedBounds)
-        self.assertIsNotNone(node.cartesianBounds)
-        self.assertIsNotNone(node.cartesianTransform)
-        self.assertIsNotNone(node.faceCount)
-        self.assertIsNotNone(node.pointCount)
+        node=MeshNode(graphPath=self.dataLoaderParking.meshGraphPath,subject=self.dataLoaderParking.meshSubject,loadResource=True)
+        for s, p, o in self.dataLoaderParking.meshGraph.triples((self.dataLoaderParking.meshSubject, None, None)):
+            if 'cartesianTransform' in p.toPython():
+                    matrix=ut.literal_to_matrix(o)
+                    #check if matrix elements are the same as the node cartesianTransform
+                    self.assertTrue(np.allclose(matrix,node.cartesianTransform,atol=0.001))
+            if 'orientedBoundingBox' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                node_param=gmu.get_oriented_bounding_box_parameters(node.orientedBoundingBox)
+                np.testing.assert_array_almost_equal(graph_param[:6],node_param[:6],2)
+            if 'convexHull' in p.toPython():
+                graph_param=ut.literal_to_matrix(o)
+                graph_volume=o3d.geometry.PointCloud(o3d.utility.Vector3dVector(graph_param)).compute_convex_hull()[0].get_volume()
+                node_volume=node.convexHull.get_volume()
+                self.assertAlmostEqual(graph_volume,node_volume,delta=0.01)
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,0 +1,179 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix exif: <http://www.w3.org/2003/12/exif/ns#> .
+@prefix geomapi: <https://w3id.org/geomapi#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix inst: <http://images#> .
+
+
+inst:P0024688 a geomapi:ImageNode ;
+    rdfs:label "P0024688"^^xsd:string ;
+    dcterms:created "2024-08-05T08:17:56"^^xsd:dateTime ;
+    exif:imageLength 8750 ;
+    exif:imageWidth 11664 ;
+    geomapi:cartesianTransform """[[ 5.83812227e-02 -9.98234429e-01  1.09387827e-02  2.63374319e+05]
+ [-9.98294230e-01 -5.83833322e-02  1.26659890e-04  1.51069035e+05]
+ [ 5.12206323e-04 -1.09275183e-02 -9.99940162e-01  2.82230717e+02]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[2.63374319e+05 1.51069035e+05 2.82230717e+02]
+ [2.63369229e+05 1.51055963e+05 2.34238762e+02]
+ [2.63367743e+05 1.51081375e+05 2.34225723e+02]
+ [2.63387964e+05 1.51057358e+05 2.35567346e+02]
+ [2.63386513e+05 1.51082174e+05 2.35554613e+02]]"""^^geomapi:matrix ;
+    geomapi:depth "50.0"^^xsd:float ;
+    geomapi:focalLength35mm "21963.0445544689"^^xsd:float ;
+    geomapi:intrinsicMatrix """[[2.19630446e+04 0.00000000e+00 5.83200000e+03]
+ [0.00000000e+00 2.19630446e+04 4.37500000e+03]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:orientedBoundingBox """[ 2.63376068e+05  1.51069125e+05  2.58537284e+02  4.75160802e+01
+  2.54553040e+01  1.88308257e+01 -3.87289307e-01  8.56542776e+01
+  2.96071632e+00]"""^^geomapi:matrix ;
+    geomapi:path "../img/P0024688.jpg"^^xsd:string ;
+    geomapi:principalPointU "0"^^xsd:float ;
+    geomapi:principalPointV "0"^^xsd:float ;
+    geomapi:xmlPath "../img/railway.xml"^^xsd:string ;
+	geomapi:adjacent inst:P0024691 .
+
+
+inst:P0024691 a geomapi:ImageNode ;
+    rdfs:label "P0024691"^^xsd:string ;
+    dcterms:created "2024-08-05T08:16:25"^^xsd:dateTime ;
+    exif:imageLength 8750 ;
+    exif:imageWidth 11664 ;
+    geomapi:cartesianTransform """[[ 6.17794351e-02 -9.98019630e-01  1.18372249e-02  2.63380505e+05]
+ [-9.98088664e-01 -6.17931192e-02 -7.93436065e-04  1.51069360e+05]
+ [ 1.52332381e-03 -1.17655819e-02 -9.99929623e-01  2.82254021e+02]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[2.63380505e+05 1.51069360e+05 2.82254021e+02]
+ [2.63375503e+05 1.51056225e+05 2.34270104e+02]
+ [2.63373931e+05 1.51081632e+05 2.34231327e+02]
+ [2.63394232e+05 1.51057685e+05 2.35614128e+02]
+ [2.63392696e+05 1.51082496e+05 2.35576260e+02]]"""^^geomapi:matrix ;
+    geomapi:depth "50.0"^^xsd:float ;
+    geomapi:focalLength35mm "21963.0445544689"^^xsd:float ;
+    geomapi:intrinsicMatrix """[[2.19630446e+04 0.00000000e+00 5.83200000e+03]
+ [0.00000000e+00 2.19630446e+04 4.37500000e+03]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:orientedBoundingBox """[ 2.63382276e+05  1.51069433e+05  2.58562089e+02  4.75160802e+01
+  2.54553040e+01  1.88308242e+01 -1.13915869e+00  8.56054901e+01
+  2.40615565e+00]"""^^geomapi:matrix ;
+    geomapi:path "../img/P0024691.jpg"^^xsd:string ;
+    geomapi:principalPointU "0"^^xsd:float ;
+    geomapi:principalPointV "0"^^xsd:float ;
+    geomapi:xmlPath "../img/railway.xml"^^xsd:string .
+
+inst:DJI_0085 a geomapi:ImageNode ;
+    rdfs:label "DJI_0085"^^xsd:string ;
+    dcterms:created "2024-04-10T13:50:51"^^xsd:dateTime ;
+    exif:imageLength 3078 ;
+    exif:imageWidth 5472 ;
+    geomapi:cartesianTransform """[[-8.13902571e-02  6.83059476e-01 -7.25813597e-01  5.18276221e+01]
+ [ 9.96648497e-01  4.97790854e-02 -6.49139139e-02  6.10007435e+01]
+ [-8.20972697e-03 -7.28664391e-01 -6.84821733e-01  1.50408221e+01]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[ 22.86625123  88.16704761 -15.3438931 ]
+ [ 51.8276221   61.00074355  15.04082214]
+ [  7.21969472  82.97640837   9.82517548]
+ [ 27.69788287  29.00224593 -14.85653284]
+ [ 11.38288499  31.99687494  10.24511094]]"""^^geomapi:matrix ;
+    geomapi:coordinateSystem "absolute"^^xsd:string ;
+    geomapi:depth "50.0"^^xsd:float ;
+    geomapi:distortionCoeficients "[0.00123387104398438, -0.0154902079106269, 0.0173681449872249, 0.0, 0.0, 0.0]"^^xsd:string ;
+    geomapi:focalLength35mm "3693.1078961549015"^^xsd:float ;
+    geomapi:intrinsicMatrix """[[3.69310790e+03 0.00000000e+00 2.73599781e+03]
+ [0.00000000e+00 3.69310790e+03 1.53899519e+03]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:orientedBoundingBox """[  33.22977654   59.36831444    1.24321536   59.3637595    42.67978384
+   28.14392836 -166.7165237    -0.47038799  -85.33136009]"""^^geomapi:matrix ;
+    geomapi:path "../img/DJI_0085.JPG"^^xsd:string ;
+    geomapi:principalPointU "-0.00219347744418651"^^xsd:float ;
+    geomapi:principalPointV "-0.00481084380622187"^^xsd:float ;
+    geomapi:xmpPath "../img/DJI_0085.xmp"^^xsd:string ;
+	geomapi:adjacent inst:IMG_8834 .
+
+
+inst:IMG_8834 a geomapi:ImageNode ;
+    rdfs:label "IMG_8834"^^xsd:string ;
+    dcterms:created "2024-04-10T13:50:51"^^xsd:dateTime ;
+    exif:imageLength 3744 ;
+    exif:imageWidth 5616 ;
+    geomapi:cartesianTransform """[[ 4.12555151e-01  4.12058430e-02 -9.10000179e-01  6.68850552e+01]
+ [ 9.10841440e-01 -4.52553581e-03  4.12731621e-01  4.52551195e+01]
+ [ 1.28887160e-02 -9.99140430e-01 -3.93990225e-02  5.45377093e+00]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[43.39970993 88.03374652 -5.42867473]
+ [66.88505525 45.25511948  5.45377093]
+ [19.35988586 34.9584961  -6.17970757]
+ [44.89848931 82.90232367 29.93394525]
+ [23.82890116 36.38477576 29.27570613]]"""^^geomapi:matrix ;
+    geomapi:coordinateSystem "absolute"^^xsd:string ;
+    geomapi:depth "50.0"^^xsd:float ;
+    geomapi:distortionCoeficients "[-0.124217384759894, 0.107339706650415, -0.0104748224573926, 0.0, 0.0, 0.0]"^^xsd:string ;
+    geomapi:focalLength35mm "3802.739603918611"^^xsd:float ;
+    geomapi:intrinsicMatrix """[[3.80273960e+03 0.00000000e+00 2.80799954e+03]
+ [0.00000000e+00 3.80273960e+03 1.87199918e+03]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:orientedBoundingBox """[  44.00921734   55.48354127   14.84759504   58.27057061   34.95938503
+   40.52795842 -110.22938334   -0.73848948   65.63239763]"""^^geomapi:matrix ;
+    geomapi:path "../img/IMG_8834.JPG"^^xsd:string ;
+    geomapi:principalPointU "-0.000464752782510192"^^xsd:float ;
+    geomapi:principalPointV "-0.000823593392050301"^^xsd:float ;
+    geomapi:xmpPath "../img/IMG_8834.xmp"^^xsd:string .
+	
+	
+inst:101_0367_0007 a geomapi:ImageNode ;
+    rdfs:label "101_0367_0007"^^xsd:string ;
+    dcterms:created "2024-04-10T13:50:51"^^xsd:dateTime ;
+    exif:imageLength 3648 ;
+    exif:imageWidth 5472 ;
+    geomapi:cartesianTransform """[[-7.99965974e-01 -5.98493762e-01 -4.31237396e-02  1.00592066e+05]
+ [-5.99164887e-01  8.00618459e-01  3.39417250e-03  1.96282855e+05]
+ [ 3.24942709e-02  2.85534531e-02 -9.99063973e-01  3.19272496e+01]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[ 1.00592066e+05  1.96282855e+05  3.19272496e+01]
+ [ 1.00607897e+05  1.96308272e+05 -8.11450216e+00]
+ [ 1.00561188e+05  1.96273287e+05 -6.21719393e+00]
+ [ 1.00626343e+05  1.96277819e+05 -4.12429343e+00]
+ [ 1.00585425e+05  1.96247172e+05 -2.46219061e+00]]"""^^geomapi:matrix ;
+    geomapi:depth "50.0"^^xsd:float ;
+    geomapi:focalLength35mm "3693.1569475809993"^^xsd:float ;
+    geomapi:intrinsicMatrix """[[3.69315695e+03 0.00000000e+00 2.73600000e+03]
+ [0.00000000e+00 3.69315695e+03 1.82400000e+03]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:orientedBoundingBox """[1.00597320e+05 1.96274497e+05 7.16015669e+00 5.83890075e+01
+ 3.46629720e+01 4.05210175e+01 1.88885718e+01 1.86211237e+00
+ 3.68327687e+01]"""^^geomapi:matrix ;
+    geomapi:path "../img/101_0367_0007.JPG"^^xsd:string ;
+    geomapi:principalPointU "0"^^xsd:float ;
+    geomapi:principalPointV "0"^^xsd:float ;
+    geomapi:xmlPath "../img/road.xml"^^xsd:string ;
+	geomapi:adjacent inst:101_0367_0055 .
+
+
+inst:101_0367_0055 a geomapi:ImageNode ;
+    rdfs:label "101_0367_0055"^^xsd:string ;
+    dcterms:created "2024-04-10T13:50:51"^^xsd:dateTime ;
+    exif:imageLength 3648 ;
+    exif:imageWidth 5472 ;
+    geomapi:cartesianTransform """[[ 8.16701918e-01  5.76783553e-01  1.78524640e-02  1.00585779e+05]
+ [ 5.76947600e-01 -8.16762274e-01 -5.55470424e-03  1.96265377e+05]
+ [ 1.13773570e-02  1.48364739e-02 -9.99825202e-01  3.19327009e+01]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:convexHull """[[ 1.00585779e+05  1.96265377e+05  3.19327009e+01]
+ [ 1.00568252e+05  1.96240366e+05 -7.65603825e+00]
+ [ 1.00550757e+05  1.96271318e+05 -3.25423370e+00]
+ [ 1.00615939e+05  1.96274053e+05 -6.99172567e+00]
+ [ 1.00592531e+05  1.96300829e+05 -2.67227458e+00]]"""^^geomapi:matrix ;
+    geomapi:depth "50.0"^^xsd:float ;
+    geomapi:focalLength35mm "3693.1569475809993"^^xsd:float ;
+    geomapi:intrinsicMatrix """[[3.69315695e+03 0.00000000e+00 2.73600000e+03]
+ [0.00000000e+00 3.69315695e+03 1.82400000e+03]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00]]"""^^geomapi:matrix ;
+    geomapi:orientedBoundingBox """[ 1.00580135e+05  1.96273852e+05  7.29158781e+00  5.83890075e+01
+  3.46629704e+01  4.05210176e+01 -1.81016423e+01 -6.51888627e-01
+  3.52387576e+01]"""^^geomapi:matrix ;
+    geomapi:path "../img/101_0367_0055.JPG"^^xsd:string ;
+    geomapi:principalPointU "0"^^xsd:float ;
+    geomapi:principalPointV "0"^^xsd:float ;
+    geomapi:xmlPath "../img/road.xml"^^xsd:string .
