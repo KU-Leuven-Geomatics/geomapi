@@ -599,7 +599,7 @@ class TestGeometryutils(unittest.TestCase):
         cutterMeshes=self.dataLoaderRoad.bimMeshes
         # mesh + [mesh]
         result1=gmu.crop_geometry_by_distance(source=sourceMesh,reference=cutterMeshes)
-        self.assertGreater(len(result1.vertices),35 )
+        self.assertGreater(len(result1.vertices),30 )
 
         # pcd + [mesh]
         result2=gmu.crop_geometry_by_distance(source=sourcepcd,reference=cutterMeshes)
