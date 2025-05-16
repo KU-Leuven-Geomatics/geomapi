@@ -282,7 +282,17 @@ class SetNode(Node):
                 #node.transform(self.cartesianTransform)
 
     def show(self):
-        pass
+        if(self.linkedNodes is None or len(self.linkedNodes) > 0):
+            return
+        geometries = []
+        for node in self.linkedNodes:
+            if(node.resource is not None and isinstance(node.resource, o3d.geometry.TriangleMesh)):
+                geometries.append(node.resource)
+            else:
+                geometries.append(node.convexHull)
+        gmu.show_geometries(geometries)
+
+
 
 
     #def save_resource(self,directory:str=None,extension :str = '.ply') -> bool:
