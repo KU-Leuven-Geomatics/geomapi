@@ -1,0 +1,2678 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Construction site progress\n",
+    "Progress monitoring of construction sites is becoming increasingly popular in the construction industry. Especially with the integration of 4D BIM, the progression and quality of the construction process can be better quantified. A key aspect is the detection of the changes between consecutive epochs of measurements on the site. However, the development of automated procedures is challenging due to noise, occlusions and the associativity between different objects. Additionally, objects are built in stages and thus varying states have to be detected according to the Percentage of Completion.\n",
+    "\n",
+    "**Progress on site**: This task can be formulated as a query to determine the ratio of the observed boundary surface area of each object compared to the surface area that can theoretically be observed (Eq.1).\n",
+    "\n",
+    "$$PoC=\\frac{\\text{observed surface Area}}{\\text{theoretical visibility}}$$\n",
+    "\n",
+    "Where a threshold can be used to state which objects are built or not (Eq.2).\n",
+    "\n",
+    "$$ \\text{built state}= 1 \\text{  if  } PoC \\geq t_v \\\\ \n",
+    "0 \\text{  else  } $$\n",
+    "\n",
+    "In this testcase, we will discuss how to use GEOMAPI to assess progress on a typical BIM-driven construction site. Concretely, we will demonstrate the API's functionality to:\n",
+    "1. Preprocess the BIM data from multiple IFC files\n",
+    "2. Preprocess the various remote sensing data (images, meshes, point clouds) of two measurement epochs\n",
+    "3. Make a subselection of observable objects\n",
+    "4. Determine the PoC of the observable objects\n",
+    "5. Serialize the analysis results\n",
+    "6. Use the resulting RDF Graph of epoch 1 to support the analysis of epoch 2."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "First the geomapi and external packages are imported"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {
+    "tags": [
+     "remove-cell"
+    ]
+   },
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Jupyter environment detected. Enabling Open3D WebVisualizer.\n",
+      "[Open3D INFO] WebRTC GUI backend enabled.\n",
+      "[Open3D INFO] WebRTCWindowSystem: HTTP handshake server disabled.\n"
+     ]
+    }
+   ],
+   "source": [
+    "#IMPORT PACKAGES\n",
+    "from rdflib import Graph, URIRef, Literal, RDF\n",
+    "import open3d as o3d\n",
+    "import os\n",
+    "from pathlib import Path\n",
+    "import ifcopenshell\n",
+    "import ifcopenshell.util.selector\n",
+    "import numpy as np\n",
+    "import rdflib\n",
+    "\n",
+    "#IMPORT MODULES\n",
+    "from context import geomapi \n",
+    "from geomapi.nodes import *\n",
+    "import geomapi.utils as ut\n",
+    "from geomapi.utils import geometryutils as gmu\n",
+    "import geomapi.tools as tl"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The autoreload extension is already loaded. To reload it, use:\n",
+      "  %reload_ext autoreload\n"
+     ]
+    }
+   ],
+   "source": [
+    "%load_ext autoreload"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%autoreload 2"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## BIM Model\n",
+    "The dataset that will be used for this analysis is a residential complex that includes 3 seperate buildings and a common underground parking, each of which consists of a seperate IFC file. Fig. 1 shows Building 1 (1192 elements) and the parking dataset (2705 elements). Both datasets depict the construction site structural phase, so the main classes include:\n",
+    "1. IfcWallStandardCase:     309 +   340     =   649\n",
+    "2. ifcSlab:                 237 +   1150    =   1387\n",
+    "3. ifcBeam:                 200 +   225     =   425\n",
+    "4. IfcColumn:               95  +   125     =   220\n",
+    "5. IfcStair:                11  +   10      =   22"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.1**: Construction site: (red) building 1 and (white) underground parking in seperate IFC files. \n",
+    "![rendering](../../pics/testcase_progress1.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Measurement Epoch week 22\n",
+    "During week 22, a portion of the site was captured with terrestrial laser scanners and hand held imagery. During that period, the ground floor of the parking and structural columns were built, and the farmwork of level 1 was being erected. The following measurements were recorded:\n",
+    "1. 45 10M point scans with a Leica BLK (Fig.2 top left)\n",
+    "2. 715 20MPix Images with a Canon EOS 5D Mark II (Fig.2 top right), resulting in a 240k Mesh (Fig.2 bottom left) and 11M point cloud (Fig.2 bottom right).\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.2**: (top left) 45 BLK point clouds, (top right) 715 geolocated images, (bottom left) 240k photogrammetric mesh and (bottom right) 11M photogrammetric point cloud.\n",
+    "\n",
+    "<img src=\"../../pics/week22_pcd.PNG\" width = \"49%\">\n",
+    "<img src=\"../../pics/week22_img.PNG\"  width = \"49%\">\n",
+    "\n",
+    "<img src=\"../../pics/week22_mesh1.PNG\"  width = \"49%\">\n",
+    "<img src=\"../../pics/week22_pcd1.PNG\"  width = \"49%\">"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Measurement Epoch week 34\n",
+    "Week 34 is very similar. Ofcourse, some complexities are inherently present such as precipitation, occlusions, rebar, etc. (Fig.3). These objects cause significant amounts of noise, clutter and confusion in any geomatics analysis. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.3**: Images of week 34 showing some documentation obstacles on the site including formwork, precipitation, etc.\n",
+    "\n",
+    "<img src=\"../../pics/week22_img2.JPG\" width = \"49%\">\n",
+    "<img src=\"../../pics/week22_img3.JPG\" width = \"49%\">\n",
+    "\n",
+    "<img src=\"../../pics/week22_img4.JPG\" width = \"49%\">\n",
+    "<img src=\"../../pics/week22_img5.JPG\" width = \"49%\">"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Preprocessing the BIM Model\n",
+    "Following the GEOMAPI principles, we serialize all relevent objects in the BIM model to an RDF Graph. This includes the structural elements of the classes listed at the top of this document. We could ofcourse list every single object in the IFC but that would unnecessirely complicate the calculations."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 87,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ifcPath1=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','IFC','Academiestraat_parking.ifc')\n",
+    "ifcPath2=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','IFC','Academiestraat_building_1.ifc')\n",
+    "BIMNodes=[]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For this analysis, we parse the ifc files using all CPU's."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 88,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2368\n",
+      "3528\n"
+     ]
+    }
+   ],
+   "source": [
+    "BIMNodes.extend(tl.ifc_to_nodes_multiprocessing(ifcPath=ifcPath1,getResource=True)) \n",
+    "print(len(BIMNodes))\n",
+    "BIMNodes.extend(tl.ifc_to_nodes_multiprocessing(ifcPath=ifcPath2,getResource=True)) \n",
+    "print(len(BIMNodes))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "It is not uncommon for certain elements to not have geometry or have some invalid meshes. These will yield **Geometry Production Errors**."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Next, we filter out the types=['IfcBeam','IfcColumn'] that we wish to evaluate in this testcase.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 89,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "417\n",
+      "220\n"
+     ]
+    }
+   ],
+   "source": [
+    "ifcBeamNodes=[n for n in BIMNodes if 'IfcBeam' in n.className]\n",
+    "print(len(ifcBeamNodes))\n",
+    "ifcColumnNodes=[n for n in BIMNodes if 'IfcColumn' in n.className]\n",
+    "print(len(ifcColumnNodes))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "bimGeometries=[n.resource for n in BIMNodes if n.resource]\n",
+    "o3d.visualization.draw_geometries(bimGeometries + [meshNode.resource])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.4**: Images of the IfcBeams and IfcColumn that will be evaluated.\n",
+    "![rendering](../../pics/week22_columns_beams1.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "When looking at the instance variables of one of the BIMNodes, it is revealed that GEOMAPI has indeed gathered all the relevant metadata for geomatic analysis of the objects."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 41,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'_ifcPath': 'd:\\\\Scan-to-BIM repository\\\\geomapi\\\\test\\\\testfiles\\\\IFC\\\\Academiestraat_parking.ifc',\n",
+       " '_globalId': '31ITCLLef6cxVKsJ1O6alJ',\n",
+       " '_cartesianBounds': array([-7.06959166, -6.29710762, 82.65923323, 94.05945977,  6.3       ,\n",
+       "         7.49      ]),\n",
+       " '_orientedBounds': array([[-6.56972877, 82.65931266,  7.52010319],\n",
+       "        [-6.29703229, 94.0506375 ,  7.48999176],\n",
+       "        [-6.56980573, 82.65609109,  6.30066736],\n",
+       "        [-7.06958983, 82.67127881,  7.52010312],\n",
+       "        [-6.79697031, 94.05938208,  6.27055586],\n",
+       "        [-7.06966679, 82.66805724,  6.30066729],\n",
+       "        [-6.79689335, 94.06260366,  7.48999169],\n",
+       "        [-6.29710925, 94.04741593,  6.27055593]]),\n",
+       " '_orientedBoundingBox': OrientedBoundingBox: center: (-6.68335, 88.3593, 6.89533), extent: 11.3946, 1.21944, 0.500004),\n",
+       " '_subject': rdflib.term.URIRef('file:///282_SF_f2_Rectangular_50_119_966607_31ITCLLef6cxVKsJ1O6alJ'),\n",
+       " '_graph': None,\n",
+       " '_graphPath': None,\n",
+       " '_path': None,\n",
+       " '_name': '282_SF_f2_Rectangular:50/119:966607',\n",
+       " '_timestamp': None,\n",
+       " '_resource': TriangleMesh with 45 points and 78 triangles.,\n",
+       " '_cartesianTransform': array([[ 1.        ,  0.        ,  0.        , -6.69666565],\n",
+       "        [ 0.        ,  1.        ,  0.        , 88.96377834],\n",
+       "        [ 0.        ,  0.        ,  1.        ,  7.01177778],\n",
+       "        [ 0.        ,  0.        ,  0.        ,  1.        ]]),\n",
+       " 'className': 'IfcBeam',\n",
+       " 'pointCount': 45,\n",
+       " 'faceCount': 78}"
+      ]
+     },
+     "execution_count": 41,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "{key:value for key, value in BIMNodes[0].__dict__.items() if not key.startswith('__') and not callable(key)}              "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can buffer these geometries on drive so we only have to parse the ifc file once. We can then reload these geometries to assess week 26."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 90,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "folder=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder')\n",
+    "if not os.path.exists(folder):\n",
+    "    os.mkdir(folder)\n",
+    "\n",
+    "for node in BIMNodes:\n",
+    "    node.save_resource(os.path.join(folder,'BIM'))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This also sets the path of each node"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 91,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\myAnalysisFolder\\BIM\\Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_903129_0_Z_Q8COz94wZzVDqlx5Ny.ply\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(BIMNodes[0].path)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Now it is good practice to already serialize these nodes in a RDF graph so we can rapidly load the nodes from the graphs in a next code run. In this testcase, we will store the generated graph in the same location as the buffered mesh geometries."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 92,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Graph identifier=Nd78fbef4e17942d9a0598eb808e0ce3c (<class 'rdflib.graph.Graph'>)>"
+      ]
+     },
+     "execution_count": 92,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "graphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','BIM','bimGraph.ttl')\n",
+    "tl.nodes_to_graph(nodelist=BIMNodes,graphPath=graphPath,save=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This sets each BIMNodes' graphpath and graph. The graph of BIMNodes[0] then looks as follows."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 93,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\myAnalysisFolder\\BIM\\bimGraph.ttl\n",
+      "@prefix e57: <http://libe57.org#> .\n",
+      "@prefix ifc: <http://ifcowl.openbimstandards.org/IFC2X3_Final#> .\n",
+      "@prefix openlabel: <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#> .\n",
+      "@prefix v4d: <https://w3id.org/v4d/core#> .\n",
+      "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n",
+      "\n",
+      "<file:///Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_903129_0_Z_Q8COz94wZzVDqlx5Ny> a v4d:BIMNode ;\n",
+      "    ifc:className \"IfcWall\" ;\n",
+      "    ifc:globalId \"0$Z_Q8COz94wZzVDqlx5Ny\" ;\n",
+      "    ifc:ifcPath \"..\\\\..\\\\IFC\\\\Academiestraat_parking.ifc\" ;\n",
+      "    e57:cartesianBounds \"\"\"[-19.23472973 -12.25564312  65.15487321  90.43620808   3.75\n",
+      "   6.45      ]\"\"\" ;\n",
+      "    e57:cartesianTransform \"\"\"[[  1.           0.           0.         -15.01948444]\n",
+      " [  0.           1.           0.          75.43717007]\n",
+      " [  0.           0.           1.           5.1       ]\n",
+      " [  0.           0.           0.           1.        ]]\"\"\" ;\n",
+      "    e57:pointCount 26 ;\n",
+      "    v4d:faceCount 48 ;\n",
+      "    v4d:name \"Basic Wall:162_WA_f2_Retaining concrete 300mm - tegen beschoeiing:903129\" ;\n",
+      "    v4d:orientedBounds \"\"\"[[-18.94468192  90.47741615   3.75      ]\n",
+      " [-12.25492307  65.15506344   3.75      ]\n",
+      " [-18.94468192  90.47741615   6.45      ]\n",
+      " [-19.23544856  90.40060027   3.75      ]\n",
+      " [-12.54568971  65.07824756   6.45      ]\n",
+      " [-19.23544856  90.40060027   6.45      ]\n",
+      " [-12.54568971  65.07824756   3.75      ]\n",
+      " [-12.25492307  65.15506344   6.45      ]]\"\"\" ;\n",
+      "    v4d:path \"Basic_Wall_162_WA_f2_Retaining_concrete_300mm_-_tegen_beschoeiing_903129_0_Z_Q8COz94wZzVDqlx5Ny.ply\" ;\n",
+      "    openlabel:timestamp \"2022-08-24T09:33:45\" .\n",
+      "\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(BIMNodes[0].graphPath)\n",
+    "print(BIMNodes[0].graph.serialize())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Note** that all path triples in graph are serialized relative to the graphPath so to make it easier to move the entire folderstructure."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Reloading from graph\n",
+    "The above steps only have to be performed once. On reruns of the code or future analysis, we can initialize the same nodes from their serialized triples in the bimGraph. This is significantly faster for smaller graphs for we are serializing over 3500 objects which result in over 40k triples."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[Open3D WARNING] Unable to load file d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\myAnalysisFolder\\BIM\\282_SC_f2_Round:Ø30:882687.obj with ASSIMP\n",
+      "[Open3D WARNING] Unable to load file d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\myAnalysisFolder\\BIM\\282_SC_f2_Round:Ø30:883780.obj with ASSIMP\n",
+      "[Open3D WARNING] Unable to load file d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\myAnalysisFolder\\BIM\\282_SC_f2_Round:Ø30:883870.obj with ASSIMP\n",
+      "3528\n",
+      "417\n",
+      "220\n"
+     ]
+    }
+   ],
+   "source": [
+    "graphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','BIM','bimGraph.ttl')\n",
+    "BIMNodes=tl.graph_path_to_nodes(graphPath=graphPath,getResource=True)\n",
+    "print(len(BIMNodes))\n",
+    "ifcBeamNodes=[n for n in BIMNodes if 'IfcBeam' in n.className]\n",
+    "print(len(ifcBeamNodes))\n",
+    "ifcColumnNodes=[n for n in BIMNodes if 'IfcColumn' in n.className]\n",
+    "print(len(ifcColumnNodes))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Analysis week 22"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Preprocess measurements week 22 \n",
+    "Data data of week 22 (see above) will be imported as part of a SessionNode. This sessionNode contains the individual Nodes of each of the resources and also some general metadata. \n",
+    "\n",
+    "First, we parse each set of resources (46 point clouds, 693+ Images and the photogrammetric mesh).\n",
+    "\n",
+    "**NOTE**: This is alot of data, some of which we potentially don't need as observable objects might not be located within the sensors Field-of-View. GEOMAPI plans for this, and allows Node metadata initialisation from other sources but the actual data such as image metadata files, e57 headers, etc. The actual resources that are needed can be imported at a later stage through get_resource() methods. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "1. **E57 POINT CLOUDS**: These nodes from the e57 header instead of actually importing the data so a first spatial analysis can be conducted effeciently"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "46\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "{'_e57Index': 0,\n",
+       " 'pointCount': 12044232,\n",
+       " 'e57XmlPath': None,\n",
+       " '_cartesianBounds': array([ -4.835392  ,  63.61618042,  15.48379898, 110.15341187,\n",
+       "          1.53644395,  52.72476959]),\n",
+       " '_orientedBounds': None,\n",
+       " '_orientedBoundingBox': None,\n",
+       " '_subject': rdflib.term.URIRef('file:///academiestraat_week_22_39'),\n",
+       " '_graph': <Graph identifier=N8e9662fa0b65459baab80065d781079c (<class 'rdflib.graph.Graph'>)>,\n",
+       " '_graphPath': 'd:\\\\Scan-to-BIM repository\\\\geomapi\\\\test\\\\testfiles\\\\myAnalysisFolder\\\\PCD\\\\pcdGraph.ttl',\n",
+       " '_path': 'C:\\\\Users\\\\u0094523\\\\Documents\\\\week 22 lidar_CC.e57',\n",
+       " '_name': 'academiestraat week 22 39',\n",
+       " '_timestamp': '2022-08-31T14:07:41',\n",
+       " '_resource': None,\n",
+       " '_cartesianTransform': array([[ 5.14918372e-01,  8.56862431e-01,  2.54134841e-02,\n",
+       "          2.27048357e+01],\n",
+       "        [-8.56208319e-01,  5.15526552e-01, -3.37592856e-02,\n",
+       "          5.93459397e+01],\n",
+       "        [-4.20283893e-02, -4.37596012e-03,  9.99106834e-01,\n",
+       "          4.85647109e+00],\n",
+       "        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,\n",
+       "          1.00000000e+00]])}"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "e57Path=os.path.join(Path(os.getcwd()).parents[4],'Data','2018-06 Werfopvolging Academiestraat Gent','week 22','PCD','week 22 lidar_CC.e57')\n",
+    "e57Path=os.path.join(\"C:\\\\Users\\\\u0094523\\\\Documents\\\\week 22 lidar_CC.e57\")\n",
+    "\n",
+    "pcdNodes=tl.e57header_to_nodes(e57Path)\n",
+    "print(len(pcdNodes))\n",
+    "\n",
+    "#serialize nodes\n",
+    "folder=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','PCD')\n",
+    "if not os.path.exists(folder):\n",
+    "    os.mkdir(folder)\n",
+    "graphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','PCD','pcdGraph.ttl')\n",
+    "tl.nodes_to_graph(nodelist=pcdNodes,graphPath=graphPath,save=True)\n",
+    "{key:value for key, value in pcdNodes[0].__dict__.items() if not key.startswith('__') and not callable(key)}              "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "2. **Geolocated Images**: Analogue to the point cloud data, the ImageNodes are initialised from a set of Reality Capture .xmp files, one for each image. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "693\n"
+     ]
+    }
+   ],
+   "source": [
+    "folder=os.path.join(Path(os.getcwd()).parents[4],'Data','2018-06 Werfopvolging Academiestraat Gent','week 22','IMG_RGB')\n",
+    "files=ut.get_list_of_files(folder)\n",
+    "xmpFiles=[file for file in files if file.endswith('.xmp')]\n",
+    "imgNodes=[]\n",
+    "for file in xmpFiles:\n",
+    "    imgNodes.append(ImageNode(xmpPath=file))\n",
+    "print(len(imgNodes))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'_xmlPath': None,\n",
+       " '_xmpPath': 'd:\\\\Data\\\\2018-06 Werfopvolging Academiestraat Gent\\\\week 22\\\\IMG_RGB\\\\IMG_8117.xmp',\n",
+       " '_orientedBoundingBox': None,\n",
+       " 'imageWidth': 5616,\n",
+       " 'imageHeight': 3744,\n",
+       " 'focalLength35mm': 24.2478838617657,\n",
+       " '_subject': rdflib.term.URIRef('file:///IMG_8117'),\n",
+       " '_graph': <Graph identifier=N9b4969503d004cd89418e82889dc7013 (<class 'rdflib.graph.Graph'>)>,\n",
+       " '_graphPath': 'd:\\\\Scan-to-BIM repository\\\\geomapi\\\\test\\\\testfiles\\\\myAnalysisFolder\\\\IMG\\\\imgGraph.ttl',\n",
+       " '_path': 'd:\\\\Data\\\\2018-06 Werfopvolging Academiestraat Gent\\\\week 22\\\\IMG_RGB\\\\IMG_8117.JPG',\n",
+       " '_name': 'IMG_8117',\n",
+       " '_timestamp': '2018-05-31T12:51:10',\n",
+       " '_resource': None,\n",
+       " '_cartesianTransform': array([[ 9.99663047e-01, -2.39186423e-02, -1.00841979e-02,\n",
+       "          2.65242540e+01],\n",
+       "        [-1.59884398e-02, -2.61328203e-01, -9.65117578e-01,\n",
+       "          4.63456265e+01],\n",
+       "        [ 2.04490168e-02,  9.64953610e-01, -2.61622569e-01,\n",
+       "          5.41631927e+00],\n",
+       "        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,\n",
+       "          1.00000000e+00]]),\n",
+       " 'coordinateSystem': 'geospatial-wgs84',\n",
+       " 'principalPointU': 0.00121787058752799,\n",
+       " 'principalPointV': -0.00280510072900163,\n",
+       " 'distortionCoeficients': [-0.124808145909033,\n",
+       "  0.103745993250385,\n",
+       "  -0.00726952029128824,\n",
+       "  0.0,\n",
+       "  0.0,\n",
+       "  0.0],\n",
+       " 'resolutionUnit': 2,\n",
+       " 'geospatialTransform': [None, None, None]}"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "#serialize nodes\n",
+    "folder=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','IMG')\n",
+    "if not os.path.exists(folder):\n",
+    "    os.mkdir(folder)\n",
+    "graphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','IMG','imgGraph.ttl')\n",
+    "tl.nodes_to_graph(nodelist=imgNodes,graphPath=graphPath,save=True)\n",
+    "{key:value for key, value in imgNodes[0].__dict__.items() if not key.startswith('__') and not callable(key)}              "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "3. **Photogrammetric mesh**: Mesh files have no metadata headers so the data has to be loaded by GEOMAPI. However, to save memory (and to illustrate the non-data functionality), we will discard the data as soon as the relevant metadata is extracted."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'pointCount': 330263,\n",
+       " 'faceCount': 485077,\n",
+       " '_cartesianBounds': array([-37.36532974, 106.94235229,  16.87863541, 130.69406128,\n",
+       "          0.71651864,  23.73304558]),\n",
+       " '_orientedBounds': array([[-1.96025705e+01,  1.65884170e+02,  2.22874728e+01],\n",
+       "        [ 1.22465481e+02,  1.23859452e+02,  2.29468259e+01],\n",
+       "        [-5.26111776e+01,  5.43129171e+01,  2.33762909e+01],\n",
+       "        [-1.95654721e+01,  1.65648765e+02, -7.09825518e-01],\n",
+       "        [ 8.94939722e+01,  1.20527931e+01,  1.03834556e+00],\n",
+       "        [-5.25740791e+01,  5.40775120e+01,  3.78992525e-01],\n",
+       "        [ 1.22502579e+02,  1.23624046e+02, -5.04724793e-02],\n",
+       "        [ 8.94568738e+01,  1.22881982e+01,  2.40356439e+01]]),\n",
+       " '_orientedBoundingBox': OrientedBoundingBox: center: (34.9457, 88.9685, 11.6629), extent: 148.155, 116.357, 22.9985),\n",
+       " '_subject': rdflib.term.URIRef('file:///week22'),\n",
+       " '_graph': <Graph identifier=N4472d046688d40a486d6000dbde7fe54 (<class 'rdflib.graph.Graph'>)>,\n",
+       " '_graphPath': 'd:\\\\Scan-to-BIM repository\\\\geomapi\\\\test\\\\testfiles\\\\myAnalysisFolder\\\\MESH\\\\meshGraph.ttl',\n",
+       " '_path': 'd:\\\\Scan-to-BIM repository\\\\geomapi\\\\test\\\\testfiles\\\\MESH\\\\week22.obj',\n",
+       " '_name': 'week22',\n",
+       " '_timestamp': '2022-08-02T08:25:01',\n",
+       " '_resource': TriangleMesh with 330263 points and 485077 triangles.,\n",
+       " '_cartesianTransform': array([[ 1.        ,  0.        ,  0.        , 27.45802746],\n",
+       "        [ 0.        ,  1.        ,  0.        , 72.81697582],\n",
+       "        [ 0.        ,  0.        ,  1.        ,  4.60116236],\n",
+       "        [ 0.        ,  0.        ,  0.        ,  1.        ]])}"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "meshPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','MESH','week22.obj')\n",
+    "meshNode=MeshNode(path=meshPath,getResource=True)\n",
+    "\n",
+    "#serialize nodes\n",
+    "folder=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','MESH')\n",
+    "if not os.path.exists(folder):\n",
+    "    os.mkdir(folder)\n",
+    "graphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','MESH','meshGraph.ttl')\n",
+    "meshNode.to_graph(graphPath=graphPath,save=True)\n",
+    "{key:value for key, value in meshNode.__dict__.items() if not key.startswith('__') and not callable(key)}     "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### SessionNode\n",
+    "From the above nodes, a overarching session can be created. As such, 2 sessions are created, one for each meaurement epoch.\n",
+    "\n",
+    "**Note**: This analysis currently solely relies on a geometric evaluation. As such, there is no need for image processing.   "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "47\n",
+      "file:///session_week22\n"
+     ]
+    }
+   ],
+   "source": [
+    "linkedNodes=pcdNodes + [meshNode]\n",
+    "\n",
+    "week22=SessionNode(subject='session_week22', linkedNodes=linkedNodes)\n",
+    "print(len(week22.linkedNodes))\n",
+    "print(week22.subject)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "week22.save_resource(os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder'))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.4**: (red) orientedBoundingBoxes of the pcdNodes and the meshNode, (red cones) scaled img field-of-views and (green) convex hull of the sessionNode.\n",
+    "![rendering](../../pics/week22_session1.PNG)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 67,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "LineSet with 135 lines."
+      ]
+     },
+     "execution_count": 67,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pcdboxes=[n.get_oriented_bounding_box() for n in pcdNodes ]\n",
+    "for box in pcdboxes:\n",
+    "    box.color=[1,0,0]\n",
+    "\n",
+    "imggeometries=[n.get_mesh_geometry(depth=2) for n in imgNodes ]\n",
+    "[img.paint_uniform_color([1,0,0]) for img in imggeometries]\n",
+    "\n",
+    "meshbox=meshNode.get_oriented_bounding_box()\n",
+    "meshbox.color=[1,0,0]\n",
+    "\n",
+    "lineset1=o3d.geometry.LineSet.create_from_triangle_mesh(week22.resource)\n",
+    "lineset1.paint_uniform_color([0,1,0])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Now it is good practice to already serialize these nodes in a RDF graph so we can rapidly load the nodes from the graphs in a next run. The facilitate the datastructure, we will store the generated graph in the same location."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "@prefix e57: <http://libe57.org#> .\n",
+      "@prefix openlabel: <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#> .\n",
+      "@prefix v4d: <https://w3id.org/v4d/core#> .\n",
+      "\n",
+      "<file:///session_week22> a v4d:SessionNode ;\n",
+      "    e57:cartesianBounds \"\"\"[-52.61117755 125.37352753   2.92507553 165.88417048  -7.61820602\n",
+      "  53.73831177]\"\"\" ;\n",
+      "    e57:cartesianTransform \"\"\"[[ 1.          0.          0.         33.33256501]\n",
+      " [ 0.          1.          0.         76.57464619]\n",
+      " [ 0.          0.          1.         22.28746892]\n",
+      " [ 0.          0.          0.          1.        ]]\"\"\" ;\n",
+      "    v4d:linkedSubjects \"['file:///academiestraat_week_22_39', 'file:///academiestraat_week_22_38', 'file:///academiestraat_week_22_37', 'file:///academiestraat_week_22_36', 'file:///academiestraat_week_22_35', 'file:///academiestraat_week_22_34', 'file:///academiestraat_week_22_33', 'file:///academiestraat_week_22_31', 'file:///academiestraat_week_22_29', 'file:///academiestraat_week_22_28', 'file:///academiestraat_week_22_25', 'file:///academiestraat_week_22_24', 'file:///academiestraat_week_22_23', 'file:///academiestraat_week_22_22', 'file:///academiestraat_week_22_21', 'file:///academiestraat_week_22_20', 'file:///academiestraat_week_22_19', 'file:///academiestraat_week_22_18', 'file:///academiestraat_week_22_17', 'file:///academiestraat_week_22_16', 'file:///academiestraat_week_22_15', 'file:///academiestraat_week_22_14', 'file:///academiestraat_week_22_13', 'file:///academiestraat_week_22_12', 'file:///academiestraat_week_22_11', 'file:///academiestraat_week_22_10', 'file:///academiestraat_week_22_9', 'file:///academiestraat_week_22_8', 'file:///academiestraat_week_22_7', 'file:///academiestraat_week_22_6', 'file:///academiestraat_week_22_5', 'file:///academiestraat_week_22_3', 'file:///academiestraat_week_22_2', 'file:///academiestraat_week_22_1', 'file:///academiestraat_week_22b_13', 'file:///academiestraat_week_22b_12', 'file:///academiestraat_week_22b_11', 'file:///academiestraat_week_22b_10', 'file:///academiestraat_week_22b_9', 'file:///academiestraat_week_22b_8', 'file:///academiestraat_week_22b_7', 'file:///academiestraat_week_22b_6', 'file:///academiestraat_week_22b_5', 'file:///academiestraat_week_22b_3', 'file:///academiestraat_week_22b_2', 'file:///academiestraat_week_22b_1', 'file:///week22']\" ;\n",
+      "    v4d:name \"session_week22\" ;\n",
+      "    v4d:orientedBounds \"\"\"[[-44.86150601 163.75358449  66.14709087]\n",
+      " [134.36227138 147.52053539  72.20018649]\n",
+      " [-58.88269774   3.0278189   50.26458954]\n",
+      " [-41.65877793 170.94034329  -9.40797122]\n",
+      " [123.54380773  -6.01847141 -19.23737693]\n",
+      " [-55.67996966  10.21457769 -25.29047255]\n",
+      " [137.56499946 154.70729418  -3.3548756 ]\n",
+      " [120.34107965 -13.20523021  56.31768516]]\"\"\" ;\n",
+      "    v4d:path \"session_week22.ply\" ;\n",
+      "    openlabel:timestamp \"2022-08-31T14:07:41\" .\n",
+      "\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "graphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','sessionGraph.ttl')\n",
+    "week22.to_graph(graphPath=graphPath,save=True)\n",
+    "print(week22.graph.serialize())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Reloading from graph\n",
+    "Similar to the BIM preprocessing, the above steps only have to be performed once. On reruns of the code or future analysis, we can initialize the same nodes from their serialized triples. This is significantly faster for smaller graphs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "43\n"
+     ]
+    }
+   ],
+   "source": [
+    "sessionGraphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','sessionGraph.ttl')\n",
+    "week22=SessionNode(graphPath=sessionGraphPath,getResource=True)\n",
+    "\n",
+    "#get resourceGraphs\n",
+    "resourceGraph=Graph().parse(os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','IMG','imgGraph.ttl'))\n",
+    "resourceGraph+=Graph().parse(os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','MESH','meshGraph.ttl'))\n",
+    "resourceGraph+=Graph().parse(os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','PCD','pcdGraph.ttl'))\n",
+    "\n",
+    "week22.get_linked_nodes(resourceGraph=resourceGraph)\n",
+    "print(len(week22.linkedNodes))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 55,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'_e57Index': 2,\n",
+       " 'pointCount': 11965832,\n",
+       " 'e57XmlPath': None,\n",
+       " '_cartesianBounds': array([-11.26517105,  83.59384155,  23.63994217, 106.9466095 ,\n",
+       "          1.22087526,  51.38877487]),\n",
+       " '_orientedBounds': None,\n",
+       " '_orientedBoundingBox': None,\n",
+       " '_subject': rdflib.term.URIRef('file:///academiestraat_week_22_37'),\n",
+       " '_graph': <Graph identifier=N5f27d492d00a49d4af61547c0720e4fc (<class 'rdflib.graph.Graph'>)>,\n",
+       " '_graphPath': None,\n",
+       " '_path': 'C:\\\\Users\\\\u0094523\\\\Documents\\\\week 22 lidar_CC.e57',\n",
+       " '_name': 'academiestraat week 22 37',\n",
+       " '_timestamp': '2022-08-31T14:07:41',\n",
+       " '_resource': None,\n",
+       " '_cartesianTransform': array([[ 4.06433852e-01,  9.13346423e-01,  2.46948508e-02,\n",
+       "          2.95436743e+01],\n",
+       "        [-9.13380668e-01,  4.06844203e-01, -1.46133214e-02,\n",
+       "          6.62387305e+01],\n",
+       "        [-2.33939817e-02, -1.66164508e-02,  9.99588223e-01,\n",
+       "          4.85315968e+00],\n",
+       "        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,\n",
+       "          1.00000000e+00]]),\n",
+       " 'type': 'https://w3id.org/v4d/core#PointCloudNode'}"
+      ]
+     },
+     "execution_count": 55,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "{key:value for key, value in week22.linkedNodes[2].__dict__.items() if not key.startswith('__') and not callable(key)}              \n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Theoretical visibility week 22\n",
+    "To assess the coverage of each BIM object $n_i \\in N$, one first needs to determine the theoretical visibility per object $c_i$. The theoretical visibility $v_i \\in \\bold{V}$ per object is defined as the portion of the boundary surface area that does not collide with other BIM geometries. To this end, a point cloud per object $P_i \\in $ is sampled with a resolution of $0.1m$ after which the proximity of these points to the remaining BIM objects $N \\backslash n_i$ is evaluated.\n",
+    "\n",
+    "$$ P_{i'}=\\{ p_i|p_i \\in P_i,q_j \\in \\bold{P}\\backslash P_i : \\min (p_i -q_j) \\leq r \\} $$\n",
+    "\n",
+    "$$ v_i = \\frac{|P_{i'}|}{|P_i|}$$"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Compute theoretical visibility $v_i$ of BIMNodes\n",
+    "First, we gather the relevant reference and target geometries we wish to sample"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "3525\n",
+      "417\n",
+      "217\n"
+     ]
+    }
+   ],
+   "source": [
+    "bimGeometries=[n.resource for n in BIMNodes if n.resource]\n",
+    "print(len(bimGeometries))\n",
+    "ifcBeamNodes=[n for n in ifcBeamNodes if n.resource]\n",
+    "ifcBeamGeometries=[n.resource for n in ifcBeamNodes]\n",
+    "print(len(ifcBeamGeometries))\n",
+    "\n",
+    "ifcColumnNodes=[n for n in ifcColumnNodes if n.resource]\n",
+    "ifcColumnGeometries=[n.resource for n in ifcColumnNodes]\n",
+    "print(len(ifcColumnGeometries))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Next, we sample the visibile point clouds on the ifcBeam elements. The result is a set of point clouds and the percentage of the surface area that does not collide with other geometries."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.33598800133307477\n"
+     ]
+    }
+   ],
+   "source": [
+    "ifcBeamPointClouds, ifcBeamPercentages=gmu.create_visible_point_cloud_from_meshes(geometries=ifcBeamGeometries,references=bimGeometries,resolution=0.1)\n",
+    "print(np.average(np.asarray(ifcBeamPercentages)))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for i,n in enumerate(ifcBeamNodes):\n",
+    "    n.theoreticalVisibility=ifcBeamPercentages[i]\n",
+    "    n.visibilityPointCloud=ifcBeamPointClouds[i]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.5**: Example of filtered invisible points between overlapping mesh geometries (left) on IfcColumns and (right) on two adjacent IfcSlabs.\n",
+    "![rendering](../../pics/invisible_points.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**NOTE**: IfcBeam objects have a relavtively low theoretical visibility (avg. 33.7%). This is unsuprising as structural elements are generally among the most occluded elements, even in an IFC with only structural elements. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.47724370256813303\n"
+     ]
+    }
+   ],
+   "source": [
+    "ifcColumnPointClouds, ifcColumnPercentages=gmu.create_visible_point_cloud_from_meshes(geometries=ifcColumnGeometries,references=bimGeometries,resolution=0.1)\n",
+    "print(np.average(np.asarray(ifcColumnPercentages)))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for i,n in enumerate(ifcColumnNodes):\n",
+    "    n.theoreticalVisibility=ifcColumnPercentages[i]\n",
+    "    n.visibilityPointCloud=ifcColumnPointClouds[i]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The theoretical visibility for IfcColumns is significantly higher due to the foundations in the BIM (Fig.6).  "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.6**: Overview of the visible sampled IfcBeam (avg. 33.7% visibility) and IfcColumn (avg. 47.8% visibility) point clouds.  \n",
+    "![rendering](../../pics/visible_points.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Discard irrelevant or unobserved resourceNodes and bimNodes "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Before evaluating the geometries, we can optimize the computational process by filtering the inputs based on **three criteria**.\n",
+    "\n",
+    "**NOTE**: Most of these spatial filters can be purely performed based on metadata, and are therefore very efficient."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### (1) Discard BIMNodes with a low theoretical visibility\n",
+    "Objects with a low theoretical visibility $v_i\\leq 0.1$ should be discarded as these cannot be reliably observed. However, this is tricky since the thereotical visibility of the objects change during the construction process. It is therefore advised that the user querries the BIMNodes to match the project status i.e. querring on architecturally finished models in the strucural phase will heavily affect the theoretical visibility of the structural elements. Or not including ifc files or building storeys that weren't started yet.     "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "634\n",
+      "565\n",
+      "69\n"
+     ]
+    }
+   ],
+   "source": [
+    "targetBimNodes=ifcBeamNodes\n",
+    "targetBimNodes+=ifcColumnNodes\n",
+    "print(len(targetBimNodes))\n",
+    "\n",
+    "visibleBIMNodes=[n for n in targetBimNodes if n.theoreticalVisibility >=0.1]\n",
+    "print(len(visibleBIMNodes))\n",
+    "invisibleBIMNodes=[n for n in targetBimNodes if n.theoreticalVisibility <0.1]\n",
+    "print(len(invisibleBIMNodes))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Analysis 1** effectively reduces the BIMNode inputs by **avg. 10%** for both ifcClasses."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "However, this theoretical visibility is not unambiguous since **(1)** objects that aren't built can cause theoretical ooclusions, **(2)** the BIM database might contain some container geometries for elements such as beams and **(3)** some modeling mistakes or duplicates negatively impact the theoretical visibility **(Fig.7)**. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 78,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De ingang is ongeldig. \n",
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De ingang is ongeldig. \n",
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De aangevraagde overdrachtsbewerking wordt niet ondersteund. \n",
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De aangevraagde overdrachtsbewerking wordt niet ondersteund. \n",
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De ingang is ongeldig. \n",
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De aangevraagde overdrachtsbewerking wordt niet ondersteund. \n"
+     ]
+    }
+   ],
+   "source": [
+    "visibleBIMGeometries=[n.resource for n in visibleBIMNodes]\n",
+    "visible=gmu.join_geometries(visibleBIMGeometries)\n",
+    "visibleLineset=o3d.geometry.LineSet.create_from_triangle_mesh(visible).paint_uniform_color([0,1,0])\n",
+    "invisbleBIMGeometries=[n.resource for n in invisibleBIMNodes]\n",
+    "invisible=gmu.join_geometries(invisbleBIMGeometries)\n",
+    "invisibleLineset=o3d.geometry.LineSet.create_from_triangle_mesh(invisible).paint_uniform_color([1,0,0])\n",
+    "referenceGeometries=[n.resource for n in BIMNodes]\n",
+    "reference=gmu.join_geometries(referenceGeometries)\n",
+    "referenceLineset=o3d.geometry.LineSet.create_from_triangle_mesh(reference)\n",
+    "\n",
+    "o3d.visualization.draw_geometries([visibleLineset,invisibleLineset,referenceLineset,referencePcd])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.7**: Overview of the theoretical visibility errors (IfcBeam,IfcColumn): (Green) Nodes with $v_i>geq t_v$, (red) Nodes with $v_i\\leq t_v$ and (black) referenceNodes. \n",
+    "![rendering](../../pics/PoC5.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### (2) Check which BIM geometries fall within the session node\n",
+    "Objects that are not contained within the session geometries bounding box or lie at the boundary of the bounding box edge can be left out of the calculations. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "565\n",
+      "565\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(len(visibleBIMNodes))\n",
+    "visibleBIMGeometries=[n.resource for n in visibleBIMNodes]\n",
+    "indices=gmu.get_mesh_inliers(visibleBIMNodes,week22.resource)\n",
+    "visibleBIMNodes=[n for i,n in enumerate(visibleBIMNodes) if i in indices]\n",
+    "print(len(visibleBIMNodes))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Analysis 2** reveals that all the target BIMNodes in fact fall within scope of the session. This is mostly due to the photogrammetric mesh that spans the entire project. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### (3) Check which resources actually see the target BIM objects\n",
+    "Images, point clouds or meshes that don't in fact observe an object, or observe it merely at the very edge of their bounding box, can be ignored."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "47\n",
+      "47\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(len(week22.linkedNodes))\n",
+    "testBoxes=[n.get_oriented_bounding_box() for n in visibleBIMNodes]\n",
+    "boxes=[n.get_oriented_bounding_box() for n in week22.linkedNodes]\n",
+    "relevantResourceNodes=[]\n",
+    "for i, b in enumerate(boxes):\n",
+    "    if gmu.get_box_inliers(sourceBox=b, testBoxes=testBoxes,t_d=-2) is not None:\n",
+    "        relevantResourceNodes.append(week22.linkedNodes[i])\n",
+    "\n",
+    "print(len(relevantResourceNodes))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Analysis 3** reveals that all resources at least see some of the BIMNodes. As such, no resources can be discarded. This again is unsurprising as the beam and colums are spread throughout the project."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**NOTE**: In this case, two of the visibility checks did not reduce any resources or bimNodes. However, when dealing with larger projects or specific zones, immense computational advantages are to be gained while the entire analysis only takes about 3s to evaluate over 500 BIM elements and 736 resources representing over 13Gb of data."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Import geometries week 22"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#resourceGeometries=[n.get_resource() for n in relevantResourceNodes]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "This step is the slowest and most RAM demanding step at the actual data has to be loaded. \n",
+    "If left unattended, the above single-thread process would take around 20min and 25Gb of RAM to load in the 46 points clouds, 1 mesh and some 700 images. \n",
+    "\n",
+    "**Three key optimizations** are therefore impletemented:"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**(1) Schedule imports as multiple processes**: By parallel importing and processing the data, we can speed up the import around 6 times given 8 cores. o3d classes cannot be pickled on Windows causing the actual transfer from e57 to o3d to run on a single core. This is overcome by working only with np.arrays which speed up the entire process to 1.56min for 45 point clouds (10M points each) on a normal laptop. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[PointCloud with 6022116 points.,\n",
+       " PointCloud with 6045451 points.,\n",
+       " PointCloud with 5982916 points.,\n",
+       " PointCloud with 6027025 points.,\n",
+       " PointCloud with 6084855 points.,\n",
+       " PointCloud with 6001275 points.,\n",
+       " PointCloud with 6006175 points.,\n",
+       " PointCloud with 6027025 points.,\n",
+       " PointCloud with 5982916 points.,\n",
+       " PointCloud with 6006175 points.,\n",
+       " PointCloud with 5996376 points.,\n",
+       " PointCloud with 5996376 points.,\n",
+       " PointCloud with 5991480 points.,\n",
+       " PointCloud with 6022116 points.,\n",
+       " PointCloud with 5991480 points.,\n",
+       " PointCloud with 5968249 points.,\n",
+       " PointCloud with 5967027 points.,\n",
+       " PointCloud with 6035620 points.,\n",
+       " PointCloud with 6027025 points.,\n",
+       " PointCloud with 6006175 points.,\n",
+       " PointCloud with 6022116 points.,\n",
+       " PointCloud with 5967027 points.,\n",
+       " PointCloud with 5991480 points.,\n",
+       " PointCloud with 6066369 points.,\n",
+       " PointCloud with 5982916 points.,\n",
+       " PointCloud with 6007401 points.,\n",
+       " PointCloud with 6027025 points.,\n",
+       " PointCloud with 6022116 points.,\n",
+       " PointCloud with 6012304 points.,\n",
+       " PointCloud with 5987809 points.,\n",
+       " PointCloud with 6006175 points.,\n",
+       " PointCloud with 6022116 points.,\n",
+       " PointCloud with 6007401 points.,\n",
+       " PointCloud with 5991480 points.,\n",
+       " PointCloud with 5987809 points.,\n",
+       " PointCloud with 5991480 points.,\n",
+       " PointCloud with 6035620 points.,\n",
+       " PointCloud with 6056521 points.,\n",
+       " PointCloud with 6017209 points.,\n",
+       " PointCloud with 5982916 points.,\n",
+       " PointCloud with 6012304 points.,\n",
+       " PointCloud with 6007401 points.,\n",
+       " None]"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "week22.get_linked_resources_multiprocessing(percentage=0.5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**(2) Store data out of core**: We can create a backup of the downsampled data on drive and temporarily discard resources we don't need to free up computational resources "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "folder=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','resources')\n",
+    "if not os.path.exists(folder):\n",
+    "    os.mkdir(folder)\n",
+    "week22.save_linked_resources(folder)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\myAnalysisFolder\\resources\\academiestraat week 22 39.pcd\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(week22.linkedNodes[0].path)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**(3) Downsample and discard the data**: By downsampling and discarding the data, and only storing in memory the downsampled data for our analyis, we can significantly reduce the memory demands for the application. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for n in week22:\n",
+    "    del n.resource"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Compute Percentage-of-Completion week 22\n",
+    "Once the actual resources and BIMNodes, that are valid for the analysis, have been determined, we can asses the built status of each object.\n",
+    "\n",
+    "To this end, we compute the Euclidean distance between the geometries in the session and the BIMNodes.\n",
+    "\n",
+    "**First**, we sample all resources given a 0.1m resolution."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "42\n"
+     ]
+    }
+   ],
+   "source": [
+    "pcds=[n.resource for n in week22.linkedNodes if 'PointCloud' in str(type(n.resource))]\n",
+    "meshes=[n.resource for n in week22.linkedNodes if 'TriangleMesh' in str(type(n.resource))]\n",
+    "resolution=0.1\n",
+    "for mesh in meshes:\n",
+    "    area=mesh.get_surface_area()\n",
+    "    number_of_points=int(area/(resolution*resolution))\n",
+    "    pcds.append(mesh.sample_points_uniformly(number_of_points))\n",
+    "print(len(pcds))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "2611051\n"
+     ]
+    }
+   ],
+   "source": [
+    "referencePcd=gmu.join_geometries(pcds)\n",
+    "referencePcd=referencePcd.voxel_down_sample(resolution)\n",
+    "print(len(referencePcd.points))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Next**, we determine the percentage of inliers for each BIMGeometry compared to the reference point clouds"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "565\n",
+      "0.14618431693127287\n"
+     ]
+    }
+   ],
+   "source": [
+    "visibleBIMGeometries=[n.resource for n in visibleBIMNodes]\n",
+    "percentages=gmu.determine_percentage_of_coverage(sources=visibleBIMGeometries,reference=referencePcd,threshold=resolution)\n",
+    "print(len(percentages))\n",
+    "print(np.average(np.asarray(percentages)))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "On average the observed percentage of the objects is 14.6%, which is rather low. **Finally**, the observed percentage per object is compared to its theoretical visibility to asses whether an object is constructed or not given a threshold $t_v$. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.39664788858215816\n"
+     ]
+    }
+   ],
+   "source": [
+    "PoC=[None]*len(visibleBIMNodes)\n",
+    "for i, n in enumerate(visibleBIMNodes):\n",
+    "    PoC[i]=percentages[i]/n.theoreticalVisibility\n",
+    "    n.PoC=PoC[i]\n",
+    "print(np.average(np.asarray(PoC)))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Which reveals that the Percentage-of-Completion, i.e. the ratio of the observed surface area over the theoretically visibility is on average 39.6%.\n",
+    "\n",
+    "$$ c_i = \\frac{|P_{i'}|}{|P_i|}$$\n",
+    "\n",
+    "$$ constructed = \\frac{|P_{i'}|}{|P_i|} \\geq t_v$$\n",
+    "\n",
+    "with $t_v$ set to 50% so if atleast half an objects' visible surface is seen, it is considered built.  "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "126\n",
+      "439\n",
+      "0\n"
+     ]
+    }
+   ],
+   "source": [
+    "constructedBIMGeometries=[n.resource.paint_uniform_color([0,1,0]) for n in visibleBIMNodes if n.PoC>=0.5]\n",
+    "print(len(constructedBIMGeometries))\n",
+    "unconstructedBIMGeometries=[n.resource for n in visibleBIMNodes if n.PoC<0.5]\n",
+    "print(len(unconstructedBIMGeometries))\n",
+    "invisibleBIMGeometries=[n.resource.paint_uniform_color([1,0,0]) for n in visibleBIMNodes if n.theoreticalVisibility<=0.1]\n",
+    "print(len(invisibleBIMGeometries))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "|invisibleBIMGeometries| is obviously 0 as these were filtered out before the analysis started."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 72,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De ingang is ongeldig. \n"
+     ]
+    }
+   ],
+   "source": [
+    "constructed=gmu.join_geometries(constructedBIMGeometries)\n",
+    "unconstructed=gmu.join_geometries(unconstructedBIMGeometries)\n",
+    "o3d.visualization.draw_geometries([constructed,unconstructed,referencePcd])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.8**: Overview of the construction state of the BIM Elements(ifcBeam,ifcColumn) (avg.39.6% PoC): (Green) Constructed elements with $PoC\\geq t_v$ (grey) Unconstructed/unseen elements with $PoC\\leq t_v$\n",
+    "![rendering](../../pics/PoC3.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "However, similar to the theoretical visibility, there are some shortcommings to this method. (1) Nearby constructed objects will increase point inliers on the object, (2) noise, ghosting and clutter will increase point inliers, (3) the point inliers do not necesserily indicate the proper built state since formwork will also show significant point inliers and (4) occlusions cause significant false negatives. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 73,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De ingang is ongeldig. \n",
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De ingang is ongeldig. \n",
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De ingang is ongeldig. \n",
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De ingang is ongeldig. \n",
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De aangevraagde overdrachtsbewerking wordt niet ondersteund. \n",
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De aangevraagde overdrachtsbewerking wordt niet ondersteund. \n"
+     ]
+    }
+   ],
+   "source": [
+    "lineset1=o3d.geometry.LineSet.create_from_triangle_mesh(constructed)\n",
+    "lineset1.paint_uniform_color([0,1,0])\n",
+    "o3d.visualization.draw_geometries([lineset1,unconstructed,referencePcd])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.9**: Overview of the Poc (inlier method) shortcommings: Example outliers due to noise, nearby constructed elements and auxiliry structures.\n",
+    "![rendering](../../pics/PoC4.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Serialize results week 22\n",
+    "Dispite some shortcommings, the majority of 126 of the 565 were correctly identified as being built. To build a reliable progress monitoring tool, one should be able to store the PoC results of week 22 and reuse the observations in the week 34 analysis. \n",
+    "\n",
+    "To this end, we serialize the results in an **analysis graph**. Concretely, the PoC, theoretical visibility and used parameters are used per object"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "@prefix omg: <https://w3id.org/omg#> .\n",
+      "@prefix v4d: <https://w3id.org/v4d/core#> .\n",
+      "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n",
+      "\n",
+      "<file:///282_SF_f2_Foundation-Rectangular_40_130_998270_3tZF_AuZDAYQfVfU1ic86_> a v4d:BIMNode ;\n",
+      "    omg:isDerivedFromGeometry \"file:///session_week22\" ;\n",
+      "    v4d:analysisTimestamp \"2022-08-31T14:07:41\" ;\n",
+      "    v4d:offsetDistanceCalculation \"0.1\"^^xsd:float ;\n",
+      "    v4d:percentageOfCompletion \"0.0\"^^xsd:float ;\n",
+      "    v4d:theoreticalVisibility \"0.2384180790960452\"^^xsd:float .\n",
+      "\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "analysisNodes=[]\n",
+    "for node in visibleBIMNodes:\n",
+    "    analysisNodes.append(BIMNode(subject=node.subject,\n",
+    "                            percentageOfCompletion=node.PoC,\n",
+    "                            theoreticalVisibility=node.theoreticalVisibility,\n",
+    "                            isDerivedFromGeometry=week22.subject,\n",
+    "                            offsetDistanceCalculation=resolution,\n",
+    "                            analysisTimestamp=week22.timestamp))\n",
+    "print(analysisNodes[0].to_graph().serialize())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Graph identifier=N3cb94120e2f94d23b14216fd5bd4d6b3 (<class 'rdflib.graph.Graph'>)>"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "analysisGraphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','week22analysisGraph.ttl')\n",
+    "tl.nodes_to_graph(analysisNodes,graphPath=analysisGraphPath,save=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Analysis week 34\n",
+    "The progress estimation in week 34 slightly differs from week 22. In week 34, we do not only have a new set of measurements that we can process. We also have the analysis of week 22 on which we can built. For instance, the theoretical visibility of the BIMNodes is the same, since both measurement epochs are part of the same structure Phase. "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Preprocess measurements week 34\n",
+    "First, we preprocess the measurements of week 34 as a sessionNode much like week 22.  "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "1. **E57 POINT CLOUDS**: These nodes from the e57 header instead of actually importing the data so a first spatial analysis can be conducted effeciently"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "19\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "{'_e57Index': 0,\n",
+       " 'pointCount': 6414743,\n",
+       " 'e57XmlPath': None,\n",
+       " '_cartesianBounds': None,\n",
+       " '_orientedBounds': None,\n",
+       " '_orientedBoundingBox': None,\n",
+       " '_subject': rdflib.term.URIRef('file:///academiestraat_22_week_34_1'),\n",
+       " '_graph': <Graph identifier=N21c459e5807745f8a4c94d62c96a9842 (<class 'rdflib.graph.Graph'>)>,\n",
+       " '_graphPath': 'd:\\\\Scan-to-BIM repository\\\\geomapi\\\\test\\\\testfiles\\\\myAnalysisFolder34\\\\PCD\\\\pcdGraph.ttl',\n",
+       " '_path': 'C:\\\\Users\\\\u0094523\\\\Documents\\\\week 34\\\\week34_lidar_georef.e57',\n",
+       " '_name': 'academiestraat 22 week 34 1',\n",
+       " '_timestamp': '2022-09-08T09:01:15',\n",
+       " '_resource': None,\n",
+       " '_cartesianTransform': array([[-1.23740218e-01,  9.92220428e-01,  1.36740747e-02,\n",
+       "          3.19596119e+01],\n",
+       "        [-9.92016441e-01, -1.24029090e-01,  2.28071432e-02,\n",
+       "          9.12885202e+01],\n",
+       "        [ 2.43256965e-02, -1.07427460e-02,  9.99646364e-01,\n",
+       "          4.76666118e+00],\n",
+       "        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,\n",
+       "          1.00000000e+00]])}"
+      ]
+     },
+     "execution_count": 22,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "e57Path=os.path.join(\"C:\\\\Users\\\\u0094523\\\\Documents\\\\week 34\\\\week34_lidar_georef.e57\")\n",
+    "\n",
+    "pcdNodes=tl.e57header_to_nodes(e57Path)\n",
+    "print(len(pcdNodes))\n",
+    "\n",
+    "#serialize nodes\n",
+    "folder=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34','PCD')\n",
+    "if not os.path.exists(folder):\n",
+    "    os.mkdir(folder)\n",
+    "graphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34','PCD','pcdGraph.ttl')\n",
+    "tl.nodes_to_graph(nodelist=pcdNodes,graphPath=graphPath,save=True)\n",
+    "{key:value for key, value in pcdNodes[0].__dict__.items() if not key.startswith('__') and not callable(key)}              "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "2. **Photogrammetric mesh**: Mesh files have no metadata headers so the data has to be loaded by GEOMAPI. However, to save memory (and to illustrate the non-data functionality), we will discard the data as soon as the relevant metadata is extracted."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'pointCount': 4190251,\n",
+       " 'faceCount': 7685546,\n",
+       " '_cartesianBounds': array([-21.60602379,  66.36610413,  42.44333649, 124.37586212,\n",
+       "         -2.55043411,  18.72565842]),\n",
+       " '_orientedBounds': array([[ 3.09926970e+00,  1.52927627e+02,  2.09918935e+01],\n",
+       "        [ 8.99627806e+01,  1.10374726e+02,  2.21682241e+01],\n",
+       "        [-3.75260534e+01,  6.98601741e+01,  1.59738496e+01],\n",
+       "        [ 3.87313645e+00,  1.53892566e+02, -1.24658549e+00],\n",
+       "        [ 5.01113242e+01,  2.82722128e+01, -5.08829878e+00],\n",
+       "        [-3.67521867e+01,  7.08251137e+01, -6.26462934e+00],\n",
+       "        [ 9.07366473e+01,  1.11339665e+02, -7.02549240e-02],\n",
+       "        [ 4.93374575e+01,  2.73072732e+01,  1.71501802e+01]]),\n",
+       " '_orientedBoundingBox': OrientedBoundingBox: center: (26.6053, 90.5999, 7.9518), extent: 96.7337, 92.6056, 22.2729),\n",
+       " '_subject': rdflib.term.URIRef('file:///week34'),\n",
+       " '_graph': <Graph identifier=Ne1fea37da8794b198e678d92a6260dd6 (<class 'rdflib.graph.Graph'>)>,\n",
+       " '_graphPath': 'd:\\\\Scan-to-BIM repository\\\\geomapi\\\\test\\\\testfiles\\\\myAnalysisFolder34\\\\MESH\\\\meshGraph.ttl',\n",
+       " '_path': 'C:\\\\Users\\\\u0094523\\\\Documents\\\\week 34\\\\week34.obj',\n",
+       " '_name': 'week34',\n",
+       " '_timestamp': '2022-09-07T09:22:50',\n",
+       " '_resource': TriangleMesh with 4190251 points and 7685546 triangles.,\n",
+       " '_cartesianTransform': array([[ 1.        ,  0.        ,  0.        , 13.07415467],\n",
+       "        [ 0.        ,  1.        ,  0.        , 78.13979001],\n",
+       "        [ 0.        ,  0.        ,  1.        ,  5.22154457],\n",
+       "        [ 0.        ,  0.        ,  0.        ,  1.        ]])}"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "meshPath=os.path.join(\"C:\\\\Users\\\\u0094523\\\\Documents\\\\week 34\\\\week34.obj\")\n",
+    "meshNode=MeshNode(path=meshPath,getResource=True)\n",
+    "\n",
+    "#serialize nodes\n",
+    "folder=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34','MESH')\n",
+    "if not os.path.exists(folder):\n",
+    "    os.mkdir(folder)\n",
+    "graphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34','MESH','meshGraph.ttl')\n",
+    "meshNode.to_graph(graphPath=graphPath,save=True)\n",
+    "{key:value for key, value in meshNode.__dict__.items() if not key.startswith('__') and not callable(key)}     "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### SessionNode\n",
+    "From the above nodes, a overarching session can be created. As such, 2 sessions are created, one for each meaurement epoch."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "20\n",
+      "file:///session_week34\n"
+     ]
+    }
+   ],
+   "source": [
+    "linkedNodes=pcdNodes + [meshNode]\n",
+    "\n",
+    "week34=SessionNode(subject='session_week34', linkedNodes=linkedNodes)\n",
+    "print(len(week34.linkedNodes))\n",
+    "print(week34.subject)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "week34.save_resource(os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34'))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 96,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pcdboxes=[n.get_oriented_bounding_box() for n in pcdNodes ]\n",
+    "for box in pcdboxes:\n",
+    "    box.color=[1,0,0]\n",
+    "\n",
+    "meshbox=meshNode.get_oriented_bounding_box()\n",
+    "meshbox.color=[1,0,0]\n",
+    "\n",
+    "lineset=o3d.geometry.LineSet.create_from_triangle_mesh(week34.resource)\n",
+    "lineset.paint_uniform_color([0,1,0])\n",
+    "o3d.visualization.draw_geometries(pcdboxes+[meshbox]+[lineset]+[meshNode.resource])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.10**: (red) orientedBoundingBoxes of the pcdNodes and the meshNode and (green) convex hull of the week 34 sessionNode.\n",
+    "![rendering](../../pics/week34_session1a.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**NOTE**: This specific AUTODESK RECAP does not contain cartesianBounds information. As such, placeholder boundingbboxes are generated untill the actual data is loaded. In this case, the convex hull of the session is equal to the orientedBounding box of the mesh."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "We can also store this convex hull as the sessionNode's resource."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 25,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "week34.save_resource(os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34'))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Now it is good practice to already serialize these nodes in a RDF graph so we can rapidly load the nodes from the graphs in a next run. The facilitate the datastructure, we will store the generated graph in the same location."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "@prefix e57: <http://libe57.org#> .\n",
+      "@prefix openlabel: <https://www.asam.net/index.php?eID=dumpFile&t=f&f=3876&token=413e8c85031ae64cc35cf42d0768627514868b2f#> .\n",
+      "@prefix v4d: <https://w3id.org/v4d/core#> .\n",
+      "\n",
+      "<file:///session_week34> a v4d:SessionNode ;\n",
+      "    e57:cartesianBounds \"\"\"[-37.52605343  90.73664735  27.30727318 153.89256624  -6.26462934\n",
+      "  22.16822407]\"\"\" ;\n",
+      "    e57:cartesianTransform \"\"\"[[ 1.          0.          0.          5.71003444]\n",
+      " [ 0.          1.          0.         84.3190585 ]\n",
+      " [ 0.          0.          1.          5.43533838]\n",
+      " [ 0.          0.          0.          1.        ]]\"\"\" ;\n",
+      "    v4d:linkedSubjects \"['file:///academiestraat_22_week_34_1', 'file:///academiestraat_22_week_34_2', 'file:///academiestraat_22_week_34_4', 'file:///academiestraat_22_week_34_5', 'file:///academiestraat_22_week_34_6', 'file:///academiestraat_22_week_34_7', 'file:///academiestraat_22_week_34_8', 'file:///academiestraat_22_week_34_9', 'file:///academiestraat_22_week_34_10', 'file:///academiestraat_22_week_34_11', 'file:///academiestraat_22_week_34_12', 'file:///academiestraat_22_week_34_13', 'file:///academiestraat_22_week_34_16', 'file:///academiestraat_22_week_34_19', 'file:///academiestraat_22_week_34_20', 'file:///academiestraat_22_week_34_21', 'file:///academiestraat_22_week_34_22', 'file:///academiestraat_22_week_34_23', 'file:///academiestraat_22_week_34_24', 'file:///week34']\" ;\n",
+      "    v4d:name \"session_week34\" ;\n",
+      "    v4d:orientedBounds \"\"\"[[ 3.09926970e+00  1.52927627e+02  2.09918935e+01]\n",
+      " [ 8.99627806e+01  1.10374726e+02  2.21682241e+01]\n",
+      " [-3.75260534e+01  6.98601741e+01  1.59738496e+01]\n",
+      " [ 3.87313645e+00  1.53892566e+02 -1.24658549e+00]\n",
+      " [ 5.01113242e+01  2.82722128e+01 -5.08829878e+00]\n",
+      " [-3.67521867e+01  7.08251137e+01 -6.26462934e+00]\n",
+      " [ 9.07366473e+01  1.11339665e+02 -7.02549240e-02]\n",
+      " [ 4.93374575e+01  2.73072732e+01  1.71501802e+01]]\"\"\" ;\n",
+      "    v4d:path \"session_week34.ply\" ;\n",
+      "    openlabel:timestamp \"2022-09-08T09:01:15\" .\n",
+      "\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "graphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34','sessionGraph.ttl')\n",
+    "week34.to_graph(graphPath=graphPath,save=True)\n",
+    "print(week34.graph.serialize())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Reloading from graph\n",
+    "Similar to the BIM preprocessing, the above steps only have to be performed once. On reruns of the code or future analysis, we can initialize the same nodes from their serialized triples. This is significantly faster for smaller graphs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "20\n"
+     ]
+    }
+   ],
+   "source": [
+    "sessionGraphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34','sessionGraph.ttl')\n",
+    "week34=SessionNode(graphPath=sessionGraphPath,getResource=True)\n",
+    "\n",
+    "#get resourceGraphs\n",
+    "resourceGraph=Graph().parse(os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34','MESH','meshGraph.ttl'))\n",
+    "resourceGraph+=Graph().parse(os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34','PCD','pcdGraph.ttl'))\n",
+    "\n",
+    "week34.get_linked_nodes(resourceGraph=resourceGraph)\n",
+    "print(len(week34.linkedNodes))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 107,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'_e57Index': 2,\n",
+       " 'pointCount': 11965832,\n",
+       " 'e57XmlPath': None,\n",
+       " '_cartesianBounds': array([-11.26517105,  83.59384155,  23.63994217, 106.9466095 ,\n",
+       "          1.22087526,  51.38877487]),\n",
+       " '_orientedBounds': None,\n",
+       " '_orientedBoundingBox': None,\n",
+       " '_subject': rdflib.term.URIRef('file:///academiestraat_week_22_37'),\n",
+       " '_graph': <Graph identifier=N996a20535b4b4a5a9cf2fdfacd926e74 (<class 'rdflib.graph.Graph'>)>,\n",
+       " '_graphPath': None,\n",
+       " '_path': 'C:\\\\Users\\\\u0094523\\\\Documents\\\\week 22 lidar_CC.e57',\n",
+       " '_name': 'academiestraat week 22 37',\n",
+       " '_timestamp': '2022-08-31T14:07:41',\n",
+       " '_resource': None,\n",
+       " '_cartesianTransform': array([[ 4.06433852e-01,  9.13346423e-01,  2.46948508e-02,\n",
+       "          2.95436743e+01],\n",
+       "        [-9.13380668e-01,  4.06844203e-01, -1.46133214e-02,\n",
+       "          6.62387305e+01],\n",
+       "        [-2.33939817e-02, -1.66164508e-02,  9.99588223e-01,\n",
+       "          4.85315968e+00],\n",
+       "        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,\n",
+       "          1.00000000e+00]]),\n",
+       " 'type': 'https://w3id.org/v4d/core#PointCloudNode'}"
+      ]
+     },
+     "execution_count": 107,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "{key:value for key, value in week34.linkedNodes[2].__dict__.items() if not key.startswith('__') and not callable(key)}              "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Theoretical visibility week 34\n",
+    "We assume the theoretical visibility to be unchanged from week 22. As such, we can just reuse the bimGraph and combine it with the analysisGraph from week 22.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "42336\n",
+      "3390\n"
+     ]
+    }
+   ],
+   "source": [
+    "bimGraphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','BIM','bimGraph.ttl')\n",
+    "bimGraph=Graph().parse(bimGraphPath)\n",
+    "print(len(bimGraph))\n",
+    "analysisGraph=Graph().parse(os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','week22analysisGraph.ttl'))\n",
+    "print(len(analysisGraph))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "To reduce the number of parsed elements (up from 3528), we retain only the subjects with ifcBeam and ifcColumn classnames which are contained within the intersection of both graphs."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "9605\n"
+     ]
+    }
+   ],
+   "source": [
+    "intersectionGraph=ut.get_graph_intersection([bimGraph,analysisGraph])\n",
+    "print(len(intersectionGraph))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "In addition to the intersectionGraph, the bimGraphPath should also be provided to complete the resource paths."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "565\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "{'_ifcPath': 'd:\\\\Scan-to-BIM repository\\\\geomapi\\\\test\\\\testfiles\\\\myAnalysisFolder\\\\IFC\\\\Academiestraat_parking.ifc',\n",
+       " '_globalId': '3ImCzVI6P6UeXNJl2tafTA',\n",
+       " '_cartesianBounds': array([32.83716386, 33.07297889, 93.90500251, 95.40825674,  6.99      ,\n",
+       "         7.49      ]),\n",
+       " '_orientedBounds': array([[33.07297889, 95.40347025,  6.99      ],\n",
+       "        [33.03710657, 93.90500251,  6.99      ],\n",
+       "        [33.07297889, 95.40347025,  7.49      ],\n",
+       "        [32.87303617, 95.40825674,  6.99      ],\n",
+       "        [32.83716386, 93.90978901,  7.49      ],\n",
+       "        [32.87303617, 95.40825674,  7.49      ],\n",
+       "        [32.83716386, 93.90978901,  6.99      ],\n",
+       "        [33.03710657, 93.90500251,  7.49      ]]),\n",
+       " '_orientedBoundingBox': OrientedBoundingBox: center: (32.9551, 94.6566, 7.24), extent: 1.4989, 0.5, 0.2),\n",
+       " '_subject': rdflib.term.URIRef('file:///282_SF_f2_Rectangular_20_50_1032696_3ImCzVI6P6UeXNJl2tafTA'),\n",
+       " '_graph': <Graph identifier=Nae34111d44684290ac74c87646ff75c3 (<class 'rdflib.graph.Graph'>)>,\n",
+       " '_graphPath': 'd:\\\\Scan-to-BIM repository\\\\geomapi\\\\test\\\\testfiles\\\\myAnalysisFolder\\\\BIM\\\\bimGraph.ttl',\n",
+       " '_path': 'd:\\\\Scan-to-BIM repository\\\\geomapi\\\\test\\\\testfiles\\\\myAnalysisFolder\\\\BIM\\\\282_SF_f2_Rectangular_20_50_1032696_3ImCzVI6P6UeXNJl2tafTA.ply',\n",
+       " '_name': '282_SF_f2_Rectangular:20/50:1032696',\n",
+       " '_timestamp': '2022-08-24T09:33:45',\n",
+       " '_resource': TriangleMesh with 12 points and 12 triangles.,\n",
+       " '_cartesianTransform': array([[ 1.        ,  0.        ,  0.        , 32.94909265],\n",
+       "        [ 0.        ,  1.        ,  0.        , 94.40688501],\n",
+       "        [ 0.        ,  0.        ,  1.        ,  7.24      ],\n",
+       "        [ 0.        ,  0.        ,  0.        ,  1.        ]]),\n",
+       " 'faceCount': 12,\n",
+       " 'pointCount': 12,\n",
+       " 'className': 'IfcBeam',\n",
+       " 'percentageOfCompletion': 0.0,\n",
+       " 'offsetDistanceCalculation': 0.1,\n",
+       " 'isDerivedFromGeometry': 'file:///session_week22',\n",
+       " 'theoreticalVisibility': 0.28448275862068967,\n",
+       " 'analysisTimestamp': '2022-08-31T14:07:41',\n",
+       " 'type': 'https://w3id.org/v4d/core#BIMNode'}"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "visibleBIMNodes=tl.graph_to_nodes(graph=intersectionGraph,graphPath=bimGraphPath,getResource=True)\n",
+    "print(len(visibleBIMNodes))\n",
+    "{key:value for key, value in visibleBIMNodes[2].__dict__.items() if not key.startswith('__') and not callable(key)}                  "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Import geometries week 34\n",
+    "In the analysis of week 22, no reduction was achieved by the preliminary checks on the remote sensing data. As such, we will forego these checks in week 34 since a similar effect is expected. This is confirmed by Fig.X where the bounding boxes cover the entire construction site."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "[PointCloud with 3207371 points.,\n",
+       " PointCloud with 3083122 points.,\n",
+       " PointCloud with 4399131 points.,\n",
+       " PointCloud with 2797306 points.,\n",
+       " PointCloud with 3068398 points.,\n",
+       " PointCloud with 3373537 points.,\n",
+       " PointCloud with 3595908 points.,\n",
+       " PointCloud with 3423975 points.,\n",
+       " PointCloud with 3476483 points.,\n",
+       " PointCloud with 3763683 points.,\n",
+       " PointCloud with 3546451 points.,\n",
+       " PointCloud with 4573729 points.,\n",
+       " PointCloud with 4764464 points.,\n",
+       " PointCloud with 3503286 points.,\n",
+       " PointCloud with 4602058 points.,\n",
+       " PointCloud with 2933539 points.,\n",
+       " PointCloud with 3455878 points.,\n",
+       " PointCloud with 3913517 points.,\n",
+       " PointCloud with 3207336 points.,\n",
+       " TriangleMesh with 4190251 points and 7685546 triangles.]"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "week34.get_linked_resources_multiprocessing(percentage=0.5)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Compute Percentage-of-Completion week 34\n",
+    "Simimlar to week 22, we first calculate the Percentage-of-Completion solely based on the observations of week 34.\n",
+    "\n",
+    "To this end, we compute the Euclidean distance between the geometries in the session and the BIMNodes.\n",
+    "\n",
+    "**First**, we sample all resources given a 0.1m resolution."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "20\n"
+     ]
+    }
+   ],
+   "source": [
+    "pcds=[n.resource for n in week34.linkedNodes if 'PointCloud' in str(type(n.resource))]\n",
+    "meshes=[n.resource for n in week34.linkedNodes if 'TriangleMesh' in str(type(n.resource))]\n",
+    "resolution=0.1\n",
+    "for mesh in meshes:\n",
+    "    area=mesh.get_surface_area()\n",
+    "    number_of_points=int(area/(resolution*resolution))\n",
+    "    pcds.append(mesh.sample_points_uniformly(number_of_points))\n",
+    "print(len(pcds))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "1497147\n"
+     ]
+    }
+   ],
+   "source": [
+    "referencePcd=gmu.join_geometries(pcds)\n",
+    "referencePcd=referencePcd.voxel_down_sample(resolution)\n",
+    "print(len(referencePcd.points))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Next**, we determine the percentage of inliers for each BIMGeometry compared to the reference point clouds"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "565\n",
+      "0.12657436250950596\n"
+     ]
+    }
+   ],
+   "source": [
+    "targetBimGeometries=[n.resource for n in visibleBIMNodes]\n",
+    "percentages=gmu.determine_percentage_of_coverage(sources=targetBimGeometries,reference=referencePcd,threshold=resolution)\n",
+    "print(len(percentages))\n",
+    "print(np.average(np.asarray(percentages)))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "On average the observed percentage of the objects is 12.5%, which is in line with week 22 (14.5%). When compared to its theoretical visibility, we get the following result."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "0.3778340465226297\n"
+     ]
+    }
+   ],
+   "source": [
+    "PoC=[None]*len(visibleBIMNodes)\n",
+    "for i, n in enumerate(visibleBIMNodes):\n",
+    "    PoC[i]=percentages[i]/n.theoreticalVisibility\n",
+    "    n.PoC=PoC[i]\n",
+    "print(np.average(np.asarray(PoC)))"
+   ]
+  },
+  {
+   "attachments": {},
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Which reveals that the Percentage-of-Completion (PoC), i.e. the ratio of the observed surface area over the theoretically visibility is on average **37.8%**. \n",
+    "\n",
+    "**Note**: the PoC can exceed 1.0 in some cases. This is due to \n",
+    "\n",
+    "1. The search distance of the inliers, which can report false positives on hidden points that fall within the ditance treshhotl.\n",
+    "2.  An underestimation of theoretical visibility as it was computed on the full model. \n",
+    "\n",
+    "Overall, the PoC is similar to week 22. This does not impy no progress is to be reported. Instead, the PoC depends on the scope of the session and the work progression."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "107\n",
+      "458\n"
+     ]
+    }
+   ],
+   "source": [
+    "constructedBIMGeometries=[n.resource.paint_uniform_color([0,1,0]) for n in visibleBIMNodes if n.PoC>=0.5]\n",
+    "print(len(constructedBIMGeometries))\n",
+    "unconstructedBIMGeometries=[n.resource for n in visibleBIMNodes if n.PoC<0.5]\n",
+    "print(len(unconstructedBIMGeometries))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De ingang is ongeldig. \n"
+     ]
+    }
+   ],
+   "source": [
+    "visible=gmu.join_geometries(constructedBIMGeometries)\n",
+    "invisible=gmu.join_geometries(unconstructedBIMGeometries)\n",
+    "o3d.visualization.draw_geometries([visible,invisible,referencePcd])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Serialize results week 34\n",
+    "However, when serializing these results, it is revealed that only 136 of the 656 objects are constructed in week 34 in contrast to 143 objects in week22. This can have a multitude of reasons including **(1)** occluded elements by work progression, **(2)** remote sensing data taking in different locations and **(3)** noise and errors in the distance evaluation. \n",
+    "\n",
+    "**First**, we serialize the results in a second **analysis graph** after which we will compare the progress between both weeks."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "@prefix omg: <https://w3id.org/omg#> .\n",
+      "@prefix v4d: <https://w3id.org/v4d/core#> .\n",
+      "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n",
+      "\n",
+      "<file:///282_SC_f2_Rectangular_30_50#C40_50_967685_31ITCLLef6cxVKsJ1O6Z0P> a v4d:BIMNode ;\n",
+      "    omg:isDerivedFromGeometry \"file:///session_week34\" ;\n",
+      "    v4d:analysisTimestamp \"2022-09-08T09:01:15\" ;\n",
+      "    v4d:offsetDistanceCalculation \"0.1\"^^xsd:float ;\n",
+      "    v4d:percentageOfCompletion \"2.136394069823051\"^^xsd:float ;\n",
+      "    v4d:theoreticalVisibility \"0.3203125\"^^xsd:float .\n",
+      "\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "analysisNodes=[]\n",
+    "for node in visibleBIMNodes:\n",
+    "    analysisNodes.append(BIMNode(subject=node.subject,\n",
+    "                            percentageOfCompletion=node.PoC,\n",
+    "                            theoreticalVisibility=node.theoreticalVisibility,\n",
+    "                            isDerivedFromGeometry=week34.subject,\n",
+    "                            offsetDistanceCalculation=resolution,\n",
+    "                            analysisTimestamp=week34.timestamp))\n",
+    "print(analysisNodes[0].to_graph().serialize())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Graph identifier=N1538a1baff2c4310a3279dc89c159bcd (<class 'rdflib.graph.Graph'>)>"
+      ]
+     },
+     "execution_count": 24,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "analysisGraphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34','week34analysisGraph.ttl')\n",
+    "tl.nodes_to_graph(analysisNodes,graphPath=analysisGraphPath,save=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Compare changes between week 22 and week 34\n",
+    "A crucial aspect of GEOMAPI is its ability to store and use analyses results in subsequent analysis. We already benefitted from the semantic web technologies by serializing the theoretical visibility, which lowered the computational cost for any future analysis. Now, we will also look whether the analysis results can be improved."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**First**, let's determine the changes between both data sets. Ideally, all objects from week 22 are also constructed in week 34 and more. To this end, we querry both analysis graphs"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 25,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "analysisGraph22=Graph().parse(os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','week22analysisGraph.ttl'))\n",
+    "analysisGraph34=Graph().parse(os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder34','week34analysisGraph.ttl'))\n",
+    "bimGraphPath=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','myAnalysisFolder','BIM','bimGraph.ttl')\n",
+    "bimGraph=Graph().parse(bimGraphPath)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "418\n",
+      "40\n",
+      "86\n",
+      "21\n"
+     ]
+    }
+   ],
+   "source": [
+    "v4d=rdflib.Namespace('https://w3id.org/v4d/core#')\n",
+    "intersectionGraph=analysisGraph22 & bimGraph\n",
+    "t_v=0.5\n",
+    "subjectsUnconstructed=[]\n",
+    "subjectsInWeek22=[]\n",
+    "subjectsInWeek22and34=[]\n",
+    "subjectsInWeek34=[]\n",
+    "\n",
+    "for subject in intersectionGraph.subjects(RDF.type):\n",
+    "    poc22 = analysisGraph22.value(subject=subject,predicate=v4d['percentageOfCompletion']).toPython()\n",
+    "    poc34 = analysisGraph34.value(subject=subject,predicate=v4d['percentageOfCompletion']).toPython()\n",
+    "\n",
+    "    if poc22 <t_v and poc34 < t_v:\n",
+    "        subjectsUnconstructed.append(subject)\n",
+    "    if poc22 >=t_v and poc34 < t_v:\n",
+    "        subjectsInWeek22.append(subject)\n",
+    "    if poc22 >=t_v and poc34 >= t_v:\n",
+    "        subjectsInWeek22and34.append(subject)\n",
+    "    if poc22 <t_v and poc34 >= t_v:\n",
+    "        subjectsInWeek34.append(subject)\n",
+    "        \n",
+    "print(len(subjectsUnconstructed))\n",
+    "print(len(subjectsInWeek22))\n",
+    "print(len(subjectsInWeek22and34))\n",
+    "print(len(subjectsInWeek34))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The above code shows the following results. \n",
+    "1. 418 BIM Elements were not constructed in both weeks (Fig.X grey elements). \n",
+    "2. 40 elements were found in week 22 but not in week 34. We will first assume that these elements are simply not recorded but indeed built as they are recorded in week 22.  \n",
+    "3. 86 elements were considered built in both weeks, showing a considerable overlap in documentation. **NOTE**,  this should be lowered if possible to make the analysis more efficient.\n",
+    "4. 21 new elements were considered built in week 34 "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 149,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "565\n"
+     ]
+    }
+   ],
+   "source": [
+    "intersectionGraph=ut.get_graph_intersection([bimGraph,analysisGraph22])\n",
+    "visibleBIMNodes=tl.graph_to_nodes(graph=intersectionGraph,graphPath=bimGraphPath,getResource=True)\n",
+    "print(len(visibleBIMNodes))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 150,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[Open3D WARNING] GLFW Error: WGL: Failed to make context current: De aangevraagde overdrachtsbewerking wordt niet ondersteund. \n"
+     ]
+    }
+   ],
+   "source": [
+    "geometries=[]\n",
+    "for n in visibleBIMNodes:\n",
+    "    if n.subject in subjectsUnconstructed and n.resource is not None:\n",
+    "        geometries.append(n.resource)\n",
+    "    if n.subject in subjectsInWeek22 and n.resource is not None:\n",
+    "        geometries.append(n.resource.paint_uniform_color([1,0,0]))\n",
+    "    if n.subject in subjectsInWeek22and34 and n.resource is not None:\n",
+    "        geometries.append(n.resource.paint_uniform_color([1, 0.706, 0]))\n",
+    "    if n.subject in subjectsInWeek34 and n.resource is not None:\n",
+    "        geometries.append(n.resource.paint_uniform_color([0,1,0]))\n",
+    "geometries=gmu.join_geometries(geometries)\n",
+    "o3d.visualization.draw_geometries(geometries + [meshNode.resource])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**Fig.11**: Overview of the IfcBeam and IfcColumn progression in week 22 and 34. (grey) unconstructed elements in both week, (red) objects only observed in week 22, (yellow) objects observed in both weeks and (green) objects only observed in week 34. \n",
+    "\n",
+    "<img src=\"../../pics/week34_poc4a.PNG\" width = \"49%\">\n",
+    "<img src=\"../../pics/week34_poc5a.PNG\"  width = \"49%\">\n",
+    "\n",
+    "<img src=\"../../pics/week34_poc6a.PNG\"  width = \"49%\">\n",
+    "<img src=\"../../pics/week34_poc7a.PNG\"  width = \"49%\">"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Conclusion\n",
+    "In this testcase, we determined the work progress on beam and column elements in two measurement epochs using GEOMAPI functionality. The following conclusions can be drawn from the above tests.\n",
+    "\n",
+    "**GEOMAPI**: Over 70 point clouds (>700M points), meshes and 2 IFC structure models are processed in under 6-10 minutes by smartly dealing with the objects metadata and parallel processing whereever possible. This shows a core strength of GEOMAPI that looks to facilitate big data remote sensing processing.\n",
+    "\n",
+    "**Storing results**: With only a few commands, we stored both the analysis parameters and results in a standardised manner. By using Graphs to store metadata and analysis results, combining data from multiple sources has become very intuitive. This promotes accessibility of the results and also increases their longevity wich is a crucial problem in current analyses. \n",
+    "\n",
+    "**Construction site documentation**: The progress estimation of both weeks showed that nearly 60% of the observed elements were documented in both weeks, which indicates a significant overlap in both measurement epochs. Since the documentation is the most costly step, and also computationally burdens downstream analyses, this should be lowered. Instead, site documentation should focus on only the parts that actually changed if possible.  \n",
+    "\n",
+    "**Analysis**: The proposed progress method, based on point inliers, gives a coarse approximation of which objects are built. However, some inherent errors are present. For instance, the PoC will overshoot the number of constructed elements due to noise, auxilary objects such as formwork and the search distance. The method will also undershoot for objects that are difficult observe.    "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Future work\n",
+    "\n",
+    "Future work will focus on the development of a more inclusice PoC method, possibly also based on image detection [1]. The decision function will also be replaced with a more State-of-the-art machine learning method that looks are appearance descriptors instead of solely evaluating point inliers based on previous work (Bassier et al., 2019).  "
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## References\n",
+    "\n",
+    "1. Cuypers, S., Bassier, M., & Vergauwen, M. (2021). Deep Learning on Construction Sites : A Case Study of Sparse Data Learning Techniques for Rebar Segmentation. Sensors, 1–20.\n",
+    "2. Bassier, M., Vincke, S., Mattheuwsen, L., De Lima Hernandez, R., Derdaele, J., & Vergauwen, M. (2019). Percentage of completion of in-situ cast concrete walls using point cloud data and bim. International Archives of the Photogrammetry, Remote Sensing and Spatial Information Sciences - ISPRS Archives, 42(5/W2), 21–28. https://doi.org/10.5194/isprs-archives-XLII-5-W2-21-2019"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3.8.13 ('conda_environment3')",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.13"
+  },
+  "orig_nbformat": 4,
+  "vscode": {
+   "interpreter": {
+    "hash": "801b4083378541fd050d6c91abf6ec053c863905e8162e031d57b83e7cdb3051"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

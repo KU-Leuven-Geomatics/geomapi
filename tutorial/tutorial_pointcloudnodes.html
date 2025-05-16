@@ -1,0 +1,820 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PointCloudNode &mdash; Geomapi 0.9.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="BIMNode" href="tutorial_bimnodes.html" />
+    <link rel="prev" title="MeshNode" href="tutorial_meshnodes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PointCloudNode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pointcloudnode-from-properties">PointCloudNode from properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pointcloudnode-from-path">PointCloudNode from Path</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pointcloudnode-from-e57-file">PointCloudNode from E57 file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pointcloudnode-from-e57-xml-file">PointCloudNode from E57 XML file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#pointcloudnode-with-getresource">PointCloudNode with getResource</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pointcloudnode-from-resource">PointCloudNode from resource</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pointcloudnode-from-e57-instance">PointCloudNode from e57 instance</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#pointcloudnode-from-graph-and-graphpath">PointCloudNode from Graph and graphPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pointcloudnode-to-graph">PointCloudNode to Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pointcloudnode-prefix-relations">PointCloudNode prefix relations</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pointcloudnode-custom-relationships">PointCloudNode custom relationships</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pointcloudnode-with-3rd-party-ontologies">PointCloudNode with 3rd party ontologies</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">PointCloudNode</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/tutorial_pointcloudnodes.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="pointcloudnode">
+<h1>PointCloudNode<a class="headerlink" href="#pointcloudnode" title="Link to this heading"></a></h1>
+<p>The PointCloudNode class in Geomapi represents the data and metadata of point cloud data. The data itself and methods build upon Open3D PointCloud concepts while the metadata builds upon the RDFlib framework:</p>
+<p><a class="reference external" href="http://www.open3d.org/docs/release/python_api/open3d.geometry.PointCloud.html">http://www.open3d.org/docs/release/python_api/open3d.geometry.PointCloud.html</a></p>
+<p><a class="reference external" href="https://rdflib.readthedocs.io/">https://rdflib.readthedocs.io/</a></p>
+<p>The code below shows how to create a PointCloudNode from various inputs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#IMPORT PACKAGES</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">import</span> <span class="nn">open3d</span> <span class="k">as</span> <span class="nn">o3d</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1">#IMPORT MODULES</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span> 
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">geomapi.utils</span> <span class="k">as</span> <span class="nn">ut</span>
+<span class="kn">from</span> <span class="nn">geomapi.utils</span> <span class="kn">import</span> <span class="n">geometryutils</span> <span class="k">as</span> <span class="n">gmu</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools</span> <span class="k">as</span> <span class="nn">tl</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The autoreload extension is already loaded. To reload it, use:
+  %reload_ext autoreload
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">autoreload</span> 2
+</pre></div>
+</div>
+</div>
+</div>
+<section id="pointcloudnode-from-properties">
+<h2>PointCloudNode from properties<a class="headerlink" href="#pointcloudnode-from-properties" title="Link to this heading"></a></h2>
+<p>A placeholder PointCloudNode can be initialised without any data or metadata</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s1">&#39;myName&#39;</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_e57Index&#39;: 0,
+ &#39;pointCount&#39;: None,
+ &#39;_cartesianBounds&#39;: None,
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///myNode&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;myName&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pointcloudnode-from-path">
+<h2>PointCloudNode from Path<a class="headerlink" href="#pointcloudnode-from-path" title="Link to this heading"></a></h2>
+<p>Instead, it is much more likely to initialise a PointCloudNode from a path containing an .pcd or .e57 file. This sets the: <br></p>
+<ol class="arabic simple">
+<li><p>subject</p></li>
+<li><p>name</p></li>
+<li><p>timestamp</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;academiestraat week 22 a 20.pcd&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_e57Index&#39;: 0,
+ &#39;pointCount&#39;: None,
+ &#39;_cartesianBounds&#39;: None,
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///academiestraat_week_22_a_20&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\PCD\\academiestraat week 22 a 20.pcd&#39;,
+ &#39;_name&#39;: &#39;academiestraat week 22 a 20&#39;,
+ &#39;_timestamp&#39;: &#39;2022-08-02T08:25:02&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None}
+</pre></div>
+</div>
+</div>
+</div>
+<section id="pointcloudnode-from-e57-file">
+<h3>PointCloudNode from E57 file<a class="headerlink" href="#pointcloudnode-from-e57-file" title="Link to this heading"></a></h3>
+<p>For E57 files, the header is parsed so significantly more metadata can be extracted without loading in the actual data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;week 22 - Lidar.e57&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_e57Index&#39;: 0,
+ &#39;pointCount&#39;: 11936498,
+ &#39;_cartesianBounds&#39;: array([-36.77039719,  44.17316818,  61.75132751, 112.70298767,
+          1.28037024,  10.4529705 ]),
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///academiestraat_week_22_20&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\PCD\\week 22 - Lidar.e57&#39;,
+ &#39;_name&#39;: &#39;academiestraat week 22 20&#39;,
+ &#39;_timestamp&#39;: &#39;2022-08-02T08:25:15&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: array([[-4.32203630e-01,  9.01764516e-01,  4.55851494e-03,
+          5.10162327e-01],
+        [-9.01695863e-01, -4.32092277e-01, -1.55188352e-02,
+          8.75119260e+01],
+        [-1.20246358e-02, -1.08176910e-02,  9.99869184e-01,
+          4.74824153e+00],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+          1.00000000e+00]])}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: Unless e57Index is specified, the first scan in the e57 file is retained.</p>
+</section>
+<section id="pointcloudnode-from-e57-xml-file">
+<h3>PointCloudNode from E57 XML file<a class="headerlink" href="#pointcloudnode-from-e57-xml-file" title="Link to this heading"></a></h3>
+<p>Analogue, the same information can be extracted from e57 xml files. These files are generated from e57 files by <a class="reference external" href="http://www.libe57.org/data.html">e57xmldump.exe</a></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;week 22 - Lidar.xml&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_e57Index&#39;: 0,
+ &#39;pointCount&#39;: 1000000,
+ &#39;_cartesianBounds&#39;: array([-4.35110378, 31.89645767, -6.84530544, 21.42576599, -1.5266    ,
+         4.38528442]),
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///week_22_-_Lidar&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\PCD\\week 22 - Lidar.xml&#39;,
+ &#39;_name&#39;: &#39;week 22 - Lidar_0&#39;,
+ &#39;_timestamp&#39;: &#39;2022-08-17T09:15:09&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: array([[-3.99988529e-01, -9.16520103e-01, -2.77684704e-04,
+          3.79711752e-01],
+        [-9.16520136e-01,  3.99988550e-01, -2.33828576e-05,
+          1.30182122e+01],
+        [ 1.32501561e-04,  2.45150748e-04, -9.99999961e-01,
+          3.69457244e-02],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+          1.00000000e+00]])}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pointcloudnode-with-getresource">
+<h3>PointCloudNode with getResource<a class="headerlink" href="#pointcloudnode-with-getresource" title="Link to this heading"></a></h3>
+<p><strong>NOTE</strong>: GetResource is optional and might slow down any analysis. Only work with data when all metadata options have been exhausted.</p>
+<p><strong>E.g.</strong>: This 11M point cloud takes 11s to import while its metadata variant is initialised within 0.2s. Especially with E57 files, where there is so much metadata already present, this is a major computational burden.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;academiestraat week 22 a 20.pcd&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">,</span> <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_e57Index&#39;: 0,
+ &#39;pointCount&#39;: 11936498,
+ &#39;_cartesianBounds&#39;: array([-36.77039719,  44.17316818,  61.75132751, 112.70298767,
+          1.28037024,  10.4529705 ]),
+ &#39;_orientedBounds&#39;: array([[-27.59671761,  51.72761543,  -1.25327158],
+        [ 49.06238386,  63.57009377,  -2.84643678],
+        [-36.96459257, 113.19129453,   4.86625159],
+        [-27.30329385,  50.94547305,   7.05164109],
+        [ 39.98793266, 124.25163049,  11.57799906],
+        [-36.67116881, 112.40915215,  13.17116426],
+        [ 49.35580762,  62.78795139,   5.45847589],
+        [ 39.6945089 , 125.03377287,   3.27308639]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (6.19561, 87.9896, 5.16236), extent: 77.5848, 62.4739, 8.34682),
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///academiestraat_week_22_a_20&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\PCD\\academiestraat week 22 a 20.pcd&#39;,
+ &#39;_name&#39;: &#39;academiestraat week 22 a 20&#39;,
+ &#39;_timestamp&#39;: &#39;2022-08-02T08:25:02&#39;,
+ &#39;_resource&#39;: PointCloud with 11936498 points.,
+ &#39;_cartesianTransform&#39;: array([[ 1.        ,  0.        ,  0.        ,  0.58767088],
+        [ 0.        ,  1.        ,  0.        , 87.49782357],
+        [ 0.        ,  0.        ,  1.        ,  5.07468233],
+        [ 0.        ,  0.        ,  0.        ,  1.        ]])}
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="rendering" src="../pics/PCD1.png" /></p>
+</section>
+</section>
+<section id="pointcloudnode-from-resource">
+<h2>PointCloudNode from resource<a class="headerlink" href="#pointcloudnode-from-resource" title="Link to this heading"></a></h2>
+<p>A similar result is achieved by initialising a PointCloudNode from a Open3D.Geometry.PointCloud or E57 instance. In this case, GetResource (bool) means nothing.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;academiestraat week 22 a 20.pcd&#39;</span><span class="p">)</span>
+<span class="n">pcd</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_point_cloud</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">pcd</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>            
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_e57Index&#39;: 0,
+ &#39;pointCount&#39;: 11936498,
+ &#39;_cartesianBounds&#39;: array([-36.77039719,  44.17316818,  61.75132751, 112.70298767,
+          1.28037024,  10.4529705 ]),
+ &#39;_orientedBounds&#39;: array([[-27.59671761,  51.72761543,  -1.25327158],
+        [ 49.06238386,  63.57009377,  -2.84643678],
+        [-36.96459257, 113.19129453,   4.86625159],
+        [-27.30329385,  50.94547305,   7.05164109],
+        [ 39.98793266, 124.25163049,  11.57799906],
+        [-36.67116881, 112.40915215,  13.17116426],
+        [ 49.35580762,  62.78795139,   5.45847589],
+        [ 39.6945089 , 125.03377287,   3.27308639]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (6.19561, 87.9896, 5.16236), extent: 77.5848, 62.4739, 8.34682),
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///58d62ae0-1dfe-11ed-8a65-c8f75043ce59&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;58d62ae0-1dfe-11ed-8a65-c8f75043ce59&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: PointCloud with 11936498 points.,
+ &#39;_cartesianTransform&#39;: array([[ 1.        ,  0.        ,  0.        ,  0.58767088],
+        [ 0.        ,  1.        ,  0.        , 87.49782357],
+        [ 0.        ,  0.        ,  1.        ,  5.07468233],
+        [ 0.        ,  0.        ,  0.        ,  1.        ]])}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: The cartesianTransform extracted from resources are void of rotationmatrices as this metadata is not part of the fileformat. The translation thus represents the center of the geometry.</p>
+<section id="pointcloudnode-from-e57-instance">
+<h3>PointCloudNode from e57 instance<a class="headerlink" href="#pointcloudnode-from-e57-instance" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pye57</span>
+
+<span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;week22 photogrammetry - Cloud.e57&#39;</span><span class="p">)</span>
+<span class="n">e57</span> <span class="o">=</span> <span class="n">pye57</span><span class="o">.</span><span class="n">E57</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
+       
+<span class="n">node</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">e57</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>     
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_e57Index&#39;: 0,
+ &#39;pointCount&#39;: 242750,
+ &#39;_cartesianBounds&#39;: array([-37.36532974, 106.94235229,  16.87863541, 130.69406128,
+          0.71651864,  23.73304749]),
+ &#39;_orientedBounds&#39;: array([[-1.96025758e+01,  1.65884155e+02,  2.22874746e+01],
+        [ 1.22465470e+02,  1.23859440e+02,  2.29468276e+01],
+        [-5.26111779e+01,  5.43129133e+01,  2.33762930e+01],
+        [-1.95654774e+01,  1.65648750e+02, -7.09825603e-01],
+        [ 8.94939663e+01,  1.20527928e+01,  1.03834566e+00],
+        [-5.25740795e+01,  5.40775081e+01,  3.78992731e-01],
+        [ 1.22502568e+02,  1.23624035e+02, -5.04726756e-02],
+        [ 8.94568679e+01,  1.22881979e+01,  2.40356459e+01]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (34.9457, 88.9685, 11.6629), extent: 148.155, 116.357, 22.9985),
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///26e1ed26-1dff-11ed-832f-c8f75043ce59&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;26e1ed26-1dff-11ed-832f-c8f75043ce59&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: PointCloud with 242750 points.,
+ &#39;_cartesianTransform&#39;: array([[ 1.        ,  0.        ,  0.        , 28.03427131],
+        [ 0.        ,  1.        ,  0.        , 72.25597195],
+        [ 0.        ,  0.        ,  1.        ,  4.47910446],
+        [ 0.        ,  0.        ,  0.        ,  1.        ]])}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="pointcloudnode-from-graph-and-graphpath">
+<h2>PointCloudNode from Graph and graphPath<a class="headerlink" href="#pointcloudnode-from-graph-and-graphpath" title="Link to this heading"></a></h2>
+<p>If a point cloud was already serialized, a node can be initialised from the graph or graphPath.</p>
+<p><strong>NOTE</strong>: The graphPath is the more complete option as it is used to absolutize the node’s path information. However, it is also the slower option as the entire graph encapsulation the node is parsed multiple times.</p>
+<p><strong>USE</strong>: linkeddatatools.graph_to_nodes resolves this issue.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;pcdGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">graphPath</span><span class="p">)</span>
+
+<span class="c1">#only print first node</span>
+<span class="n">newGraph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">newGraph</span><span class="o">=</span><span class="n">ut</span><span class="o">.</span><span class="n">bind_ontologies</span><span class="p">(</span><span class="n">newGraph</span><span class="p">)</span>
+<span class="n">newGraph</span><span class="o">+=</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">URIRef</span><span class="p">(</span><span class="s1">&#39;file:///_65FBBFC3-1192-47C2-BCC1-B2BF66840C4A_-Cloud-1&#39;</span><span class="p">),</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">newGraph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///_65FBBFC3-1192-47C2-BCC1-B2BF66840C4A_-Cloud-1&gt; a v4d:PointCloudNode ;
+    e57:cartesianBounds &quot;&quot;&quot;[-14.56856251  18.11331177 -16.01319885  15.32858181  -1.11594343\r
+  15.32411003]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[1. 0. 0. 0.]\r
+ [0. 1. 0. 0.]\r
+ [0. 0. 1. 0.]\r
+ [0. 0. 0. 1.]]&quot;&quot;&quot; ;
+    e57:e57Index 0 ;
+    e57:pointCount 20168806 ;
+    v4d:name &quot;{65FBBFC3-1192-47C2-BCC1-B2BF66840C4A}-Cloud-1&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[-13.47140023 -17.40796858  -0.17794121]\r
+ [ 19.16010023 -15.45181523  -1.25154832]\r
+ [-15.44981412  13.51956681  -3.95922326]\r
+ [-13.02567042 -15.24017258  17.31949716]\r
+ [ 17.62741617  17.64351618  12.46460799]\r
+ [-15.0040843   15.68736282  13.5382151 ]\r
+ [ 19.60583005 -13.28401922  16.24589004]\r
+ [ 17.18168635  15.47572017  -5.03283037]]&quot;&quot;&quot; ;
+    v4d:path &quot;PCD\\navvis.e57&quot; ;
+    openlabel:timestamp &quot;2022-07-25 10:26:49&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_e57Index&#39;: 0,
+ &#39;pointCount&#39;: 20168806,
+ &#39;_cartesianBounds&#39;: array([-14.56856251,  18.11331177, -16.01319885,  15.32858181,
+         -1.11594343,  15.32411003]),
+ &#39;_orientedBounds&#39;: array([[-13.47140023, -17.40796858,  -0.17794121],
+        [ 19.16010023, -15.45181523,  -1.25154832],
+        [-15.44981412,  13.51956681,  -3.95922326],
+        [-13.02567042, -15.24017258,  17.31949716],
+        [ 17.62741617,  17.64351618,  12.46460799],
+        [-15.0040843 ,  15.68736282,  13.5382151 ],
+        [ 19.60583005, -13.28401922,  16.24589004],
+        [ 17.18168635,  15.47572017,  -5.03283037]]),
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///_65FBBFC3-1192-47C2-BCC1-B2BF66840C4A_-Cloud-1&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=N23cf548e77ad47fe98f9a262c673613f (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\pcdGraph.ttl&#39;,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\PCD\\navvis.e57&#39;,
+ &#39;_name&#39;: &#39;{65FBBFC3-1192-47C2-BCC1-B2BF66840C4A}-Cloud-1&#39;,
+ &#39;_timestamp&#39;: &#39;2022-07-25T10:26:49&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: array([[1., 0., 0., 0.],
+        [0., 1., 0., 0.],
+        [0., 0., 1., 0.],
+        [0., 0., 0., 1.]]),
+ &#39;type&#39;: &#39;https://w3id.org/v4d/core#PointCloudNode&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pointcloudnode-to-graph">
+<h2>PointCloudNode to Graph<a class="headerlink" href="#pointcloudnode-to-graph" title="Link to this heading"></a></h2>
+<p>The Graph serialisation is inherited from Node functionality.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+                    <span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">,</span>
+                    <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">newGraphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s1">&#39;myGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">newGraphPath</span><span class="p">)</span>
+
+<span class="n">newNode</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">newGraphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///week22_photogrammetry_-_Cloud&gt; a v4d:PointCloudNode ;
+    e57:cartesianBounds &quot;&quot;&quot;[-37.36532974 106.94235229  16.87863541 130.69406128   0.71651864
+  23.73304749]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[ 1.          0.          0.         28.03427131]
+ [ 0.          1.          0.         72.25597195]
+ [ 0.          0.          1.          4.47910446]
+ [ 0.          0.          0.          1.        ]]&quot;&quot;&quot; ;
+    e57:e57Index 0 ;
+    e57:pointCount 242750 ;
+    v4d:name &quot;week22 photogrammetry - Cloud&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[-1.96025758e+01  1.65884155e+02  2.22874746e+01]
+ [ 1.22465470e+02  1.23859440e+02  2.29468276e+01]
+ [-5.26111779e+01  5.43129133e+01  2.33762930e+01]
+ [-1.95654774e+01  1.65648750e+02 -7.09825603e-01]
+ [ 8.94939663e+01  1.20527928e+01  1.03834566e+00]
+ [-5.25740795e+01  5.40775081e+01  3.78992731e-01]
+ [ 1.22502568e+02  1.23624035e+02 -5.04726756e-02]
+ [ 8.94568679e+01  1.22881979e+01  2.40356459e+01]]&quot;&quot;&quot; ;
+    v4d:path &quot;..\\..\\..\\test\\testfiles\\PCD\\week22 photogrammetry - Cloud.e57&quot; ;
+    openlabel:timestamp &quot;2022-08-02T08:25:27&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pointcloudnode-prefix-relations">
+<h2>PointCloudNode prefix relations<a class="headerlink" href="#pointcloudnode-prefix-relations" title="Link to this heading"></a></h2>
+<p>PointCloudNodes can be attributed with a range of relationships. This is extremely usefull for Graph navigation and linking together different resources. In <a class="reference external" href="https://rdflib.readthedocs.io/en/stable/intro_to_creating_rdf.html">Semantic Web Technologies</a>, relationships are defined by triples that have other subjects as literals.</p>
+<p>In this first example, we perform a subselection on a node based on the <a class="reference external" href="https://www.projekt-scope.de/ontologies/omg/">omg.isDerivedFromGeometry</a> relation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myNode</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;file:///academiestraat_week_22_a_20&#39;</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span> <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myNode</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PointCloud with 11936498 points.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#croppingGeometry</span>
+<span class="n">box</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">TriangleMesh</span><span class="o">.</span><span class="n">create_box</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">box</span><span class="o">=</span><span class="n">box</span><span class="o">.</span><span class="n">get_oriented_bounding_box</span><span class="p">()</span>
+<span class="n">box</span><span class="o">.</span><span class="n">translate</span><span class="p">([</span><span class="mi">7</span><span class="p">,</span><span class="mi">77</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">box</span><span class="o">.</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">croppedGeometry</span><span class="o">=</span><span class="n">myNode</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">croppedGeometry</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PointCloud with 63856 points.
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="rendering" src="../_images/subPCD2.png" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">subNode</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;mySubNode&#39;</span><span class="p">,</span>
+                <span class="n">resource</span><span class="o">=</span><span class="n">croppedGeometry</span><span class="p">,</span>
+                <span class="n">isDerivedFromGeometry</span><span class="o">=</span><span class="n">myNode</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix omg: &lt;https://w3id.org/omg#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///mySubNode&gt; a v4d:PointCloudNode ;
+    e57:cartesianBounds &quot;[ 7.00004864 16.99991798 77.00058746 86.99999237  3.01331043  7.22578764]&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[ 1.          0.          0.          9.84694508]
+ [ 0.          1.          0.         83.50834556]
+ [ 0.          0.          1.          5.98616932]
+ [ 0.          0.          0.          1.        ]]&quot;&quot;&quot; ;
+    e57:e57Index 0 ;
+    e57:pointCount 63856 ;
+    omg:isDerivedFromGeometry &quot;file:///academiestraat_week_22_a_20&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[11.92503234 91.95077613  7.2293572 ]
+ [21.88910944 81.98219128  7.41400688]
+ [ 2.17810184 82.20761211  7.19474963]
+ [11.97234966 91.91866715  2.94256659]
+ [12.18949625 72.20691828  3.09260868]
+ [ 2.22541916 82.17550313  2.90795901]
+ [21.93642675 81.95008229  3.12721626]
+ [12.14217894 72.23902726  7.3793993 ]]&quot;&quot;&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pointcloudnode-custom-relationships">
+<h2>PointCloudNode custom relationships<a class="headerlink" href="#pointcloudnode-custom-relationships" title="Link to this heading"></a></h2>
+<p>When designing a new analysis, there is often need for custom relations and properties. Both can be just asssigned as <strong>instance variables</strong>, which will be serialized by default under the v4d ontology.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ifcopenshell</span>
+<span class="kn">import</span> <span class="nn">ifcopenshell.util.selector</span> 
+
+
+<span class="n">ifcPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IFC&#39;</span><span class="p">,</span><span class="s1">&#39;Academiestraat_parking.ifc&#39;</span><span class="p">)</span>
+<span class="n">ifc</span> <span class="o">=</span> <span class="n">ifcopenshell</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ifcPath</span><span class="p">)</span>   
+<span class="n">classes</span><span class="o">=</span><span class="s1">&#39;IfcColumn&#39;</span>
+<span class="n">bimNodes</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">ifcElement</span> <span class="ow">in</span> <span class="n">ifcopenshell</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">filter_elements</span><span class="p">(</span><span class="n">ifc</span><span class="p">,</span><span class="n">classes</span><span class="p">):</span> 
+    <span class="n">bimNodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">ifcElement</span><span class="p">,</span> <span class="n">ifcPath</span><span class="o">=</span><span class="n">ifcPath</span><span class="p">))</span>
+<span class="n">geometries</span><span class="o">=</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bimNodes</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">resource</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">myNode</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;file:///academiestraat_week_22_a_20&#39;</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span> <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myNode</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PointCloud with 11936498 points.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">subCloud</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">crop_geometry_by_distance</span><span class="p">(</span><span class="n">myNode</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span> <span class="n">geometries</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">subCloud</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PointCloud with 290245 points.
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="rendering" src="../_images/subCloud3.PNG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">subNode</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;mySubNode&#39;</span><span class="p">,</span>
+                <span class="n">resource</span><span class="o">=</span><span class="n">croppedGeometry</span><span class="p">,</span>
+                <span class="n">isDerivedFromGeometry</span><span class="o">=</span><span class="n">myNode</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
+                <span class="n">isDerivedFromIFC</span><span class="o">=</span><span class="n">ifcPath</span><span class="p">,</span> <span class="c1">#custom</span>
+                <span class="n">ifcClass</span><span class="o">=</span><span class="n">classes</span><span class="p">,</span>
+                <span class="n">offsetDistanceCalculation</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix omg: &lt;https://w3id.org/omg#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///mySubNode&gt; a v4d:PointCloudNode ;
+    e57:cartesianBounds &quot;[ 7.00004864 16.99991798 77.00058746 86.99999237  3.01331043  7.22578764]&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[ 1.          0.          0.          9.84694508]
+ [ 0.          1.          0.         83.50834556]
+ [ 0.          0.          1.          5.98616932]
+ [ 0.          0.          0.          1.        ]]&quot;&quot;&quot; ;
+    e57:e57Index 0 ;
+    e57:pointCount 63856 ;
+    omg:isDerivedFromGeometry &quot;file:///academiestraat_week_22_a_20&quot; ;
+    v4d:ifcClass &quot;.IfcColumn&quot; ;
+    v4d:isDerivedFromIFC &quot;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IFC\\Academiestraat_parking.ifc&quot; ;
+    v4d:offsetDistanceCalculation &quot;0.1&quot;^^xsd:float ;
+    v4d:orientedBounds &quot;&quot;&quot;[[11.92503234 91.95077613  7.2293572 ]
+ [21.88910944 81.98219128  7.41400688]
+ [ 2.17810184 82.20761211  7.19474963]
+ [11.97234966 91.91866715  2.94256659]
+ [12.18949625 72.20691828  3.09260868]
+ [ 2.22541916 82.17550313  2.90795901]
+ [21.93642675 81.95008229  3.12721626]
+ [12.14217894 72.23902726  7.3793993 ]]&quot;&quot;&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pointcloudnode-with-3rd-party-ontologies">
+<h2>PointCloudNode with 3rd party ontologies<a class="headerlink" href="#pointcloudnode-with-3rd-party-ontologies" title="Link to this heading"></a></h2>
+<p>Additionally, 3rd party ontologies can be registered in the namespace of the node.graph and the relationship can be manually attached to the graph.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">rdflib</span>
+<span class="n">subNode</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;mySubNode&#39;</span><span class="p">)</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+
+<span class="n">myOntology</span> <span class="o">=</span> <span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;http://myOntology#&#39;</span><span class="p">)</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;myOntology&#39;</span><span class="p">,</span> <span class="n">myOntology</span><span class="p">)</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">subNode</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span><span class="n">myOntology</span><span class="p">[</span><span class="s1">&#39;myProperty&#39;</span><span class="p">],</span><span class="n">Literal</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span> <span class="p">))</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">subNode</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span><span class="n">myOntology</span><span class="p">[</span><span class="s1">&#39;myRelation&#39;</span><span class="p">],</span><span class="n">myNode</span><span class="o">.</span><span class="n">subject</span> <span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix myOntology: &lt;http://myOntology#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///mySubNode&gt; a v4d:PointCloudNode ;
+    e57:e57Index 0 ;
+    myOntology:myProperty 1e-01 ;
+    myOntology:myRelation &lt;file:///academiestraat_week_22_a_20&gt; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial_meshnodes.html" class="btn btn-neutral float-left" title="MeshNode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial_bimnodes.html" class="btn btn-neutral float-right" title="BIMNode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

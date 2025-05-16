@@ -1,0 +1,523 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GeometryNode &mdash; Geomapi 0.9.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">GeometryNode</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/tutorial_geometrynodes.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="geometrynode">
+<h1>GeometryNode<a class="headerlink" href="#geometrynode" title="Link to this heading"></a></h1>
+<p>The GeometryNode class in Geomapi is the abstract metadata class that governs geometry concepts such as the cartesianBounds and the OrientedBoundingBox. While this node should not be frequently used (unless to govern unknown geospatial data), it houses the geometry function for the MeshNode, BIMNode and PointCloudNode.</p>
+<p><strong>NOTE</strong>: the serialisation of the geometry concepts is mostly based on the <a class="reference external" href="https://www.asam.net/index.php?eID=dumpFile&amp;amp;t=f&amp;amp;f=3876&amp;amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#">OPENLABEL</a> concept and <a class="reference external" href="http://www.open3d.org/docs/release/python_api/open3d.geometry.html">Open3D</a> geometry definitions</p>
+<p>The code below shows how to create a GeometryNode class works and how it interacts with RDF Graphs.</p>
+<p>First the geomapi and external packages are imported</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#IMPORT PACKAGES</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">import</span> <span class="nn">open3d</span> <span class="k">as</span> <span class="nn">o3d</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1">#IMPORT MODULES</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span> 
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">geomapi.utils</span> <span class="k">as</span> <span class="nn">ut</span>
+<span class="kn">from</span> <span class="nn">geomapi.utils</span> <span class="kn">import</span> <span class="n">geometryutils</span> <span class="k">as</span> <span class="n">gmu</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools</span> <span class="k">as</span> <span class="nn">tl</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The autoreload extension is already loaded. To reload it, use:
+  %reload_ext autoreload
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">autoreload</span> 2
+</pre></div>
+</div>
+</div>
+</div>
+<section id="geometrynode-with-cartesianbounds">
+<h2>GeometryNode with cartesianBounds<a class="headerlink" href="#geometrynode-with-cartesianbounds" title="Link to this heading"></a></h2>
+<p>cartesianBounds (np.array [6x1]) [xMin,xMax,yMin,yMax,zMin,zMax], can be set from 5 different inputs:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;MESH&#39;</span><span class="p">,</span><span class="s1">&#39;week22.obj&#39;</span><span class="p">)</span>
+
+<span class="n">mesh</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_triangle_mesh</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="n">box</span><span class="o">=</span><span class="n">mesh</span><span class="o">.</span><span class="n">get_oriented_bounding_box</span><span class="p">()</span>
+<span class="n">box</span><span class="o">.</span><span class="n">color</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">alignedBox</span><span class="o">=</span><span class="n">mesh</span><span class="o">.</span><span class="n">get_axis_aligned_bounding_box</span><span class="p">()</span>
+<span class="n">alignedBox</span><span class="o">.</span><span class="n">color</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">vectorlist</span><span class="o">=</span><span class="n">box</span><span class="o">.</span><span class="n">get_box_points</span><span class="p">()</span>
+<span class="n">pcd</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">PointCloud</span><span class="p">()</span>
+<span class="n">pcd</span><span class="o">.</span><span class="n">points</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">utility</span><span class="o">.</span><span class="n">Vector3dVector</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">vstack</span><span class="p">((</span><span class="n">mesh</span><span class="o">.</span><span class="n">get_min_bound</span><span class="p">(),</span><span class="n">mesh</span><span class="o">.</span><span class="n">get_max_bound</span><span class="p">())))</span>
+<span class="n">pcd</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">pcd2</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">PointCloud</span><span class="p">()</span>
+<span class="n">pcd2</span><span class="o">.</span><span class="n">points</span><span class="o">=</span><span class="n">vectorlist</span>
+<span class="n">pcd2</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PointCloud with 8 points.
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="rendering" src="../pics/geometryNode1.PNG" /></p>
+<ol class="arabic simple">
+<li><p>np.array(6x1), list (6 elements) <br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">cartesianBounds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">,</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">])</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">cartesianBounds</span><span class="o">=</span><span class="n">cartesianBounds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">cartesianBounds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[1 2 3 4 5 6]
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Vector3dVector (n elements)<br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">vectorlist</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">cartesianBounds</span><span class="o">=</span><span class="n">vectorlist</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">cartesianBounds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>std::vector&lt;Eigen::Vector3d&gt; with 8 elements.
+Use numpy.asarray() to access data.
+[-52.61117755 122.50257926  12.05279306 165.88417048  -0.70982552
+  24.03564393]
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>orientedBounds (np.array(8x3))<br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vectorlist</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">cartesianBounds</span><span class="o">=</span><span class="n">array</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">cartesianBounds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.96025705e+01  1.65884170e+02  2.22874728e+01]
+ [ 1.22465481e+02  1.23859452e+02  2.29468259e+01]
+ [-5.26111776e+01  5.43129171e+01  2.33762909e+01]
+ [-1.95654721e+01  1.65648765e+02 -7.09825518e-01]
+ [ 8.94939722e+01  1.20527931e+01  1.03834556e+00]
+ [-5.25740791e+01  5.40775120e+01  3.78992525e-01]
+ [ 1.22502579e+02  1.23624046e+02 -5.04724793e-02]
+ [ 8.94568738e+01  1.22881982e+01  2.40356439e+01]]
+[-52.61117755 122.50257926  12.05279306 165.88417048  -0.70982552
+  24.03564393]
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="4">
+<li><p>Open3D.geometry.OrientedBoundingBox<br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">cartesianBounds</span><span class="o">=</span><span class="n">box</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">cartesianBounds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>OrientedBoundingBox: center: (34.9457, 88.9685, 11.6629), extent: 148.155, 116.357, 22.9985)
+[-52.61117755 122.50257926  12.05279306 165.88417048  -0.70982552
+  24.03564393]
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="5">
+<li><p>Open3D geometry<br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">cartesianBounds</span><span class="o">=</span><span class="n">mesh</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">cartesianBounds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TriangleMesh with 330263 points and 485077 triangles.
+[-37.36532974 106.94235229  16.87863541 130.69406128   0.71651864
+  23.73304558]
+</pre></div>
+</div>
+</div>
+</div>
+<section id="cartesianbounds-serialization">
+<h3>CartesianBounds serialization<a class="headerlink" href="#cartesianbounds-serialization" title="Link to this heading"></a></h3>
+<p>cartesianBounds is serialized conform E57 as a string formatted np.array [xMin,xMax,yMin,yMax,zMin,zMax]</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">cartesianBounds</span><span class="o">=</span><span class="n">cartesianBounds</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+
+&lt;file:///9aa338d7-1a46-11ed-b3cf-c8f75043ce59&gt; a v4d:GeometryNode ;
+    e57:cartesianBounds &quot;[1 2 3 4 5 6]&quot; ;
+    v4d:name &quot;9aa338d7-1a46-11ed-b3cf-c8f75043ce59&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="geometrynode-with-orientedbounds">
+<h2>GeometryNode with orientedBounds<a class="headerlink" href="#geometrynode-with-orientedbounds" title="Link to this heading"></a></h2>
+<p>orientedBounds (np.array [8x3]), can be set from 3 different inputs:</p>
+<ol class="arabic simple">
+<li><p>np.array(6x1), list (6 elements) <br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">orientedBounds</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vectorlist</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">orientedBounds</span><span class="o">=</span><span class="n">orientedBounds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">orientedBounds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.96025705e+01  1.65884170e+02  2.22874728e+01]
+ [ 1.22465481e+02  1.23859452e+02  2.29468259e+01]
+ [-5.26111776e+01  5.43129171e+01  2.33762909e+01]
+ [-1.95654721e+01  1.65648765e+02 -7.09825518e-01]
+ [ 8.94939722e+01  1.20527931e+01  1.03834556e+00]
+ [-5.25740791e+01  5.40775120e+01  3.78992525e-01]
+ [ 1.22502579e+02  1.23624046e+02 -5.04724793e-02]
+ [ 8.94568738e+01  1.22881982e+01  2.40356439e+01]]
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Open3D.geometry.OrientedBoundingBox<br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">orientedBounds</span><span class="o">=</span><span class="n">box</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">orientedBounds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>OrientedBoundingBox: center: (34.9457, 88.9685, 11.6629), extent: 148.155, 116.357, 22.9985)
+[[-1.96025705e+01  1.65884170e+02  2.22874728e+01]
+ [ 1.22465481e+02  1.23859452e+02  2.29468259e+01]
+ [-5.26111776e+01  5.43129171e+01  2.33762909e+01]
+ [-1.95654721e+01  1.65648765e+02 -7.09825518e-01]
+ [ 8.94939722e+01  1.20527931e+01  1.03834556e+00]
+ [-5.25740791e+01  5.40775120e+01  3.78992525e-01]
+ [ 1.22502579e+02  1.23624046e+02 -5.04724793e-02]
+ [ 8.94568738e+01  1.22881982e+01  2.40356439e+01]]
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Open3D geometry<br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">orientedBounds</span><span class="o">=</span><span class="n">mesh</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">orientedBounds</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TriangleMesh with 330263 points and 485077 triangles.
+[[-1.96025705e+01  1.65884170e+02  2.22874728e+01]
+ [ 1.22465481e+02  1.23859452e+02  2.29468259e+01]
+ [-5.26111776e+01  5.43129171e+01  2.33762909e+01]
+ [-1.95654721e+01  1.65648765e+02 -7.09825518e-01]
+ [ 8.94939722e+01  1.20527931e+01  1.03834556e+00]
+ [-5.25740791e+01  5.40775120e+01  3.78992525e-01]
+ [ 1.22502579e+02  1.23624046e+02 -5.04724793e-02]
+ [ 8.94568738e+01  1.22881982e+01  2.40356439e+01]]
+</pre></div>
+</div>
+</div>
+</div>
+<section id="orientedbounds-serialization">
+<h3>orientedBounds serialization<a class="headerlink" href="#orientedbounds-serialization" title="Link to this heading"></a></h3>
+<p>orientedBounds is serialized conform V4D as a string formatted np.array (8x3)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">orientedBounds</span><span class="o">=</span><span class="n">mesh</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+
+&lt;file:///eb728b67-1a46-11ed-8d02-c8f75043ce59&gt; a v4d:GeometryNode ;
+    v4d:name &quot;eb728b67-1a46-11ed-8d02-c8f75043ce59&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[-1.96025705e+01  1.65884170e+02  2.22874728e+01]
+ [ 1.22465481e+02  1.23859452e+02  2.29468259e+01]
+ [-5.26111776e+01  5.43129171e+01  2.33762909e+01]
+ [-1.95654721e+01  1.65648765e+02 -7.09825518e-01]
+ [ 8.94939722e+01  1.20527931e+01  1.03834556e+00]
+ [-5.25740791e+01  5.40775120e+01  3.78992525e-01]
+ [ 1.22502579e+02  1.23624046e+02 -5.04724793e-02]
+ [ 8.94568738e+01  1.22881982e+01  2.40356439e+01]]&quot;&quot;&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="geometrynode-with-orientedboundingbox">
+<h2>GeometryNode with orientedBoundingBox<a class="headerlink" href="#geometrynode-with-orientedboundingbox" title="Link to this heading"></a></h2>
+<p>orientedBoundingBox (Open3D.geometry.OriendtedBoundingBox), can be set from 3 different inputs:</p>
+<ol class="arabic simple">
+<li><p>Open3D.geometry.OrientedBoundingBox<br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">orientedBoundingBox</span><span class="o">=</span><span class="n">box</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">orientedBoundingBox</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>OrientedBoundingBox: center: (34.9457, 88.9685, 11.6629), extent: 148.155, 116.357, 22.9985)
+OrientedBoundingBox: center: (34.9457, 88.9685, 11.6629), extent: 148.155, 116.357, 22.9985)
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p>Open3D geometry<br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">mesh</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">orientedBoundingBox</span><span class="o">=</span><span class="n">mesh</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">orientedBoundingBox</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TriangleMesh with 330263 points and 485077 triangles.
+OrientedBoundingBox: center: (34.9457, 88.9685, 11.6629), extent: 148.155, 116.357, 22.9985)
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p>orientedBounds (np.array(8x3))<br></p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">array</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">vectorlist</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">array</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span> <span class="n">GeometryNode</span><span class="p">(</span><span class="n">orientedBoundingBox</span><span class="o">=</span><span class="n">array</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">orientedBoundingBox</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[-1.96025705e+01  1.65884170e+02  2.22874728e+01]
+ [ 1.22465481e+02  1.23859452e+02  2.29468259e+01]
+ [-5.26111776e+01  5.43129171e+01  2.33762909e+01]
+ [-1.95654721e+01  1.65648765e+02 -7.09825518e-01]
+ [ 8.94939722e+01  1.20527931e+01  1.03834556e+00]
+ [-5.25740791e+01  5.40775120e+01  3.78992525e-01]
+ [ 1.22502579e+02  1.23624046e+02 -5.04724793e-02]
+ [ 8.94568738e+01  1.22881982e+01  2.40356439e+01]]
+OrientedBoundingBox: center: (34.9457, 88.9685, 11.6629), extent: 148.155, 116.357, 22.9985)
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>IMPORTANT</strong> orientedBoundingBox is currently not serialized as it can be easily reconstructed from orientedBounds.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

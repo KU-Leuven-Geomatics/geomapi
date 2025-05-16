@@ -1,0 +1,39 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Node selection"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "It is important to notice geomapi extends the base operations of [OPEN3D](http://www.open3d.org/docs/release/tutorial/geometry/mesh.html) and [TRIMESH](https://trimsh.org/trimesh.base.html) to operate on **metadata**. This significantly reduces resource demands and speeds up any analyses. <br>\n",
+    "\n",
+    "A first core task is the selection of nearby Nodes:"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3.8.13 ('conda_environment3')",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "name": "python",
+   "version": "3.8.13"
+  },
+  "orig_nbformat": 4,
+  "vscode": {
+   "interpreter": {
+    "hash": "801b4083378541fd050d6c91abf6ec053c863905e8162e031d57b83e7cdb3051"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

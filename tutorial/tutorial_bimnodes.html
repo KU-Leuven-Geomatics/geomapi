@@ -1,0 +1,701 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIMNode &mdash; Geomapi 0.9.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=39bb1c6d"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="LineSetNode" href="tutorial_linesetnodes.html" />
+    <link rel="prev" title="PointCloudNode" href="tutorial_pointcloudnodes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">BIMNode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bimnode-from-properties">BIMNode from properties</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bimnode-from-ifcpath">BIMNode from ifcPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#meshnode-from-resource">MeshNode from resource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bimnodes-from-entire-ifc">BIMNodes from entire IFC</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bimnode-from-graph-and-graphpath">BIMNode from Graph and graphPath</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bimnode-save-resource">BIMNode save resource</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bimnode-to-graph">BIMNode to Graph</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#bimnode-analyses">BIMNode Analyses</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">BIMNode</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/tutorial_bimnodes.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="bimnode">
+<h1>BIMNode<a class="headerlink" href="#bimnode" title="Link to this heading"></a></h1>
+<p>The BIMNode class in Geomapi represents the data and metadata of ifc data. The data itself and methods build upon Open3D TriangleMesh and IFCOPENSHELL concepts while the metadata builds upon the RDFlib framework:</p>
+<p><a class="reference external" href="http://www.open3d.org/docs/latest/tutorial/Basic/mesh.html#">http://www.open3d.org/docs/latest/tutorial/Basic/mesh.html#</a></p>
+<p><a class="reference external" href="http://ifcopenshell.org/">http://ifcopenshell.org/</a></p>
+<p><a class="reference external" href="https://rdflib.readthedocs.io/">https://rdflib.readthedocs.io/</a></p>
+<p>The code below shows how to create a BIMNode from various inputs.</p>
+<p>First the geomapi and external packages are imported</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#IMPORT PACKAGES</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">import</span> <span class="nn">open3d</span> <span class="k">as</span> <span class="nn">o3d</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">import</span> <span class="nn">ifcopenshell</span>
+<span class="kn">import</span> <span class="nn">ifcopenshell.util.selector</span>
+
+<span class="c1">#IMPORT MODULES</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span> 
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">geomapi.utils</span> <span class="k">as</span> <span class="nn">ut</span>
+<span class="kn">from</span> <span class="nn">geomapi.utils</span> <span class="kn">import</span> <span class="n">geometryutils</span> <span class="k">as</span> <span class="n">gmu</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools</span> <span class="k">as</span> <span class="nn">tl</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jupyter environment detected. Enabling Open3D WebVisualizer.
+[Open3D INFO] WebRTC GUI backend enabled.
+[Open3D INFO] WebRTCWindowSystem: HTTP handshake server disabled.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">autoreload</span> 2
+</pre></div>
+</div>
+</div>
+</div>
+<section id="bimnode-from-properties">
+<h2>BIMNode from properties<a class="headerlink" href="#bimnode-from-properties" title="Link to this heading"></a></h2>
+<p>A placeholder BIMNode can be initialised without any data or metadata</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+              <span class="n">name</span><span class="o">=</span><span class="s1">&#39;myName&#39;</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_ifcPath&#39;: None,
+ &#39;_globalId&#39;: None,
+ &#39;_cartesianBounds&#39;: None,
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///myNode&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;myName&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="bimnode-from-ifcpath">
+<h2>BIMNode from ifcPath<a class="headerlink" href="#bimnode-from-ifcpath" title="Link to this heading"></a></h2>
+<p>Instead, it is much more likely to initialise a BIMNode from a path containing an .ifc file. This sets the: <br></p>
+<ol class="arabic simple">
+<li><p>subject</p></li>
+<li><p>name  (name + globalID as some files have overlapping names for different objects)</p></li>
+<li><p>timestamp</p></li>
+<li><p>ifcClass</p></li>
+<li><p>GlobalId (ifc guid)</p></li>
+<li><p>ifcPath</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IFC&#39;</span><span class="p">,</span><span class="s1">&#39;Academiestraat_parking.ifc&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">ifcPath</span><span class="o">=</span><span class="n">filePath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_ifcPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IFC\\Academiestraat_parking.ifc&#39;,
+ &#39;_globalId&#39;: &#39;2n_QS$kOz7M9BWCXzp5rs4&#39;,
+ &#39;_cartesianBounds&#39;: None,
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///Floor_232_FL_Wide_slab_50mm_974795_2n_QS_kOz7M9BWCXzp5rs4&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;Floor:232_FL_Wide slab 50mm:974795&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None,
+ &#39;className&#39;: &#39;IfcSlab&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: GetResource is optional and might slow down any analysis. Only work with data when all metadata options have been exhausted.</p>
+<p><strong>NOTE</strong>: if no globalId is given, the first .ifcObject is retained</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">ifcPath</span><span class="o">=</span><span class="n">filePath</span><span class="p">,</span> <span class="n">globalId</span><span class="o">=</span><span class="s1">&#39;1K2OFoocT0bub_jVpw2PsR&#39;</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_ifcPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IFC\\Academiestraat_parking.ifc&#39;,
+ &#39;_globalId&#39;: &#39;1K2OFoocT0bub_jVpw2PsR&#39;,
+ &#39;_cartesianBounds&#39;: array([-19.38519689, 114.01719939,  45.19729363, 125.59687726,
+          3.35      ,   3.75      ]),
+ &#39;_orientedBounds&#39;: array([[-11.28238184,  37.99919902,   3.35      ],
+        [116.01357152,  57.68952212,   3.35      ],
+        [-21.90604793, 106.68012904,   3.35      ],
+        [-11.28238184,  37.99919902,   3.75      ],
+        [105.38990543, 126.37045214,   3.75      ],
+        [-21.90604793, 106.68012904,   3.75      ],
+        [116.01357152,  57.68952212,   3.75      ],
+        [105.38990543, 126.37045214,   3.35      ]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (47.0538, 82.1848, 3.55), extent: 128.81, 69.4977, 0.4),
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///Floor_164_FL_Foundation_slab_400mm_C35_45_1276320_1K2OFoocT0bub_jVpw2PsR&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;Floor:164_FL_Foundation slab 400mm C35/45:1276320&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: TriangleMesh with 1576 points and 3636 triangles.,
+ &#39;_cartesianTransform&#39;: array([[ 1.        ,  0.        ,  0.        , 52.24275107],
+        [ 0.        ,  1.        ,  0.        , 85.37826532],
+        [ 0.        ,  0.        ,  1.        ,  3.55659287],
+        [ 0.        ,  0.        ,  0.        ,  1.        ]]),
+ &#39;className&#39;: &#39;IfcSlab&#39;,
+ &#39;pointCount&#39;: 1576,
+ &#39;faceCount&#39;: 3636}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: GetMetadata (bool) by default is True. As such, when data is imported, the cartesianBounds, orientedBounds, cartesianTransform and orientedBoundingBox is automatically extracted.</p>
+</section>
+<section id="meshnode-from-resource">
+<h2>MeshNode from resource<a class="headerlink" href="#meshnode-from-resource" title="Link to this heading"></a></h2>
+<p>A similar result is achieved by initialising a MeshNode from a Open3D.Geometry.TriangleMesh or IFCOpenShell instance. In this case, GetResource (bool) means nothing.</p>
+<p><strong>NOTE</strong>: initialising from an .obj or .ply mesh of an ifcElement does not contain any IFC information as those formats do not include such metadata. Initialise from .ifc files whenever possible.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;BIM&#39;</span><span class="p">,</span><span class="s1">&#39;System_Panel_Precast_Thinshell_50mm_1677890_3fhPSHjyH7lghMFf1Y5rrB.ply&#39;</span><span class="p">)</span>
+<span class="n">mesh</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_triangle_mesh</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">mesh</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>            
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_ifcPath&#39;: None,
+ &#39;_globalId&#39;: None,
+ &#39;_cartesianBounds&#39;: array([ 50.07300091,  50.80691124, 110.31694196, 111.98929461,
+          0.36      ,   2.75      ]),
+ &#39;_orientedBounds&#39;: array([[ 50.11916531, 110.31694196,   0.36      ],
+        [ 50.11916531, 110.31694196,   2.75      ],
+        [ 50.80691124, 111.97008919,   0.36      ],
+        [ 50.07300091, 110.33614737,   0.36      ],
+        [ 50.76074684, 111.98929461,   2.75      ],
+        [ 50.76074684, 111.98929461,   0.36      ],
+        [ 50.07300091, 110.33614737,   2.75      ],
+        [ 50.80691124, 111.97008919,   2.75      ]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (50.44, 111.153, 1.555), extent: 2.39, 1.7905, 0.05),
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///4de4d5d4-1e34-11ed-9ccc-c8f75043ce59&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;4de4d5d4-1e34-11ed-9ccc-c8f75043ce59&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: TriangleMesh with 8 points and 12 triangles.,
+ &#39;_cartesianTransform&#39;: array([[  1.        ,   0.        ,   0.        ,  50.43995608],
+        [  0.        ,   1.        ,   0.        , 111.15311828],
+        [  0.        ,   0.        ,   1.        ,   1.555     ],
+        [  0.        ,   0.        ,   0.        ,   1.        ]]),
+ &#39;pointCount&#39;: 8,
+ &#39;faceCount&#39;: 12}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: The cartesianTransform extracted from paths or resources are void of rotationmatrices as this metadata is not part of the fileformat. The translation thus represents the center of the geometry.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ifcPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IFC&#39;</span><span class="p">,</span><span class="s1">&#39;Academiestraat_parking.ifc&#39;</span><span class="p">)</span>
+<span class="n">ifc</span> <span class="o">=</span> <span class="n">ifcopenshell</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ifcPath</span><span class="p">)</span>   
+<span class="n">ifcWall</span><span class="o">=</span><span class="n">ifc</span><span class="o">.</span><span class="n">by_guid</span><span class="p">(</span><span class="s1">&#39;06v1k9ENv8DhGMCvKUuLQV&#39;</span><span class="p">)</span>
+<span class="n">bimNode</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">ifcWall</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_ifcPath&#39;: None,
+ &#39;_globalId&#39;: None,
+ &#39;_cartesianBounds&#39;: array([ 50.07300091,  50.80691124, 110.31694196, 111.98929461,
+          0.36      ,   2.75      ]),
+ &#39;_orientedBounds&#39;: array([[ 50.11916531, 110.31694196,   0.36      ],
+        [ 50.11916531, 110.31694196,   2.75      ],
+        [ 50.80691124, 111.97008919,   0.36      ],
+        [ 50.07300091, 110.33614737,   0.36      ],
+        [ 50.76074684, 111.98929461,   2.75      ],
+        [ 50.76074684, 111.98929461,   0.36      ],
+        [ 50.07300091, 110.33614737,   2.75      ],
+        [ 50.80691124, 111.97008919,   2.75      ]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (50.44, 111.153, 1.555), extent: 2.39, 1.7905, 0.05),
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///4de4d5d4-1e34-11ed-9ccc-c8f75043ce59&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;4de4d5d4-1e34-11ed-9ccc-c8f75043ce59&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: TriangleMesh with 8 points and 12 triangles.,
+ &#39;_cartesianTransform&#39;: array([[  1.        ,   0.        ,   0.        ,  50.43995608],
+        [  0.        ,   1.        ,   0.        , 111.15311828],
+        [  0.        ,   0.        ,   1.        ,   1.555     ],
+        [  0.        ,   0.        ,   0.        ,   1.        ]]),
+ &#39;pointCount&#39;: 8,
+ &#39;faceCount&#39;: 12}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="bimnodes-from-entire-ifc">
+<h2>BIMNodes from entire IFC<a class="headerlink" href="#bimnodes-from-entire-ifc" title="Link to this heading"></a></h2>
+<p>As one wants to frequently parse entire ifc files, linkeddatatools incorportes the functionality to parse ifc files given a set of classses.</p>
+<p><strong>NOTE</strong>: By default, all objects in the ifc (.ifcObject) are retained which do not necessarily contains geometry.</p>
+<p><strong>NOTE</strong>: By default, getResource =  True. Turn it off to speed up the process (you can always get the geometry later).</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ifcPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IFC&#39;</span><span class="p">,</span><span class="s1">&#39;Academiestraat_building_1.ifc&#39;</span><span class="p">)</span>
+<span class="n">ifc</span> <span class="o">=</span> <span class="n">ifcopenshell</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ifcPath</span><span class="p">)</span>   
+<span class="n">bimNodes</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">ifcElement</span> <span class="ow">in</span> <span class="n">ifcopenshell</span><span class="o">.</span><span class="n">util</span><span class="o">.</span><span class="n">selector</span><span class="o">.</span><span class="n">filter_elements</span><span class="p">(</span><span class="n">ifc</span><span class="p">,</span><span class="s2">&quot;IfcElement&quot;</span><span class="p">):</span> 
+    <span class="n">bimNodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">ifcElement</span><span class="o">=</span><span class="n">ifcElement</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bimNodes</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>1192
+</pre></div>
+</div>
+</div>
+</div>
+<p>and now with specific classes…</p>
+<p><img alt="rendering" src="../_images/BIM1.PNG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">classes</span><span class="o">=</span><span class="s1">&#39;.ifcWall | .ifcColumn&#39;</span>
+<span class="n">bimNodes</span><span class="o">=</span><span class="n">tl</span><span class="o">.</span><span class="n">ifc_to_nodes</span><span class="p">(</span><span class="n">ifcPath</span><span class="p">,</span> <span class="n">classes</span><span class="o">=</span><span class="n">classes</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bimNodes</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>460
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="bimnode-from-graph-and-graphpath">
+<h2>BIMNode from Graph and graphPath<a class="headerlink" href="#bimnode-from-graph-and-graphpath" title="Link to this heading"></a></h2>
+<p>If a ifc object was already serialized, a node can be initialised from the graph or graphPath.</p>
+<p><strong>NOTE</strong>: The graphPath is the more complete option as it is used to absolutize the node’s path information. However, it is also the slower option as the entire graph encapsulation the node is parsed multiple times.</p>
+<p><strong>USE</strong>: linkeddatatools.graph_to_nodes resolves this issue.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;bimGraph1.ttl&#39;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">graphPath</span><span class="p">)</span>
+
+<span class="c1">#only print first node</span>
+<span class="n">newGraph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">newGraph</span><span class="o">=</span><span class="n">ut</span><span class="o">.</span><span class="n">bind_ontologies</span><span class="p">(</span><span class="n">newGraph</span><span class="p">)</span>
+<span class="n">newGraph</span><span class="o">+=</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">URIRef</span><span class="p">(</span><span class="s1">&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;</span><span class="p">),</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">newGraph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix ifc: &lt;http://ifcowl.openbimstandards.org/IFC2X3_Final#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&gt; a v4d:BIMNode ;
+    ifc:className &quot;IfcWall&quot; ;
+    ifc:globalId &quot;0KysUSO6T3_gOJKtAiUE7d&quot; ;
+    ifc:ifcPath &quot;IFC\\Academiestraat_building_1.ifc&quot; ;
+    ifc:phase &quot;BIM-UF&quot; ;
+    e57:cartesianBounds &quot;&quot;&quot;[ 31.3840053   37.25142541 100.31983802 100.57972895   7.49
+  10.48      ]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[  1.           0.           0.          34.91152793]
+ [  0.           1.           0.         100.43864519]
+ [  0.           0.           1.           9.31833333]
+ [  0.           0.           0.           1.        ]]&quot;&quot;&quot; ;
+    e57:pointCount 24 ;
+    v4d:accuracy &quot;0.05&quot;^^xsd:float ;
+    v4d:faceCount 44 ;
+    v4d:lod 300 ;
+    v4d:name &quot;Basic Wall:211_WA_Ff1_Glued brickwork sandlime 150mm:1118860&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[ 31.38400511 100.42974533  10.48      ]
+ [ 37.24861442 100.31982342  10.48      ]
+ [ 31.38400511 100.42974533   7.49      ]
+ [ 31.38681629 100.57972895  10.48      ]
+ [ 37.2514256  100.46980704   7.49      ]
+ [ 31.38681629 100.57972895   7.49      ]
+ [ 37.2514256  100.46980704  10.48      ]
+ [ 37.24861442 100.31982342   7.49      ]]&quot;&quot;&quot; ;
+    v4d:path &quot;BIM\\Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d.ply&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_ifcPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IFC\\Academiestraat_building_1.ifc&#39;,
+ &#39;_globalId&#39;: &#39;1sAc4Xyq99bfet1lGbGxNb&#39;,
+ &#39;_cartesianBounds&#39;: array([-10.82253789,  -9.66331336,  72.20498616,  72.63245695,
+         16.99      ,  17.04      ]),
+ &#39;_orientedBounds&#39;: array([[-10.8129766 ,  72.63260805,  17.04      ],
+        [ -9.66325013,  72.60493317,  17.04      ],
+        [-10.82260366,  72.23266104,  17.04      ],
+        [-10.8129766 ,  72.63260805,  16.99      ],
+        [ -9.67287719,  72.20498616,  16.99      ],
+        [-10.82260366,  72.23266104,  16.99      ],
+        [ -9.66325013,  72.60493317,  16.99      ],
+        [ -9.67287719,  72.20498616,  17.04      ]]),
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///1faada72-1493-11ed-8ec2-c8f75043ce59&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=Nb1446c85b0e64370916b01c9da7f5639 (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\bimGraph1.ttl&#39;,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\BIM\\1faada72-1493-11ed-8ec2-c8f75043ce59.ply&#39;,
+ &#39;_name&#39;: &#39;1faada72-1493-11ed-8ec2-c8f75043ce59&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: array([[  1.        ,   0.        ,   0.        , -10.24292717],
+        [  0.        ,   1.        ,   0.        ,  72.41878611],
+        [  0.        ,   0.        ,   1.        ,  17.015     ],
+        [  0.        ,   0.        ,   0.        ,   1.        ]]),
+ &#39;type&#39;: &#39;https://w3id.org/v4d/core#BIMNode&#39;,
+ &#39;className&#39;: &#39;IfcOpeningElement&#39;,
+ &#39;phase&#39;: &#39;BIM-UF&#39;,
+ &#39;pointCount&#39;: 8,
+ &#39;accuracy&#39;: 0.05,
+ &#39;faceCount&#39;: 12,
+ &#39;lod&#39;: 300}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="bimnode-save-resource">
+<h2>BIMNode save resource<a class="headerlink" href="#bimnode-save-resource" title="Link to this heading"></a></h2>
+<p>It is interesting to buffer the geometries of ifc files on drive to speed up future analyses.
+Set save=True on node.to_graph with an optional filepath to store the geometry as .ply or .obj.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ifcPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IFC&#39;</span><span class="p">,</span><span class="s1">&#39;Academiestraat_parking.ifc&#39;</span><span class="p">)</span>
+<span class="n">ifc</span> <span class="o">=</span> <span class="n">ifcopenshell</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ifcPath</span><span class="p">)</span>   
+<span class="n">ifcWall</span><span class="o">=</span><span class="n">ifc</span><span class="o">.</span><span class="n">by_guid</span><span class="p">(</span><span class="s1">&#39;06v1k9ENv8DhGMCvKUuLQV&#39;</span><span class="p">)</span>
+<span class="n">bimNode</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">ifcWall</span><span class="p">)</span>
+
+<span class="n">bimNode</span><span class="o">.</span><span class="n">save_resource</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IFC&#39;</span><span class="p">,</span><span class="s1">&#39;resources&#39;</span><span class="p">),</span>
+                        <span class="n">extension</span><span class="o">=</span><span class="s1">&#39;.ply&#39;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="bimnode-to-graph">
+<h2>BIMNode to Graph<a class="headerlink" href="#bimnode-to-graph" title="Link to this heading"></a></h2>
+<p>The Graph serialisation is inherited from Node functionality.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">globalId</span><span class="o">=</span><span class="s1">&#39;06v1k9ENv8DhGMCvKUuLQV&#39;</span><span class="p">,</span>
+                <span class="n">ifcPath</span><span class="o">=</span><span class="n">ifcPath</span><span class="p">,</span>
+                <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">newGraphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s1">&#39;myGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">newGraphPath</span><span class="p">)</span>
+
+<span class="n">newNode</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">newGraphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix ifc: &lt;http://ifcowl.openbimstandards.org/IFC2X3_Final#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///Basic_Wall_168_WA_f2_Soilmix_600mm_956569_06v1k9ENv8DhGMCvKUuLQV&gt; a v4d:BIMNode ;
+    ifc:className &quot;IfcWallStandardCase&quot; ;
+    ifc:globalId &quot;06v1k9ENv8DhGMCvKUuLQV&quot; ;
+    ifc:ifcPath &quot;..\\..\\..\\test\\testfiles\\IFC\\Academiestraat_parking.ifc&quot; ;
+    e57:cartesianBounds &quot;&quot;&quot;[-19.83659837 -12.40836166  64.55835804  90.40079018  -0.25
+   6.45      ]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[  1.           0.           0.         -16.04308554]
+ [  0.           1.           0.          77.58409117]
+ [  0.           0.           1.           3.325     ]
+ [  0.           0.           0.           1.        ]]&quot;&quot;&quot; ;
+    e57:pointCount 16 ;
+    v4d:faceCount 28 ;
+    v4d:name &quot;Basic Wall:168_WA_f2_Soilmix 600mm:956569&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[-19.83941221  90.32921075   6.45      ]
+ [-12.98842887  64.40506348   6.45      ]
+ [-19.83941221  90.32921075  -0.25      ]
+ [-19.25652179  90.48325141   6.45      ]
+ [-12.40553844  64.55910413  -0.25      ]
+ [-19.25652179  90.48325141  -0.25      ]
+ [-12.40553844  64.55910413   6.45      ]
+ [-12.98842887  64.40506348  -0.25      ]]&quot;&quot;&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="bimnode-analyses">
+<h2>BIMNode Analyses<a class="headerlink" href="#bimnode-analyses" title="Link to this heading"></a></h2>
+<p>BIMNodes can be attributed with a range of relationships. This is extremely usefull for Graph navigation and linking together different resources. In <a class="reference external" href="https://rdflib.readthedocs.io/en/stable/intro_to_creating_rdf.html">Semantic Web Technologies</a>, relationships are defined by triples that have other subjects as literals.</p>
+<p>In this first example, we determine the percentage of completion on a subselection on an ifc file to asses which objects are built based on point cloud inliers. To this end, we use the <a class="reference external" href="https://w3id.org/v4d/core#">v4d.analysesBasedOn</a> relation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ifcPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IFC&#39;</span><span class="p">,</span><span class="s1">&#39;Academiestraat_parking.ifc&#39;</span><span class="p">)</span>
+<span class="n">node1</span><span class="o">=</span> <span class="n">BIMNode</span><span class="p">(</span><span class="n">ifcPath</span><span class="o">=</span><span class="n">ifcPath</span><span class="p">,</span><span class="n">globalId</span><span class="o">=</span><span class="s1">&#39;1K2OFoocT0bub_jVpw2PsR&#39;</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">node2</span><span class="o">=</span> <span class="n">BIMNode</span><span class="p">(</span><span class="n">ifcPath</span><span class="o">=</span><span class="n">ifcPath</span><span class="p">,</span><span class="n">globalId</span><span class="o">=</span><span class="s1">&#39;23JN72MijBOfF91SkLzf3a&#39;</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node1</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node2</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TriangleMesh with 1576 points and 3636 triangles.
+TriangleMesh with 8 points and 12 triangles.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;pcdGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">myNode</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;file:///week22_photogrammetry_-_Cloud&#39;</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span> <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myNode</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PointCloud with 242750 points.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sources</span><span class="o">=</span> <span class="p">[</span><span class="n">node1</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span><span class="n">node2</span><span class="o">.</span><span class="n">resource</span><span class="p">]</span>
+<span class="n">reference</span><span class="o">=</span><span class="n">myNode</span><span class="o">.</span><span class="n">resource</span>
+<span class="n">threshold</span><span class="o">=</span><span class="mf">0.1</span>
+<span class="n">percentages</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">determine_percentage_of_coverage</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">sources</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">reference</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">percentages</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[0.15218456]
+ [0.70726916]]
+</pre></div>
+</div>
+</div>
+</div>
+<p>These percentages indicate the percentage of the surface area that have points of a reference point cloud/mesh within a threshold Euclidean distance of the surface. It is a measure for the observed/built state of objects.</p>
+<p><img alt="rendering" src="../_images/POC1.PNG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">analysisNode1</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">node1</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
+                <span class="n">percentageOfCompletion</span><span class="o">=</span><span class="n">percentages</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span>
+                <span class="n">isDerivedFromGeometry</span><span class="o">=</span><span class="n">myNode</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
+                <span class="n">offsetDistanceCalculation</span><span class="o">=</span><span class="n">threshold</span><span class="p">,</span>
+                <span class="n">analysisTimestamp</span><span class="o">=</span><span class="n">myNode</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
+<span class="n">analysisNode1</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">analysisNode1</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix omg: &lt;https://w3id.org/omg#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///Floor_164_FL_Foundation_slab_400mm_C35_45_1276320_1K2OFoocT0bub_jVpw2PsR&gt; a v4d:BIMNode ;
+    omg:isDerivedFromGeometry &quot;file:///week22_photogrammetry_-_Cloud&quot; ;
+    v4d:analysisTimestamp &quot;2022-07-18T15:47:20&quot; ;
+    v4d:offsetDistanceCalculation &quot;0.1&quot;^^xsd:float ;
+    v4d:percentageOfCompletion &quot;[0.15218456]&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+<p>These analyses nodes can be stored in seperate graphs and combined at later stages to be used in future analyses.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial_pointcloudnodes.html" class="btn btn-neutral float-left" title="PointCloudNode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial_linesetnodes.html" class="btn btn-neutral float-right" title="LineSetNode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
