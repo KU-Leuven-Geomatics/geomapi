@@ -88,7 +88,7 @@ class ImageNode(Node):
             
             - intrinsicMatrix (np.array, optional) : intrinsic camera matrix (3x3) k=[[fx 0 cx] [0 fy cy][0 0  1]]
             
-            - focalLength35mm (float, optional) : focal length with a standardised Field-of-View in pixels. Defaults to circa 2600pix for a 25.4mm lens
+            - focalLength35mm (float, optional) : focal length with a standardized Field-of-View in mm.
             
             - keypoints (np.array, optional) : a set of image keypoints, generated through sift or orb. 
             
@@ -245,7 +245,7 @@ class ImageNode(Node):
     def focalLength35mm(self):
         """Get the focalLength35mm (float) of the node."""
         if self._focalLength35mm is None:
-            self._focalLength35mm = 2600
+            self._focalLength35mm = 35
         return self._focalLength35mm
     
     @focalLength35mm.setter
@@ -302,17 +302,9 @@ class ImageNode(Node):
         [0 0  1]
         
         """
-        if self._intrinsicMatrix is not None:
-            return self._intrinsicMatrix
-        else:
-            pinholeCameraIntrinsic = o3d.camera.PinholeCameraIntrinsic(self.imageWidth,
-                                                                       self.imageHeight,
-                                                                       self.focalLength35mm,
-                                                                       self.focalLength35mm,
-                                                                       self.imageWidth/2+self.principalPointU,
-                                                                       self.imageHeight/2+self.principalPointV)
-            self._intrinsicMatrix = pinholeCameraIntrinsic.intrinsic_matrix
-            return self._intrinsicMatrix
+        if self._intrinsicMatrix is None:
+            return None
+        return self._intrinsicMatrix
 
     @intrinsicMatrix.setter
     def intrinsicMatrix(self,value:np.ndarray):
@@ -322,7 +314,7 @@ class ImageNode(Node):
             value=value.reshape(3,3)
             self._intrinsicMatrix=np.array(value)
         else:
-            raise ValueError('self.descriptors must be a numpy array')
+            raise ValueError('must be a 3x3 np array')
 
     #---------------------Depth----------------------------
     @property
@@ -388,30 +380,38 @@ class ImageNode(Node):
         Returns:
             - bool: True if meta data is successfully parsed
         """
-        
-        if hasattr(self,'graph'):
-            return True
-        
-        if getattr(self,'timestamp',None) is None :
-            self.timestamp=ut.get_timestamp(path)
-        
-        if getattr(self,'name',None) is None:
-            self.name=Path(path).stem
 
-        if (getattr(self,'imageWidth',None) is not None and
-            getattr(self,'imageHeight',None) is not None and
-            getattr(self,'geospatialTransform',None) is not None):
-            return True
-
-        # pix = PIL.Image.open(self.path) 
         with Image.open(path) as pix:
             exifData=gsu.get_exif_data(pix)
+            print(exifData)
 
         if exifData is not None:
-            self.timestamp=exifData.get("DateTime")
-            # self.resolutionUnit=exifData.get("ResolutionUnit")
-            self.imageWidth=exifData.get("ExifImageWidth")
-            self.imageHeight=exifData.get("ExifImageHeight")
+            # get the relevant exif properties
+            timestamp=exifData.get("DateTime")
+            imageWidth=exifData.get("ExifImageWidth")
+            imageHeight=exifData.get("ExifImageHeight")
+            focalLength = exifData.get("FocalLength")
+            focalLength35mm = exifData.get("FocalLengthIn35mmFilm")
+
+            # Get the cameraParameters
+            cropFactor = focalLength35mm/focalLength
+            sensor_width_mm = 36.0 / cropFactor
+            sensor_height_mm = 24.0 / cropFactor
+            fx = (focalLength / sensor_width_mm) * imageWidth
+            fy = (focalLength / sensor_height_mm) * imageHeight
+            cx = imageWidth / 2.0
+            cy = imageHeight / 2.0
+            K = np.array([
+                [fx,  0,  cx],
+                [ 0, fy,  cy],
+                [ 0,  0,   1]
+            ])
+
+            if(self._timestamp is None): self.timestamp = timestamp
+            if(self._imageWidth is None): self.imageWidth = imageWidth
+            if(self._imageHeight is None): self.imageHeight = imageHeight
+            if(self._focalLength35mm is None): self.focalLength35mm = focalLength35mm
+            if(self._intrinsicMatrix is None): self.intrinsicMatrix = K
             
             if 'GPSInfo' in exifData:
                 gps_info = exifData["GPSInfo"]
@@ -464,7 +464,6 @@ class ImageNode(Node):
         for child in root.iter():
             #Attributes
             for attribute in child.attrib:
-                print(attribute)
                 if ('latitude' in attribute and
                     'longitude'in attribute and
                     'altitude' in attribute):
@@ -607,249 +606,139 @@ class ImageNode(Node):
             # Align with the frustum shape
             self.orientedBoundingBox = gmu.get_oriented_bounding_box(self.convexHull)
     
-    def create_rays(self, imagePoints: np.ndarray = None, depths: np.ndarray = None) -> np.ndarray:
+    def create_rays(self, imagePoints: np.ndarray, depths: np.ndarray = None) -> np.ndarray:
         """
-        Generate a grid of rays from the camera location through given imagePoints.
+        Generate rays from the camera center through given image points.
+
         Args:
-            imagePoints (np.ndarray): (n,2) Pixel coordinates (row, column).
-            depths (np.ndarray, optional): NOT used inside this function anymore.
+            imagePoints (np.ndarray): (n, 2) Pixel coordinates (row, column).
+            depths (np.ndarray, optional): If None, rays are cast at unit distance along camera direction.
+
         Returns:
-            np.ndarray: (n,6) array where [:,0:3] are the camera origins, [:,3:6] are unit direction vectors.
+            np.ndarray: (n, 6) where [:, 0:3] is origin, [:, 3:6] is unit direction.
         """
-        if imagePoints is None:
-            points = np.array([
-                [0, 0],
-                [0, self.imageWidth],
-                [self.imageHeight, 0],
-                [self.imageHeight, self.imageWidth]])
-        else:
-            points = ut.map_to_2d_array(imagePoints)
 
-        points = np.reshape(points, (-1, 2))  # ensure shape (n,2)
+        points = ut.map_to_2d_array(imagePoints)
+
+        points = np.reshape(points, (-1, 2))  # Ensure shape (n, 2)
         n = points.shape[0]
-        
-        # Camera parameters
-        f = self.focalLength35mm
-        k = self.intrinsicMatrix
-        m = self.cartesianTransform
-        t = gmu.get_translation(m)
 
-        # Convert pixel coordinates to normalized image plane
-        u = +points[:,1] - self.imageWidth / 2
-        v = +points[:,0] - self.imageHeight / 2
-        camera_coords = np.vstack((u, v, np.full(n, f)))
+        # Default to unit distances if no depths provided
+        if depths is None:
+            depths = np.ones(n)
 
-        # Homogeneous coordinates
-        camera_coords = np.vstack((camera_coords, np.ones((1, n))))  # (4,n)
-        
-        # Transform to world coordinates
-        world_coords = m @ camera_coords  # (4,n)
+        # Compute 3D points in world space along each ray
+        world_pts = self.pixel_to_world_coordinates(
+            image_points=points,
+            depths=depths,
+            use_z_depth=False  # using Euclidean distance by default
+        )
 
-        # Compute ray directions
-        directions = (world_coords[:3, :].T - t)  # (n,3)
-        directions = gmu.normalize_vectors(directions)
+        # Camera origin
+        origin = self.cartesianTransform[:3, 3]
+        origins = np.tile(origin, (n, 1))
 
-        # Build ray (origin + direction)
-        rays = np.hstack((np.tile(t, (n, 1)), directions))  # (n,6)
-        
+        # Ray directions
+        directions = gmu.normalize_vectors(world_pts - origins)
+
+        # Final ray array: origin + direction
+        rays = np.hstack((origins, directions))  # (n, 6)
         return rays
 
     
-    def world_to_pixel_coordinates(self,worldCoordinates: np.ndarray) -> np.ndarray:
-        """Converts 3D world coordinates to pixel coordinates in an image.
-
-        This function takes 3D world coordinates and converts them to pixel coordinates in an image. It uses camera parameters such as the transformation matrix, focal length, image width, and image height.
-
-        **NOTE**: the pixel coordinates have a (row, column) format. This fitts well with array indexing, but not with Matplotlib's imshow function
+    def world_to_pixel_coordinates(self,worldCoordinates: np.ndarray, use_z_depth=False) -> np.ndarray:
+        """
+        Projects 3D world points to 2D image coordinates.
+        Optionally returns z-depths instead of Euclidean distances.
 
         Args:
-            - worldCoordinates (np.ndarray (n,3) or (n,4) homogenous coordinates) : A set of 3D points in world coordinates to be converted.
-
+            worldCoordinates: (N, 3) array of world coordinates [X, Y, Z]
+            use_z_depth: if True, return z-axis depth instead of Euclidean distance
         Returns:
-           pixels : A 2D array containing the pixel coordinates (row, column) in the image.
-
-        Note:
-            - The function performs a series of transformations, including world to camera, camera to image, and image centering.
-            - It returns the imageCoordinates as a 2D array.
+            image_points: (N, 2) pixel coordinates
+            depths: (N,) z-depths or Euclidean distances
         """
-        # Ensure homogeneous coordinates
-        worldCoordinates = gmu.convert_to_homogeneous_3d_coordinates(worldCoordinates)  # (n,4)
+        worldCoordinates = np.atleast_2d(worldCoordinates)
+        N = worldCoordinates.shape[0]
 
-        # Transform world coordinates to camera coordinates
-        cameraCoordinates = np.linalg.inv(self.cartesianTransform) @ worldCoordinates.T  # (4,n)
+        # Invert camera pose to get world-to-camera transform
+        T_inv = np.linalg.inv(self.cartesianTransform)
+        worldCoordinates_h = np.hstack([worldCoordinates, np.ones((N, 1))])
+        cam_points = (T_inv @ worldCoordinates_h.T).T[:, :3]
 
-        # Normalize to 3D (homogeneous division)
-        xy = cameraCoordinates[:3, :] / cameraCoordinates[2, :]
+        # Project to image
+        proj = (self.intrinsicMatrix @ cam_points.T).T
+        image_points = proj[:, :2] / proj[:, 2:3]
 
-        # Apply focal length scaling
-        xy[:2, :] *= self.focalLength35mm
-
-        # Convert to image coordinates (row, column)
-        uv = np.zeros((2, xy.shape[1]))
-        uv[0, :] = xy[1, :] + self.imageHeight / 2  # row (y)
-        uv[1, :] = xy[0, :] + self.imageWidth / 2   # column (x)
-
-        uv = uv.T  # (n,2)
-
-        # Optionally flatten if it's a single point
-        if uv.shape[0] == 1:
-            uv = uv.flatten()
-
-        return uv
-    
-    
-    def pixel_to_world_coordinates(self, pixels: np.array, depths: np.array = None) -> np.ndarray:
-        """Converts pixel coordinates in an image to 3D world coordinates.
-
-        This function takes pixel coordinates and optional depths and converts them to 3D world coordinates. It uses camera parameters such as the transformation matrix, focal length, image width, and image height.
-
-        Args:
-            - pixels (np.array[n,2]) : Pixel coordinates in the image (row, column).
-            - depths (np.array[n,1], optional) : Depths for the corresponding pixel coordinates. Defaults to 50m for each point.
-
-        Returns:
-            - worldCoordinates (np.ndarray): A 2D array (n, 3) containing the 3D world coordinates (X, Y, Z).
-        """
-        rays = self.create_rays(pixels)  # (n,6)
-    
-        if rays.ndim == 1:
-            camera_center = rays[:3]
-            direction = gmu.normalize_vectors(rays[3:])
+        if use_z_depth:
+            depths = cam_points[:, 2]  # z-depth
         else:
-            camera_center = rays[:, :3]
-            direction = gmu.normalize_vectors(rays[:, 3:])
+            cam_origin = np.zeros((1, 3))
+            distances = np.linalg.norm(cam_points - cam_origin, axis=1)
+            depths = distances
 
-        if depths is None:
-            depths = np.full((direction.shape[0], 1), self.depth)
-        else:
-            depths = np.asarray(depths)
-            if depths.ndim == 1:
-                depths = depths[:, np.newaxis]
-
-        world_coordinates = camera_center + direction * depths
-
-        return world_coordinates
+        return image_points, depths
     
-
-    def project_lineset_on_image(self,linesets:List[o3d.geometry.LineSet],thickness:int=2,overwrite=True) ->np.ndarray:
-        """Project Opend3D linesets onto the resource of the node.
-
-        **NOTE**: this affects the original image if overwrite is True.
-        
-        .. image:: ../../../docs/pics/image_projection_1.png
+    
+    def pixel_to_world_coordinates(self, pixels: np.array, depths: np.array = None, use_z_depth=False) -> np.ndarray:
+        """
+        Back-projects image points to 3D world coordinates using either z-depth or Euclidean distance.
 
         Args:
-            - linesets (List[o3d.LineSet]): List of linesets. Note that the color of the lines is stored in the lineset.
-            - thickness (int) : Thickness of the projected lines
-            - overwrite (bool) : If True, the original image is overwritten. If False, a new image is created.
-
+            pixels: (N, 2) array of pixel coordinates
+            depths: (N,) array of z-depths or Euclidean distances
+            use_z_depth: if True, interpret depths as z-axis depth
         Returns:
-            resource : The resource of the ImageNode with the projected lines.
+            world_points: (N, 3) array of world coordinates
         """
-        if self.resource is None:
-            return None
-        
-        #copy if overwrite is False
-        image=self.resource if overwrite else copy.deepcopy(self.resource)
-        
-        # Loop through each LineSet
-        for lineset in ut.item_to_list(linesets):
-            points = np.asarray(lineset.points)
-            lines = np.asarray(lineset.lines)
+        pixels = np.atleast_2d(pixels)
+        depths = np.atleast_1d(depths)
+        N = pixels.shape[0]
 
-            # Project points to image plane
-            projected_points = self.world_to_pixel_coordinates(points)
-            
-            #reverse column 0 and 1 to get uv format (column,row)
-            projected_points_switched = projected_points[:, [1, 0]]
+        # Back-project to camera rays
+        K_inv = np.linalg.inv(self.intrinsicMatrix)
+        pixels_h = np.hstack([pixels, np.ones((N, 1))])
+        cam_dirs = (K_inv @ pixels_h.T).T
 
-            #get colors
-            colors = np.asarray(np.asarray(lineset.colors)* 255).astype(int) if lineset.has_colors() else np.full((len(lines), 3), 255)
-            # Draw lines on the image
-            for i,line in enumerate(lines):
-                pt1 = tuple(projected_points_switched[line[0]].astype(int))
-                pt2 = tuple(projected_points_switched[line[1]].astype(int))
-                color = tuple(colors[i])
-                color = (int(color[0]), int(color[1]), int(color[2]))  # Ensure color values are integers
-                if 0 <= pt1[0] < self.imageWidth and 0 <= pt1[1] < self.imageHeight and \
-                0 <= pt2[0] < self.imageWidth and 0 <= pt2[1] < self.imageHeight:
-                    cv2.line(image, pt1, pt2,color, thickness=thickness)
-        return image
-   
-   
-    def crop_image_within_lineset(self, lineset:o3d.geometry.LineSet, bufferDistance:int=0,overwrite=False) ->np.ndarray:
-        """
-        Crop an image within a 3D polygon (open3d LineSet). If the lineset is not an enclosed space,
-        use a buffer distance to cut out the image up to this distance from the lineset.
+        if not use_z_depth:
+            # Normalize ray directions to unit vectors for Euclidean depth
+            cam_dirs = cam_dirs / np.linalg.norm(cam_dirs, axis=1, keepdims=True)
 
-        Args:
-            - image (np.ndarray) : The input image to be cropped.
-            - lineset (o3d.geometry.LineSet) : The open3d LineSet representing the 3D polygon.
-            - buffer_distance (float) : The buffer distance to cut out the image if the lineset is not enclosed.
-            - overwrite (bool) : If True, the original image is overwritten. If False, a new image is created.
+        cam_points = cam_dirs * depths[:, np.newaxis]
 
-        Returns:
-            image : The cropped image
-        """
-        #copy if overwrite is False
-        image=self.resource if overwrite else copy.deepcopy(self.resource)
-        
-        # Project the lineset onto the image plane
-        points = np.asarray(lineset.points)
-        lines = np.asarray(lineset.lines)
+        # Convert to homogeneous and transform to world space
+        cam_points_h = np.hstack([cam_points, np.ones((N, 1))])
+        world_points = (self.cartesianTransform @ cam_points_h.T).T[:, :3]
 
-        # Project points to image plane
-        projected_points = self.world_to_pixel_coordinates(points)
-
-        # Reverse columns 0 and 1 to get uv format (column, row)
-        projected_points_switched = projected_points[:, [1, 0]]
-
-        # Create a mask to crop the image
-        mask = np.zeros(image.shape[:2], dtype=np.uint8)
-
-        # Draw lines on the mask
-        for line in lines:
-            pt1 = tuple(projected_points_switched[line[0]].astype(int))
-            pt2 = tuple(projected_points_switched[line[1]].astype(int))
-            cv2.line(mask, pt1, pt2, 255, thickness=bufferDistance * 2 if bufferDistance > 0 else 1)
-
-        # Dilate the mask to account for the buffer distance
-        kernel_size = max(1, bufferDistance)
-        kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (kernel_size, kernel_size))
-        dilated_mask = cv2.dilate(mask, kernel)
-
-        # Find contours to determine the region to crop
-        contours, _ = cv2.findContours(dilated_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-
-        if len(contours) == 0:
-            raise ValueError("No contours found. Unable to create a crop region.")
-        # Create a new mask with the filled polygon
-        fill_mask = np.zeros_like(mask)
-        cv2.drawContours(fill_mask, contours, -1, 255, thickness=cv2.FILLED)
-
-        # Apply the mask to the image to get the cropped result
-        cropped_image = cv2.bitwise_and(image, image, mask=fill_mask)
-
-        # Find the bounding box of the filled mask to crop the image
-        x, y, w, h = cv2.boundingRect(fill_mask)
-        cropped_image = cropped_image[y:y+h, x:x+w]
-
-        return cropped_image
-        
-    def show(self):
+        return world_points
+    
+    def show(self, convertColorspace = False, show3d = False):
         super().show()
-        # Converts from one colour space to the other. this is needed as RGB
-        # is not the default colour space for OpenCV
-        image = cv2.cvtColor(self.resource, cv2.COLOR_BGR2RGB)
+        if(show3d):
+            frustum_lines, image_plane = gmu.create_camera_frustum_mesh_with_image(
+                self.cartesianTransform,
+                self.imageWidth, 
+                self.imageHeight, 
+                self.focalLength35mm, 
+                self.depth,
+                image_cv2=self.resource)
+            o3d.visualization.draw_geometries([frustum_lines, image_plane])
+        else:
+            # Converts from one colour space to the other. this is needed as RGB
+            # is not the default colour space for OpenCV
+            if(convertColorspace):
+                image = cv2.cvtColor(self.resource, cv2.COLOR_BGR2RGB)
+            else:
+                image = self.resource
 
-        # Show the image
-        plt.imshow(image)
+            # Show the image
+            plt.imshow(image)
 
-        # remove the axis / ticks for a clean looking image
-        plt.xticks([])
-        plt.yticks([])
+            # remove the axis / ticks for a clean looking image
+            plt.xticks([])
+            plt.yticks([])
 
-        # if a title is provided, show it
-        plt.title(self.name)
+            # if a title is provided, show it
+            plt.title(self.name)
 
-        plt.show()
+            plt.show()

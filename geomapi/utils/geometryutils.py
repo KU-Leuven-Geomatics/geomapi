@@ -257,6 +257,38 @@ def convert_to_homogeneous_3d_coordinates(input_data: list | np.ndarray) -> np.n
     return input_data
 
 def create_camera_frustum_mesh(transform, focal_length_35mm, depth=5.0):
+    """
+    Creates a 3D camera frustum mesh as a triangular pyramid using 35mm-equivalent focal length.
+
+    Parameters:
+    -----------
+    transform : np.ndarray, shape (4, 4)
+        A 4x4 transformation matrix that places the camera frustum in world coordinates.
+
+    focal_length_35mm : float
+        Camera focal length in millimeters assuming a standard full-frame (36mm x 24mm) sensor.
+        Used to compute the field of view of the frustum.
+
+    depth : float, optional (default=5.0)
+        The distance from the camera origin to the far image plane along the Z-axis.
+
+    Returns:
+    --------
+    mesh : o3d.geometry.TriangleMesh
+        A triangular mesh representing the camera frustum as a 3D pyramid.
+
+    Notes:
+    ------
+    - The frustum is constructed with its apex at the origin [0, 0, 0] and a rectangular base at the given depth.
+    - The field of view is calculated from the sensor size and focal length.
+    - The mesh includes triangular sides and a back face (the image plane), and is colored uniformly.
+    - The result is useful for visualizing camera poses and orientations in 3D.
+
+    Example:
+    --------
+    frustum_mesh = create_camera_frustum_mesh(np.eye(4), focal_length_35mm=50.0)
+    o3d.visualization.draw_geometries([frustum_mesh])
+    """
     # Standard full-frame sensor size (in mm)
     sensor_width = 36.0
     sensor_height = 24.0
@@ -303,6 +335,130 @@ def create_camera_frustum_mesh(transform, focal_length_35mm, depth=5.0):
 
     return mesh
 
+def create_camera_frustum_mesh_with_image(transform, image_width, image_height, focal_length_35mm, depth=5.0, image_cv2=None):
+    """
+    Creates a 3D camera frustum as an Open3D LineSet, and optionally a textured image plane at the frustum's far end.
+
+    Parameters:
+    -----------
+    transform : np.ndarray, shape (4, 4)
+        A 4x4 transformation matrix representing the camera's pose in world coordinates.
+
+    image_width : int
+        Width of the image in pixels. Used to determine the aspect ratio of the camera's sensor.
+
+    image_height : int
+        Height of the image in pixels. Used to determine the aspect ratio of the camera's sensor.
+
+    focal_length_35mm : float
+        Camera focal length in millimeters, assuming a 35mm-equivalent sensor width of 36mm.
+        This is used to compute the field of view and shape of the frustum.
+
+    depth : float, optional (default=5.0)
+        Distance from the camera origin to the far/image plane along the Z-axis (i.e., frustum depth).
+
+    image_cv2 : np.ndarray, optional
+        An OpenCV (NumPy) RGB or BGR image. If provided, a textured mesh is created at the far end
+        of the frustum using the image dimensions for accurate aspect ratio.
+
+    Returns:
+    --------
+    line_set : o3d.geometry.LineSet
+        A LineSet representing the frustum's edges.
+
+    image_mesh : o3d.geometry.TriangleMesh or None
+        A textured TriangleMesh showing the input image at the far end of the frustum.
+        Returns None if `image_cv2` is not provided.
+
+    Notes:
+    ------
+    - The frustum assumes a perspective camera with a virtual sensor width of 36mm.
+    - The image plane is placed at `depth` units away from the camera origin along the local Z-axis.
+    - This function is useful for visualizing camera poses and projected views in 3D scenes.
+
+    Example:
+    --------
+    frustum, img_plane = create_camera_frustum_mesh(transform, w, h, 50.0, depth=5.0, image_cv2=cv2_img)
+    o3d.visualization.draw_geometries([frustum, img_plane] if img_plane else [frustum])
+    """
+    
+    # Use 36mm width as the base (standard full-frame width)
+    sensor_width_mm = 36.0
+    sensor_aspect = image_height / image_width
+    sensor_height_mm = sensor_width_mm * sensor_aspect
+
+    # Compute field of view in radians
+    fov_x = 2 * math.atan((sensor_width_mm / 2) / focal_length_35mm)
+    fov_y = 2 * math.atan((sensor_height_mm / 2) / focal_length_35mm)
+
+    # Compute half width and height at the given depth
+    half_width = depth * math.tan(fov_x / 2)
+    half_height = depth * math.tan(fov_y / 2)
+
+    # Define frustum vertices
+    vertices = np.array([
+        [0, 0, 0],  # Camera origin
+
+        [-half_width, -half_height, depth],  # Far bottom-left
+        [ half_width, -half_height, depth],  # Far bottom-right
+        [ half_width,  half_height, depth],  # Far top-right
+        [-half_width,  half_height, depth],  # Far top-left
+    ])
+
+    # Frustum wireframe connections
+    lines = [
+        [0, 1], [0, 2], [0, 3], [0, 4],
+        [1, 2], [2, 3], [3, 4], [4, 1],
+    ]
+
+    line_set = o3d.geometry.LineSet()
+    line_set.points = o3d.utility.Vector3dVector(vertices)
+    line_set.lines = o3d.utility.Vector2iVector(lines)
+    line_set.colors = o3d.utility.Vector3dVector([[0, 0, 1] for _ in lines])  # Blue
+
+    # Apply transformation
+    line_set.transform(transform)
+
+    image_mesh = None
+    if image_cv2 is not None:
+        # Get image dimensions and aspect ratio
+        img_height, img_width = image_cv2.shape[:2]
+        aspect_ratio = img_width / img_height
+
+        # Match the frustum's field of view while preserving aspect ratio
+        img_plane_half_height = half_height
+        img_plane_half_width = img_plane_half_height * aspect_ratio
+
+        # Image plane vertices (quad)
+        plane_vertices = np.array([
+            [img_plane_half_width, -img_plane_half_height, depth],  # Bottom-left
+            [ -img_plane_half_width, -img_plane_half_height, depth],  # Bottom-right
+            [ -img_plane_half_width,  img_plane_half_height, depth],  # Top-right
+            [img_plane_half_width,  img_plane_half_height, depth],  # Top-left
+        ])
+
+        triangles = np.array([
+            [0, 1, 2],
+            [0, 2, 3],
+        ])
+
+        # create the uv coordinates
+        v_uv = np.array([[0, 1], [1, 1], [1, 0], 
+                 [0, 1], [1, 0], [0, 0]])
+
+        # Convert OpenCV image (BGR to RGB if needed)
+        o3d_image = o3d.geometry.Image(image_cv2)
+
+        image_mesh = o3d.geometry.TriangleMesh()
+        image_mesh.vertices = o3d.utility.Vector3dVector(plane_vertices)
+        image_mesh.triangles = o3d.utility.Vector3iVector(triangles)
+        image_mesh.triangle_uvs = o3d.utility.Vector2dVector(v_uv)
+        image_mesh.triangle_material_ids = o3d.utility.IntVector([0] * len(triangles))
+        image_mesh.textures = [o3d_image]
+        image_mesh.compute_vertex_normals()
+        image_mesh.transform(transform)
+
+    return line_set, image_mesh
 
 def create_ellipsoid_mesh(radii: np.ndarray, transformation: np.ndarray, resolution: int = 30):
     """
@@ -2481,34 +2637,60 @@ def mesh_to_trimesh(geometry: o3d.geometry.Geometry) -> trimesh.Trimesh:
     Returns:
         trimesh.Trimesh
     """
-    face_normals=geometry.triangle_normals if geometry.has_triangle_normals() else None
-    vertex_normals=geometry.vertex_normals if geometry.has_vertex_normals() else None
-    vertex_colors=(np.asarray(geometry.vertex_colors)*255).astype(int) if geometry.has_vertex_colors() else None
+    if isinstance(geometry, o3d.geometry.TriangleMesh):
+        vertices = np.asarray(geometry.vertices)
+        faces = np.asarray(geometry.triangles)
+
+        mesh = trimesh.Trimesh(vertices=vertices, faces=faces, process=False)
+
+        # Optionally add vertex normals
+        if geometry.has_vertex_normals():
+            mesh.vertex_normals = np.asarray(geometry.vertex_normals)
+
+        # Optionally add vertex colors
+        if geometry.has_vertex_colors():
+            colors = np.asarray(geometry.vertex_colors)
+            if colors.max() <= 1.0:  # Open3D uses [0, 1], Trimesh expects [0, 255]
+                colors = (colors * 255).astype(np.uint8)
+            mesh.visual.vertex_colors = colors
+
+        return mesh
     
-    # Extract UV coordinates (if available)
-    uvs = None
-    if geometry.triangle_uvs is not None and len(geometry.triangle_uvs) > 0:
-        uvs = np.asarray(geometry.triangle_uvs)  # Flattened list of UVs
+    elif isinstance(geometry, o3d.geometry.PointCloud):
+        points = np.asarray(geometry.points)
+        point_cloud = trimesh.points.PointCloud(points)
 
-    # Load the texture image if available
-    texture_image = None
-    #if geometry.textures:
-        # Open3D stores textures as Open3D images, convert to numpy
-    #    o3d_texture = geometry.textures[0]
-    #    texture_image = np.asarray(o3d_texture)  # Convert Open3D image to numpy
-        # Convert to a PIL image for easier handling
-    #    texture_pil = Image.fromarray(texture_image)
+        # Add colors if present
+        if geometry.has_colors():
+            colors = np.asarray(geometry.colors)
+            if colors.max() <= 1.0:
+                colors = (colors * 255).astype(np.uint8)
+            point_cloud.colors = colors
 
-    return trimesh.Trimesh(vertices=geometry.vertices, 
-                            faces=geometry.triangles, 
-                            face_normals=face_normals,
-                            vertex_normals=vertex_normals, 
-                            vertex_colors=vertex_colors)
-                            #visual=trimesh.visual.TextureVisuals(uv=uvs, image=texture_pil)) 
+        # Add normals if present (stored as metadata, not native in Trimesh PointCloud)
+        if geometry.has_normals():
+            point_cloud.metadata['normals'] = np.asarray(geometry.normals)
+
+        return point_cloud
+
+    elif isinstance(geometry, o3d.geometry.LineSet):
+        points = np.asarray(geometry.points)
+        lines = np.asarray(geometry.lines)
+        entities = [trimesh.path.entities.Line([start, end]) for start, end in lines]
+        path = trimesh.path.Path3D(entities=entities, vertices=points)
+
+        # Optional: attach colors if present
+        if geometry.has_colors():
+            colors = np.asarray(geometry.colors)
+            if colors.max() <= 1.0:
+                colors = (colors * 255).astype(np.uint8)
+            path.metadata['colors'] = colors
+
+        return path
     
-
-
-   
+    else:
+        raise TypeError(f"Unsupported Open3D geometry type: {type(geometry)}")
+    
 def mesh_get_lineset(geometry: o3d.geometry.TriangleMesh, color: np.array = ut.get_random_color()) -> o3d.geometry.LineSet:
     """Returns a lineset representation of a mesh.\n
 

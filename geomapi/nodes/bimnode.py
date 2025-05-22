@@ -3,6 +3,8 @@
 This node builds upon the [Open3D](https://www.open3d.org/) and [ifcopenshell](https://ifcopenshell.org/) API for the BIM definitions.
 Be sure to check the properties defined in those abstract classes to initialise the Node.
 
+This Node is an extension of the MeshNode so it inherits all mesh-based transformation and visualization functionality.
+
 .. image:: ../../../docs/pics/graph_ifc1.png
 
 **IMPORTANT**: The current BIMNode class is designed from a geospatial perspective to 
@@ -215,5 +217,3 @@ class BIMNode (MeshNode):
     
 #---------------------METHODS----------------------------
 
-
-       

@@ -3,6 +3,7 @@
 #IMPORT PACKAGES
 import csv
 import inspect
+import math
 import cv2
 import numpy as np 
 import open3d as o3d 
@@ -112,7 +113,7 @@ def e57xml_to_pointcloud_nodes(xmlPath :str, **kwargs) -> List[PointCloudNode]:
     mytree = ET.parse(path)
     root = mytree.getroot()
     nodelist=[]
-    e57Path=xmlPath.with_suffix('.e57')
+    e57Path=path.with_suffix('.e57')
     # loop over every vectorchild
     for idx,e57xml in enumerate(root.iter('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}vectorChild')):
         # OrientedBoundingBox
@@ -159,7 +160,7 @@ def e57xml_to_pointcloud_nodes(xmlPath :str, **kwargs) -> List[PointCloudNode]:
                 except:
                     translationVector=np.array([0.0,0.0,0.0])
             cartesianTransform = gmu.get_cartesian_transform(translation=translationVector,rotation=rotationMatrix)
-            print(cartesianTransform)
+            #print(cartesianTransform)
 
         pointsnode=e57xml.find('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}points')
         if not pointsnode is None:
@@ -214,14 +215,51 @@ def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFo
     #get sensors
     sensors=[]
     for sensor in root.iter('sensor'):       
-        try:
+        try:            
+            # Extract resolution
+            resolution = sensor.find('resolution')
+            image_width = int(resolution.attrib['width'])
+            image_height = int(resolution.attrib['height'])
+
+            # Extract properties into a dictionary for easy access
+            properties = {prop.attrib['name']: float(prop.attrib['value']) for prop in sensor.findall('property')}
+            pixel_width_mm = properties['pixel_width']
+            pixel_height_mm = properties['pixel_height']
+            focal_length_mm = properties['focal_length']
+
+            # Calculate sensor dimensions in mm
+            sensor_width_mm = image_width * pixel_width_mm
+            sensor_height_mm = image_height * pixel_height_mm
+            sensor_diagonal_mm = math.sqrt(sensor_width_mm**2 + sensor_height_mm**2)
+            full_frame_diagonal_mm = math.sqrt(36**2 + 24**2)
+            crop_factor = full_frame_diagonal_mm / sensor_diagonal_mm
+            focal_length_35mm = focal_length_mm / crop_factor
+
+            # find the calibration
             calibration=sensor.find('calibration')
-            focalLength35mm= calibration.find('f').text if calibration.find('f') is not None else calibration.find('fx').text # sometimes the focal length is named diffirently
+            if(calibration is not None):
+                f = float(calibration.find('f').text if calibration.find('f') is not None else calibration.find('fx').text) # sometimes the focal length is named diffirently
+                cx = image_width / 2 + float(calibration.find('cx').text)
+                cy = image_height / 2 + float(calibration.find('cy').text)
+            else:
+                # If no calibration found, fallback to defaults
+                f = focal_length_mm / pixel_width_mm
+                cx = image_width / 2
+                cy = image_height / 2
+            # Construct the intrinsic matrix
+            K = np.array([
+                [f,   0,  cx],
+                [0,   f,  cy],
+                [0,    0,   1]
+            ])
+            
             sensors.append({'sensorid':  int(sensor.get('id'))   ,        
-                            'imageWidth': int(calibration.find('resolution').get('width')),
-                            'imageHeight': int(calibration.find('resolution').get('height')),
-                            'focalLength35mm': float(focalLength35mm)})     
-        except:
+                            'imageWidth': image_width,
+                            'imageHeight': image_height,
+                            'intrinsicMatrix': K,
+                            'focalLength35mm': float(focal_length_35mm)})     
+        except Exception as error:
+            print("An error occurred:", error) # An error occurred: name 'x' is not defined
             sensors.append(None)
             continue
     
@@ -276,6 +314,7 @@ def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFo
                          cartesianTransform=transform,
                         imageWidth =  int(sensorInformation['imageWidth']),
                         imageHeight = int(sensorInformation['imageHeight'] ),
+                        intrinsicMatrix = sensorInformation['intrinsicMatrix'],
                         focalLength35mm = float(sensorInformation['focalLength35mm']), 
                         **kwargs)
             # node.xmlPath=xmlPath
