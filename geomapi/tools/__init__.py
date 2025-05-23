@@ -262,7 +262,7 @@ def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFo
                             'intrinsicMatrix': K,
                             'focalLength35mm': focal_length_35mm})     
         except Exception as error:
-            print("An error occurred:", error) # An error occurred: name 'x' is not defined
+            print("An error occurred in the sensor parsing:", error) # An error occurred: name 'x' is not defined
             sensors.append(None)
             continue
     
@@ -314,10 +314,10 @@ def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFo
             #create image node 
             node=ImageNode(
                         name=name, 
-                         cartesianTransform=transform,
-                        imageWidth =  int(sensorInformation['imageWidth']),
-                        imageHeight = int(sensorInformation['imageHeight'] ),
-                        focalLength35mm = float(sensorInformation['focalLength35mm']), 
+                        cartesianTransform = transform,
+                        imageWidth =  sensorInformation['imageWidth'],
+                        imageHeight = sensorInformation['imageHeight'],
+                        focalLength35mm = sensorInformation['focalLength35mm'], 
                         **kwargs)
             # node.xmlPath=xmlPath
             
@@ -327,10 +327,10 @@ def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFo
                 node.path=files[i]
                 nodelist.append(node)   
             except:
-                
                 None if filterByFolder else nodelist.append(node) 
 
-        except:
+        except Exception as error:
+            print("Parsing error:", error) # An error occurred: name 'x' is not defined
             continue
     return nodelist[0::skip] if skip else nodelist
 
