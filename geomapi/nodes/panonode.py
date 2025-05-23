@@ -557,11 +557,14 @@ class PanoNode(Node):
     
 
     
-    def show(self, subsample = None):
+    def show(self, convertColorspace = False, subsample = None):
         super().show()
         # Converts from one colour space to the other. this is needed as RGB
         # is not the default colour space for OpenCV
-        image = cv2.cvtColor(self.resource, cv2.COLOR_BGR2RGB)
+        if(convertColorspace):
+            image = cv2.cvtColor(self.resource, cv2.COLOR_BGR2RGB)
+        else:
+            image = self.resource
         if not subsample == None:
             image = cv2.resize(image,[int(self.imageWidth/subsample),int(self.imageHeight/subsample)])
 

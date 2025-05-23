@@ -18,6 +18,8 @@ import pye57
 import laspy 
 from pathlib import Path
 
+import trimesh
+
 #IMPORT MODULES
 # from geomapi.nodes import GeometryNode
 from geomapi.nodes import Node
@@ -302,6 +304,10 @@ class PointCloudNode (Node):
             return False
         return True
     
-    def show(self):
+    def show(self,  inline = False):
         super().show()
-        gmu.show_geometries([self.resource])
+        if(inline):
+            from IPython.display import display
+            display(trimesh.Scene(gmu.mesh_to_trimesh(self.resource)).show())
+        else:
+            gmu.show_geometries([self.resource])

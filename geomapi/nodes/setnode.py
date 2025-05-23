@@ -30,6 +30,7 @@ from typing import List, Optional,Tuple,Union
 
 #IMPORT MODULES
 from geomapi.nodes import Node
+from geomapi.nodes.imagenode import ImageNode
 import geomapi.utils as ut
 from geomapi.utils import rdf_property, GEOMAPI_PREFIXES
 import geomapi.utils.geometryutils as gmu
@@ -282,14 +283,27 @@ class SetNode(Node):
                 #node.transform(self.cartesianTransform)
 
     def show(self):
-        if(self.linkedNodes is None or len(self.linkedNodes) > 0):
+        if(self.linkedNodes is None or len(self.linkedNodes) == 0):
+            print("No linkedNodes present")
             return
         geometries = []
         for node in self.linkedNodes:
-            if(node.resource is not None and isinstance(node.resource, o3d.geometry.TriangleMesh)):
+            if(node.resource is None):
+                geometries.append(gmu.mesh_get_lineset(node.convexHull))
+            elif(isinstance(node.resource, (o3d.geometry.TriangleMesh, o3d.geometry.PointCloud, o3d.geometry.LineSet))):
                 geometries.append(node.resource)
+            elif(isinstance(node, ImageNode)):
+                frustum_lines, image_plane = gmu.create_camera_frustum_mesh_with_image(
+                node.cartesianTransform,
+                node.imageWidth, 
+                node.imageHeight, 
+                node.focalLength35mm, 
+                node.depth,
+                image_cv2=self.resource)
+                geometries.append(frustum_lines)
+                geometries.append(image_plane)
             else:
-                geometries.append(node.convexHull)
+                geometries.append(gmu.mesh_get_lineset(node.convexHull))
         gmu.show_geometries(geometries)
 
 

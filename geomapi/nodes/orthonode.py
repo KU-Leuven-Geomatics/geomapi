@@ -617,11 +617,14 @@ class OrthoNode(Node):
                     cv2.line(image, pt1, pt2,color, thickness=thickness)
         return image
     
-    def show(self):
+    def show(self, convertColorspace = False):
         super().show()
         # Converts from one colour space to the other. this is needed as RGB
         # is not the default colour space for OpenCV
-        image = cv2.cvtColor(self.resource, cv2.COLOR_BGR2RGB)
+        if(convertColorspace):
+            image = cv2.cvtColor(self.resource, cv2.COLOR_BGR2RGB)
+        else:
+            image = self.resource
 
         # Show the image
         plt.imshow(image)

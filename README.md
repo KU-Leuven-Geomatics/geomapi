@@ -1,6 +1,6 @@
 
 
-![geomapiLogo](https://github.com/KU-Leuven-Geomatics/geomapi/blob/main/docs/source/_static/geomapi_logo_B.png?width=64)
+![geomapiLogo](https://raw.githubusercontent.com/KU-Leuven-Geomatics/geomapi/main/docs/source/_static/geomapi_logo_Blue.png?width=64)
 
 # GEOMAPI
 ![Python](https://img.shields.io/pypi/pyversions/geomapi.svg?logo=python&logoColor=FBE072)
@@ -17,7 +17,7 @@ to process and analyse big data in construction applications.
 Use the package manager [pip](https://pypi.org/project/geomapi) to install geomapi as a user.
 
 ```bash
-conda create --name geomapi_user python=3.10
+conda create --name geomapi_user python=3.11
 pip install geomapi
 ```
 
@@ -52,17 +52,17 @@ Please create a new branch if you would like to make changes and submit them for
 If you want to cite us, refer to the following publication (published). 
 ```
 @article{GEOMAPI,
-            title = {GEOMAPI: Processing close-range sensing data of construction scenes with semantic web technologies},
-            journal = {Automation in Construction},
-            volume = {164},
-            pages = {105454},
-            year = {2024},
-            issn = {0926-5805},
-            doi = {https://doi.org/10.1016/j.autcon.2024.105454},
-            url = {https://www.sciencedirect.com/science/article/pii/S0926580524001900},
-            author = {Maarten Bassier and Jelle Vermandere and Sam De Geyter and Heinder De Winter},
-            keywords = {Geomatics, Semantic Web Technologies, Construction, Close-range sensing, BIM, Point clouds, Photogrammetry}
-            }
+title = {GEOMAPI: Processing close-range sensing data of construction scenes with semantic web technologies},
+journal = {Automation in Construction},
+volume = {164},
+pages = {105454},
+year = {2024},
+issn = {0926-5805},
+doi = {https://doi.org/10.1016/j.autcon.2024.105454},
+url = {https://www.sciencedirect.com/science/article/pii/S0926580524001900},
+author = {Maarten Bassier and Jelle Vermandere and Sam De Geyter and Heinder De Winter},
+keywords = {Geomatics, Semantic Web Technologies, Construction, Close-range sensing, BIM, Point clouds, Photogrammetry}
+}
 ```
 ## TEAM
 - maarten.bassier@kuleuven.be (PI)

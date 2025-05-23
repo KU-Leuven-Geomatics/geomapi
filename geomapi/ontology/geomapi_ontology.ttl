@@ -165,7 +165,7 @@ xsd:float
 :focalLength35mm
 	rdf:type owl:DatatypeProperty ;
 	rdf:type owl:FunctionalProperty ;
-	rdfs:comment """The 35 mm equivalent focal length is a measure of the angle of view for a particular combination of a camera lens and film or image sensor size. Calculated in pixels as f/36*imageWidth. """@en  ;
+	rdfs:comment """The 35 mm equivalent focal length is a measure of the angle of view for a particular combination of a camera lens and film or image sensor size. Calculated in mm """@en  ;
 	rdfs:label "focalLength35mm"@en ;
 	rdfs:domain :ImageNode,
 				:PanoNode;		
