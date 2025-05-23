@@ -1,0 +1,398 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Alignment Tools\n",
+    "\n",
+    "A sample file going over all the step to properly use the tools.\n",
+    "\n",
+    "The alignment process is aimed at aligning multiple sessions containing both 2D images and 3D geometries. We assume a single session contains locally aligned data. This means that if a small subset of the data is aligned all the rest is also aligned in that coordinate system."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "- **Step 1: Gather the Test Inputs**\n",
+    "  - The test session with all the pictures and coordinates as a `SessionNode()`\n",
+    "  - The global coordinates of the device\n",
+    "- **Step 2: check for relevant Reference data**\n",
+    "  - use the global coordinates to find all the reference data that is geo-referenced close enough (GPS precision)\n",
+    "- **Step 3: 2D Check**\n",
+    "  - Compare all the test images against all the reference images\n",
+    "  - Find which session has the highest match rate\n",
+    "  - Find which Image has the highest match rate\n",
+    "  - Calculate the transformation between the two images\n",
+    "  - calculate the inverse transformation to give the test data a Reference global position\n",
+    "- **Step 4: 3D Check**\n",
+    "  - Compare the test mesh against relevant point clouds\n",
+    "  - Compare the test mesh against BIM models\n",
+    "  - Perform a CCP for the final alignment\n",
+    "- **Step 5: Choosing final Position**\n",
+    "  - Use the different results from all the methods to come to a best position\n",
+    "  - Send the Position and rotation back to the device"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Overview"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### classes\n",
+    "\n",
+    "- `geomapi.nodes.SessionNode()` The starting point, containing the global position, boundingbox and all the resources.\n",
+    "- `geomapi.alignmenttools.Match()` The base class for 2 connected nodes, containing the match parameters and nodes.\n",
+    "  - This has 2 child classes: `geomapi.alignmenttools.ImageMatch()` & `geomapi.alignmenttools.GeometryMatch()`\n",
+    "- `geomapi.alignmenttools.PoseEstimation()` an estimated pose based on a number of matches\n",
+    "\n",
+    "### Functions\n",
+    "\n",
+    "- `find_close_sessions()` \n",
+    "  - Read all rdf files or sessions to get the global position and boundingbox and compare it to the given bounding volume\n",
+    "  - we need to get all the graphs or RDF files and read their bounding box variable\n",
+    "- `pos2d.get_transformation()`\n",
+    "  - Combines all the 2D transformation algorithms into one function\n",
+    "  - `pos2d.match_incremental()`\n",
+    "  - `pos2d.match_crossref()`\n",
+    "  - `pos2d.match_raycast()`\n",
+    "- `pos3d.get_transformation()`\n",
+    "  - Combines the 3d transformation algorithms into one function\n",
+    "  - `pos3d.match_fgr()`\n",
+    "  - `pos3d.match_super4pcs()`"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Setup\n",
+    "Importing the required packages and modules"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from context import geomapi\n",
+    "import geomapi.tools.alignmenttools as at"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "testSessionPath = \"test/testfiles/sessionGraph.ttl\"\n",
+    "refSessionsPath = \"test/testfiles/graphs/\""
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Getting the Sessions\n",
+    "\n",
+    "Most higher level functions revolve around `geomapi.nodes.SessionNode`\n",
+    "It is also possible to work directly with the `geomapi.nodes.ImageNode` or `geomapi.nodes.GeometryNode`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "testSession = geomapi.nodes.SessionNode(testSessionPath)\n",
+    "refSessions = geomapi.nodes.SessionNode(refSessionsPath)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/LivingLab_Dataset.png)***figure 15:** flgvliz*"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Single Function\n",
+    "`estimate_session_position()` Is a compound function that combines the above mentioned workflow into one.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "finalPos = at.estimate_session_position(testSession, refSessions)\n",
+    "testSession.cartesianTransform = finalPos"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step-by-step\n",
+    "\n",
+    "The full alignment algorithm is performed in 4 steps: **Subselection**, **2D Pose**, **3D Pose**, **Pose Weighting**\n",
+    "\n",
+    "- **Step 1: check for relevant Reference data**\n",
+    "  - use the global coordinates to find all the reference data that is geo-referenced close enough (GPS precision)\n",
+    "- **Step 2: 2D Check**\n",
+    "  - Compare all the test images against all the reference images\n",
+    "  - Find which session has the highest match rate\n",
+    "  - Find which Image has the highest match rate\n",
+    "  - Calculate the transformation between the two images\n",
+    "  - calculate the inverse transformation to give the test data a Reference global position\n",
+    "- **Step 3: 3D Check**\n",
+    "  - Compare the test mesh against relevant point clouds\n",
+    "  - Compare the test mesh against BIM models\n",
+    "  - Perform a CCP for the final alignment\n",
+    "- **Step 4: Weighting final Position**\n",
+    "  - Use the different results from all the methods to come to a best position\n",
+    "  - Send the Position and rotation back to the device"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 1: check for relevant Reference data\n",
+    "  - use the global coordinates to find all the reference data that is geo-referenced close enough (GPS precision)\n",
+    "\n",
+    "![](../../pics/global_Estimation_schema.png)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "closeSessions = at.find_close_sessions(testSession, refSessions) # Returns a subselection of the given referenceSessions"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "\n",
+    "### Step 2: 2D Check\n",
+    "\n",
+    "The function `pose2d.get_transformation()` calculates estimations for every image in the test session, creating a large amount of poses, each with specific matching parameters.\n",
+    "\n",
+    "2D Checks can also be performed seperatly using the 3 different Algorithms: \n",
+    "- Incremental Matching\n",
+    "- Cross Reference Matching\n",
+    "- Raycast Matching"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "estimated2DPoses = at.pose2d.get_transformation(testSession, closeSessions)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Incremental reference Matching"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "incrementalPoseEst = at.pose2d.match_incremental(testSession.images[0], closeSessions[0].images)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![](../../pics/Incremental_Good_Match.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Cross reference Matching"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "crossrefPoseEst = at.pose2d.match_crossref(testSession.images[0], closeSessions[0].images)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![](../../pics/overlapping_good_match.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Raycast Matching"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "raycastPoseEst = at.pose2d.match_raycast(testSession.images[0], closeSessions[0].images)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![](../../pics/Good_raycasting_match.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 3: 3D Check\n",
+    "\n",
+    "The function `pose3d.get_transformation()` calculates estimations for every geometry in the test session, creating a large amount of poses, each with specific matching parameters.\n",
+    "\n",
+    "3D Checks can also be performed seperatly using the 2 different Algorithms: \n",
+    "- Fast global registration\n",
+    "- Super4PCS"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "estimated3DPoses = at.pose3d.get_transformation(testSession, closeSessions)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Fast Global Registration"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "at.pose3d.match_fgr(testSession.geometries[0], closeSessions[0].geometries)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![](../../pics/good_fpfh.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Super4PCS Matching"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "at.pose3d.match_super4pcs(testSession.geometries[0], closeSessions[0].geometries)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/good_4pcs.png)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Step 4: Weighting final Position\n",
+    "  - Each estimation is stored in a class `PoseEstimation()` which contains the pose and the matching parameters. These are used to weight all the poses to calculate the best one.\n",
+    "\n",
+    "![](../../pics/Succesful_alignment_Icon.png)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "finalPose = at.get_weighted_pose(estimated2DPoses, estimated3DPoses)\n",
+    "testSession.catresianTranform = finalPose"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3.9.13 ('env': venv)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.13"
+  },
+  "orig_nbformat": 4,
+  "vscode": {
+   "interpreter": {
+    "hash": "b1ee4163d9a0d387d4692122acdc2368cb31f97e539c5d989aee9fda604d253d"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

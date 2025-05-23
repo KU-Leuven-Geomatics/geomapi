@@ -1,0 +1,958 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SetNode &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">SetNode</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/tutorial_setnodes_old.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="setnode">
+<h1>SetNode<a class="headerlink" href="#setnode" title="Link to this heading"></a></h1>
+<p>The SetNode class in Geomapi represents the data and metadata captured within a single epoch. The data itself can consist of various remote sensing inputs (point clouds, meshes, etc.) and mostly builds upon OPEN3D. The metadata of the SetNode consists of the overarching properties and builds upon the RDFlib framework:</p>
+<p><a class="reference external" href="http://www.open3d.org/docs/latest/tutorial/Basic/mesh.html#">http://www.open3d.org/docs/latest/tutorial/Basic/mesh.html#</a></p>
+<p><a class="reference external" href="https://rdflib.readthedocs.io/">https://rdflib.readthedocs.io/</a></p>
+<p>The code below shows how to create a SetNode from various inputs.</p>
+<p>First the geomapi and external packages are imported</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#IMPORT PACKAGES</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1">#IMPORT MODULES</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span> <span class="c1">#context import for documentation only</span>
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">SetNode</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jupyter environment detected. Enabling Open3D WebVisualizer.
+[Open3D INFO] WebRTC GUI backend enabled.
+[Open3D INFO] WebRTCWindowSystem: HTTP handshake server disabled.
+</pre></div>
+</div>
+</div>
+</div>
+<section id="setnode-from-properties">
+<h2>SetNode from properties<a class="headerlink" href="#setnode-from-properties" title="Link to this heading"></a></h2>
+<p>A placeholder SetNode can be initialised without any data or metadata</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">SetNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+                <span class="n">name</span><span class="o">=</span><span class="s1">&#39;myName&#39;</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_linkedNodes&#39;: [],
+ &#39;_linkedSubjects&#39;: [],
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///myNode&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;myName&#39;,
+ &#39;_cartesianBounds&#39;: None,
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None}
+</pre></div>
+</div>
+</div>
+</div>
+<section id="add-linkednodes">
+<h3>Add linkedNodes<a class="headerlink" href="#add-linkednodes" title="Link to this heading"></a></h3>
+<p>Once a SetNode is established, any Node can be added to it that is part of the epoch. The instance variables linkedNodes and linkedSubjects (which is automatically updated) are used for this purpose.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;MESH&#39;</span><span class="p">,</span><span class="s1">&#39;week22.obj&#39;</span><span class="p">)</span>
+<span class="n">resourceNode1</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">.</span><span class="n">add_linked_nodes</span><span class="p">(</span><span class="n">resourceNode1</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_linkedNodes&#39;: [&lt;geomapi.nodes.meshnode.MeshNode at 0x24e15ea11c0&gt;],
+ &#39;_linkedSubjects&#39;: [rdflib.term.URIRef(&#39;file:///week22&#39;)],
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///myNode&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;myName&#39;,
+ &#39;_cartesianBounds&#39;: None,
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="compute-metadata">
+<h3>Compute metadata<a class="headerlink" href="#compute-metadata" title="Link to this heading"></a></h3>
+<p>If a set of nodes is present in a set, one can compute the overarching metadata. First, add a second node.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;academiestraat week 22 a 20.pcd&#39;</span><span class="p">)</span>
+<span class="n">resourceNode2</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">add_linked_nodes</span><span class="p">(</span><span class="n">resourceNode2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">.</span><span class="n">get_metadata_from_linked_nodes</span><span class="p">()</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_linkedNodes&#39;: [&lt;geomapi.nodes.meshnode.MeshNode at 0x24e15ea11c0&gt;,
+  &lt;geomapi.nodes.pointcloudnode.PointCloudNode at 0x24e15ea1af0&gt;],
+ &#39;_linkedSubjects&#39;: [rdflib.term.URIRef(&#39;file:///week22&#39;),
+  rdflib.term.URIRef(&#39;file:///academiestraat_week_22_a_20&#39;)],
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///myNode&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;myName&#39;,
+ &#39;_cartesianBounds&#39;: array([-52.61117755, 122.50257926,  12.05279306, 165.88417048,
+         -2.84643678,  24.03564393]),
+ &#39;_orientedBounds&#39;: array([[-23.32604321, 166.79579552,  25.50980916],
+        [123.61436625, 128.38233267,  26.79035759],
+        [-54.06530499,  49.13654472,  23.27674533],
+        [-22.97196977, 167.22821067,  -2.1479756 ],
+        [ 93.22917791,  11.15549702,  -3.10049101],
+        [-53.71123155,  49.56895987,  -4.38103943],
+        [123.96843969, 128.81474782,  -0.86742718],
+        [ 92.87510447,  10.72308187,  24.55729376]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (34.9516, 88.9756, 11.2047), extent: 151.884, 121.629, 27.6634),
+ &#39;_timestamp&#39;: &#39;2022-08-02T08:25:01&#39;,
+ &#39;_resource&#39;: TriangleMesh with 12 points and 20 triangles.,
+ &#39;_cartesianTransform&#39;: array([[ 1.        ,  0.        ,  0.        , 20.57065419],
+        [ 0.        ,  1.        ,  0.        , 88.47905237],
+        [ 0.        ,  0.        ,  1.        ,  8.41263647],
+        [ 0.        ,  0.        ,  0.        ,  1.        ]])}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: the set’s geometric metadata i.e. cartesianBounds, orientedBounds, cartesianTransform and orientedBounding box encompas the entire set. As such, these properties represent the average and the extremes of the nodes in the set.</p>
+<p><img alt="rendering" src="../pics/session2.PNG" /></p>
+</section>
+</section>
+<section id="setnode-from-nodes">
+<h2>SetNode from Nodes<a class="headerlink" href="#setnode-from-nodes" title="Link to this heading"></a></h2>
+<p>SetNodes can also be directly initialised from a set of nodes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">meshNode</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;Mesh&#39;</span><span class="p">,</span><span class="s1">&#39;Basic Wall_211_WA_Ff1_Glued brickwork sandlime 150mm_1095339.obj&#39;</span><span class="p">),</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">imgNode</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">xmpPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IMG&#39;</span><span class="p">,</span><span class="s1">&#39;IMG_2174.xmp&#39;</span><span class="p">),</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">pcdNode</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;week22 photogrammetry - Cloud.pcd&#39;</span><span class="p">),</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">bimNode</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">ifcPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IFC&#39;</span><span class="p">,</span><span class="s1">&#39;Academiestraat_parking.ifc&#39;</span><span class="p">),</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">nodeList</span><span class="o">=</span><span class="p">[</span><span class="n">meshNode</span><span class="p">,</span><span class="n">imgNode</span><span class="p">,</span><span class="n">pcdNode</span><span class="p">,</span><span class="n">bimNode</span><span class="p">]</span>     
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">SetNode</span><span class="p">(</span><span class="n">linkedNodes</span><span class="o">=</span><span class="n">nodeList</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>   
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_linkedNodes&#39;: [&lt;geomapi.nodes.meshnode.MeshNode at 0x24e15ebc6d0&gt;,
+  &lt;geomapi.nodes.imagenode.ImageNode at 0x24e15ebc670&gt;,
+  &lt;geomapi.nodes.pointcloudnode.PointCloudNode at 0x24e15e7df40&gt;,
+  &lt;geomapi.nodes.bimnode.BIMNode at 0x24e175d4fd0&gt;],
+ &#39;_linkedSubjects&#39;: [rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339&#39;),
+  rdflib.term.URIRef(&#39;file:///IMG_2174&#39;),
+  rdflib.term.URIRef(&#39;file:///week22_photogrammetry_-_Cloud&#39;),
+  rdflib.term.URIRef(&#39;file:///Circular_Mullion_Grouting_pile_680mm_1072728_3M75Mhp4L2Aei641BocJ1v&#39;)],
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///b46569bd-1ef7-11ed-9c4a-c8f75043ce59&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: None,
+ &#39;_cartesianBounds&#39;: array([-52.61117792, 122.50256846,   9.21354145, 165.88415522,
+         -0.7098256 ,  24.0356459 ]),
+ &#39;_orientedBounds&#39;: array([[-9.66526260e+00,  1.86468386e+02,  3.02287259e+01],
+        [ 1.39268037e+02,  1.15739611e+02,  2.71940092e+01],
+        [-7.84479065e+01,  4.18226980e+01,  2.58085749e+01],
+        [-9.81006206e+00,  1.87462216e+02, -4.02857866e-02],
+        [ 7.03405939e+01, -2.79122459e+01, -7.49515344e+00],
+        [-7.85927059e+01,  4.28165285e+01, -4.46043679e+00],
+        [ 1.39123238e+02,  1.16733442e+02, -3.07500244e+00],
+        [ 7.04853934e+01, -2.89060764e+01,  2.27738582e+01]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (30.3377, 79.2781, 11.3668), extent: 164.903, 160.228, 30.2857),
+ &#39;_timestamp&#39;: &#39;2022-08-02T08:25:01&#39;,
+ &#39;_resource&#39;: TriangleMesh with 12 points and 20 triangles.,
+ &#39;_cartesianTransform&#39;: array([[ 1.        ,  0.        ,  0.        , 37.79468033],
+        [ 0.        ,  1.        ,  0.        , 71.92163471],
+        [ 0.        ,  0.        ,  1.        ,  8.91496436],
+        [ 0.        ,  0.        ,  0.        ,  1.        ]])}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: GetMetadata (bool) by default is True. As such, when data is imported, the cartesianBounds, orientedBounds, cartesianTransform and orientedBoundingBox is automatically extracted.</p>
+</section>
+<section id="setnode-from-resources">
+<h2>SetNode from resources<a class="headerlink" href="#setnode-from-resources" title="Link to this heading"></a></h2>
+<p>A similar result is achieved by initialising a SetNode from a set of geometries. In this case, GetResource (bool) means nothing.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="o">=</span><span class="p">[</span><span class="n">meshNode</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span><span class="n">imgNode</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span><span class="n">pcdNode</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span><span class="n">bimNode</span><span class="o">.</span><span class="n">resource</span><span class="p">]</span>
+<span class="n">node</span><span class="o">=</span><span class="n">SetNode</span><span class="p">(</span><span class="n">linkedResources</span><span class="o">=</span><span class="n">resources</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>            
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_linkedNodes&#39;: [&lt;geomapi.nodes.meshnode.MeshNode at 0x24e15ea1f40&gt;,
+  &lt;geomapi.nodes.imagenode.ImageNode at 0x24e15ea1a00&gt;,
+  &lt;geomapi.nodes.pointcloudnode.PointCloudNode at 0x24e15ea1070&gt;,
+  &lt;geomapi.nodes.meshnode.MeshNode at 0x24e126f28e0&gt;],
+ &#39;_linkedSubjects&#39;: [rdflib.term.URIRef(&#39;file:///b48b8164-1ef7-11ed-9a09-c8f75043ce59&#39;),
+  rdflib.term.URIRef(&#39;file:///b48b8165-1ef7-11ed-b91e-c8f75043ce59&#39;),
+  rdflib.term.URIRef(&#39;file:///b48b8166-1ef7-11ed-a400-c8f75043ce59&#39;),
+  rdflib.term.URIRef(&#39;file:///b49ca47b-1ef7-11ed-a13f-c8f75043ce59&#39;)],
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///b48b8163-1ef7-11ed-884c-c8f75043ce59&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: None,
+ &#39;_cartesianBounds&#39;: array([-52.61117792, 122.50256846,  12.05279275, 165.88415522,
+         -0.7098256 ,  24.0356459 ]),
+ &#39;_orientedBounds&#39;: array([[ -2.80881716, 195.04328414,  30.48888509],
+        [146.03830992, 110.2994234 ,  26.99612434],
+        [-76.00408274,  66.6405539 ,  26.60602343],
+        [ -2.9516538 , 196.04025482,   0.21255762],
+        [ 72.7002077 , -17.10633616,  -7.16306479],
+        [-76.14691938,  67.63752458,  -3.67030404],
+        [145.89547327, 111.29639407,  -3.28020313],
+        [ 72.84304434, -18.10330684,  23.11326268]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (34.9457, 88.9685, 11.6629), extent: 171.316, 147.851, 30.2931),
+ &#39;_timestamp&#39;: &#39;2022-08-18T15:14:35&#39;,
+ &#39;_resource&#39;: TriangleMesh with 11 points and 18 triangles.,
+ &#39;_cartesianTransform&#39;: array([[ 1.        ,  0.        ,  0.        , 39.72931617],
+        [ 0.        ,  1.        ,  0.        , 74.53447192],
+        [ 0.        ,  0.        ,  1.        ,  9.01263668],
+        [ 0.        ,  0.        ,  0.        ,  1.        ]])}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: The cartesianTransform extracted from paths or resources are void of rotationmatrices as this metadata is not part of the fileformat. The translation thus represents the center of the geometry.</p>
+</section>
+<section id="setnode-from-graph-and-graphpath">
+<h2>SetNode from Graph and graphPath<a class="headerlink" href="#setnode-from-graph-and-graphpath" title="Link to this heading"></a></h2>
+<p>If a set was already serialized, a SetNode can be initialised from the graph or graphPath.</p>
+<p><strong>NOTE</strong>: The graphPath is the more complete option as it is used to absolutize the node’s path information. However, it is also the slower option as the entire graph encapsulation the node is parsed multiple times.</p>
+<p><strong>USE</strong>: linkeddatatools.graph_to_nodes resolves this issue.</p>
+<p>It is important to notice that a SetNode can be initiliased from <strong>3 types of Graphs</strong>.</p>
+<section id="setgraph">
+<h3>SetGraph<a class="headerlink" href="#setgraph" title="Link to this heading"></a></h3>
+<p>The setGraph is the nodes own metadata and is considered the one true graph that should occupy the SetNode.graph variable</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;sessionGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+
+&lt;file:///17dc31bc-17f2-11ed-bdae-c8f75043ce59&gt; a v4d:SessionNode ;
+    e57:cartesianBounds &quot;&quot;&quot;[-52.61117792 122.50256846   9.21354145 165.88415522  -0.7098256
+  24.0356459 ]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[ 1.          0.          0.         30.86556763]
+ [ 0.          1.          0.         93.16462374]
+ [ 0.          0.          1.         10.82216436]
+ [ 0.          0.          0.          1.        ]]&quot;&quot;&quot; ;
+    v4d:linkedSubjects &quot;[&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339&#39;, &#39;file:///IMG_2174&#39;, &#39;file:///week22_photogrammetry_-_Cloud&#39;, &#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;]&quot; ;
+    v4d:name &quot;17dc31bc-17f2-11ed-bdae-c8f75043ce59&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[-3.63772704e+01  1.68281221e+02  2.37857820e+01]
+ [ 1.25493633e+02  1.45094167e+02  2.49074918e+01]
+ [-5.81517614e+01  1.62450831e+01  2.32386533e+01]
+ [-3.61957602e+01  1.68344760e+02 -1.09404387e+00]
+ [ 1.03900652e+02 -6.87843298e+00 -5.19462782e-01]
+ [-5.79702512e+01  1.63086218e+01 -1.64117262e+00]
+ [ 1.25675143e+02  1.45157705e+02  2.76659619e-02]
+ [ 1.03719142e+02 -6.94197166e+00  2.43603631e+01]]&quot;&quot;&quot; ;
+    v4d:path &quot;SESSION\\17dc31bc-17f2-11ed-bdae-c8f75043ce59.ply&quot; ;
+    openlabel:timestamp &quot;2022-08-02T08:25:01&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">SetNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>file:///17dc31bc-17f2-11ed-bdae-c8f75043ce59
+</pre></div>
+</div>
+</div>
+</div>
+<p>calling getResource on this graph will gather the convex hull of all the nodes that comprised the Set.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">.</span><span class="n">get_resource</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TriangleMesh with 9 points and 14 triangles.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="resourcegraph">
+<h3>ResourceGraph<a class="headerlink" href="#resourcegraph" title="Link to this heading"></a></h3>
+<p>Alternatively, a Set can also be initialised from a graph that only contains resources.</p>
+<p><strong>NOTE</strong>: this graph can consists of any nodetypes</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;resourceGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">graphPath</span><span class="p">)</span>
+
+<span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">)]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">subjects</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;), rdflib.term.URIRef(&#39;file:///IMG_2174&#39;), rdflib.term.URIRef(&#39;file:///week22_photogrammetry_-_Cloud&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">SetNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>            
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>no sessionSubjects found
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_linkedNodes&#39;: [&lt;geomapi.nodes.meshnode.MeshNode at 0x24e175e1a30&gt;,
+  &lt;geomapi.nodes.bimnode.BIMNode at 0x24e182d5190&gt;,
+  &lt;geomapi.nodes.imagenode.ImageNode at 0x24e182d5910&gt;,
+  &lt;geomapi.nodes.pointcloudnode.PointCloudNode at 0x24e175e1700&gt;],
+ &#39;_linkedSubjects&#39;: [rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339&#39;),
+  rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;),
+  rdflib.term.URIRef(&#39;file:///IMG_2174&#39;),
+  rdflib.term.URIRef(&#39;file:///week22_photogrammetry_-_Cloud&#39;)],
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///b56f7eaf-1ef7-11ed-8315-c8f75043ce59&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=N71506f93b1a24d4a90046464f99554b3 (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\resourceGraph.ttl&#39;,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: None,
+ &#39;_cartesianBounds&#39;: array([-52.61117797, 122.50256846,   9.21354145, 165.88415534,
+         -0.70982566,  24.03564597]),
+ &#39;_orientedBounds&#39;: array([[-3.63772707e+01,  1.68281221e+02,  2.37857820e+01],
+        [ 1.25493633e+02,  1.45094167e+02,  2.49074919e+01],
+        [-5.81517614e+01,  1.62450830e+01,  2.32386533e+01],
+        [-3.61957605e+01,  1.68344760e+02, -1.09404394e+00],
+        [ 1.03900652e+02, -6.87843277e+00, -5.19462770e-01],
+        [-5.79702512e+01,  1.63086216e+01, -1.64117265e+00],
+        [ 1.25675143e+02,  1.45157706e+02,  2.76659342e-02],
+        [ 1.03719142e+02, -6.94197144e+00,  2.43603632e+01]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (33.7617, 80.7014, 11.6332), extent: 163.527, 153.588, 24.8806),
+ &#39;_timestamp&#39;: &#39;2022-08-02T08:25:01&#39;,
+ &#39;_resource&#39;: TriangleMesh with 9 points and 14 triangles.,
+ &#39;_cartesianTransform&#39;: array([[ 1.        ,  0.        ,  0.        , 30.86556763],
+        [ 0.        ,  1.        ,  0.        , 93.16462375],
+        [ 0.        ,  0.        ,  1.        , 10.82216436],
+        [ 0.        ,  0.        ,  0.        ,  1.        ]])}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="combined-graph">
+<h3>Combined Graph<a class="headerlink" href="#combined-graph" title="Link to this heading"></a></h3>
+<p>A third option is a combined graph of SetNode(s) and resourceNodes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">pprint</span>
+
+<span class="n">graphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;combinedGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">graphPath</span><span class="p">)</span>
+
+<span class="nb">dict</span><span class="o">=</span><span class="p">[{</span><span class="n">s</span><span class="p">,</span><span class="n">o</span><span class="p">}</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">o</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">subject_objects</span><span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">)]</span>
+<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{rdflib.term.URIRef(&#39;file:///17dc31bc-17f2-11ed-bdae-c8f75043ce59&#39;),
+  rdflib.term.URIRef(&#39;https://w3id.org/v4d/core#SessionNode&#39;)},
+ {rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339&#39;),
+  rdflib.term.URIRef(&#39;https://w3id.org/v4d/core#MeshNode&#39;)},
+ {rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;),
+  rdflib.term.URIRef(&#39;https://w3id.org/v4d/core#BIMNode&#39;)},
+ {rdflib.term.URIRef(&#39;file:///IMG_2174&#39;),
+  rdflib.term.URIRef(&#39;https://w3id.org/v4d/core#ImageNode&#39;)},
+ {rdflib.term.URIRef(&#39;file:///week22_photogrammetry_-_Cloud&#39;),
+  rdflib.term.URIRef(&#39;https://w3id.org/v4d/core#PointCloudNode&#39;)}]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">SetNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>     
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_linkedNodes&#39;: [&lt;geomapi.nodes.meshnode.MeshNode at 0x24e182d6fa0&gt;,
+  &lt;geomapi.nodes.bimnode.BIMNode at 0x24e182d6280&gt;,
+  &lt;geomapi.nodes.imagenode.ImageNode at 0x24e182d6af0&gt;,
+  &lt;geomapi.nodes.pointcloudnode.PointCloudNode at 0x24e182d6d90&gt;],
+ &#39;_linkedSubjects&#39;: [rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339&#39;),
+  rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;),
+  rdflib.term.URIRef(&#39;file:///IMG_2174&#39;),
+  rdflib.term.URIRef(&#39;file:///week22_photogrammetry_-_Cloud&#39;)],
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///17dc31bc-17f2-11ed-bdae-c8f75043ce59&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=N49190a6bb6d748fba3b8f30b7cb84dc2 (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\combinedGraph.ttl&#39;,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\SESSION\\17dc31bc-17f2-11ed-bdae-c8f75043ce59.ply&#39;,
+ &#39;_name&#39;: &#39;17dc31bc-17f2-11ed-bdae-c8f75043ce59&#39;,
+ &#39;_cartesianBounds&#39;: array([-52.61117797, 122.50256846,   9.21354145, 165.88415534,
+         -0.70982566,  24.03564597]),
+ &#39;_orientedBounds&#39;: array([[-3.63772707e+01,  1.68281221e+02,  2.37857820e+01],
+        [ 1.25493633e+02,  1.45094167e+02,  2.49074919e+01],
+        [-5.81517614e+01,  1.62450830e+01,  2.32386533e+01],
+        [-3.61957605e+01,  1.68344760e+02, -1.09404394e+00],
+        [ 1.03900652e+02, -6.87843277e+00, -5.19462770e-01],
+        [-5.79702512e+01,  1.63086216e+01, -1.64117265e+00],
+        [ 1.25675143e+02,  1.45157706e+02,  2.76659342e-02],
+        [ 1.03719142e+02, -6.94197144e+00,  2.43603632e+01]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (33.7617, 80.7014, 11.6332), extent: 163.527, 153.588, 24.8806),
+ &#39;_timestamp&#39;: &#39;2022-08-02T08:25:01&#39;,
+ &#39;_resource&#39;: TriangleMesh with 9 points and 14 triangles.,
+ &#39;_cartesianTransform&#39;: array([[ 1.        ,  0.        ,  0.        , 30.86556763],
+        [ 0.        ,  1.        ,  0.        , 93.16462375],
+        [ 0.        ,  0.        ,  1.        , 10.82216436],
+        [ 0.        ,  0.        ,  0.        ,  1.        ]]),
+ &#39;type&#39;: &#39;https://w3id.org/v4d/core#SessionNode&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="setnode-get-linked-nodes">
+<h2>SetNode get linked Nodes<a class="headerlink" href="#setnode-get-linked-nodes" title="Link to this heading"></a></h2>
+<p>It is also possible to add specific Nodes from a graph to an existing Set</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;sessionGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">SetNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">linkedNodes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;resourceGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">graph</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">)]</span>
+<span class="n">mysubjects</span><span class="o">=</span><span class="n">subjects</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">2</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">mysubjects</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">.</span><span class="n">get_linked_nodes</span><span class="p">(</span><span class="n">graph</span><span class="p">,</span><span class="n">mysubjects</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">linkedNodes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;geomapi.nodes.meshnode.MeshNode object at 0x0000024E182D3670&gt;, &lt;geomapi.nodes.bimnode.BIMNode object at 0x0000024E182D3640&gt;]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="setnode-get-linked-resources">
+<h2>SetNode get linked resources<a class="headerlink" href="#setnode-get-linked-resources" title="Link to this heading"></a></h2>
+<p>The resources of the linkedNodes can also be directly called from the SetNodes. Obviously, this only works if the resources are stored in the directory/subdirectory of the Set graphPath</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;combinedGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">SetNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">linkedNodes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;geomapi.nodes.meshnode.MeshNode object at 0x0000024E182BF460&gt;, &lt;geomapi.nodes.bimnode.BIMNode object at 0x0000024E182BF250&gt;, &lt;geomapi.nodes.imagenode.ImageNode object at 0x0000024E182D0370&gt;, &lt;geomapi.nodes.pointcloudnode.PointCloudNode object at 0x0000024E182BFAF0&gt;]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resources</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">get_linked_resources</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">([</span><span class="nb">type</span><span class="p">(</span><span class="n">r</span><span class="p">)</span> <span class="k">for</span> <span class="n">r</span> <span class="ow">in</span> <span class="n">resources</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&lt;class &#39;open3d.cpu.pybind.geometry.TriangleMesh&#39;&gt;, &lt;class &#39;open3d.cpu.pybind.geometry.TriangleMesh&#39;&gt;, &lt;class &#39;numpy.ndarray&#39;&gt;, &lt;class &#39;open3d.cpu.pybind.geometry.PointCloud&#39;&gt;]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="setnode-save-linked-resources">
+<h2>SetNode save linked resources<a class="headerlink" href="#setnode-save-linked-resources" title="Link to this heading"></a></h2>
+<p>We can also save these resources to a new directory. Default file types will be used for each nodetype.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">directory</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;resources&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">save_linked_resources</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">ut</span><span class="o">.</span><span class="n">get_list_of_files</span><span class="p">(</span><span class="n">directory</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[&#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\resources\\17dc31bc-17f2-11ed-bdae-c8f75043ce59.ply&#39;, &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\resources\\Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339.ply&#39;, &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\resources\\Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d.ply&#39;, &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\resources\\IMG_2174.png&#39;, &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\resources\\week22_photogrammetry_-_Cloud.pcd&#39;]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="setnode-save-resource">
+<h2>SetNode save resource<a class="headerlink" href="#setnode-save-resource" title="Link to this heading"></a></h2>
+<p>It is interesting to buffer the geometries on drive to speed up future analyses.
+Set save=True on node.to_graph with an optional filepath to store the geometry as .ply or .obj.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">.</span><span class="n">save_resource</span><span class="p">(</span><span class="n">directory</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>d:\Scan-to-BIM repository\geomapi\test\testfiles\SESSION\17dc31bc-17f2-11ed-bdae-c8f75043ce59.ply
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="setnode-to-graph">
+<h2>SetNode to Graph<a class="headerlink" href="#setnode-to-graph" title="Link to this heading"></a></h2>
+<p>The Graph serialisation is inherited from Node functionality.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span><span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;combinedGraph.ttl&#39;</span><span class="p">)</span>
+
+<span class="n">node</span><span class="o">=</span><span class="n">SetNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+
+<span class="n">newGraphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s1">&#39;myGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">newGraphPath</span><span class="p">)</span>
+
+<span class="n">newNode</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">newGraphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+
+&lt;file:///17dc31bc-17f2-11ed-bdae-c8f75043ce59&gt; a v4d:SessionNode ;
+    e57:cartesianBounds &quot;&quot;&quot;[-52.61117797 122.50256846   9.21354145 165.88415534  -0.70982566
+  24.03564597]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[ 1.          0.          0.         30.86556763]
+ [ 0.          1.          0.         93.16462375]
+ [ 0.          0.          1.         10.82216436]
+ [ 0.          0.          0.          1.        ]]&quot;&quot;&quot; ;
+    v4d:linkedSubjects &quot;[&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339&#39;, &#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;, &#39;file:///IMG_2174&#39;, &#39;file:///week22_photogrammetry_-_Cloud&#39;]&quot; ;
+    v4d:name &quot;17dc31bc-17f2-11ed-bdae-c8f75043ce59&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[-3.63772707e+01  1.68281221e+02  2.37857820e+01]
+ [ 1.25493633e+02  1.45094167e+02  2.49074919e+01]
+ [-5.81517614e+01  1.62450830e+01  2.32386533e+01]
+ [-3.61957605e+01  1.68344760e+02 -1.09404394e+00]
+ [ 1.03900652e+02 -6.87843277e+00 -5.19462770e-01]
+ [-5.79702512e+01  1.63086216e+01 -1.64117265e+00]
+ [ 1.25675143e+02  1.45157706e+02  2.76659342e-02]
+ [ 1.03719142e+02 -6.94197144e+00  2.43603632e+01]]&quot;&quot;&quot; ;
+    v4d:path &quot;..\\..\\..\\test\\testfiles\\SESSION\\17dc31bc-17f2-11ed-bdae-c8f75043ce59.ply&quot; ;
+    openlabel:timestamp &quot;2022-08-02T08:25:01&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="linkednodes-linked-nodes-to-graph">
+<h2>LinkedNodes linked nodes to Graph<a class="headerlink" href="#linkednodes-linked-nodes-to-graph" title="Link to this heading"></a></h2>
+<p>Additionally, SetNodes have the functionality to serialize all of their linkedNodes aswell. This effectively creates a new resourceGraph in the target directory</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">.</span><span class="n">linked_nodes_to_graph</span><span class="p">(</span><span class="n">newGraphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">newGraph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">newGraphPath</span><span class="p">)</span>
+<span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">newGraph</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">)]</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">subjects</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;), rdflib.term.URIRef(&#39;file:///IMG_2174&#39;), rdflib.term.URIRef(&#39;file:///week22_photogrammetry_-_Cloud&#39;)]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="linkednodes-set-to-graph">
+<h2>LinkedNodes Set to Graph<a class="headerlink" href="#linkednodes-set-to-graph" title="Link to this heading"></a></h2>
+<p>Finally, a combined Graph can also be serialized consisting of both the SetNode and each of the LinkedNodes.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">.</span><span class="n">session_to_graph</span><span class="p">(</span><span class="n">newGraphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">newGraph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">newGraphPath</span><span class="p">)</span>
+<span class="nb">dict</span><span class="o">=</span><span class="p">[{</span><span class="n">s</span><span class="p">,</span><span class="n">o</span><span class="p">}</span> <span class="k">for</span> <span class="n">s</span><span class="p">,</span><span class="n">o</span> <span class="ow">in</span> <span class="n">newGraph</span><span class="o">.</span><span class="n">subject_objects</span><span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">)]</span>
+<span class="n">pprint</span><span class="o">.</span><span class="n">pprint</span><span class="p">(</span><span class="nb">dict</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[{rdflib.term.URIRef(&#39;file:///17dc31bc-17f2-11ed-bdae-c8f75043ce59&#39;),
+  rdflib.term.URIRef(&#39;https://w3id.org/v4d/core#SessionNode&#39;)},
+ {rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1095339&#39;),
+  rdflib.term.URIRef(&#39;https://w3id.org/v4d/core#MeshNode&#39;)},
+ {rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;),
+  rdflib.term.URIRef(&#39;https://w3id.org/v4d/core#BIMNode&#39;)},
+ {rdflib.term.URIRef(&#39;file:///IMG_2174&#39;),
+  rdflib.term.URIRef(&#39;https://w3id.org/v4d/core#ImageNode&#39;)},
+ {rdflib.term.URIRef(&#39;file:///week22_photogrammetry_-_Cloud&#39;),
+  rdflib.term.URIRef(&#39;https://w3id.org/v4d/core#PointCloudNode&#39;)}]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="setnode-analysis">
+<h2>SetNode Analysis<a class="headerlink" href="#setnode-analysis" title="Link to this heading"></a></h2>
+<p>SetNodes are usefull for a range of analyses. Most notably, their metadata allows for fast selection of which resources are to be used in any given analysis.</p>
+<p>E.g. Image we want to asses which objects of a BIM model are potentially observed in an epochs.</p>
+<p>Consider the following resource (convex hull) of the following SetNode:</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">imgNode</span><span class="o">=</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">xmpPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IMG&#39;</span><span class="p">,</span><span class="s1">&#39;IMG_2174.xmp&#39;</span><span class="p">),</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">pcdNode</span><span class="o">=</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;academiestraat week 22 a 20.pcd&#39;</span><span class="p">),</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">bimNode</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">ifcPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IFC&#39;</span><span class="p">,</span><span class="s1">&#39;Academiestraat_parking.ifc&#39;</span><span class="p">),</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">nodeList</span><span class="o">=</span><span class="p">[</span><span class="n">imgNode</span><span class="p">,</span><span class="n">pcdNode</span><span class="p">,</span><span class="n">bimNode</span><span class="p">]</span>     
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">week1</span><span class="o">=</span><span class="n">SetNode</span><span class="p">(</span><span class="n">linkedNodes</span><span class="o">=</span><span class="n">nodeList</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">week1</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TriangleMesh with 12 points and 20 triangles.
+</pre></div>
+</div>
+</div>
+</div>
+<p>The already serialized ifc model and its geometry can be efficiently retrieved from the graphPath</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bimGraphPath</span><span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;bimGraph1.ttl&#39;</span><span class="p">)</span>
+<span class="n">bimGraph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">bimGraphPath</span><span class="p">)</span>
+<span class="n">bimNodes</span><span class="o">=</span><span class="p">[]</span>
+<span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">bimGraph</span><span class="o">.</span><span class="n">subjects</span><span class="p">(</span><span class="n">RDF</span><span class="o">.</span><span class="n">type</span><span class="p">):</span>
+    <span class="n">bimNodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">s</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">bimGraphPath</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Open3D WARNING] Unable to load file d:\Scan-to-BIM repository\geomapi\test\testfiles\282_SC_f2_Round:Ø30:883870.obj with ASSIMP
+[Open3D WARNING] Unable to load file d:\Scan-to-BIM repository\geomapi\test\testfiles\B1_CL.obj with ASSIMP
+[Open3D WARNING] Unable to load file d:\Scan-to-BIM repository\geomapi\test\testfiles\Default Grid.obj with ASSIMP
+[Open3D WARNING] Unable to load file d:\Scan-to-BIM repository\geomapi\test\testfiles\Precast Stair:Stair:1194239.obj with ASSIMP
+[Open3D WARNING] Unable to load file d:\Scan-to-BIM repository\geomapi\test\testfiles\Precast Stair:Stair:1195754.obj with ASSIMP
+</pre></div>
+</div>
+</div>
+</div>
+<p>next, we can easily asses whether the BIM geometries are contained within the convex hull of the Set</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">BIMgeometries</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">bimNodes</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">BIMgeometries</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>100
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inliers</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">get_mesh_inliers</span><span class="p">(</span><span class="n">sources</span><span class="o">=</span><span class="n">BIMgeometries</span><span class="p">,</span> <span class="n">reference</span><span class="o">=</span><span class="n">week1</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">inliers</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[False, False, False, True, True, True, None, False, False, False, False, True, False, True, False, False, False, False, True, False, False, False, False, False, True, False, True, True, None, True, True, False, True, True, False, True, True, False, False, False, False, False, True, True, False, False, False, True, True, True, True, False, False, True, True, True, True, True, True, True, False, True, True, True, True, True, True, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, False, True, None, False, False, False, True, False, False, True, False, False, False, None, True, True, None, False]
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">inside</span><span class="o">=</span><span class="p">[</span><span class="n">g</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">g</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">BIMgeometries</span><span class="p">)</span> <span class="k">if</span> <span class="n">inliers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">]</span>
+<span class="n">outside</span><span class="o">=</span><span class="p">[</span><span class="n">g</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">g</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">BIMgeometries</span><span class="p">)</span> <span class="k">if</span> <span class="n">inliers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">!=</span><span class="kc">True</span><span class="p">]</span>
+<span class="n">lineset1</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">LineSet</span><span class="o">.</span><span class="n">create_from_triangle_mesh</span><span class="p">(</span><span class="n">week1</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+<span class="n">lineset1</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="p">[</span><span class="n">g</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">g</span> <span class="ow">in</span> <span class="n">inside</span><span class="p">]</span>
+<span class="n">o3d</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">draw_geometries</span><span class="p">(</span><span class="n">inside</span> <span class="o">+</span> <span class="n">outside</span> <span class="o">+</span> <span class="p">[</span><span class="n">lineset1</span><span class="p">,</span><span class="n">pcdNode</span><span class="o">.</span><span class="n">resource</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>LineSet with 30 lines.
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="rendering" src="../pics/session4.PNG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">subjects</span><span class="o">=</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">subject</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">node</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">bimNodes</span><span class="p">)</span> <span class="k">if</span> <span class="n">inliers</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">==</span><span class="kc">True</span><span class="p">]</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">subjects</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>39
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">analysisNode1</span><span class="o">=</span><span class="n">SetNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="n">week1</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
+                <span class="n">observableBIMNodes</span><span class="o">=</span><span class="n">subjects</span><span class="p">,</span>
+                <span class="n">isDerivedFromGeometry</span><span class="o">=</span><span class="n">week1</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span>
+                <span class="n">analysisTimestamp</span><span class="o">=</span><span class="n">week1</span><span class="o">.</span><span class="n">timestamp</span><span class="p">)</span>
+<span class="n">analysisNode1</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">analysisNode1</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix omg: &lt;https://w3id.org/omg#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+
+&lt;file:///c23e6f1b-1ef7-11ed-9a6f-c8f75043ce59&gt; a v4d:SessionNode ;
+    omg:isDerivedFromGeometry &quot;TriangleMesh with 12 points and 20 triangles.&quot; ;
+    v4d:analysisTimestamp &quot;2022-03-13T13:55:30&quot; ;
+    v4d:observableBIMNodes &quot;[rdflib.term.URIRef(&#39;file:///20946a35-1493-11ed-a3e0-c8f75043ce59&#39;), rdflib.term.URIRef(&#39;file:///282_SC_f2_Rectangular_20_20_902338_0WczkhEJb5j9vKUsZ2C8Xb&#39;), rdflib.term.URIRef(&#39;file:///282_SC_f2_Rectangular_50_20_1128324_3fzMBiyqn35x9PKxUuI9k5&#39;), rdflib.term.URIRef(&#39;file:///282_SC_h2_Circular_Hollow_Sections_CHS219x8_874044_2VkCuCs_XE6Oa0y_VskRw_&#39;), rdflib.term.URIRef(&#39;file:///282_SF_f2_Rectangular_20_45_883681_3vj_SCnYn1ygZxCAXgDJ8E&#39;), rdflib.term.URIRef(&#39;file:///282_SF_f2_Rectangular_20_50_882150_1uRDEANfn5uQudsbYskAIQ&#39;), rdflib.term.URIRef(&#39;file:///282_SF_f2_Rectangular_precast__20_20_910622_0xd_OlqWn3CPWz5_iJaRR3&#39;), rdflib.term.URIRef(&#39;file:///282_SF_h2_H-Wide_Flange_HEM180_1087611_3X7b5jdTP3qPcQ8PFZIQyv&#39;), rdflib.term.URIRef(&#39;file:///282_SF_h2_UPN_UPN240_1204348_3UjGj1LDDF4OdGVnMEh_PL&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1118860_0KysUSO6T3_gOJKtAiUE7d&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_150mm_1119623_2KGJL8gr1CSxNi9E5OsTC5&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_214mm_871840_0xEj5E_xb0xuG9m0PNp3LQ&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_214mm_875067_0tYm_oWnH4EO9KOnrQ_LTZ&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_214mm_909296_1_1LnVDAG8H2GhtSGFUjv0cw&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_214mm_915343_0igX5ELYf27gUEXdl0c9BO&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_214mm_957051_1r0ua9H6vBcgWG64YK_7sP&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Ff1_Glued_brickwork_sandlime_214mm_957053_1r0ua9H6vBcgWG64YK_7sV&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Fg2_Masonry_perforated_brick_420mm_890813_1_1viIg84R51EQ3AC_ORnWPI&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_Fg2_Masonry_perforated_brick_420mm_890813_35DaG1pibDM8EXj9_uGbw5&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_150mm_871551_27Y0jzhqDDngyHLzsbzFWM&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_1094351_3dwB2NAe1Bwg5iNk81I6l1&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_871479_14ggU2wNT39gT0cJEPcQ2T&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_871524_1MQAV8CnbF1gfS2oQu3BTB&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_871539_1naLsFzZjExgYlxSPIk5Fv&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_871546_27Y0jzhqDDngyHLzsbzFWJ&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_871605_36EK3dgtj5kvzLoe__DpK_&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_871610_36EK3dgtj5kvzLoe__DpKn&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_871615_36EK3dgtj5kvzLoe__DpKq&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_871640_3m98g9juf6duIoC__K0IiP&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_871749_24_a_Hzkf0MQ_ZwECgKMG1&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_872964_21RVJrNGr989BN7TXOhOb6&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_872969_21RVJrNGr989BN7TXOhObB&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_873082_1naLsFzZjExgYlxSPIk59_&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_200mm_892869_3_XZi7pMP9Ng_MI42c_pXP&#39;), rdflib.term.URIRef(&#39;file:///Basic_Wall_211_WA_f2_Concrete_interior_250mm_881587_1i_PelBQv4sR9_JJI0Ie0o&#39;), rdflib.term.URIRef(&#39;file:///Floor_232_FL_Compression_slab_150_CIP__200mm__957651_2IS4Dw5in8hOx8w270ibl_&#39;), rdflib.term.URIRef(&#39;file:///Floor_232_FL_Wide_slab_50mm_1012024_37fvQW5Ab3jRe12QYYQFCn&#39;), rdflib.term.URIRef(&#39;file:///Precast_Stair_Stair_1194239_Landing_1_0zVTcSmQj60w7eOLIJ1eQZ&#39;), rdflib.term.URIRef(&#39;file:///Precast_Stair_Stair_1194239_Run_2_0zVTcSmQj60w7eOLIJ1eQX&#39;)]&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+<p>These analyses nodes can be stored in seperate graphs and combined at later stages to be used in future analyses.</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

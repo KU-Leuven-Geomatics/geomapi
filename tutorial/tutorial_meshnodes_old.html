@@ -1,0 +1,631 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MeshNode &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">MeshNode</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/tutorial_meshnodes_old.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="meshnode">
+<h1>MeshNode<a class="headerlink" href="#meshnode" title="Link to this heading"></a></h1>
+<p>The meshNode class in Geomapi represents the data and metadata of polygonal mesh data. The data itself and methods build upon Open3D TriangleMesh and Trimesh concepts while the metadata builds upon the RDFlib framework:</p>
+<p><a class="reference external" href="http://www.open3d.org/docs/latest/tutorial/Basic/mesh.html#">http://www.open3d.org/docs/latest/tutorial/Basic/mesh.html#</a></p>
+<p><a class="reference external" href="https://trimsh.org/trimesh.base.html">https://trimsh.org/trimesh.base.html</a></p>
+<p><a class="reference external" href="https://rdflib.readthedocs.io/">https://rdflib.readthedocs.io/</a></p>
+<p>The code below shows how to create a MeshNode from various inputs.</p>
+<p>First the geomapi and external packages are imported</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#IMPORT PACKAGES</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">URIRef</span><span class="p">,</span> <span class="n">Literal</span>
+<span class="kn">import</span> <span class="nn">open3d</span> <span class="k">as</span> <span class="nn">o3d</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+
+<span class="c1">#IMPORT MODULES</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span> 
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">geomapi.utils</span> <span class="k">as</span> <span class="nn">ut</span>
+<span class="kn">from</span> <span class="nn">geomapi.utils</span> <span class="kn">import</span> <span class="n">geometryutils</span> <span class="k">as</span> <span class="n">gmu</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools</span> <span class="k">as</span> <span class="nn">tl</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="meshnode-from-properties">
+<h2>MeshNode from properties<a class="headerlink" href="#meshnode-from-properties" title="Link to this heading"></a></h2>
+<p>A placeholder MeshNode can be initialised without any data or metadata</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+              <span class="n">name</span><span class="o">=</span><span class="s1">&#39;myName&#39;</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pointCount&#39;: None,
+ &#39;faceCount&#39;: None,
+ &#39;_cartesianBounds&#39;: None,
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///myNode&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;myName&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="meshnode-from-path">
+<h2>MeshNode from Path<a class="headerlink" href="#meshnode-from-path" title="Link to this heading"></a></h2>
+<p>Instead, it is much more likely to initialise a MeshNode from a path containing an .obj or .ply file. This sets the: <br></p>
+<ol class="arabic simple">
+<li><p>subject</p></li>
+<li><p>name</p></li>
+<li><p>timestamp</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;MESH&#39;</span><span class="p">,</span><span class="s1">&#39;Precast Stair_Stair_1181900 Landing 1.obj&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pointCount&#39;: None,
+ &#39;faceCount&#39;: None,
+ &#39;_cartesianBounds&#39;: None,
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///Precast_Stair_Stair_1181900_Landing_1&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\MESH\\Precast Stair_Stair_1181900 Landing 1.obj&#39;,
+ &#39;_name&#39;: &#39;Precast Stair_Stair_1181900 Landing 1&#39;,
+ &#39;_timestamp&#39;: &#39;2022-08-02T08:25:01&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: GetResource is optional and might slow down any analysis. Only work with data when all metadata options have been exhausted.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">,</span> <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pointCount&#39;: 24,
+ &#39;faceCount&#39;: 44,
+ &#39;_cartesianBounds&#39;: array([-15.33829975, -12.29339981,  72.86849976,  75.14150238,
+          9.96000004,  10.22000027]),
+ &#39;_orientedBounds&#39;: array([[-14.77782442,  75.91900201,  10.22442134],
+        [-11.71133823,  73.70850378,  10.21801638],
+        [-16.18895543,  73.96140652,  10.23185056],
+        [-14.77867795,  75.91859696,   9.95557148],
+        [-13.12332277,  71.75050325,   9.95659574],
+        [-16.18980896,  73.96100148,   9.9630007 ],
+        [-11.71219175,  73.70809874,   9.94916652],
+        [-13.12246924,  71.75090829,  10.2254456 ]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (-13.9506, 73.8348, 10.0905), extent: 3.78017, 2.4132, 0.268852),
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///Precast_Stair_Stair_1181900_Landing_1&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\MESH\\Precast Stair_Stair_1181900 Landing 1.obj&#39;,
+ &#39;_name&#39;: &#39;Precast Stair_Stair_1181900 Landing 1&#39;,
+ &#39;_timestamp&#39;: &#39;2022-08-02T08:25:01&#39;,
+ &#39;_resource&#39;: TriangleMesh with 24 points and 44 triangles.,
+ &#39;_cartesianTransform&#39;: array([[  1.        ,   0.        ,   0.        , -13.47834166],
+        [  0.        ,   1.        ,   0.        ,  73.99623426],
+        [  0.        ,   0.        ,   1.        ,  10.09000015],
+        [  0.        ,   0.        ,   0.        ,   1.        ]])}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: GetMetadata (bool) by default is True. As such, when data is imported, the cartesianBounds, orientedBounds, cartesianTransform and orientedBoundingBox is automatically extracted.</p>
+</section>
+<section id="meshnode-from-resource">
+<h2>MeshNode from resource<a class="headerlink" href="#meshnode-from-resource" title="Link to this heading"></a></h2>
+<p>A similar result is achieved by initialising a MeshNode from a Open3D.Geometry.TriangleMesh or Trimesh.trimesh instance. In this case, GetResource (bool) means nothing.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mesh</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_triangle_mesh</span><span class="p">(</span><span class="n">filePath</span><span class="p">)</span>
+<span class="n">node</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">mesh</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>            
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pointCount&#39;: 24,
+ &#39;faceCount&#39;: 44,
+ &#39;_cartesianBounds&#39;: array([-15.33829975, -12.29339981,  72.86849976,  75.14150238,
+          9.96000004,  10.22000027]),
+ &#39;_orientedBounds&#39;: array([[-14.77782442,  75.91900201,  10.22442134],
+        [-11.71133823,  73.70850378,  10.21801638],
+        [-16.18895543,  73.96140652,  10.23185056],
+        [-14.77867795,  75.91859696,   9.95557148],
+        [-13.12332277,  71.75050325,   9.95659574],
+        [-16.18980896,  73.96100148,   9.9630007 ],
+        [-11.71219175,  73.70809874,   9.94916652],
+        [-13.12246924,  71.75090829,  10.2254456 ]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (-13.9506, 73.8348, 10.0905), extent: 3.78017, 2.4132, 0.268852),
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///c1bc9eaa-1d70-11ed-b067-c8f75043ce59&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;c1bc9eaa-1d70-11ed-b067-c8f75043ce59&#39;,
+ &#39;_timestamp&#39;: None,
+ &#39;_resource&#39;: TriangleMesh with 24 points and 44 triangles.,
+ &#39;_cartesianTransform&#39;: array([[  1.        ,   0.        ,   0.        , -13.47834166],
+        [  0.        ,   1.        ,   0.        ,  73.99623426],
+        [  0.        ,   0.        ,   1.        ,  10.09000015],
+        [  0.        ,   0.        ,   0.        ,   1.        ]])}
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>NOTE</strong>: The cartesianTransform extracted from paths or resources are void of rotationmatrices as this metadata is not part of the fileformat. The translation thus represents the center of the geometry.</p>
+</section>
+<section id="meshnode-from-graph-and-graphpath">
+<h2>MeshNode from Graph and graphPath<a class="headerlink" href="#meshnode-from-graph-and-graphpath" title="Link to this heading"></a></h2>
+<p>If a mesh was already serialized, a node can be initialised from the graph or graphPath.</p>
+<p><strong>NOTE</strong>: The graphPath is the more complete option as it is used to absolutize the node’s path information. However, it is also the slower option as the entire graph encapsulation the node is parsed multiple times.</p>
+<p><strong>USE</strong>: linkeddatatools.graph_to_nodes resolves this issue.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;meshGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">graph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">graphPath</span><span class="p">)</span>
+
+<span class="c1">#only print first node</span>
+<span class="n">newGraph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span>
+<span class="n">newGraph</span><span class="o">=</span><span class="n">ut</span><span class="o">.</span><span class="n">bind_ontologies</span><span class="p">(</span><span class="n">newGraph</span><span class="p">)</span>
+<span class="n">newGraph</span><span class="o">+=</span><span class="n">graph</span><span class="o">.</span><span class="n">triples</span><span class="p">((</span><span class="n">URIRef</span><span class="p">(</span><span class="s1">&#39;file:///Basic_Wall_000_WA_DummyWall_20mm_1130411&#39;</span><span class="p">),</span><span class="kc">None</span><span class="p">,</span><span class="kc">None</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">newGraph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///Basic_Wall_000_WA_DummyWall_20mm_1130411&gt; a v4d:MeshNode ;
+    e57:cartesianBounds &quot;&quot;&quot;[-14.01650047 -13.62110043  69.10179901  69.13130188  13.97000027\r
+  17.20999908]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[  1.           0.           0.         -13.81880021]\r
+ [  0.           1.           0.          69.11655045]\r
+ [  0.           0.           1.          15.58999968]\r
+ [  0.           0.           0.           1.        ]]&quot;&quot;&quot; ;
+    e57:pointCount 8 ;
+    v4d:accuracy &quot;0.05&quot;^^xsd:float ;
+    v4d:faceCount 12 ;
+    v4d:name &quot;Basic Wall_000_WA_DummyWall 20mm_1130411&quot; ;
+    v4d:path &quot;MESH\\Basic Wall_000_WA_DummyWall 20mm_1130411.obj&quot; ;
+    openlabel:sensor &quot;Hololens 2&quot; ;
+    openlabel:timestamp &quot;2022-04-06 15:16:28&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pointCount&#39;: 8,
+ &#39;faceCount&#39;: 12,
+ &#39;_cartesianBounds&#39;: array([-14.01650047, -13.62110043,  69.10179901,  69.13130188,
+         13.97000027,  17.20999908]),
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///Basic_Wall_000_WA_DummyWall_20mm_1130411&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=N77dd02aa430140ae8f8a6b853162824b (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\meshGraph.ttl&#39;,
+ &#39;_path&#39;: &#39;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\MESH\\Basic Wall_000_WA_DummyWall 20mm_1130411.obj&#39;,
+ &#39;_name&#39;: &#39;Basic Wall_000_WA_DummyWall 20mm_1130411&#39;,
+ &#39;_timestamp&#39;: &#39;2022-04-06T15:16:28&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: array([[  1.        ,   0.        ,   0.        , -13.81880021],
+        [  0.        ,   1.        ,   0.        ,  69.11655045],
+        [  0.        ,   0.        ,   1.        ,  15.58999968],
+        [  0.        ,   0.        ,   0.        ,   1.        ]]),
+ &#39;type&#39;: &#39;https://w3id.org/v4d/core#MeshNode&#39;,
+ &#39;accuracy&#39;: 0.05,
+ &#39;sensor&#39;: &#39;Hololens 2&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="meshnode-to-graph">
+<h2>MeshNode to Graph<a class="headerlink" href="#meshnode-to-graph" title="Link to this heading"></a></h2>
+<p>The Graph serialisation is inherited from Node functionality.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;myNode&#39;</span><span class="p">,</span>
+                <span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">,</span>
+                <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="n">newGraphPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s1">&#39;myGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">newGraphPath</span><span class="p">)</span>
+
+<span class="n">newNode</span><span class="o">=</span><span class="n">Node</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">newGraphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///myNode&gt; a v4d:MeshNode ;
+    e57:cartesianBounds &quot;&quot;&quot;[-15.33829975 -12.29339981  72.86849976  75.14150238   9.96000004
+  10.22000027]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[  1.           0.           0.         -13.47834166]
+ [  0.           1.           0.          73.99623426]
+ [  0.           0.           1.          10.09000015]
+ [  0.           0.           0.           1.        ]]&quot;&quot;&quot; ;
+    e57:pointCount 24 ;
+    v4d:faceCount 44 ;
+    v4d:name &quot;Precast Stair_Stair_1181900 Landing 1&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[-14.77782442  75.91900201  10.22442134]
+ [-11.71133823  73.70850378  10.21801638]
+ [-16.18895543  73.96140652  10.23185056]
+ [-14.77867795  75.91859696   9.95557148]
+ [-13.12332277  71.75050325   9.95659574]
+ [-16.18980896  73.96100148   9.9630007 ]
+ [-11.71219175  73.70809874   9.94916652]
+ [-13.12246924  71.75090829  10.2254456 ]]&quot;&quot;&quot; ;
+    v4d:path &quot;..\\..\\..\\test\\testfiles\\MESH\\Precast Stair_Stair_1181900 Landing 1.obj&quot; ;
+    openlabel:timestamp &quot;2022-08-02T08:25:01&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="meshnode-prefix-relations">
+<h2>MeshNode prefix relations<a class="headerlink" href="#meshnode-prefix-relations" title="Link to this heading"></a></h2>
+<p>MeshNodes can be attributed with a range of relationships. This is extremely usefull for Graph navigation and linking together different resources. In <a class="reference external" href="https://rdflib.readthedocs.io/en/stable/intro_to_creating_rdf.html">Semantic Web Technologies</a>, relationships are defined by triples that have other subjects as literals.</p>
+<p>In this first example, we perform a subselection on a node based on the <a class="reference external" href="https://www.projekt-scope.de/ontologies/omg/">omg.isDerivedFromGeometry</a> relation.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">filePath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;MESH&#39;</span><span class="p">,</span><span class="s1">&#39;week22.obj&#39;</span><span class="p">)</span>
+<span class="n">myNode</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">filePath</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">myNode</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>TriangleMesh with 330263 points and 485077 triangles.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#croppingGeometry</span>
+<span class="n">box</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">TriangleMesh</span><span class="o">.</span><span class="n">create_box</span><span class="p">(</span><span class="n">width</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">height</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">depth</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+<span class="n">box</span><span class="o">=</span><span class="n">box</span><span class="o">.</span><span class="n">get_oriented_bounding_box</span><span class="p">()</span>
+<span class="n">box</span><span class="o">.</span><span class="n">translate</span><span class="p">([</span><span class="mi">50</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">box</span><span class="o">.</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">croppedGeometry</span><span class="o">=</span><span class="n">myNode</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">box</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">croppedGeometry</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Open3D WARNING] [SelectByIndex] This mesh contains triangle uvs that are not handled in this function
+TriangleMesh with 5457 points and 10637 triangles.
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="rendering" src="../pics/subMesh1.PNG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">subNode</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;mySubNode&#39;</span><span class="p">,</span>
+                <span class="n">resource</span><span class="o">=</span><span class="n">croppedGeometry</span><span class="p">,</span>
+                <span class="n">isDerivedFromGeometry</span><span class="o">=</span><span class="n">myNode</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix omg: &lt;https://w3id.org/omg#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///mySubNode&gt; a v4d:MeshNode ;
+    e57:cartesianBounds &quot;[50.00110626 59.99737167 50.00030136 59.99775696  3.61150765  6.80015469]&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[ 1.          0.          0.         54.76393966]
+ [ 0.          1.          0.         54.55544061]
+ [ 0.          0.          1.          3.96772196]
+ [ 0.          0.          0.          1.        ]]&quot;&quot;&quot; ;
+    e57:pointCount 5457 ;
+    omg:isDerivedFromGeometry &quot;file:///week22&quot; ;
+    v4d:faceCount 10637 ;
+    v4d:orientedBounds &quot;&quot;&quot;[[54.98500194 65.04216759  5.28071617]
+ [65.00704144 55.38643459  5.6780494 ]
+ [45.48973927 55.26101097  7.08691   ]
+ [54.73196446 64.63378783  1.73896801]
+ [55.25874129 45.19689822  3.94249506]
+ [45.23670179 54.85263122  3.54516184]
+ [64.75400396 54.97805483  2.13630124]
+ [55.51177877 45.60527797  7.48424322]]&quot;&quot;&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="meshnode-custom-relationships">
+<h2>MeshNode custom relationships<a class="headerlink" href="#meshnode-custom-relationships" title="Link to this heading"></a></h2>
+<p>When designing a new analysis, there is often need for custom relations and properties. Both can be just asssigned as <strong>instance variables</strong>, which will be serialized by default under the v4d ontology.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">ifcopenshell</span>
+
+<span class="n">ifcPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IFC&#39;</span><span class="p">,</span><span class="s1">&#39;Academiestraat_parking.ifc&#39;</span><span class="p">)</span>
+<span class="n">ifc</span> <span class="o">=</span> <span class="n">ifcopenshell</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">ifcPath</span><span class="p">)</span>   
+<span class="n">ifcWall</span><span class="o">=</span><span class="n">ifc</span><span class="o">.</span><span class="n">by_guid</span><span class="p">(</span><span class="s1">&#39;06v1k9ENv8DhGMCvKUuLQV&#39;</span><span class="p">)</span>
+<span class="n">bimNode</span><span class="o">=</span><span class="n">BIMNode</span><span class="p">(</span><span class="n">resource</span><span class="o">=</span><span class="n">ifcWall</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bimNode</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>file:///Basic_Wall_168_WA_f2_Soilmix_600mm_956569_06v1k9ENv8DhGMCvKUuLQV
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">croppedGeometry</span><span class="o">=</span><span class="n">myNode</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">crop</span><span class="p">(</span><span class="n">bimNode</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">get_oriented_bounding_box</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">croppedGeometry</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Open3D WARNING] [SelectByIndex] This mesh contains triangle uvs that are not handled in this function
+TriangleMesh with 176 points and 217 triangles.
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="rendering" src="../_images/selection_BB_mesh2.PNG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">subNode</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;mySubNode&#39;</span><span class="p">,</span>
+                <span class="n">resource</span><span class="o">=</span><span class="n">croppedGeometry</span><span class="p">,</span>
+                <span class="n">isDerivedFromGeometry</span><span class="o">=</span><span class="n">myNode</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
+                <span class="n">isDerivedFromIFC</span><span class="o">=</span><span class="n">ifcPath</span><span class="p">,</span> <span class="c1">#custom</span>
+                <span class="n">isWithinBoundaryOf</span><span class="o">=</span><span class="n">bimNode</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span>
+                <span class="n">offsetDistanceCalculation</span><span class="o">=</span><span class="mf">0.1</span><span class="p">)</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix omg: &lt;https://w3id.org/omg#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///mySubNode&gt; a v4d:MeshNode ;
+    e57:cartesianBounds &quot;&quot;&quot;[-15.47279358 -14.65663528  72.94135284  75.88972473   4.45037508
+   6.42876816]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[  1.           0.           0.         -15.14809074]
+ [  0.           1.           0.          74.72710605]
+ [  0.           0.           1.           5.3706931 ]
+ [  0.           0.           0.           1.        ]]&quot;&quot;&quot; ;
+    e57:pointCount 176 ;
+    omg:isDerivedFromGeometry &quot;file:///week22&quot; ;
+    v4d:faceCount 217 ;
+    v4d:isDerivedFromIFC &quot;d:\\Scan-to-BIM repository\\geomapi\\test\\testfiles\\IFC\\Academiestraat_parking.ifc&quot; ;
+    v4d:isWithinBoundaryOf &quot;file:///Basic_Wall_168_WA_f2_Soilmix_600mm_956569_06v1k9ENv8DhGMCvKUuLQV&quot; ;
+    v4d:offsetDistanceCalculation &quot;0.1&quot;^^xsd:float ;
+    v4d:orientedBounds &quot;&quot;&quot;[[-14.64414204  72.9709104    6.37267627]
+ [-15.39184782  75.87261175   6.44123073]
+ [-14.58012432  73.03350824   4.4213251 ]
+ [-14.87577248  72.91144883   6.36316971]
+ [-15.55946053  75.87574803   4.48037301]
+ [-14.81175476  72.97404668   4.41181855]
+ [-15.62347825  75.81315019   6.43172418]
+ [-15.32783009  75.9352096    4.48987956]]&quot;&quot;&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="meshnode-with-3rd-party-ontologies">
+<h2>MeshNode with 3rd party ontologies<a class="headerlink" href="#meshnode-with-3rd-party-ontologies" title="Link to this heading"></a></h2>
+<p>Additionally, 3rd party ontologies can be registered in the namespace of the node.graph and the relationship can be manually attached to the graph.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">rdflib</span>
+<span class="n">subNode</span><span class="o">=</span><span class="n">MeshNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;mySubNode&#39;</span><span class="p">)</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">to_graph</span><span class="p">()</span>
+
+<span class="n">myOntology</span> <span class="o">=</span> <span class="n">rdflib</span><span class="o">.</span><span class="n">Namespace</span><span class="p">(</span><span class="s1">&#39;http://myOntology#&#39;</span><span class="p">)</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">bind</span><span class="p">(</span><span class="s1">&#39;myOntology&#39;</span><span class="p">,</span> <span class="n">myOntology</span><span class="p">)</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">subNode</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span><span class="n">myOntology</span><span class="p">[</span><span class="s1">&#39;myProperty&#39;</span><span class="p">],</span><span class="n">Literal</span><span class="p">(</span><span class="mf">0.1</span><span class="p">)</span> <span class="p">))</span>
+<span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">add</span><span class="p">((</span><span class="n">subNode</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span><span class="n">myOntology</span><span class="p">[</span><span class="s1">&#39;myRelation&#39;</span><span class="p">],</span><span class="n">myNode</span><span class="o">.</span><span class="n">subject</span> <span class="p">))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">subNode</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix myOntology: &lt;http://myOntology#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///mySubNode&gt; a v4d:MeshNode ;
+    myOntology:myProperty 1e-01 ;
+    myOntology:myRelation &lt;file:///week22&gt; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

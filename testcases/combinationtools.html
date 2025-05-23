@@ -1,0 +1,523 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Combination Tools &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Construction site progress" href="site_progress.html" />
+    <link rel="prev" title="Alignment Tools" href="alignmenttools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Combination Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#set-up">Set Up</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#dataset">Dataset</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#importing-geometries">Importing Geometries</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#single-function">Single function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-by-step">Step-by-step</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#removal-phase">Removal Phase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#step-1-create-a-convex-hull-of-the-newgeometry">Step 1: Create a convex hull of the newGeometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-2-filter-out-the-irrelevant-points-in-the-oggeometry">Step 2: Filter out the irrelevant points in the ogGeometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-3-isolate-the-not-covered-points-of-the-oggeometry-compared-to-the-newgeometry">Step 3: Isolate the not covered points of the ogGeometry compared to the newGeometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-4-perform-the-visibility-check">Step 4: perform the visibility check</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#addition-phase">Addition Phase</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#step-5-filter-the-newgeometrypoints-to-only-keep-the-changed-geometry">Step 5: Filter the newGeometryPoints to only keep the changed geometry</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#step-6-combine-the-irrelevant-unchanged-and-changed-geometry">Step 6: Combine the irrelevant, unchanged and changed geometry</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#statistics">Statistics</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#code-performance">Code performance</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#point-stats">Point stats</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Combination Tools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/testcases/combinationtools.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="combination-tools">
+<h1>Combination Tools<a class="headerlink" href="#combination-tools" title="Link to this heading"></a></h1>
+<p>The completion process is aimed at complementing existing large datasets with newer smaller datasets.
+It also aims to leave as much of the original dataset in tact as possible, assuming it’s more detailed and precise.</p>
+<p>This testcase will go over the functionalities of the completiontools using a real dataset to showcase the different functions and how they work together.</p>
+<section id="set-up">
+<h2>Set Up<a class="headerlink" href="#set-up" title="Link to this heading"></a></h2>
+<p>Defining the correct imports and unique parameters for the combination process.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span> <span class="c1">#Only needed for this example file</span>
+<span class="kn">import</span> <span class="nn">geomapi.nodes</span> <span class="k">as</span> <span class="nn">nodes</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools.combinationtools</span> <span class="k">as</span> <span class="nn">ct</span>
+<span class="kn">import</span> <span class="nn">geomapi.utils</span> <span class="k">as</span> <span class="nn">ut</span>
+<span class="kn">import</span> <span class="nn">geomapi.utils.geometryutils</span> <span class="k">as</span> <span class="nn">gmu</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">open3d</span> <span class="k">as</span> <span class="nn">o3d</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">tresholdResolution</span> <span class="o">=</span> <span class="mf">0.05</span> <span class="c1"># The max coverage distance in meters</span>
+<span class="n">ogGeometryPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s2">&quot;../../../test/testfiles/PCD/voxel_grond_pointcloud.ply&quot;</span><span class="p">)</span>
+<span class="n">newGeometryPath</span> <span class="o">=</span>  <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span><span class="s2">&quot;../../../test/testfiles/MESH/GrondSampleMesh.obj&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="dataset">
+<h2>Dataset<a class="headerlink" href="#dataset" title="Link to this heading"></a></h2>
+<p>Is this testcase, two data sets are used:</p>
+<ul class="simple">
+<li><p>The original data set is a pointcloud captured by a NavVis VLX sensor downsampled to 743.618 points.</p></li>
+<li><p>The newer data set is a mesh capturde by a Microsoft Hololens containing 13.107 vertices and 23.112 triangles</p></li>
+</ul>
+<section id="importing-geometries">
+<h3>Importing Geometries<a class="headerlink" href="#importing-geometries" title="Link to this heading"></a></h3>
+<p>Geometries can be either directly imported from a file or retrieved from a <code class="docutils literal notranslate"><span class="pre">geomapi.GeometryNode</span></code></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ogGeometry</span> <span class="o">=</span> <span class="n">gmu</span><span class="o">.</span><span class="n">get_geometry_from_path</span><span class="p">(</span><span class="n">ogGeometryPath</span><span class="p">)</span>
+<span class="n">newGeometry</span> <span class="o">=</span> <span class="n">gmu</span><span class="o">.</span><span class="n">get_geometry_from_path</span><span class="p">(</span><span class="n">newGeometryPath</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[Open3D WARNING] geometry::TriangleMesh appears to be a geometry::PointCloud (only contains vertices, but no triangles).
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gmu</span><span class="o">.</span><span class="n">show_geometries</span><span class="p">([</span><span class="n">ogGeometry</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/OGGeometry.PNG" /><em>Image of the original Dataset</em></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gmu</span><span class="o">.</span><span class="n">show_geometries</span><span class="p">([</span><span class="n">newGeometry</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/NewGeometry.PNG" /> <em>Image of the new Dataset</em></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gmu</span><span class="o">.</span><span class="n">show_geometries</span><span class="p">([</span><span class="n">ogGeometry</span><span class="p">,</span> <span class="n">newGeometry</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/BothGeometry.PNG" /></p>
+</section>
+</section>
+<section id="single-function">
+<h2>Single function<a class="headerlink" href="#single-function" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">combine_geometry()</span></code> is a compound function which performs the full algorithm and returns the combined geometry.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">combinedGeometry</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">combine_geometry</span><span class="p">(</span><span class="n">ogGeometry</span><span class="p">,</span> <span class="n">newGeometry</span><span class="p">,</span> <span class="n">tresholdResolution</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Covex hull created
+Irrelevant points filtered
+Covered poinys calculated
+invisible points detected
+new points filtered
+geometries combined
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gmu</span><span class="o">.</span><span class="n">show_geometries</span><span class="p">([</span><span class="n">combinedGeometry</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/CombinedPointcloud.PNG" /></p>
+<p><em>Image of the combined Datasets</em></p>
+</section>
+<section id="step-by-step">
+<h2>Step-by-step<a class="headerlink" href="#step-by-step" title="Link to this heading"></a></h2>
+<p>The combination algorithm is performed in 2 phases: the <strong>removal</strong> and the <strong>addition</strong> phase.</p>
+<ul class="simple">
+<li><p><strong>Removal phase:</strong> All the out-of-date points in the original mesh are removed to make room for the new points.</p></li>
+<li><p><strong>Addition phase:</strong> Only the new (uncovered) points from the new geometry are added, this is to ensure the existing original pointcould can keep as much relevant data as possible.</p></li>
+</ul>
+<section id="removal-phase">
+<h3>Removal Phase<a class="headerlink" href="#removal-phase" title="Link to this heading"></a></h3>
+<section id="step-1-create-a-convex-hull-of-the-newgeometry">
+<h4>Step 1: Create a convex hull of the newGeometry<a class="headerlink" href="#step-1-create-a-convex-hull-of-the-newgeometry" title="Link to this heading"></a></h4>
+<p>In order to prevent false removal of the original geometry, we need to limit the evaluated points of the original geometry. This is why a convex hull is created to encapsulate all the relevant points.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">newGeoHull</span> <span class="o">=</span> <span class="n">gmu</span><span class="o">.</span><span class="n">get_convex_hull</span><span class="p">(</span><span class="n">newGeometry</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gmu</span><span class="o">.</span><span class="n">show_geometries</span><span class="p">([</span><span class="n">gmu</span><span class="o">.</span><span class="n">get_lineset</span><span class="p">(</span><span class="n">newGeoHull</span><span class="p">),</span> <span class="n">newGeometry</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/MeshBoundingBox.PNG" /></p>
+</section>
+<section id="step-2-filter-out-the-irrelevant-points-in-the-oggeometry">
+<h4>Step 2: Filter out the irrelevant points in the ogGeometry<a class="headerlink" href="#step-2-filter-out-the-irrelevant-points-in-the-oggeometry" title="Link to this heading"></a></h4>
+<p>A subselection of the original geometry is made with the convex hull as boundary volume.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">relevantOg</span><span class="p">,</span> <span class="n">irrelevantOg</span> <span class="o">=</span> <span class="n">gmu</span><span class="o">.</span><span class="n">get_points_in_hull</span><span class="p">(</span><span class="n">ogGeometry</span><span class="p">,</span> <span class="n">newGeoHull</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gmu</span><span class="o">.</span><span class="n">show_geometries</span><span class="p">([</span><span class="n">gmu</span><span class="o">.</span><span class="n">get_lineset</span><span class="p">(</span><span class="n">newGeoHull</span><span class="p">),</span> <span class="n">relevantOg</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/PointcloudBoundingBox.PNG" /></p>
+</section>
+<section id="step-3-isolate-the-not-covered-points-of-the-oggeometry-compared-to-the-newgeometry">
+<h4>Step 3: Isolate the not covered points of the ogGeometry compared to the newGeometry<a class="headerlink" href="#step-3-isolate-the-not-covered-points-of-the-oggeometry-compared-to-the-newgeometry" title="Link to this heading"></a></h4>
+<p>To determine which points are still relevant and therefor, should not be removed we perform 2 Checks, the first one being the Coverage check. This checks If the original points are also captured on the new dataset. if they are not, they are either no longer up-to-date and should be removed, or they were not visible to the scanner and should remain in the scan. This is where the second check comes in.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">newGeometryPoints</span> <span class="o">=</span> <span class="n">gmu</span><span class="o">.</span><span class="n">mesh_to_pcd</span><span class="p">(</span><span class="n">newGeometry</span><span class="p">,</span><span class="n">tresholdResolution</span><span class="o">/</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">coveredPoints</span><span class="p">,</span> <span class="n">unCoveredPoints</span> <span class="o">=</span> <span class="n">gmu</span><span class="o">.</span><span class="n">filter_pcd_by_distance</span><span class="p">(</span><span class="n">relevantOg</span><span class="p">,</span> <span class="n">newGeometryPoints</span><span class="p">,</span> <span class="n">tresholdResolution</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gmu</span><span class="o">.</span><span class="n">show_geometries</span><span class="p">([</span><span class="n">unCoveredPoints</span><span class="p">,</span> <span class="n">newGeometry</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/UncoveredPointcloudPoints.PNG" /></p>
+</section>
+<section id="step-4-perform-the-visibility-check">
+<h4>Step 4: perform the visibility check<a class="headerlink" href="#step-4-perform-the-visibility-check" title="Link to this heading"></a></h4>
+<p>The uncovered points are chacked agains the new mesh. assuming the new scanner has caoptured everything it can see, Points that are hidden behind the geometry were not visible during the scanning process. This check is performed by finding the closest faces to the points and comparing the normal direction. Points facing the faces could have been seen by the scanner and vise versa.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">insideList</span><span class="p">,</span> <span class="n">outsideList</span> <span class="o">=</span> <span class="n">ct</span><span class="o">.</span><span class="n">check_point_inside_mesh</span><span class="p">(</span><span class="n">unCoveredPoints</span><span class="o">.</span><span class="n">points</span><span class="p">,</span> <span class="n">newGeometry</span><span class="p">)</span>
+<span class="n">visiblePoints</span> <span class="o">=</span> <span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">PointCloud</span><span class="p">()</span>
+<span class="n">visiblePoints</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">o3d</span><span class="o">.</span><span class="n">utility</span><span class="o">.</span><span class="n">Vector3dVector</span><span class="p">(</span><span class="n">outsideList</span><span class="p">)</span>
+<span class="n">invisiblePoints</span> <span class="o">=</span> <span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">PointCloud</span><span class="p">()</span>
+<span class="n">invisiblePoints</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">o3d</span><span class="o">.</span><span class="n">utility</span><span class="o">.</span><span class="n">Vector3dVector</span><span class="p">(</span><span class="n">insideList</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gmu</span><span class="o">.</span><span class="n">show_geometries</span><span class="p">([</span><span class="n">visiblePoints</span><span class="p">,</span> <span class="n">invisiblePoints</span><span class="p">,</span> <span class="n">newGeometry</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/InvisiblePointcloudPoints.PNG" /></p>
+</section>
+</section>
+<section id="addition-phase">
+<h3>Addition Phase<a class="headerlink" href="#addition-phase" title="Link to this heading"></a></h3>
+<section id="step-5-filter-the-newgeometrypoints-to-only-keep-the-changed-geometry">
+<h4>Step 5: Filter the newGeometryPoints to only keep the changed geometry<a class="headerlink" href="#step-5-filter-the-newgeometrypoints-to-only-keep-the-changed-geometry" title="Link to this heading"></a></h4>
+<p>Because we assume The original geometry is of better quality, we will only add points that are changed. Therefor we apply an inverted distance query from the new points to the existing geometry.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">existingNewGeo</span><span class="p">,</span> <span class="n">newNewGeo</span> <span class="o">=</span> <span class="n">gmu</span><span class="o">.</span><span class="n">filter_pcd_by_distance</span><span class="p">(</span><span class="n">newGeometryPoints</span><span class="p">,</span> <span class="n">relevantOg</span><span class="p">,</span> <span class="n">tresholdResolution</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gmu</span><span class="o">.</span><span class="n">show_geometries</span><span class="p">([</span><span class="n">newNewGeo</span><span class="p">,</span> <span class="n">existingNewGeo</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/NewMeshPoints.PNG" /></p>
+</section>
+<section id="step-6-combine-the-irrelevant-unchanged-and-changed-geometry">
+<h4>Step 6: Combine the irrelevant, unchanged and changed geometry<a class="headerlink" href="#step-6-combine-the-irrelevant-unchanged-and-changed-geometry" title="Link to this heading"></a></h4>
+<p>The final step is combining the original irrelevant data, the unganged original data and the changed new geometry. The resulting geometry is a combination of both, aimed at retaining as much of the original as possible.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">newCombinedGeometry</span> <span class="o">=</span> <span class="n">coveredPoints</span> <span class="o">+</span> <span class="n">invisiblePoints</span> <span class="o">+</span> <span class="n">newNewGeo</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gmu</span><span class="o">.</span><span class="n">show_geometries</span><span class="p">([</span><span class="n">coveredPoints</span><span class="p">,</span> <span class="n">invisiblePoints</span><span class="p">,</span> <span class="n">newNewGeo</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/CombinedPointcloud.PNG" /></p>
+</section>
+</section>
+</section>
+<section id="statistics">
+<h2>Statistics<a class="headerlink" href="#statistics" title="Link to this heading"></a></h2>
+<section id="code-performance">
+<h3>Code performance<a class="headerlink" href="#code-performance" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">geomapi.utils</span> <span class="kn">import</span> <span class="n">time_funtion</span>
+<span class="n">time_funtion</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">combine_geometry</span><span class="p">,</span><span class="o">*</span><span class="p">(</span><span class="n">ogGeometry</span><span class="p">,</span> <span class="n">newGeometry</span><span class="p">,</span> <span class="n">tresholdResolution</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Covex hull created
+Irrelevant points filtered
+Covered poinys calculated
+invisible points detected
+new points filtered
+geometries combined
+Completed function `combine_geometry()` in 1.473 seconds
+</pre></div>
+</div>
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PointCloud with 749482 points.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">geomapi.utils</span> <span class="kn">import</span> <span class="n">time_funtion</span>
+<span class="c1"># Step 1: Create a convex hull of the newGeometry</span>
+<span class="n">newGeoHull</span> <span class="o">=</span> <span class="n">time_funtion</span><span class="p">(</span><span class="n">gmu</span><span class="o">.</span><span class="n">get_convex_hull</span><span class="p">,</span><span class="n">newGeometry</span><span class="p">)</span>
+<span class="c1"># Step 2: Filter out the irrelevant points in the ogGeometry</span>
+<span class="n">relevantOg</span><span class="p">,</span> <span class="n">irrelevantOg</span> <span class="o">=</span> <span class="n">time_funtion</span><span class="p">(</span><span class="n">gmu</span><span class="o">.</span><span class="n">get_points_in_hull</span><span class="p">,</span><span class="o">*</span><span class="p">(</span><span class="n">ogGeometry</span><span class="p">,</span> <span class="n">newGeoHull</span><span class="p">))</span>
+<span class="c1"># Step 3: Isolate the not covered points of the ogGeometry compared to the newGeometry</span>
+<span class="n">newGeometryPoints</span> <span class="o">=</span> <span class="n">time_funtion</span><span class="p">(</span><span class="n">gmu</span><span class="o">.</span><span class="n">mesh_to_pcd</span><span class="p">,</span><span class="o">*</span><span class="p">(</span><span class="n">newGeometry</span><span class="p">,</span><span class="n">tresholdResolution</span><span class="o">/</span><span class="mi">2</span><span class="p">))</span>
+<span class="n">coveredPoints</span><span class="p">,</span> <span class="n">unCoveredPoints</span> <span class="o">=</span> <span class="n">time_funtion</span><span class="p">(</span><span class="n">gmu</span><span class="o">.</span><span class="n">filter_pcd_by_distance</span><span class="p">,</span><span class="o">*</span><span class="p">(</span><span class="n">relevantOg</span><span class="p">,</span> <span class="n">newGeometryPoints</span><span class="p">,</span> <span class="n">tresholdResolution</span><span class="p">))</span>
+<span class="c1"># Step 4: Perform the visibility check of the not covered points</span>
+<span class="n">invisibleUncoveredPoints</span> <span class="o">=</span> <span class="n">time_funtion</span><span class="p">(</span><span class="n">ct</span><span class="o">.</span><span class="n">get_invisible_points</span><span class="p">,</span><span class="o">*</span><span class="p">(</span><span class="n">unCoveredPoints</span><span class="p">,</span> <span class="n">newGeometry</span><span class="p">))</span>
+<span class="c1"># Step 5: Filter the newGeometryPoints to only keep the changed geometry</span>
+<span class="n">existingNewGeo</span><span class="p">,</span> <span class="n">newNewGeo</span> <span class="o">=</span> <span class="n">time_funtion</span><span class="p">(</span><span class="n">gmu</span><span class="o">.</span><span class="n">filter_pcd_by_distance</span><span class="p">,</span><span class="o">*</span><span class="p">(</span><span class="n">newGeometryPoints</span><span class="p">,</span> <span class="n">relevantOg</span><span class="p">,</span> <span class="n">tresholdResolution</span><span class="p">))</span>
+<span class="c1"># Step 6: Combine the irrelevant, unchanged and changed geometry</span>
+<span class="n">newCombinedGeometry</span> <span class="o">=</span> <span class="n">irrelevantOg</span> <span class="o">+</span> <span class="n">coveredPoints</span> <span class="o">+</span> <span class="n">invisibleUncoveredPoints</span> <span class="o">+</span> <span class="n">newNewGeo</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Completed function `get_convex_hull()` in 0.002 seconds
+Completed function `get_points_in_hull()` in 0.215 seconds
+Completed function `mesh_to_pcd()` in 0.045 seconds
+Completed function `filter_pcd_by_distance()` in 0.048 seconds
+Completed function `get_invisible_points()` in 0.999 seconds
+Completed function `filter_pcd_by_distance()` in 0.036 seconds
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="point-stats">
+<h3>Point stats<a class="headerlink" href="#point-stats" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;removal Phase&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Reduced relevant points by&quot;</span><span class="p">,</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">irrelevantOg</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">ogGeometry</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;%&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Filtering the original geometry resulted in&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">unCoveredPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">relevantOg</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f the points being uncovered&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Performing a visibility check on the uncovered points resulted in&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">100</span> <span class="o">-</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">invisibleUncoveredPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">unCoveredPoints</span><span class="o">.</span><span class="n">points</span><span class="p">))</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> 
+<span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f the points being visible and should be deleted&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;this means&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">invisibleUncoveredPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">relevantOg</span><span class="o">.</span><span class="n">points</span><span class="p">),</span><span class="mi">3</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f relevant original points are removed from the dataset&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Addition Phase&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Coverage checking the new geometry resulted in&quot;</span><span class="p">,</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">newNewGeo</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="nb">len</span><span class="p">(</span><span class="n">newGeometryPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">% o</span><span class="s2">f the points being new&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;In summary&quot;</span><span class="p">)</span>
+<span class="n">totalNewPoints</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">coveredPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">invisibleUncoveredPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">newNewGeo</span><span class="o">.</span><span class="n">points</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The new relevant part of the dataset consists of: &quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">coveredPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="n">totalNewPoints</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">% s</span><span class="s2">till relevant existing points&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">invisibleUncoveredPoints</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="n">totalNewPoints</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;</span><span class="si">% i</span><span class="s2">nconclusive occluded points&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">newNewGeo</span><span class="o">.</span><span class="n">points</span><span class="p">)</span> <span class="o">/</span> <span class="n">totalNewPoints</span><span class="o">*</span><span class="mi">100</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span><span class="o">+</span> <span class="s2">&quot;% new updated points&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>removal Phase
+Reduced relevant points by 95.5%
+Filtering the original geometry resulted in 36.2% of the points being uncovered
+Performing a visibility check on the uncovered points resulted in 56.6% of the points being visible and should be deleted
+this means 15.7% of relevant original points are removed from the dataset
+Addition Phase
+Coverage checking the new geometry resulted in 26.4% of the points being new
+In summary
+The new relevant part of the dataset consists of: 
+54.4% still relevant existing points
+13.4% inconclusive occluded points
+32.2% new updated points
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="alignmenttools.html" class="btn btn-neutral float-left" title="Alignment Tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="site_progress.html" class="btn btn-neutral float-right" title="Construction site progress" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

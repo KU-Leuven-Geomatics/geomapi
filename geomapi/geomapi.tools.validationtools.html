@@ -1,0 +1,704 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.tools.validationtools &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="User environment" href="../development/environment%20creation.html" />
+    <link rel="prev" title="geomapi.tools.progresstools" href="geomapi.tools.progresstools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.html">geomapi.tools.alignmenttools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.combinationtools.html">geomapi.tools.combinationtools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.inspectiontools.html">geomapi.tools.inspectiontools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.machinelearningtools.html">geomapi.tools.machinelearningtools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.progresstools.html">geomapi.tools.progresstools</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.tools.validationtools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.plot_pano_positions"><code class="docutils literal notranslate"><span class="pre">plot_pano_positions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.get_heading"><code class="docutils literal notranslate"><span class="pre">get_heading()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.get_zenit"><code class="docutils literal notranslate"><span class="pre">get_zenit()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.navvis_csv_to_nodes"><code class="docutils literal notranslate"><span class="pre">navvis_csv_to_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.get_boundingbox_of_list_of_geometries"><code class="docutils literal notranslate"><span class="pre">get_boundingbox_of_list_of_geometries()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.match_BIM_points"><code class="docutils literal notranslate"><span class="pre">match_BIM_points()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.compute_LOA"><code class="docutils literal notranslate"><span class="pre">compute_LOA()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.plot_histogram"><code class="docutils literal notranslate"><span class="pre">plot_histogram()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.color_point_cloud_by_LOA"><code class="docutils literal notranslate"><span class="pre">color_point_cloud_by_LOA()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.color_point_cloud_by_distance"><code class="docutils literal notranslate"><span class="pre">color_point_cloud_by_distance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.csv_by_LOA"><code class="docutils literal notranslate"><span class="pre">csv_by_LOA()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.excel_by_LOA"><code class="docutils literal notranslate"><span class="pre">excel_by_LOA()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.color_BIMNode"><code class="docutils literal notranslate"><span class="pre">color_BIMNode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.cad_show_lines"><code class="docutils literal notranslate"><span class="pre">cad_show_lines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.sample_pcd_from_linesets"><code class="docutils literal notranslate"><span class="pre">sample_pcd_from_linesets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.get_linesets_inliers_in_box"><code class="docutils literal notranslate"><span class="pre">get_linesets_inliers_in_box()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.create_selection_box_from_image_boundary_points"><code class="docutils literal notranslate"><span class="pre">create_selection_box_from_image_boundary_points()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.AlignmentPose"><code class="docutils literal notranslate"><span class="pre">AlignmentPose</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.tools.validationtools.AlignmentPose.__init__"><code class="docutils literal notranslate"><span class="pre">AlignmentPose.__init__()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPose"><code class="docutils literal notranslate"><span class="pre">PanoPose</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPose.__init__"><code class="docutils literal notranslate"><span class="pre">PanoPose.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPose.heading"><code class="docutils literal notranslate"><span class="pre">PanoPose.heading</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPose.zenit"><code class="docutils literal notranslate"><span class="pre">PanoPose.zenit</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPose.get_direction_to_other_pose"><code class="docutils literal notranslate"><span class="pre">PanoPose.get_direction_to_other_pose()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPoseCollection"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPoseCollection.__init__"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPoseCollection.headings"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.headings</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPoseCollection.zenits"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.zenits</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPoseCollection.box"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.box</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPoseCollection.transform"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.tools.validationtools.PanoPoseCollection.plot"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection.plot()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.read_leica_pano_poses_xml"><code class="docutils literal notranslate"><span class="pre">read_leica_pano_poses_xml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.read_navvis_pano_poses_csv"><code class="docutils literal notranslate"><span class="pre">read_navvis_pano_poses_csv()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.read_navvis_alignment_xml"><code class="docutils literal notranslate"><span class="pre">read_navvis_alignment_xml()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.plot_pose_collections"><code class="docutils literal notranslate"><span class="pre">plot_pose_collections()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.plot_pose_collections_3D"><code class="docutils literal notranslate"><span class="pre">plot_pose_collections_3D()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.decode_depthmap"><code class="docutils literal notranslate"><span class="pre">decode_depthmap()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.get_loaclasses_from_ifcclass"><code class="docutils literal notranslate"><span class="pre">get_loaclasses_from_ifcclass()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.get_ifcclasses_from_loaclass"><code class="docutils literal notranslate"><span class="pre">get_ifcclasses_from_loaclass()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.create_default_loa_graph"><code class="docutils literal notranslate"><span class="pre">create_default_loa_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.parse_loa_excel"><code class="docutils literal notranslate"><span class="pre">parse_loa_excel()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.validationtools.get_loa_class_per_bimnode"><code class="docutils literal notranslate"><span class="pre">get_loa_class_per_bimnode()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.graph_to_nodes"><code class="docutils literal notranslate"><span class="pre">graph_to_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.e57xml_to_pointcloud_nodes"><code class="docutils literal notranslate"><span class="pre">e57xml_to_pointcloud_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.xml_to_image_nodes"><code class="docutils literal notranslate"><span class="pre">xml_to_image_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.e57_to_pointcloud_nodes"><code class="docutils literal notranslate"><span class="pre">e57_to_pointcloud_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.dxf_to_lineset_nodes"><code class="docutils literal notranslate"><span class="pre">dxf_to_lineset_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.dxf_to_ortho_nodes"><code class="docutils literal notranslate"><span class="pre">dxf_to_ortho_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.ifc_to_bim_nodes"><code class="docutils literal notranslate"><span class="pre">ifc_to_bim_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.ifc_to_nodes_multiprocessing"><code class="docutils literal notranslate"><span class="pre">ifc_to_nodes_multiprocessing()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.navvis_csv_to_pano_nodes"><code class="docutils literal notranslate"><span class="pre">navvis_csv_to_pano_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_k_nearest_neighbors"><code class="docutils literal notranslate"><span class="pre">select_nodes_k_nearest_neighbors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_radius"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_radius()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_bounding_box"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_bounding_box()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_convex_hull"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_convex_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_intersecting_bounding_box"><code class="docutils literal notranslate"><span class="pre">select_nodes_intersecting_bounding_box()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_intersecting_convex_hull"><code class="docutils literal notranslate"><span class="pre">select_nodes_intersecting_convex_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.nodes_to_graph"><code class="docutils literal notranslate"><span class="pre">nodes_to_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.navvis_decode_depthmap"><code class="docutils literal notranslate"><span class="pre">navvis_decode_depthmap()</span></code></a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.tools.html">geomapi.tools</a></li>
+      <li class="breadcrumb-item active">geomapi.tools.validationtools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.tools.validationtools.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.tools.validationtools">
+<span id="geomapi-tools-validationtools"></span><h1>geomapi.tools.validationtools<a class="headerlink" href="#module-geomapi.tools.validationtools" title="Link to this heading"></a></h1>
+<p>validationtools - a Python library for validating objects.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.plot_pano_positions">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">plot_pano_positions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">panos</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.plot_pano_positions" title="Link to this definition"></a></dt>
+<dd><p>ppcs: list of PanoPoseCollection
+headings: boolean (default: False) - plots headings as vectors
+with size 1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.get_heading">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">get_heading</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orientation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.get_heading" title="Link to this definition"></a></dt>
+<dd><p>Heading measured as angle from x to y axis. In equirectangular format
+this is the center of the pano. Headings are always positive to
+simplify subsequent calculations.</p>
+<p>See ‘<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.html</a>’</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.get_zenit">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">get_zenit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">orientation</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.get_zenit" title="Link to this definition"></a></dt>
+<dd><p>Angle with the vertical</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.navvis_csv_to_nodes">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">navvis_csv_to_nodes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csvPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">panoPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includeDepth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depthPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">skip</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filterByFolder</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode" title="geomapi.nodes.panonode.PanoNode"><span class="pre">PanoNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.navvis_csv_to_nodes" title="Link to this definition"></a></dt>
+<dd><p>Parse Navvis csv file and output a set of PanoNodes</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>csvPath (str): csv file path e.g. “D:/Data/pano/pano-poses.csv”
+panoPath (str, optional): _description_. Defaults to None.
+includeDepth (bool, optional): _description_. Defaults to True.
+depthPath (str, optional): _description_. Defaults to None.
+skip (int, optional): select every nth image from the xml. Defaults to None.
+filterByFolder (bool, optional): _description_. Defaults to True.</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[panonode.PanoNode]: a list of Panonodes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.get_boundingbox_of_list_of_geometries">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">get_boundingbox_of_list_of_geometries</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.PointCloud</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.get_boundingbox_of_list_of_geometries" title="Link to this definition"></a></dt>
+<dd><p>Determines the global boundingbox of a group of Node containing geometries.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>geometries (List[Nodes]):  list of Nodes containing a resource of which the boundingbox must be determined”</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array[3x1]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.match_BIM_points">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">match_BIM_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.PointCloud</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">references</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.PointCloud</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceIds</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.02</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t00</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.62</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wn</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.38</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.7</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.match_BIM_points" title="Link to this definition"></a></dt>
+<dd><p>Determines the accuracy of a BIM model or object using a pointcloud</p>
+<dl>
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>sources(list(o3d.geometry.PointCloud)): The captured point clouds of the site.</p></li>
+<li><p>references(list(o3d.geometry.PointCloud)): A pointcloud per reference object</p></li>
+<li><p>referenceIds(list(str), optional): ID to be assigned to the points of the source point cloud</p></li>
+<li><p>resolution (float, optional): voxel size for the a voxel downsampling before the analysis default 0.02m</p></li>
+<li><p>t00(float): Threshold to which matching point will be searched default 0.15m</p></li>
+<li><p>wd (float): weight of the distances in the decision function default 0.62</p></li>
+<li><p>wn (float): weight of the normals in the decision function default 0.38</p></li>
+<li><p>threshold (float): minimum value to be seen as a match, default 0.7</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.PointCloud: pointcloud used in the analysis linked to the identity and the distances of the points.</p>
+<p>identityArray: array containing the matching label to the BIM for each point from the point cloud.</p>
+<p>distances: array containing all the distances to the matching BIM for each point from the point cloud.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.compute_LOA">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">compute_LOA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t00</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t10</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t20</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t30</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.015</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byElement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limit</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.compute_LOA" title="Link to this definition"></a></dt>
+<dd><p>Function which uses distances and a linked identity array to determine the LOA percentages</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>identities (nx1-array): Array containing the identity of the distance between two matched points
+distances (nx1 array): Array containing the distances between two matched points
+t00 (float, optional): Maximum distance to be used in the analysis. Defaults to 0.15.
+t10 (float, optional): Upper bound of the LOA10 bracket. Defaults to 0.10.
+t20 (float, optional): Upper bound of the LOA20 bracket. Defaults to 0.05.
+t30 (float, optional): Upper bound of the LOA10 bracket. Defaults to 0.015.
+byElement (bool, optional): If the LOA must be computed per element of for the enitre cloud. Defaults to False.
+limit (float, optional): Percentage of inliers between two brackets needed to assign the LOA label. Defaults to 0.95.</p>
+</dd>
+<dt>Returns:</dt><dd><p>LOA: List of LOAs per element (id, [LOA10, LOA20, LOA30], label)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.plot_histogram">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">plot_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">identities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buckets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interval</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byElement</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.plot_histogram" title="Link to this definition"></a></dt>
+<dd><p>Function to plot distances between the captured cloud and the reference cloud</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>identities (nx1-array): Array containing the identity of the distance between two matched points
+distances (nx1 array): Array containing the distances between two matched points
+buckets (int, optional): Number of intervals the data will be seperated. Defaults to None.
+interval (float, optional): distance between the upper and lower bound of an interval. Defaults to None.
+dmax (float, optional): Distances higher then this distance will be ignored. Defaults to 0.1.
+byElement (bool, optional): If the LOA must be computed per element of for the enitre cloud. Defaults to False.
+bins (1xn array): Can be used to describe custom bin boundries (intervals must be equal). Defaults to None.
+directory (path, optional): When provided the histograms will be saved in the form of a PNG to this directory. Defaults to None.
+show (bool, optional): When set on true the histograms will be visualized. Defaults to True.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.color_point_cloud_by_LOA">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">color_point_cloud_by_LOA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pointcloud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.PointCloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identities</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distances</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t00</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t10</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t20</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.05</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">t30</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.015</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byElement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.color_point_cloud_by_LOA" title="Link to this definition"></a></dt>
+<dd><p>Colors each point by its computed LOA based on the distance between the matched points of the reference and the source cloud</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>pointcloud (o3d.geometry.PointCloud): Point cloud from the LOA determination or pointcloud matching its the returned indeces
+identities (nx1-array): Array containing the identity of the distance between two matched points
+distances (nx1 array): Array containing the distances between two matched points
+t00 (float, optional): Maximum distance to be used in the analysis. Defaults to 0.15.
+t10 (float, optional): Upper bound of the LOA10 bracket. Defaults to 0.10.
+t20 (float, optional): Upper bound of the LOA20 bracket. Defaults to 0.05.
+t30 (float, optional): Upper bound of the LOA10 bracket. Defaults to 0.015.
+byElement (bool, optional): If the LOA must be computed per element of for the enitre cloud. Defaults to False.</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.PointCloud()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.color_point_cloud_by_distance">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">color_point_cloud_by_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pointcloud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.PointCloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identities</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distances</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buckets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">byElement</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.PointCloud</span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.color_point_cloud_by_distance" title="Link to this definition"></a></dt>
+<dd><p>Colorizes the resulting point cloud of the LOA analysis in a gradient by distance between the matched points from the reference and the source (very slow).</p>
+<p><strong>NOTE</strong>: use sklearn to make this faster.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>pointcloud (o3d.geometry.PointCloud): Point cloud from the LOA determination or pointcloud matching its the returned indeces.</p></li>
+<li><p>identities (nx1-array): Array containing the identity of the distance between two matched points.</p></li>
+<li><p>distances (nx1 array): Array containing the distances between two matched points.</p></li>
+<li><p>buckets (int, optional): Number of intervals to be colored in. Defaults to 5.</p></li>
+<li><p>dmax (float, optional): Distances higher then this distance will be ignored. Defaults to 0.1m.</p></li>
+<li><p>byElement (bool, optional): If the LOA must be computed per element of for the enitre cloud. Defaults to False.</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.PointCloud</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.csv_by_LOA">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">csv_by_LOA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LOAs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visibility</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.csv_by_LOA" title="Link to this definition"></a></dt>
+<dd><p>Function to report the LOA analysis in a csv file.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>directory (path): directory where the report must be saved.</p></li>
+<li><p>LOAs (_type_): results of the LOA computation.</p></li>
+<li><p>visibility (_type_, optional): array containing the per element visibility.</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>returns true when succeded.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.excel_by_LOA">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">excel_by_LOA</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">LOAs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">visibility</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.excel_by_LOA" title="Link to this definition"></a></dt>
+<dd><p>Function to report the LOA analysis in an excel file</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>directory (path): directory where the report must be saved
+LOAs (_type_): results of the LOA computation
+visibility (_type_, optional): array containing the per element visibility</p>
+</dd>
+<dt>Returns:</dt><dd><p>returns true when succeded</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.color_BIMNode">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">color_BIMNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">LOAs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BIMNodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="geomapi.nodes.bimnode.html#geomapi.nodes.bimnode.BIMNode" title="geomapi.nodes.bimnode.BIMNode"><span class="pre">BIMNode</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.color_BIMNode" title="Link to this definition"></a></dt>
+<dd><p>Colors the BIM mesh geometries in the computed LOA color</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>LOAs (_type_): results of the LOA analysis
+BIMNodes (List[BIMNode]): List of the BIMNodes in the project</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.cad_show_lines">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">cad_show_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dxf_path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.cad_show_lines" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.sample_pcd_from_linesets">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">sample_pcd_from_linesets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linesets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.LineSet</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.PointCloud</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.sample_pcd_from_linesets" title="Link to this definition"></a></dt>
+<dd><p>Sample a point cloud from a set of o3d.geometry.LineSet elements (color is inherited)</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>linesets (List[o3d.geometry.LineSet]): linesets to sample.
+step_size(float,optional):spacing between points. Defaults to 0.1m.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Tuple[List[o3d.geometry.PointCloud],np.ndarray]: point_clouds, identityarray with integers of the origin of the points</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.get_linesets_inliers_in_box">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">get_linesets_inliers_in_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linesets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.LineSet</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.OrientedBoundingBox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_cloud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.PointCloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identityArray</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.LineSet</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.get_linesets_inliers_in_box" title="Link to this definition"></a></dt>
+<dd><p>Returns the segments of the linesets that have sampled pointcloud points falling within a certain bounding box.
+This function should be used together with:</p>
+<blockquote>
+<div><p>1. vt.sample_pcd_from_linesets(linesets,step_size=0.1)2.vt.create_selection_box_from_image_boundary_points(n,roi,meshNode.resource,z=5) </p>
+</div></blockquote>
+<dl class="simple">
+<dt>Args:</dt><dd><p>linesets (List[o3d.geometry.LineSet]): linesets from which the segments will be selected
+box (o3d.geometry.OrientedBoundingBox): bounding box that is used to filter the point cloud points
+point_cloud (o3d.geometry.PointCloud): sampled points on the linesets
+identityArray (np.ndarray): array with integers that reflect which point cloud point belongs to which lineset</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[o3d.geometry.LineSet]: _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.create_selection_box_from_image_boundary_points">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">create_selection_box_from_image_boundary_points</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode" title="geomapi.nodes.imagenode.ImageNode"><span class="pre">ImageNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">roi</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.TriangleMesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.OrientedBoundingBox</span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.create_selection_box_from_image_boundary_points" title="Link to this definition"></a></dt>
+<dd><p>Create a selection box from an ImageNode, a region of interest (roi) and a mesh to raycast.
+A o3d.geometry.OrientedBoundingBox will be created on the location of the intersection of the rays with the mesh.
+The height of the box is determined by the offset of z in both positive and negative Z-direction</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>n (ImageNode): Imagenode used for the raycasting (internal and external camera paramters)
+roi (Tuple[int,int,int,int]): region of interest (rowMin,rowMax,columnMin,columnMax)
+mesh (o3d.geometry.TriangleMesh): mesh used for the raycasting
+z (float, optional): offset in height of the bounding box. Defaults to [-5m:5m].</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.OrientedBoundingBox or None (if not all rays hit the mesh)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.AlignmentPose">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">AlignmentPose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.AlignmentPose" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>An alignment pose is used to transform a collection of pano poses.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.AlignmentPose.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.AlignmentPose.__init__" title="Link to this definition"></a></dt>
+<dd><p>Creation of the alignmentpose</p>
+<p>Args:</p>
+<blockquote>
+<div><p>x (float): x-coordinate</p>
+<p>y (float): y-coordinate</p>
+<p>z (float): z-coordinate</p>
+<p>orientation (tuple): rotation quaternion</p>
+<p>name (str, optional): the name of the pose. Defaults to None.</p>
+<p>validate (bool, optional): check if the rotation is a valid quaternion. Defaults to True.</p>
+</div></blockquote>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPose">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">PanoPose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPose" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="#geomapi.tools.validationtools.AlignmentPose" title="geomapi.tools.validationtools.AlignmentPose"><code class="xref py py-class docutils literal notranslate"><span class="pre">AlignmentPose</span></code></a></p>
+<p>A pano pose gives the position, orientation and optionally time and name of
+a pano.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPose.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientation</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">time</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPose.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPose.heading">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">heading</span></span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPose.heading" title="Link to this definition"></a></dt>
+<dd><p>Heading measured as angle from x to y axis. In equirectangular format
+this is the center of the pano. Headings are always positive to
+simplify subsequent calculations.</p>
+<p>See ‘<a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.html">https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.transform.Rotation.html</a>’</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPose.zenit">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zenit</span></span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPose.zenit" title="Link to this definition"></a></dt>
+<dd><p>Angle with the vertical</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPose.get_direction_to_other_pose">
+<span class="sig-name descname"><span class="pre">get_direction_to_other_pose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">other_pose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPose.get_direction_to_other_pose" title="Link to this definition"></a></dt>
+<dd><p>Angle from x to y with ‘self’ in the origin. Angles are always positive
+to simplify subsequent calculations.</p>
+<p>other_pose: instance of ‘self’</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPoseCollection">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">PanoPoseCollection</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_ys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_zs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_ys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_zs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_ws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPoseCollection" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>A collection of pano poses with position, orientation and time.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPoseCollection.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pos_xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_ys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pos_zs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_xs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_ys</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_zs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ori_ws</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">times</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPoseCollection.__init__" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPoseCollection.headings">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">headings</span></span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPoseCollection.headings" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPoseCollection.zenits">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">zenits</span></span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPoseCollection.zenits" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPoseCollection.box">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">box</span></span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPoseCollection.box" title="Link to this definition"></a></dt>
+<dd><p>Give bounding box of pano collection.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPoseCollection.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aligment_pose</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">validate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPoseCollection.transform" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.PanoPoseCollection.plot">
+<span class="sig-name descname"><span class="pre">plot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">headings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.PanoPoseCollection.plot" title="Link to this definition"></a></dt>
+<dd><p>headings: boolean (default: False) - plots headings as vectors
+with size 1.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.read_leica_pano_poses_xml">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">read_leica_pano_poses_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filespec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.read_leica_pano_poses_xml" title="Link to this definition"></a></dt>
+<dd><p>Read xml file from .e57 exported with Leica Cyclone.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.read_navvis_pano_poses_csv">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">read_navvis_pano_poses_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filespec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.read_navvis_pano_poses_csv" title="Link to this definition"></a></dt>
+<dd><p>NavVis provides a pano-poses.csv file in each post-processed dataset. It
+holds the timestamp, position and orientation of each pano in the dataset.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.read_navvis_alignment_xml">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">read_navvis_alignment_xml</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filespec</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.read_navvis_alignment_xml" title="Link to this definition"></a></dt>
+<dd><p>Read xml file generated by NavVis aligment tool.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.plot_pose_collections">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">plot_pose_collections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ppcs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.plot_pose_collections" title="Link to this definition"></a></dt>
+<dd><p>ppcs: list of PanoPoseCollection
+headings: boolean (default: False) - plots headings as vectors
+with size 1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.plot_pose_collections_3D">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">plot_pose_collections_3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ppcs</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">headings</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.plot_pose_collections_3D" title="Link to this definition"></a></dt>
+<dd><p>ppcs: list of PanoPoseCollection
+headings: boolean (default: False) - plots headings as vectors
+with size 1.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.decode_depthmap">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">decode_depthmap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(8192,</span> <span class="pre">4096)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.decode_depthmap" title="Link to this definition"></a></dt>
+<dd><p>Function to decode the depthmaps generated by the navvis processing
+source: Location of the PNG files containing the depthmap
+resize(bool): If the resulting dethmap needs to be resized to match the size of the corresponding pano, by default True
+size: size of the corresponding pano, by default 8192x4096
+show: if true the result wil be shown, by default False</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.get_loaclasses_from_ifcclass">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">get_loaclasses_from_ifcclass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ifcClass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">URIRef</span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.get_loaclasses_from_ifcclass" title="Link to this definition"></a></dt>
+<dd><p>Return the matching LOA class given a ifcClass e.g. IfcWall -&gt; URIRef(’<a class="reference external" href="https://B2010_EXTERIOR_WALLS">https://B2010_EXTERIOR_WALLS</a>’).
+The returned subjects can be used to retreive the LOAm and LOAr values from the LOA graph.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>ifcClass (str): class names e.g. IfcWall</p>
+</dd>
+<dt>Returns:</dt><dd><p>URIRef: subjects of LOA graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.get_ifcclasses_from_loaclass">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">get_ifcclasses_from_loaclass</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loaClass</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Literal</span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.get_ifcclasses_from_loaclass" title="Link to this definition"></a></dt>
+<dd><p>_summary_</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>loaClass (str): _description_</p>
+</dd>
+<dt>Returns:</dt><dd><p>Literal: _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.create_default_loa_graph">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">create_default_loa_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Graph</span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.create_default_loa_graph" title="Link to this definition"></a></dt>
+<dd><p>Generates a Graph from the default USIBD_SPC-LOA_C220_2016_ver0_1 specification. This specification contains information on the accuraycy
+of building documentation and representation.</p>
+<p>Example:</p>
+<blockquote>
+<div><p>&lt;<a class="reference external" href="https://A1010_STANDARD_FOUNDATIONS">https://A1010_STANDARD_FOUNDATIONS</a>&gt; a “LOA” ;</p>
+<p>ifc:classes “[‘IfcFooting’, ‘IfcPile’, ‘IfcPlate’]” ;</p>
+<p>loa:CSI “A1010” ;</p>
+<p>loa:LOAm 10 ;</p>
+<p>loa:LOAr 20 ;</p>
+<p>loa:validation “B” .</p>
+</div></blockquote>
+<p>More documentation can be found on <a class="reference external" href="https://docplayer.net/131921614-Usibd-level-of-accuracy-loa-specification-guide">https://docplayer.net/131921614-Usibd-level-of-accuracy-loa-specification-guide</a>.html# on how to use this specification.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>path (str, optional): path to CSV with USIBD values</p>
+</dd>
+<dt>Returns:</dt><dd><p>Graph: graph with serialized accuracies, to be used in validation procedures</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.parse_loa_excel">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">parse_loa_excel</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Graph</span></span></span><a class="headerlink" href="#geomapi.tools.validationtools.parse_loa_excel" title="Link to this definition"></a></dt>
+<dd><p>Parse an USIBD_SPC-LOA_C220_2016_ver0_1.xlsx spreadsheet that contains meaured/represented accuracy parameters for building documentation procedures.
+The returned graph can be used by GEOMAPI or other linked data processes to validate remote sensing/BIM models.</p>
+<p>More documentation can be found on <a class="reference external" href="https://docplayer.net/131921614-Usibd-level-of-accuracy-loa-specification-guide">https://docplayer.net/131921614-Usibd-level-of-accuracy-loa-specification-guide</a>.html# on how to use this specification.
+If no excel is presented, a graph with standard values will be obtained.</p>
+<img alt="../_images/USIBD.PNG" src="../_images/USIBD.PNG" />
+<dl class="simple">
+<dt>Args:</dt><dd><p>excelPath (str): file path to the spreadsheet</p>
+</dd>
+<dt>Returns:</dt><dd><p>Graph: graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.validationtools.get_loa_class_per_bimnode">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.validationtools.</span></span><span class="sig-name descname"><span class="pre">get_loa_class_per_bimnode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">BIMNodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="geomapi.nodes.bimnode.html#geomapi.nodes.bimnode.BIMNode" title="geomapi.nodes.bimnode.BIMNode"><span class="pre">BIMNode</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.validationtools.get_loa_class_per_bimnode" title="Link to this definition"></a></dt>
+<dd><p>Assigns the accuracy properties of an LOA Excel spreadsheet to the list of BIMNodes.
+The assignment is based on the ifc classNames which are mapped to LOA classes.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ol class="arabic simple">
+<li><p>LOAm (measured accuracy)</p></li>
+<li><p>LOAr (represented accuracy)</p></li>
+<li><p>validation (A, B or C)</p></li>
+</ol>
+</dd>
+<dt>Args:</dt><dd><p>BIMNodes (List[BIMNode]): List of nodes to assign the propteries to.
+path (str, optional): Path to Excel spreadsheet. If None, the default LOA properties are assigned.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.tools.progresstools.html" class="btn btn-neutral float-left" title="geomapi.tools.progresstools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../development/environment%20creation.html" class="btn btn-neutral float-right" title="User environment" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

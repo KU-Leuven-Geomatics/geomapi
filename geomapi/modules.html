@@ -1,0 +1,509 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">geomapi</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/modules.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="geomapi">
+<h1>geomapi<a class="headerlink" href="#geomapi" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.html">geomapi</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.bimnode.html">geomapi.nodes.bimnode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.nodes.bimnode.html#geomapi.nodes.bimnode.BIMNode"><code class="docutils literal notranslate"><span class="pre">BIMNode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html">geomapi.nodes.imagenode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode"><code class="docutils literal notranslate"><span class="pre">ImageNode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html">geomapi.nodes.linesetnode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode"><code class="docutils literal notranslate"><span class="pre">LineSetNode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.meshnode.html">geomapi.nodes.meshnode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.nodes.meshnode.html#geomapi.nodes.meshnode.MeshNode"><code class="docutils literal notranslate"><span class="pre">MeshNode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html">geomapi.nodes.node</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html">geomapi.nodes.orthonode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode"><code class="docutils literal notranslate"><span class="pre">OrthoNode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html">geomapi.nodes.panonode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode"><code class="docutils literal notranslate"><span class="pre">PanoNode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html">geomapi.nodes.pointcloudnode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html#geomapi.nodes.pointcloudnode.PointCloudNode"><code class="docutils literal notranslate"><span class="pre">PointCloudNode</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.setnode.html">geomapi.nodes.setnode</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode"><code class="docutils literal notranslate"><span class="pre">SetNode</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.html">geomapi.tools.alignmenttools</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html">geomapi.tools.alignmenttools.match</a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.alignmenttools.params.html">geomapi.tools.alignmenttools.params</a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.alignmenttools.html#geomapi.tools.alignmenttools.find_close_sessions"><code class="docutils literal notranslate"><span class="pre">find_close_sessions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.alignmenttools.html#geomapi.tools.alignmenttools.get_weighted_pose"><code class="docutils literal notranslate"><span class="pre">get_weighted_pose()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.alignmenttools.html#geomapi.tools.alignmenttools.estimate_session_position"><code class="docutils literal notranslate"><span class="pre">estimate_session_position()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.alignmenttools.html#geomapi.tools.alignmenttools.execute_fast_global_registration"><code class="docutils literal notranslate"><span class="pre">execute_fast_global_registration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.alignmenttools.html#geomapi.tools.alignmenttools.execute_global_registration"><code class="docutils literal notranslate"><span class="pre">execute_global_registration()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.alignmenttools.html#geomapi.tools.alignmenttools.weighted_average_quaternions"><code class="docutils literal notranslate"><span class="pre">weighted_average_quaternions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.alignmenttools.html#geomapi.tools.alignmenttools.calibrate_camera"><code class="docutils literal notranslate"><span class="pre">calibrate_camera()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.combinationtools.html">geomapi.tools.combinationtools</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.combinationtools.html#geomapi.tools.combinationtools.combine_geometry"><code class="docutils literal notranslate"><span class="pre">combine_geometry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.combinationtools.html#geomapi.tools.combinationtools.check_point_inside_mesh"><code class="docutils literal notranslate"><span class="pre">check_point_inside_mesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.combinationtools.html#geomapi.tools.combinationtools.get_invisible_points"><code class="docutils literal notranslate"><span class="pre">get_invisible_points()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.combinationtools.html#geomapi.tools.combinationtools.mesh_to_pcd"><code class="docutils literal notranslate"><span class="pre">mesh_to_pcd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.combinationtools.html#geomapi.tools.combinationtools.get_points_in_hull"><code class="docutils literal notranslate"><span class="pre">get_points_in_hull()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.combinationtools.html#geomapi.tools.combinationtools.get_indices_in_hull"><code class="docutils literal notranslate"><span class="pre">get_indices_in_hull()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.combinationtools.html#geomapi.tools.combinationtools.filter_pcd_by_distance"><code class="docutils literal notranslate"><span class="pre">filter_pcd_by_distance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.combinationtools.html#geomapi.tools.combinationtools.filter_geometry_by_distance"><code class="docutils literal notranslate"><span class="pre">filter_geometry_by_distance()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.inspectiontools.html">geomapi.tools.inspectiontools</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.inspectiontools.html#geomapi.tools.inspectiontools.calculate_distance_between_images"><code class="docutils literal notranslate"><span class="pre">calculate_distance_between_images()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.inspectiontools.html#geomapi.tools.inspectiontools.filter_images_by_overlap"><code class="docutils literal notranslate"><span class="pre">filter_images_by_overlap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.inspectiontools.html#geomapi.tools.inspectiontools.project_lineset_on_image"><code class="docutils literal notranslate"><span class="pre">project_lineset_on_image()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.inspectiontools.html#geomapi.tools.inspectiontools.crop_image_within_lineset"><code class="docutils literal notranslate"><span class="pre">crop_image_within_lineset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.machinelearningtools.html">geomapi.tools.machinelearningtools</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.compute_balance_classes"><code class="docutils literal notranslate"><span class="pre">compute_balance_classes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.depth_map_to_hha"><code class="docutils literal notranslate"><span class="pre">depth_map_to_hha()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.processDepthImage"><code class="docutils literal notranslate"><span class="pre">processDepthImage()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.getPointCloudFromZ"><code class="docutils literal notranslate"><span class="pre">getPointCloudFromZ()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.computeNormalsSquareSupport"><code class="docutils literal notranslate"><span class="pre">computeNormalsSquareSupport()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.filterItChopOff"><code class="docutils literal notranslate"><span class="pre">filterItChopOff()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.mutiplyIt"><code class="docutils literal notranslate"><span class="pre">mutiplyIt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.invertIt"><code class="docutils literal notranslate"><span class="pre">invertIt()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.getYDir"><code class="docutils literal notranslate"><span class="pre">getYDir()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.getYDirHelper"><code class="docutils literal notranslate"><span class="pre">getYDirHelper()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.getRMatrix"><code class="docutils literal notranslate"><span class="pre">getRMatrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.machinelearningtools.html#geomapi.tools.machinelearningtools.rotatePC"><code class="docutils literal notranslate"><span class="pre">rotatePC()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.progresstools.html">geomapi.tools.progresstools</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.create_voxel_block_grid_and_raytrace"><code class="docutils literal notranslate"><span class="pre">create_voxel_block_grid_and_raytrace()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.subdivide_pcd_per_box"><code class="docutils literal notranslate"><span class="pre">subdivide_pcd_per_box()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.subdivide_pcd_per_octree"><code class="docutils literal notranslate"><span class="pre">subdivide_pcd_per_octree()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.pcd_to_octree"><code class="docutils literal notranslate"><span class="pre">pcd_to_octree()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.capture_image_and_depth_viewer"><code class="docutils literal notranslate"><span class="pre">capture_image_and_depth_viewer()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.assign_point_cloud_information"><code class="docutils literal notranslate"><span class="pre">assign_point_cloud_information()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.filter_img_classifcation_by_neighbors"><code class="docutils literal notranslate"><span class="pre">filter_img_classifcation_by_neighbors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.remap_color_images_to_masks"><code class="docutils literal notranslate"><span class="pre">remap_color_images_to_masks()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.project_meshes_to_rgbd_images"><code class="docutils literal notranslate"><span class="pre">project_meshes_to_rgbd_images()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.project_pcd_to_rgbd_images"><code class="docutils literal notranslate"><span class="pre">project_pcd_to_rgbd_images()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.get_average_cartesian_transform_ortho"><code class="docutils literal notranslate"><span class="pre">get_average_cartesian_transform_ortho()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.create_xy_grids"><code class="docutils literal notranslate"><span class="pre">create_xy_grids()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.volume_mesh_BIM"><code class="docutils literal notranslate"><span class="pre">volume_mesh_BIM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.volume_theoretical_BIM"><code class="docutils literal notranslate"><span class="pre">volume_theoretical_BIM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.calculate_completion"><code class="docutils literal notranslate"><span class="pre">calculate_completion()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.color_BIMNode"><code class="docutils literal notranslate"><span class="pre">color_BIMNode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.remove_edges_volume_calculation"><code class="docutils literal notranslate"><span class="pre">remove_edges_volume_calculation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.color_pointcloud_by_height"><code class="docutils literal notranslate"><span class="pre">color_pointcloud_by_height()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.create_xy_grid"><code class="docutils literal notranslate"><span class="pre">create_xy_grid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.get_mesh_intersections"><code class="docutils literal notranslate"><span class="pre">get_mesh_intersections()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.get_bim_intersections"><code class="docutils literal notranslate"><span class="pre">get_bim_intersections()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.get_mesh_intersectionsBIM"><code class="docutils literal notranslate"><span class="pre">get_mesh_intersectionsBIM()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.get_scene_intersections"><code class="docutils literal notranslate"><span class="pre">get_scene_intersections()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.get_rays_raycast"><code class="docutils literal notranslate"><span class="pre">get_rays_raycast()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.get_mesh_intersection_with_grid"><code class="docutils literal notranslate"><span class="pre">get_mesh_intersection_with_grid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.get_top_lineset_from_meshes"><code class="docutils literal notranslate"><span class="pre">get_top_lineset_from_meshes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.progresstools.html#geomapi.tools.progresstools.determine_percentage_of_coverage"><code class="docutils literal notranslate"><span class="pre">determine_percentage_of_coverage()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.validationtools.html">geomapi.tools.validationtools</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.plot_pano_positions"><code class="docutils literal notranslate"><span class="pre">plot_pano_positions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.get_heading"><code class="docutils literal notranslate"><span class="pre">get_heading()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.get_zenit"><code class="docutils literal notranslate"><span class="pre">get_zenit()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.navvis_csv_to_nodes"><code class="docutils literal notranslate"><span class="pre">navvis_csv_to_nodes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.get_boundingbox_of_list_of_geometries"><code class="docutils literal notranslate"><span class="pre">get_boundingbox_of_list_of_geometries()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.match_BIM_points"><code class="docutils literal notranslate"><span class="pre">match_BIM_points()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.compute_LOA"><code class="docutils literal notranslate"><span class="pre">compute_LOA()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.plot_histogram"><code class="docutils literal notranslate"><span class="pre">plot_histogram()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.color_point_cloud_by_LOA"><code class="docutils literal notranslate"><span class="pre">color_point_cloud_by_LOA()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.color_point_cloud_by_distance"><code class="docutils literal notranslate"><span class="pre">color_point_cloud_by_distance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.csv_by_LOA"><code class="docutils literal notranslate"><span class="pre">csv_by_LOA()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.excel_by_LOA"><code class="docutils literal notranslate"><span class="pre">excel_by_LOA()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.color_BIMNode"><code class="docutils literal notranslate"><span class="pre">color_BIMNode()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.cad_show_lines"><code class="docutils literal notranslate"><span class="pre">cad_show_lines()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.sample_pcd_from_linesets"><code class="docutils literal notranslate"><span class="pre">sample_pcd_from_linesets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.get_linesets_inliers_in_box"><code class="docutils literal notranslate"><span class="pre">get_linesets_inliers_in_box()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.create_selection_box_from_image_boundary_points"><code class="docutils literal notranslate"><span class="pre">create_selection_box_from_image_boundary_points()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.AlignmentPose"><code class="docutils literal notranslate"><span class="pre">AlignmentPose</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.PanoPose"><code class="docutils literal notranslate"><span class="pre">PanoPose</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.PanoPoseCollection"><code class="docutils literal notranslate"><span class="pre">PanoPoseCollection</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.read_leica_pano_poses_xml"><code class="docutils literal notranslate"><span class="pre">read_leica_pano_poses_xml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.read_navvis_pano_poses_csv"><code class="docutils literal notranslate"><span class="pre">read_navvis_pano_poses_csv()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.read_navvis_alignment_xml"><code class="docutils literal notranslate"><span class="pre">read_navvis_alignment_xml()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.plot_pose_collections"><code class="docutils literal notranslate"><span class="pre">plot_pose_collections()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.plot_pose_collections_3D"><code class="docutils literal notranslate"><span class="pre">plot_pose_collections_3D()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.decode_depthmap"><code class="docutils literal notranslate"><span class="pre">decode_depthmap()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.get_loaclasses_from_ifcclass"><code class="docutils literal notranslate"><span class="pre">get_loaclasses_from_ifcclass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.get_ifcclasses_from_loaclass"><code class="docutils literal notranslate"><span class="pre">get_ifcclasses_from_loaclass()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.create_default_loa_graph"><code class="docutils literal notranslate"><span class="pre">create_default_loa_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.parse_loa_excel"><code class="docutils literal notranslate"><span class="pre">parse_loa_excel()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.tools.validationtools.html#geomapi.tools.validationtools.get_loa_class_per_bimnode"><code class="docutils literal notranslate"><span class="pre">get_loa_class_per_bimnode()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.graph_to_nodes"><code class="docutils literal notranslate"><span class="pre">graph_to_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.e57xml_to_pointcloud_nodes"><code class="docutils literal notranslate"><span class="pre">e57xml_to_pointcloud_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.xml_to_image_nodes"><code class="docutils literal notranslate"><span class="pre">xml_to_image_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.e57_to_pointcloud_nodes"><code class="docutils literal notranslate"><span class="pre">e57_to_pointcloud_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.dxf_to_lineset_nodes"><code class="docutils literal notranslate"><span class="pre">dxf_to_lineset_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.dxf_to_ortho_nodes"><code class="docutils literal notranslate"><span class="pre">dxf_to_ortho_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.ifc_to_bim_nodes"><code class="docutils literal notranslate"><span class="pre">ifc_to_bim_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.ifc_to_nodes_multiprocessing"><code class="docutils literal notranslate"><span class="pre">ifc_to_nodes_multiprocessing()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.navvis_csv_to_pano_nodes"><code class="docutils literal notranslate"><span class="pre">navvis_csv_to_pano_nodes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_k_nearest_neighbors"><code class="docutils literal notranslate"><span class="pre">select_nodes_k_nearest_neighbors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_radius"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_radius()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_bounding_box"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_bounding_box()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_convex_hull"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_convex_hull()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_intersecting_bounding_box"><code class="docutils literal notranslate"><span class="pre">select_nodes_intersecting_bounding_box()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_intersecting_convex_hull"><code class="docutils literal notranslate"><span class="pre">select_nodes_intersecting_convex_hull()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.nodes_to_graph"><code class="docutils literal notranslate"><span class="pre">nodes_to_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.navvis_decode_depthmap"><code class="docutils literal notranslate"><span class="pre">navvis_decode_depthmap()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.cadutils.html">geomapi.utils.cadutils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.ezdxf_to_o3d"><code class="docutils literal notranslate"><span class="pre">ezdxf_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.ezdxf_entity_to_o3d"><code class="docutils literal notranslate"><span class="pre">ezdxf_entity_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.calculate_angle_between_lines"><code class="docutils literal notranslate"><span class="pre">calculate_angle_between_lines()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.calculate_perpendicular_distance"><code class="docutils literal notranslate"><span class="pre">calculate_perpendicular_distance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.insert_to_o3d"><code class="docutils literal notranslate"><span class="pre">insert_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.circle_to_o3d"><code class="docutils literal notranslate"><span class="pre">circle_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.line_to_o3d"><code class="docutils literal notranslate"><span class="pre">line_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.arc_to_o3d"><code class="docutils literal notranslate"><span class="pre">arc_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.ellips_to_o3d"><code class="docutils literal notranslate"><span class="pre">ellips_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.point_to_o3d"><code class="docutils literal notranslate"><span class="pre">point_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.spline_to_o3d"><code class="docutils literal notranslate"><span class="pre">spline_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.solid_to_o3d"><code class="docutils literal notranslate"><span class="pre">solid_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.lwpolyline_to_o3d"><code class="docutils literal notranslate"><span class="pre">lwpolyline_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.polyline_to_o3d"><code class="docutils literal notranslate"><span class="pre">polyline_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.mesh_to_o3d"><code class="docutils literal notranslate"><span class="pre">mesh_to_o3d()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.sample_pcd_from_linesets"><code class="docutils literal notranslate"><span class="pre">sample_pcd_from_linesets()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.get_linesets_inliers_in_box"><code class="docutils literal notranslate"><span class="pre">get_linesets_inliers_in_box()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.cadutils.html#geomapi.utils.cadutils.get_rgb_from_aci"><code class="docutils literal notranslate"><span class="pre">get_rgb_from_aci()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.geometryutils.html">geomapi.utils.geometryutils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.array_to_colors"><code class="docutils literal notranslate"><span class="pre">array_to_colors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.array_subsample"><code class="docutils literal notranslate"><span class="pre">array_subsample()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.arrays_to_mesh"><code class="docutils literal notranslate"><span class="pre">arrays_to_mesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.box_to_mesh"><code class="docutils literal notranslate"><span class="pre">box_to_mesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.color_by_intensity"><code class="docutils literal notranslate"><span class="pre">color_by_intensity()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.compute_nearest_neighbors"><code class="docutils literal notranslate"><span class="pre">compute_nearest_neighbors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.compute_raycasting_collisions"><code class="docutils literal notranslate"><span class="pre">compute_raycasting_collisions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.convert_to_homogeneous_3d_coordinates"><code class="docutils literal notranslate"><span class="pre">convert_to_homogeneous_3d_coordinates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_camera_frustum_mesh"><code class="docutils literal notranslate"><span class="pre">create_camera_frustum_mesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_camera_frustum_mesh_with_image"><code class="docutils literal notranslate"><span class="pre">create_camera_frustum_mesh_with_image()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_ellipsoid_mesh"><code class="docutils literal notranslate"><span class="pre">create_ellipsoid_mesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_identity_point_cloud"><code class="docutils literal notranslate"><span class="pre">create_identity_point_cloud()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_obb_from_orthophoto"><code class="docutils literal notranslate"><span class="pre">create_obb_from_orthophoto()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_transform_from_pyramid_points"><code class="docutils literal notranslate"><span class="pre">create_transform_from_pyramid_points()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_xyz_grid"><code class="docutils literal notranslate"><span class="pre">create_xyz_grid()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_dataframe_from_meshes"><code class="docutils literal notranslate"><span class="pre">crop_dataframe_from_meshes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_geometry_by_box"><code class="docutils literal notranslate"><span class="pre">crop_geometry_by_box()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_geometry_by_distance"><code class="docutils literal notranslate"><span class="pre">crop_geometry_by_distance()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_geometry_by_raycasting"><code class="docutils literal notranslate"><span class="pre">crop_geometry_by_raycasting()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_mesh_by_convex_hull"><code class="docutils literal notranslate"><span class="pre">crop_mesh_by_convex_hull()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.crop_point_cloud_from_meshes"><code class="docutils literal notranslate"><span class="pre">crop_point_cloud_from_meshes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.dataframe_to_las"><code class="docutils literal notranslate"><span class="pre">dataframe_to_las()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.dataframe_to_pcd"><code class="docutils literal notranslate"><span class="pre">dataframe_to_pcd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.describe_element"><code class="docutils literal notranslate"><span class="pre">describe_element()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.divide_box_in_boxes"><code class="docutils literal notranslate"><span class="pre">divide_box_in_boxes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.divide_pcd_per_height"><code class="docutils literal notranslate"><span class="pre">divide_pcd_per_height()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_to_arrays"><code class="docutils literal notranslate"><span class="pre">e57_to_arrays()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_to_pcd"><code class="docutils literal notranslate"><span class="pre">e57_to_pcd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_e57_from_pcd"><code class="docutils literal notranslate"><span class="pre">get_e57_from_pcd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_array_to_pcd"><code class="docutils literal notranslate"><span class="pre">e57_array_to_pcd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_dict_to_pcd"><code class="docutils literal notranslate"><span class="pre">e57_dict_to_pcd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_fix_rotation_order"><code class="docutils literal notranslate"><span class="pre">e57_fix_rotation_order()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_get_cartesian_transform"><code class="docutils literal notranslate"><span class="pre">e57_get_cartesian_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_get_colors"><code class="docutils literal notranslate"><span class="pre">e57_get_colors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_get_normals"><code class="docutils literal notranslate"><span class="pre">e57_get_normals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_get_xyz_from_raw_data"><code class="docutils literal notranslate"><span class="pre">e57_get_xyz_from_raw_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_get_xyz_from_spherical_raw_data"><code class="docutils literal notranslate"><span class="pre">e57_get_xyz_from_spherical_raw_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57_update_point_field"><code class="docutils literal notranslate"><span class="pre">e57_update_point_field()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57path_to_pcd"><code class="docutils literal notranslate"><span class="pre">e57path_to_pcd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.e57path_to_pcds_multiprocessing"><code class="docutils literal notranslate"><span class="pre">e57path_to_pcds_multiprocessing()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.expand_box"><code class="docutils literal notranslate"><span class="pre">expand_box()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.extract_points"><code class="docutils literal notranslate"><span class="pre">extract_points()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.generate_virtual_images"><code class="docutils literal notranslate"><span class="pre">generate_virtual_images()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_backface_center_transform"><code class="docutils literal notranslate"><span class="pre">get_backface_center_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_box_inliers"><code class="docutils literal notranslate"><span class="pre">get_box_inliers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_box_intersections"><code class="docutils literal notranslate"><span class="pre">get_box_intersections()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_cartesian_bounds"><code class="docutils literal notranslate"><span class="pre">get_cartesian_bounds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_cartesian_transform"><code class="docutils literal notranslate"><span class="pre">get_cartesian_transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_convex_hull"><code class="docutils literal notranslate"><span class="pre">get_convex_hull()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_geometry_from_path"><code class="docutils literal notranslate"><span class="pre">get_geometry_from_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_mesh_collisions_trimesh"><code class="docutils literal notranslate"><span class="pre">get_mesh_collisions_trimesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_mesh_inliers"><code class="docutils literal notranslate"><span class="pre">get_mesh_inliers()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_oriented_bounding_box"><code class="docutils literal notranslate"><span class="pre">get_oriented_bounding_box()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_oriented_bounding_box_parameters"><code class="docutils literal notranslate"><span class="pre">get_oriented_bounding_box_parameters()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_oriented_bounds"><code class="docutils literal notranslate"><span class="pre">get_oriented_bounds()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_pcd_collisions"><code class="docutils literal notranslate"><span class="pre">get_pcd_collisions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_pcd_from_depth_map"><code class="docutils literal notranslate"><span class="pre">get_pcd_from_depth_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_points_and_normals"><code class="docutils literal notranslate"><span class="pre">get_points_and_normals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_rotation_matrix_from_forward_up"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix_from_forward_up()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_rotation_matrix"><code class="docutils literal notranslate"><span class="pre">get_rotation_matrix()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_translation"><code class="docutils literal notranslate"><span class="pre">get_translation()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.get_triangles_center"><code class="docutils literal notranslate"><span class="pre">get_triangles_center()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.ifc_to_mesh"><code class="docutils literal notranslate"><span class="pre">ifc_to_mesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.ifc_get_materials"><code class="docutils literal notranslate"><span class="pre">ifc_get_materials()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.img_to_arrays"><code class="docutils literal notranslate"><span class="pre">img_to_arrays()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.join_geometries"><code class="docutils literal notranslate"><span class="pre">join_geometries()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.las_to_pcd"><code class="docutils literal notranslate"><span class="pre">las_to_pcd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.las_add_extra_dimensions"><code class="docutils literal notranslate"><span class="pre">las_add_extra_dimensions()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.las_get_data"><code class="docutils literal notranslate"><span class="pre">las_get_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.las_get_normals"><code class="docutils literal notranslate"><span class="pre">las_get_normals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.las_subsample"><code class="docutils literal notranslate"><span class="pre">las_subsample()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.mesh_to_arrays"><code class="docutils literal notranslate"><span class="pre">mesh_to_arrays()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.create_visible_point_cloud_from_meshes"><code class="docutils literal notranslate"><span class="pre">create_visible_point_cloud_from_meshes()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.mesh_to_trimesh"><code class="docutils literal notranslate"><span class="pre">mesh_to_trimesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.mesh_get_lineset"><code class="docutils literal notranslate"><span class="pre">mesh_get_lineset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.normalize_vectors"><code class="docutils literal notranslate"><span class="pre">normalize_vectors()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.octree_to_voxelmesh"><code class="docutils literal notranslate"><span class="pre">octree_to_voxelmesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.pcd_to_arrays"><code class="docutils literal notranslate"><span class="pre">pcd_to_arrays()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.pcd_to_las"><code class="docutils literal notranslate"><span class="pre">pcd_to_las()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.pcd_to_voxelmesh"><code class="docutils literal notranslate"><span class="pre">pcd_to_voxelmesh()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.pcd_get_normals"><code class="docutils literal notranslate"><span class="pre">pcd_get_normals()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.preprocess_points_for_geometry"><code class="docutils literal notranslate"><span class="pre">preprocess_points_for_geometry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.project_meshes_to_rgbd_images"><code class="docutils literal notranslate"><span class="pre">project_meshes_to_rgbd_images()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.rays_to_lineset"><code class="docutils literal notranslate"><span class="pre">rays_to_lineset()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.rays_to_points"><code class="docutils literal notranslate"><span class="pre">rays_to_points()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.sample_geometry"><code class="docutils literal notranslate"><span class="pre">sample_geometry()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.save_dataframe_as_ply"><code class="docutils literal notranslate"><span class="pre">save_dataframe_as_ply()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.save_view_point"><code class="docutils literal notranslate"><span class="pre">save_view_point()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.segment_pcd_by_connected_component"><code class="docutils literal notranslate"><span class="pre">segment_pcd_by_connected_component()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.show_geometries"><code class="docutils literal notranslate"><span class="pre">show_geometries()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.split_pcd_by_labels"><code class="docutils literal notranslate"><span class="pre">split_pcd_by_labels()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.split_quad_faces"><code class="docutils literal notranslate"><span class="pre">split_quad_faces()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.transform_dataframe"><code class="docutils literal notranslate"><span class="pre">transform_dataframe()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.transform_points"><code class="docutils literal notranslate"><span class="pre">transform_points()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geometryutils.html#geomapi.utils.geometryutils.voxelgrid_to_mesh"><code class="docutils literal notranslate"><span class="pre">voxelgrid_to_mesh()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.geospatialutils.html">geomapi.utils.geospatialutils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geospatialutils.html#geomapi.utils.geospatialutils.belgian_datum_to_wgs84"><code class="docutils literal notranslate"><span class="pre">belgian_datum_to_wgs84()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geospatialutils.html#geomapi.utils.geospatialutils.wgs84_to_belgian_datum"><code class="docutils literal notranslate"><span class="pre">wgs84_to_belgian_datum()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geospatialutils.html#geomapi.utils.geospatialutils.parse_exif_gps_data"><code class="docutils literal notranslate"><span class="pre">parse_exif_gps_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geospatialutils.html#geomapi.utils.geospatialutils.dms_to_dd"><code class="docutils literal notranslate"><span class="pre">dms_to_dd()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geospatialutils.html#geomapi.utils.geospatialutils.dd_to_dms"><code class="docutils literal notranslate"><span class="pre">dd_to_dms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geospatialutils.html#geomapi.utils.geospatialutils.parse_dms"><code class="docutils literal notranslate"><span class="pre">parse_dms()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.geospatialutils.html#geomapi.utils.geospatialutils.get_exif_data"><code class="docutils literal notranslate"><span class="pre">get_exif_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.imageutils.html">geomapi.utils.imageutils</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.fill_black_pixels"><code class="docutils literal notranslate"><span class="pre">fill_black_pixels()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.subdivide_image"><code class="docutils literal notranslate"><span class="pre">subdivide_image()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.get_features"><code class="docutils literal notranslate"><span class="pre">get_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.draw_keypoints_on_image"><code class="docutils literal notranslate"><span class="pre">draw_keypoints_on_image()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.match_features"><code class="docutils literal notranslate"><span class="pre">match_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.match_images"><code class="docutils literal notranslate"><span class="pre">match_images()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.load_navvis_depth_map"><code class="docutils literal notranslate"><span class="pre">load_navvis_depth_map()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="geomapi.utils.imageutils.html#geomapi.utils.imageutils.get_pcd_from_depth_map"><code class="docutils literal notranslate"><span class="pre">get_pcd_from_depth_map()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.time_function"><code class="docutils literal notranslate"><span class="pre">time_function()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_timestamp"><code class="docutils literal notranslate"><span class="pre">get_timestamp()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_random_color"><code class="docutils literal notranslate"><span class="pre">get_random_color()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.map_to_2d_array"><code class="docutils literal notranslate"><span class="pre">map_to_2d_array()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.item_to_list"><code class="docutils literal notranslate"><span class="pre">item_to_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.split_list"><code class="docutils literal notranslate"><span class="pre">split_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.replace_str_index"><code class="docutils literal notranslate"><span class="pre">replace_str_index()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_list_of_files"><code class="docutils literal notranslate"><span class="pre">get_list_of_files()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_geomapi_classes"><code class="docutils literal notranslate"><span class="pre">get_geomapi_classes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_method_for_datatype"><code class="docutils literal notranslate"><span class="pre">get_method_for_datatype()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.apply_method_to_object"><code class="docutils literal notranslate"><span class="pre">apply_method_to_object()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_subject_name"><code class="docutils literal notranslate"><span class="pre">get_subject_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_subject_graph"><code class="docutils literal notranslate"><span class="pre">get_subject_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_attribute_from_predicate"><code class="docutils literal notranslate"><span class="pre">get_attribute_from_predicate()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_number"><code class="docutils literal notranslate"><span class="pre">literal_to_number()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_string"><code class="docutils literal notranslate"><span class="pre">literal_to_string()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_int"><code class="docutils literal notranslate"><span class="pre">literal_to_int()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_float"><code class="docutils literal notranslate"><span class="pre">literal_to_float()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_list"><code class="docutils literal notranslate"><span class="pre">literal_to_list()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_matrix"><code class="docutils literal notranslate"><span class="pre">literal_to_matrix()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_datetime"><code class="docutils literal notranslate"><span class="pre">literal_to_datetime()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xml_to_float"><code class="docutils literal notranslate"><span class="pre">xml_to_float()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_lat"><code class="docutils literal notranslate"><span class="pre">xcr_to_lat()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_long"><code class="docutils literal notranslate"><span class="pre">xcr_to_long()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_alt"><code class="docutils literal notranslate"><span class="pre">xcr_to_alt()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_string"><code class="docutils literal notranslate"><span class="pre">validate_string()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_uri"><code class="docutils literal notranslate"><span class="pre">validate_uri()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_path"><code class="docutils literal notranslate"><span class="pre">validate_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.check_if_subject_is_in_graph"><code class="docutils literal notranslate"><span class="pre">check_if_subject_is_in_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_graph_intersection"><code class="docutils literal notranslate"><span class="pre">get_graph_intersection()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.bind_ontologies"><code class="docutils literal notranslate"><span class="pre">bind_ontologies()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_node_resource_extensions"><code class="docutils literal notranslate"><span class="pre">get_node_resource_extensions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_node_type"><code class="docutils literal notranslate"><span class="pre">get_node_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_data_type"><code class="docutils literal notranslate"><span class="pre">get_data_type()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_geomapi_data_types"><code class="docutils literal notranslate"><span class="pre">get_geomapi_data_types()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_ifcowl_uri"><code class="docutils literal notranslate"><span class="pre">get_ifcowl_uri()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_ifcopenshell_class_name"><code class="docutils literal notranslate"><span class="pre">get_ifcopenshell_class_name()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_predicate_and_datatype"><code class="docutils literal notranslate"><span class="pre">get_predicate_and_datatype()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_relative_path"><code class="docutils literal notranslate"><span class="pre">get_relative_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.rdf_property"><code class="docutils literal notranslate"><span class="pre">rdf_property()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

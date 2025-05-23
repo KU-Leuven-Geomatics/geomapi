@@ -1,0 +1,329 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# LineSetNode\n",
+    "The LineSetNode class in Geomapi represents the data and metadata of polygonal LineSet data. The data itself and methods build upon Open3D TriangleLineSet and TriLineSet concepts while the metadata builds upon the RDFlib framework:\n",
+    "\n",
+    "[http://www.open3d.org/docs/latest/tutorial/Basic/LineSet.html#](http://www.open3d.org/docs/latest/tutorial/Basic/LineSet.html#) \n",
+    "\n",
+    "[https://trimsh.org/triLineSet.base.html](https://trimsh.org/triLineSet.base.html)\n",
+    "\n",
+    "[https://rdflib.readthedocs.io/](https://rdflib.readthedocs.io/) \n",
+    "\n",
+    "The code below shows how to create a LineSetNode from various inputs."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "First the geomapi and external packages are imported"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Jupyter environment detected. Enabling Open3D WebVisualizer.\n",
+      "[Open3D INFO] WebRTC GUI backend enabled.\n",
+      "[Open3D INFO] WebRTCWindowSystem: HTTP handshake server disabled.\n"
+     ]
+    }
+   ],
+   "source": [
+    "#IMPORT PACKAGES\n",
+    "from rdflib import Graph\n",
+    "import os\n",
+    "import numpy as np\n",
+    "\n",
+    "#IMPORT MODULES\n",
+    "from context import geomapi #context import for documentation only\n",
+    "from geomapi.nodes import LineSetNode"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## LineSetNode Creation\n",
+    "\n",
+    "A LineSetNode is constructed using the same parameters as the base Node. Please refer to [Node Tutorial](../tutorial/tutorial_nodes.ipynb) For more info about Node Creation"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "LineSetNode( subject = None,             # (URIRef, optional) : A subject to use as identifier for the Node.\n",
+    "             graph = None,               # (Graph, optional) : An RDF Graph to parse.\n",
+    "             graphPath = None,           # (Path, optional) : The path of an RDF Graph to parse.\n",
+    "             name = None,                # (str, optional) : A name of the Node.\n",
+    "             path = None,                # (Path, optional) : A filepath to a resource.\n",
+    "             timestamp = None,           # (str, optional) : Timestamp for the node.\n",
+    "             resource = None,            # (optional) : Resource associated with the node.\n",
+    "             cartesianTransform = None,  # (np.ndarray, optional) : The (4x4) transformation matrix.\n",
+    "             orientedBoundingBox = None, # (o3d.geometry.OrientedBoundingBox, optional) : The oriented bounding box of the node.\n",
+    "             convexHull = None,          # (o3d.geometry.TriangleLineSet, optional) : The convex hull of the node.\n",
+    "             loadResource = False,       # Load the resource at initialization?\n",
+    "             dxfPath = None,             # (str|Path) : path to DXF file\n",
+    "             handle = None,              # (str) : CAD handle\n",
+    "             layer = None,               # (str) : CAD layername e.g. IFC$1$BT8_Loofboom_Laag_WGI2, etc.\n",
+    "             dxfType = None              # (str, optional) : type of the object\n",
+    "            )"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Ontology link\n",
+    "\n",
+    "The LineSetNode has 6 new standard properties that are serialized to the graph:\n",
+    "\n",
+    "| python name | predicate |\n",
+    "|-----------  |-----------|\n",
+    "| `pointCount` | `geomapi:pointCount` |\n",
+    "| `lineCount` | `geomapi:lineCount` |\n",
+    "| `dxfPath` | `geomapi:dxfPath` |\n",
+    "| `handle` | `geomapi:handle` |\n",
+    "| `layer` | `geomapi:layer` |\n",
+    "| `dxfType` | `geomapi:dxfType` |\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Creation From dxf file\n",
+    "\n",
+    "LineSetNodes can be created from autocad dfx files.\n",
+    "Since dxf files contain a large amount of elements, they cannot be loaded directly into a LineSetNode.\n",
+    "Use the [`geomapi.tools.dxf_to_lineset_nodes`](../geomapi/geomapi.tools.html#geomapi.tools.dxf_to_lineset_nodes) function to load all elements into a list of LineSetNode."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Reading DXF file from ..\\..\\..\\tests\\testfiles\\cad\\railway.dxf...\n",
+      "162 entities were not LineSets. Skipping for now...\n",
+      "    loaded 121 lineSetNodes from dxf file\n"
+     ]
+    }
+   ],
+   "source": [
+    "import geomapi.tools as tl\n",
+    "\n",
+    "linesetnodes = tl.dxf_to_lineset_nodes(dxfPath = r\"../../..\\tests\\testfiles\\cad/railway.dxf\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## LineSetNode Resource\n",
+    "\n",
+    "When creating a Node with a resource, it can be done either directly with the resource, or with the path to the resource.\n",
+    "\n",
+    "A resource can be a big piece of data, this is why it is not always wanted to load the whole resource at initialization. This is why the `loadResource` parameter is default to `False`\n",
+    "\n",
+    "For more info on specific resources, see the corresponding Node type"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Loading The Resource"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resource not loaded, but path is defined, call `load_resource()` to access it.\n",
+      "Resource not loaded, but path is defined, call `load_resource()` to access it.\n",
+      "resource before loading: None\n",
+      "resource after loading: LineSet with 1 lines.\n"
+     ]
+    }
+   ],
+   "source": [
+    "node = LineSetNode(path=r\"../../..\\tests\\testfiles\\cad\\line.ply\", loadResource=False)\n",
+    "print(\"resource before loading:\",node.resource)\n",
+    "node.load_resource() # Use specialized node fo each type of resource.\n",
+    "print(\"resource after loading:\",node.resource)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Saving The Resource\n",
+    "\n",
+    "A LineSet resource can be saved to disk using the `save_resource()` function.\n",
+    "Currently supports: .ply, .obj"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "node = LineSetNode(path=r\"../../..\\tests\\testfiles\\cad\\line.ply\", loadResource=True)\n",
+    "node.save_resource(directory=r\"../../../tests/testfiles/resources\", extension=\".ply\") # Save the resource to the resourcePath"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## LineSetNode Transformation\n",
+    "\n",
+    "Since every nod has a cartesian transform, it can be transformed using the `node.transform()` function.\n",
+    "\n",
+    "The transformation also updates the `convexHull` and `orientedBoundingBox`.\n",
+    "\n",
+    "Furthermore, if the LineSetNode has a resource, that resource is also transformed."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[[1. 0. 0. 0.]\n",
+      " [0. 1. 0. 0.]\n",
+      " [0. 0. 1. 0.]\n",
+      " [0. 0. 0. 1.]]\n",
+      "applying transformation: (-1)\n",
+      "[[0. 0. 1. 0.]\n",
+      " [0. 1. 0. 0.]\n",
+      " [1. 0. 0. 0.]\n",
+      " [0. 0. 0. 1.]] \n",
+      "\n",
+      "applying rotation: (90,0,0)\n",
+      "[[ 1.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00]\n",
+      " [ 0.000000e+00  6.123234e-17 -1.000000e+00  0.000000e+00]\n",
+      " [ 0.000000e+00  1.000000e+00  6.123234e-17  0.000000e+00]\n",
+      " [ 0.000000e+00  0.000000e+00  0.000000e+00  1.000000e+00]] \n",
+      "\n",
+      "applying translation: (1,2,3)\n",
+      "[[1. 0. 0. 1.]\n",
+      " [0. 1. 0. 2.]\n",
+      " [0. 0. 1. 3.]\n",
+      " [0. 0. 0. 1.]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "node = LineSetNode()\n",
+    "print(node.cartesianTransform)\n",
+    "transformation = np.array([[0,0,1,0],[0,1,0,0],[1,0,0,0],[0,0,0,1]])\n",
+    "node.transform(transformation=transformation)\n",
+    "print(\"applying transformation: (-1)\")\n",
+    "print(node.cartesianTransform,\"\\n\")\n",
+    "\n",
+    "node = LineSetNode()\n",
+    "rotation = np.array([90,0,0]) #eulers in degrees\n",
+    "node.transform(rotation=rotation)\n",
+    "print(\"applying rotation: (90,0,0)\")\n",
+    "print(node.cartesianTransform,\"\\n\")\n",
+    "\n",
+    "node = LineSetNode()\n",
+    "translation = np.array([1,2,3])\n",
+    "node.transform(translation=translation)\n",
+    "print(\"applying translation: (1,2,3)\")\n",
+    "print(node.cartesianTransform)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## LineSetNode Visualisation\n",
+    "\n",
+    "When a LineSetNode has a resource, the `show()` function displays the LineSet using either open3d or TriLineSet, depending on the workspace.\n",
+    "\n",
+    "Use the `inline = True` parameter to display the LineSet using the TriLineSet viewer in your jupyter notebook file. Otherwise the function opens a new python window to display the open3d viewer"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "node = LineSetNode(path=r\"../../..\\tests\\testfiles\\cad\\line.ply\", loadResource=True)\n",
+    "node.show(inline=False) # The standard node has no resource to display"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Further reading\n",
+    "\n",
+    "Please refer to the full [API documentation](../geomapi/geomapi.nodes.LineSetnode.rst) of the LineSetNode class for more details about the functionality"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "env",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.7"
+  },
+  "orig_nbformat": 4
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

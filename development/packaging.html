@@ -1,0 +1,551 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Packaging &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Ontology Creation" href="ontology%20creation.html" />
+    <link rel="prev" title="User environment" href="environment%20creation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Packaging</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#structure">Structure</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#project-structure">Project Structure</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#package-structure">Package Structure</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#importing-in-the-package">Importing in the package</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#test-file">Test file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#test-running">Test Running</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#documentation">Documentation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#source-code-documenting">Source code documenting</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation-generation">Documentation generation</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#setup">Setup</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#autodoc">Autodoc</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-the-documentation">Build the documentation</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#documentation-hosting">Documentation hosting</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#gitlab">Gitlab</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#github">Github</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#publishing">Publishing</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#required-files">Required Files</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pyproject-toml">pyproject.toml</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#setup-cfg">setup.cfg</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pypirc">.pypirc</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#build-commands">Build commands</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#automation">Automation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Gitlab</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#stage-preparation">Stage Preparation</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pages-stage">Pages Stage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#build-stage">Build Stage</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#deploy-stage">Deploy Stage</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Github</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Packaging</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/development/packaging.md.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="packaging">
+<h1>Packaging<a class="headerlink" href="#packaging" title="Link to this heading"></a></h1>
+<p>Everything you need to know to write and share your Python code</p>
+<section id="structure">
+<h2>Structure<a class="headerlink" href="#structure" title="Link to this heading"></a></h2>
+<p>In order to make it easier to reuse your code, you can put it in a package. However, there are certain standards your package should conform to.</p>
+<section id="project-structure">
+<h3>Project Structure<a class="headerlink" href="#project-structure" title="Link to this heading"></a></h3>
+<p>Here you can find the basic structure to organize your project. <a class="reference external" href="https://docs.python-guide.org/writing/structure/">more info</a></p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;project&quot;</span><span class="l l-Scalar l-Scalar-Plain">/</span><span class="w">            </span><span class="c1"># The root of the repository</span>
+<span class="l l-Scalar l-Scalar-Plain">│</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ venv/</span><span class="w">              </span><span class="c1"># Your virtual environment</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ &quot;package&quot;/</span><span class="w">         </span><span class="c1"># The name of your package</span>
+<span class="l l-Scalar l-Scalar-Plain">│  ├─ __init__.py</span><span class="w">     </span><span class="c1"># The init file to show python this folder is a package</span>
+<span class="l l-Scalar l-Scalar-Plain">│  ├─ &quot;module&quot;.py</span><span class="w">     </span><span class="c1"># modules ending in .py</span>
+<span class="l l-Scalar l-Scalar-Plain">│  ├─ &quot;subpackage&quot;/</span><span class="w">   </span><span class="c1"># sub-packages</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ docs/</span><span class="w">              </span><span class="c1"># Your documentation for the package</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ test/</span><span class="w">              </span><span class="c1"># The unit test of your code</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ README.md</span><span class="w">          </span><span class="c1"># A file with the basic information about the project</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ requirements.txt</span><span class="w">   </span><span class="c1"># The dependencies of your project during development</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ .gitignore</span><span class="w">         </span><span class="c1"># A file to indicate which files to ignore</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ LICENSE</span><span class="w">            </span><span class="c1"># The (open-source) license</span>
+</pre></div>
+</div>
+</section>
+<section id="package-structure">
+<h3>Package Structure<a class="headerlink" href="#package-structure" title="Link to this heading"></a></h3>
+<p>A package is a folder containing an <code class="docutils literal notranslate"><span class="pre">__init__.py</span></code> file and a collection of modules &amp; subpackages.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="s">&quot;mypackage&quot;</span><span class="l l-Scalar l-Scalar-Plain">/</span><span class="w">         </span><span class="c1"># The main package</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ __init__.py</span><span class="w">        </span><span class="c1"># The init file to show python this folder is a package</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ &quot;module1&quot;.py</span><span class="w">        </span><span class="c1"># modules ending in .py</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ &quot;module2&quot;.py</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ ...</span>
+<span class="l l-Scalar l-Scalar-Plain">├─ &quot;subpackage&quot;/</span><span class="w">       </span><span class="c1"># sub-package</span>
+<span class="l l-Scalar l-Scalar-Plain">│  ├─ __init__.py</span><span class="w">      </span><span class="c1"># The init file to show python this folder is a package</span>
+<span class="l l-Scalar l-Scalar-Plain">│  ├─ &quot;submodule&quot;.py</span><span class="w">   </span><span class="c1"># modules ending in .py</span>
+<span class="l l-Scalar l-Scalar-Plain">│  ├─ ...</span>
+</pre></div>
+</div>
+<section id="importing-in-the-package">
+<h4>Importing in the package<a class="headerlink" href="#importing-in-the-package" title="Link to this heading"></a></h4>
+<p>Your code is designed to run outside of the package. Since python is very strict about where the code is run from, you will need to import your relative modules as if you are importing them from outside of the package ex:</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="c1"># to import module1.py in module2.py</span>
+<span class="kn">import</span> <span class="nn">mypackage.module1</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+<section id="testing">
+<h2>Testing<a class="headerlink" href="#testing" title="Link to this heading"></a></h2>
+<p>To remove the guesswork in evaluating if your package works properly, we use <a class="reference external" href="https://docs.python.org/3/library/unittest.html">unittests</a>. These are a collection of functions that test the base functionalities of all the functions and classes in the package.</p>
+<section id="test-file">
+<h3>Test file<a class="headerlink" href="#test-file" title="Link to this heading"></a></h3>
+<p>Each <code class="docutils literal notranslate"><span class="pre">module.py</span></code> should have a corresponding <code class="docutils literal notranslate"><span class="pre">test_module.py</span></code> in the <code class="docutils literal notranslate"><span class="pre">tests/</span></code> folder. To test the functionality, call every function and compare the output with what you expect.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">unittest</span>
+
+<span class="k">class</span> <span class="nc">TestMyClass</span><span class="p">(</span><span class="n">unittest</span><span class="o">.</span><span class="n">TestCase</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">test_function_1</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;foo&#39;</span><span class="o">.</span><span class="n">upper</span><span class="p">(),</span> <span class="s1">&#39;FOO&#39;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">test_function_2</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">assertEqual</span><span class="p">(</span><span class="s1">&#39;FOO&#39;</span><span class="o">.</span><span class="n">lower</span><span class="p">(),</span> <span class="s1">&#39;foo&#39;</span><span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">unittest</span><span class="o">.</span><span class="n">main</span><span class="p">()</span>
+</pre></div>
+</div>
+</section>
+<section id="test-running">
+<h3>Test Running<a class="headerlink" href="#test-running" title="Link to this heading"></a></h3>
+<p>To run all the tests simply run the following command:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>unittest
+</pre></div>
+</div>
+</section>
+</section>
+<section id="documentation">
+<h2>Documentation<a class="headerlink" href="#documentation" title="Link to this heading"></a></h2>
+<p>Keeping your code readable with <a class="reference external" href="https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html">docstrings</a> and <a class="reference external" href="https://www.sphinx-doc.org/en/master/">sphinx</a></p>
+<section id="source-code-documenting">
+<h3>Source code documenting<a class="headerlink" href="#source-code-documenting" title="Link to this heading"></a></h3>
+<p>If you want others (or yourself in the future) to understand your code, you should explain the functionality of all your functions and classes. Use <a class="reference external" href="https://marketplace.visualstudio.com/items?itemName=njpwerner.autodocstring">autoDocstring</a> to automatically generate the template.</p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">function</span><span class="p">(</span><span class="n">value</span> <span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;_summary_</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        value (str): _description_</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        str: _description_</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">value</span>
+</pre></div>
+</div>
+</section>
+<section id="documentation-generation">
+<h3>Documentation generation<a class="headerlink" href="#documentation-generation" title="Link to this heading"></a></h3>
+<p>Use <a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> to generate automatic documentation of the full API. You can create websites using some pre-made templates to easily organize your documentation.</p>
+<section id="setup">
+<h4>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h4>
+<p><a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> provides a handy <code class="docutils literal notranslate"><span class="pre">quickstart</span></code> function to create the source files needed to generate the documentation</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span><span class="w"> </span>./docs<span class="w">                         </span><span class="c1"># Navigate to the docs folder</span>
+sphinx-quickstart<span class="w">                 </span><span class="c1"># set up the docs sources</span>
+</pre></div>
+</div>
+</section>
+<section id="autodoc">
+<h4>Autodoc<a class="headerlink" href="#autodoc" title="Link to this heading"></a></h4>
+<p><a class="reference external" href="https://www.sphinx-doc.org/en/master/">Sphinx</a> can automatically create the documentation structure, based on the package and its modules. Activate these extensions in <code class="docutils literal notranslate"><span class="pre">conf.py</span></code></p>
+<div class="highlight-py notranslate"><div class="highlight"><pre><span></span><span class="n">extensions</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="s1">&#39;sphinx.ext.autodoc&#39;</span><span class="p">,</span>           <span class="c1"># search for docstrings</span>
+    <span class="s1">&#39;sphinx.ext.autosummary&#39;</span><span class="p">,</span>       <span class="c1"># Search for summaries</span>
+    <span class="s1">&#39;sphinx.ext.napoleon&#39;</span><span class="p">,</span>          <span class="c1"># Allow for napoleon style docstrings</span>
+<span class="p">]</span>
+<span class="n">autosummary_generate</span> <span class="o">=</span> <span class="kc">True</span>         <span class="c1"># Turn on sphinx.ext.autosummary</span>
+<span class="n">napoleon_google_docstring</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">napoleon_use_param</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">napoleon_use_ivar</span> <span class="o">=</span> <span class="kc">True</span>
+</pre></div>
+</div>
+<p>Generate the source framework using APIdoc</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">sphinx</span><span class="o">-</span><span class="n">apidoc</span> <span class="o">-</span><span class="n">o</span> <span class="o">.</span> <span class="o">../</span><span class="n">mypackage</span><span class="o">/</span> <span class="o">-</span><span class="n">e</span>
+</pre></div>
+</div>
+</section>
+<section id="build-the-documentation">
+<h4>Build the documentation<a class="headerlink" href="#build-the-documentation" title="Link to this heading"></a></h4>
+<p>The HTML code can be easily generated using the make file in the <code class="docutils literal notranslate"><span class="pre">docs/</span></code> directory</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="o">./</span><span class="n">make</span> <span class="n">html</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="documentation-hosting">
+<h3>Documentation hosting<a class="headerlink" href="#documentation-hosting" title="Link to this heading"></a></h3>
+<section id="gitlab">
+<h4>Gitlab<a class="headerlink" href="#gitlab" title="Link to this heading"></a></h4>
+<p>gitlab.kuleuven.be has a webserver to host your documentation per project by the following structure points to the <code class="docutils literal notranslate"><span class="pre">public/</span></code> folder in the root of the repo:
+https://”group”.pages.gitlab.kuleuven.be/”collection”/”project”/</p>
+<p>for example: https://geomatics.pages.gitlab.kuleuven.be/research-projects/geomapi</p>
+<section id="ci-cd-file">
+<h5>CI/CD File<a class="headerlink" href="#ci-cd-file" title="Link to this heading"></a></h5>
+<p>Create <code class="docutils literal notranslate"><span class="pre">.gitlab-ci.yml</span></code> in the root of the project with the following content to automatically publish the page after each push using <a class="reference external" href="https://docs.gitlab.com/ee/ci/">CI/CD</a>:</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pages</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">stage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deploy</span>
+<span class="w">  </span><span class="nt">script</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mkdir .public</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">cp -r * .public</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">mv .public docs</span>
+<span class="w">  </span><span class="nt">artifacts</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
+<span class="w">  </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="github">
+<h4>Github<a class="headerlink" href="#github" title="Link to this heading"></a></h4>
+<p>Github works with the github actions automation system. a yaml based instruction platform. You can enable the github pages in your project settings by selecting the <code class="docutils literal notranslate"><span class="pre">gh-pages</span></code> branch after the workflow has run at least once.</p>
+<section id="workflows-file">
+<h5>workflows File<a class="headerlink" href="#workflows-file" title="Link to this heading"></a></h5>
+<p>Create a <code class="docutils literal notranslate"><span class="pre">.github/workflows/'name'.yml</span></code> file and</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Docs</span>
+<span class="nt">on</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">[</span><span class="nv">push</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">pull_request</span><span class="p p-Indicator">,</span><span class="w"> </span><span class="nv">workflow_dispatch</span><span class="p p-Indicator">]</span>
+<span class="nt">jobs</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">docs</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">runs-on</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">ubuntu-latest</span>
+<span class="w">    </span><span class="nt">steps</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/checkout@v2</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">actions/setup-python@v2</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Install dependencies</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">pip install -r docs/docs_requirements.yaml</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Sphinx build</span>
+<span class="w">        </span><span class="nt">run</span><span class="p">:</span><span class="w"> </span><span class="p p-Indicator">|</span>
+<span class="w">          </span><span class="no">sphinx-build docs/source _build</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">name</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">Deploy</span>
+<span class="w">        </span><span class="nt">uses</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">peaceiris/actions-gh-pages@v3</span>
+<span class="w">        </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ github.event_name == &#39;push&#39; &amp;&amp; github.ref == &#39;refs/heads/main&#39; }}</span>
+<span class="w">        </span><span class="nt">with</span><span class="p">:</span>
+<span class="w">          </span><span class="nt">publish_branch</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">gh-pages</span>
+<span class="w">          </span><span class="nt">github_token</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">${{ secrets.GITHUB_TOKEN }}</span>
+<span class="w">          </span><span class="nt">publish_dir</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">_build/</span>
+<span class="w">          </span><span class="nt">force_orphan</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</section>
+</section>
+</section>
+</section>
+<section id="publishing">
+<h2>Publishing<a class="headerlink" href="#publishing" title="Link to this heading"></a></h2>
+<p>To publish your package to pypi.org and Conda you’ll need <code class="docutils literal notranslate"><span class="pre">setuptools</span></code></p>
+<section id="required-files">
+<h3>Required Files<a class="headerlink" href="#required-files" title="Link to this heading"></a></h3>
+<p>Files that are nescacary to build and deploy your package.</p>
+<section id="pyproject-toml">
+<h4>pyproject.toml<a class="headerlink" href="#pyproject-toml" title="Link to this heading"></a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">build</span><span class="o">-</span><span class="n">system</span><span class="p">]</span>
+<span class="n">requires</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;setuptools&quot;</span><span class="p">]</span>
+<span class="n">build</span><span class="o">-</span><span class="n">backend</span> <span class="o">=</span> <span class="s2">&quot;setuptools.build_meta&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="setup-cfg">
+<h4>setup.cfg<a class="headerlink" href="#setup-cfg" title="Link to this heading"></a></h4>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">metadata</span><span class="p">]</span>
+<span class="n">name</span> <span class="o">=</span><span class="s2">&quot;name&quot;</span>
+<span class="n">version</span> <span class="o">=</span> <span class="mf">0.0.1</span>
+<span class="n">author</span> <span class="o">=</span> <span class="s2">&quot;author&quot;</span>
+<span class="n">description</span> <span class="o">=</span> <span class="s2">&quot;desc&quot;</span>
+<span class="n">long_description</span> <span class="o">=</span> <span class="n">file</span><span class="p">:</span> <span class="n">README</span><span class="o">.</span><span class="n">md</span>
+<span class="n">long_description_content_type</span> <span class="o">=</span> <span class="n">text</span><span class="o">/</span><span class="n">markdown</span>
+<span class="n">url</span> <span class="o">=</span><span class="s2">&quot;url&quot;</span>
+<span class="n">classifiers</span> <span class="o">=</span>
+    <span class="n">Programming</span> <span class="n">Language</span> <span class="p">::</span> <span class="n">Python</span> <span class="p">::</span> <span class="mi">3</span>
+    <span class="n">License</span> <span class="p">::</span> <span class="n">OSI</span> <span class="n">Approved</span> <span class="p">::</span> <span class="n">GNU</span> <span class="n">General</span> <span class="n">Public</span> <span class="n">License</span> <span class="p">(</span><span class="n">GPL</span><span class="p">)</span>
+    <span class="n">Operating</span> <span class="n">System</span> <span class="p">::</span> <span class="n">OS</span> <span class="n">Independent</span>
+
+<span class="p">[</span><span class="n">options</span><span class="p">]</span>
+<span class="n">packages</span> <span class="o">=</span> <span class="n">find</span><span class="p">:</span>
+<span class="n">python_requires</span> <span class="o">=</span> <span class="o">&gt;=</span><span class="mf">3.8</span>
+<span class="n">install_requires</span> <span class="o">=</span>
+      <span class="s2">&quot;dependancies&quot;</span>
+</pre></div>
+</div>
+</section>
+<section id="pypirc">
+<h4>.pypirc<a class="headerlink" href="#pypirc" title="Link to this heading"></a></h4>
+<p>a file in your $HOME directory to store the publish token</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="p">[</span><span class="n">distutils</span><span class="p">]</span>
+<span class="n">index</span><span class="o">-</span><span class="n">servers</span> <span class="o">=</span>
+    <span class="n">pypi</span>
+    <span class="n">testpypi</span>
+    
+<span class="p">[</span><span class="n">pypi</span><span class="p">]</span>
+  <span class="n">username</span> <span class="o">=</span> <span class="n">__token__</span>
+  <span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;***&quot;</span>
+
+<span class="p">[</span><span class="n">testpypi</span><span class="p">]</span>
+<span class="n">repository</span> <span class="o">=</span> <span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">test</span><span class="o">.</span><span class="n">pypi</span><span class="o">.</span><span class="n">org</span><span class="o">/</span><span class="n">legacy</span><span class="o">/</span>
+<span class="n">username</span> <span class="o">=</span> <span class="n">__token__</span>
+<span class="n">password</span> <span class="o">=</span> <span class="s2">&quot;***&quot;</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="build-commands">
+<h3>Build commands<a class="headerlink" href="#build-commands" title="Link to this heading"></a></h3>
+<p>It is advised to first publish to the testpypi server before the real one.
+Create an account and an token on the websites.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">python</span> <span class="n">pip</span> <span class="o">-</span><span class="n">m</span> <span class="n">build</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">twine</span> <span class="n">upload</span> <span class="o">--</span><span class="n">repository</span> <span class="n">testpypi</span> <span class="n">dist</span><span class="o">/*</span>
+<span class="n">python3</span> <span class="o">-</span><span class="n">m</span> <span class="n">twine</span> <span class="n">upload</span> <span class="n">dist</span><span class="o">/*</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="automation">
+<h2>Automation<a class="headerlink" href="#automation" title="Link to this heading"></a></h2>
+<section id="id1">
+<h3>Gitlab<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p><a class="reference external" href="https://docs.gitlab.com/ee/ci/">CI/CD</a> or Continuous integration and deployment can automate most of these tasks
+by using a <code class="docutils literal notranslate"><span class="pre">.gitlab-ci.yml</span></code>file. This performs a tasks in multiple stages:</p>
+<section id="stage-preparation">
+<h4>Stage Preparation<a class="headerlink" href="#stage-preparation" title="Link to this heading"></a></h4>
+<p>Set up a virtual environment and instal the dependencies to validate the documentation and package</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">variables</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">PIP_CACHE_DIR</span><span class="p">:</span><span class="w"> </span><span class="s">&quot;$CI_PROJECT_DIR/.cache/pip&quot;</span>
+<span class="nt">cache</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">.cache/pip</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">venv/</span>
+<span class="nt">stages</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pages</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">build</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deploy</span>
+<span class="nt">before_script</span><span class="p">:</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python -V</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install virtualenv</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">virtualenv venv</span>
+<span class="w">  </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">source venv/bin/activate</span>
+<span class="w">  </span><span class="c1">#- pip install -r requirements.txt</span>
+</pre></div>
+</div>
+</section>
+<section id="pages-stage">
+<h4>Pages Stage<a class="headerlink" href="#pages-stage" title="Link to this heading"></a></h4>
+<p>We use  <code class="docutils literal notranslate"><span class="pre">Moc-imports</span></code> in the <code class="docutils literal notranslate"><span class="pre">conf.py</span></code> to import all the dependencies so we don’t have to import them all again.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">pages</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">stage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pages</span>
+<span class="w">  </span><span class="nt">script</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install sphinx</span><span class="w"> </span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install sphinx_rtd_theme</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">sphinx-build -b html docs/source/ public/</span>
+<span class="w">  </span><span class="nt">artifacts</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">public</span>
+<span class="w">  </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH</span>
+</pre></div>
+</div>
+</section>
+<section id="build-stage">
+<h4>Build Stage<a class="headerlink" href="#build-stage" title="Link to this heading"></a></h4>
+<p>Next we build the package using <code class="docutils literal notranslate"><span class="pre">setup.cfg</span></code>.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">build</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">stage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">build</span>
+<span class="w">  </span><span class="nt">artifacts</span><span class="p">:</span>
+<span class="w">    </span><span class="nt">paths</span><span class="p">:</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">build</span>
+<span class="w">      </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">dist</span>
+<span class="w">  </span><span class="nt">script</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install --upgrade build</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python -m build</span>
+<span class="w">  </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH</span>
+</pre></div>
+</div>
+</section>
+<section id="deploy-stage">
+<h4>Deploy Stage<a class="headerlink" href="#deploy-stage" title="Link to this heading"></a></h4>
+<p>The final step is publishing the package to a CDN, in this case pypi. Use the token from pypi in the environment variables in Gitlab to hide the password.</p>
+<div class="highlight-yaml notranslate"><div class="highlight"><pre><span></span><span class="nt">deploy</span><span class="p">:</span>
+<span class="w">  </span><span class="nt">stage</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">deploy</span>
+<span class="w">  </span><span class="nt">script</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">pip install --upgrade build twine</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">python -m build</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">TWINE_PASSWORD=${PYPI_TOKEN} TWINE_USERNAME=__token__ python -m twine upload --verbose dist/*</span>
+<span class="w">  </span><span class="nt">rules</span><span class="p">:</span>
+<span class="w">    </span><span class="p p-Indicator">-</span><span class="w"> </span><span class="nt">if</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">$CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH</span>
+<span class="w">  </span><span class="nt">allow_failure</span><span class="p">:</span><span class="w"> </span><span class="l l-Scalar l-Scalar-Plain">true</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id2">
+<h3>Github<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>You can read the <a class="reference external" href="https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-python">Docs</a> for more info and starter templates.</p>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="environment%20creation.html" class="btn btn-neutral float-left" title="User environment" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="ontology%20creation.html" class="btn btn-neutral float-right" title="Ontology Creation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

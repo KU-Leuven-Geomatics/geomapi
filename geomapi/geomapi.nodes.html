@@ -1,0 +1,337 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.nodes &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.nodes.bimnode" href="geomapi.nodes.bimnode.html" />
+    <link rel="prev" title="Volume calculation" href="../testcases/volume_calculation.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">geomapi.nodes</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.bimnode.html">geomapi.nodes.bimnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.imagenode.html">geomapi.nodes.imagenode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.linesetnode.html">geomapi.nodes.linesetnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.meshnode.html">geomapi.nodes.meshnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.node.html">geomapi.nodes.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.orthonode.html">geomapi.nodes.orthonode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.panonode.html">geomapi.nodes.panonode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html">geomapi.nodes.pointcloudnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.setnode.html">geomapi.nodes.setnode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">geomapi.nodes</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.nodes.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="geomapi-nodes">
+<h1>geomapi.nodes<a class="headerlink" href="#geomapi-nodes" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.bimnode.html">geomapi.nodes.bimnode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.bimnode.html#geomapi.nodes.bimnode.BIMNode"><code class="docutils literal notranslate"><span class="pre">BIMNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.bimnode.html#geomapi.nodes.bimnode.BIMNode.__init__"><code class="docutils literal notranslate"><span class="pre">BIMNode.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.bimnode.html#geomapi.nodes.bimnode.BIMNode.ifcPath"><code class="docutils literal notranslate"><span class="pre">BIMNode.ifcPath</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.bimnode.html#geomapi.nodes.bimnode.BIMNode.globalId"><code class="docutils literal notranslate"><span class="pre">BIMNode.globalId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.bimnode.html#geomapi.nodes.bimnode.BIMNode.className"><code class="docutils literal notranslate"><span class="pre">BIMNode.className</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.bimnode.html#geomapi.nodes.bimnode.BIMNode.objectType"><code class="docutils literal notranslate"><span class="pre">BIMNode.objectType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.bimnode.html#geomapi.nodes.bimnode.BIMNode.resource"><code class="docutils literal notranslate"><span class="pre">BIMNode.resource</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.imagenode.html">geomapi.nodes.imagenode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode"><code class="docutils literal notranslate"><span class="pre">ImageNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.__init__"><code class="docutils literal notranslate"><span class="pre">ImageNode.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.xmpPath"><code class="docutils literal notranslate"><span class="pre">ImageNode.xmpPath</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.xmlPath"><code class="docutils literal notranslate"><span class="pre">ImageNode.xmlPath</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.imageWidth"><code class="docutils literal notranslate"><span class="pre">ImageNode.imageWidth</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.imageHeight"><code class="docutils literal notranslate"><span class="pre">ImageNode.imageHeight</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.principalPointU"><code class="docutils literal notranslate"><span class="pre">ImageNode.principalPointU</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.principalPointV"><code class="docutils literal notranslate"><span class="pre">ImageNode.principalPointV</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.focalLength35mm"><code class="docutils literal notranslate"><span class="pre">ImageNode.focalLength35mm</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.keypoints"><code class="docutils literal notranslate"><span class="pre">ImageNode.keypoints</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.descriptors"><code class="docutils literal notranslate"><span class="pre">ImageNode.descriptors</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.intrinsicMatrix"><code class="docutils literal notranslate"><span class="pre">ImageNode.intrinsicMatrix</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.depth"><code class="docutils literal notranslate"><span class="pre">ImageNode.depth</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.resource"><code class="docutils literal notranslate"><span class="pre">ImageNode.resource</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.get_metadata_from_exif_data"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_metadata_from_exif_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.get_metadata_from_xmp_path"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_metadata_from_xmp_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.load_resource"><code class="docutils literal notranslate"><span class="pre">ImageNode.load_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.save_resource"><code class="docutils literal notranslate"><span class="pre">ImageNode.save_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.get_image_features"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_image_features()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.draw_keypoints_on_image"><code class="docutils literal notranslate"><span class="pre">ImageNode.draw_keypoints_on_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.create_rays"><code class="docutils literal notranslate"><span class="pre">ImageNode.create_rays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.world_to_pixel_coordinates"><code class="docutils literal notranslate"><span class="pre">ImageNode.world_to_pixel_coordinates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.pixel_to_world_coordinates"><code class="docutils literal notranslate"><span class="pre">ImageNode.pixel_to_world_coordinates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode.show"><code class="docutils literal notranslate"><span class="pre">ImageNode.show()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.linesetnode.html">geomapi.nodes.linesetnode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode"><code class="docutils literal notranslate"><span class="pre">LineSetNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode.__init__"><code class="docutils literal notranslate"><span class="pre">LineSetNode.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode.pointCount"><code class="docutils literal notranslate"><span class="pre">LineSetNode.pointCount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode.lineCount"><code class="docutils literal notranslate"><span class="pre">LineSetNode.lineCount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode.dxfPath"><code class="docutils literal notranslate"><span class="pre">LineSetNode.dxfPath</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode.handle"><code class="docutils literal notranslate"><span class="pre">LineSetNode.handle</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode.layer"><code class="docutils literal notranslate"><span class="pre">LineSetNode.layer</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode.dxfType"><code class="docutils literal notranslate"><span class="pre">LineSetNode.dxfType</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode.resource"><code class="docutils literal notranslate"><span class="pre">LineSetNode.resource</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode.load_resource"><code class="docutils literal notranslate"><span class="pre">LineSetNode.load_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode.save_resource"><code class="docutils literal notranslate"><span class="pre">LineSetNode.save_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.linesetnode.html#geomapi.nodes.linesetnode.LineSetNode.show"><code class="docutils literal notranslate"><span class="pre">LineSetNode.show()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.meshnode.html">geomapi.nodes.meshnode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.meshnode.html#geomapi.nodes.meshnode.MeshNode"><code class="docutils literal notranslate"><span class="pre">MeshNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.meshnode.html#geomapi.nodes.meshnode.MeshNode.__init__"><code class="docutils literal notranslate"><span class="pre">MeshNode.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.meshnode.html#geomapi.nodes.meshnode.MeshNode.pointCount"><code class="docutils literal notranslate"><span class="pre">MeshNode.pointCount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.meshnode.html#geomapi.nodes.meshnode.MeshNode.faceCount"><code class="docutils literal notranslate"><span class="pre">MeshNode.faceCount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.meshnode.html#geomapi.nodes.meshnode.MeshNode.resource"><code class="docutils literal notranslate"><span class="pre">MeshNode.resource</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.meshnode.html#geomapi.nodes.meshnode.MeshNode.load_resource"><code class="docutils literal notranslate"><span class="pre">MeshNode.load_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.meshnode.html#geomapi.nodes.meshnode.MeshNode.save_resource"><code class="docutils literal notranslate"><span class="pre">MeshNode.save_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.meshnode.html#geomapi.nodes.meshnode.MeshNode.show"><code class="docutils literal notranslate"><span class="pre">MeshNode.show()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.node.html">geomapi.nodes.node</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.__init__"><code class="docutils literal notranslate"><span class="pre">Node.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.path"><code class="docutils literal notranslate"><span class="pre">Node.path</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.name"><code class="docutils literal notranslate"><span class="pre">Node.name</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.timestamp"><code class="docutils literal notranslate"><span class="pre">Node.timestamp</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.graphPath"><code class="docutils literal notranslate"><span class="pre">Node.graphPath</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.graph"><code class="docutils literal notranslate"><span class="pre">Node.graph</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.subject"><code class="docutils literal notranslate"><span class="pre">Node.subject</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.resource"><code class="docutils literal notranslate"><span class="pre">Node.resource</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.cartesianTransform"><code class="docutils literal notranslate"><span class="pre">Node.cartesianTransform</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.orientedBoundingBox"><code class="docutils literal notranslate"><span class="pre">Node.orientedBoundingBox</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.convexHull"><code class="docutils literal notranslate"><span class="pre">Node.convexHull</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.get_center"><code class="docutils literal notranslate"><span class="pre">Node.get_center()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.load_resource"><code class="docutils literal notranslate"><span class="pre">Node.load_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.save_resource"><code class="docutils literal notranslate"><span class="pre">Node.save_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.get_graph"><code class="docutils literal notranslate"><span class="pre">Node.get_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.save_graph"><code class="docutils literal notranslate"><span class="pre">Node.save_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.transform"><code class="docutils literal notranslate"><span class="pre">Node.transform()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node.show"><code class="docutils literal notranslate"><span class="pre">Node.show()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.orthonode.html">geomapi.nodes.orthonode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode"><code class="docutils literal notranslate"><span class="pre">OrthoNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.__init__"><code class="docutils literal notranslate"><span class="pre">OrthoNode.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.dxfPath"><code class="docutils literal notranslate"><span class="pre">OrthoNode.dxfPath</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.tfwPath"><code class="docutils literal notranslate"><span class="pre">OrthoNode.tfwPath</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.imageWidth"><code class="docutils literal notranslate"><span class="pre">OrthoNode.imageWidth</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.imageHeight"><code class="docutils literal notranslate"><span class="pre">OrthoNode.imageHeight</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.gsd"><code class="docutils literal notranslate"><span class="pre">OrthoNode.gsd</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.depth"><code class="docutils literal notranslate"><span class="pre">OrthoNode.depth</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.height"><code class="docutils literal notranslate"><span class="pre">OrthoNode.height</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.resource"><code class="docutils literal notranslate"><span class="pre">OrthoNode.resource</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.load_resource"><code class="docutils literal notranslate"><span class="pre">OrthoNode.load_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.save_resource"><code class="docutils literal notranslate"><span class="pre">OrthoNode.save_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.get_metadata_from_tfw_path"><code class="docutils literal notranslate"><span class="pre">OrthoNode.get_metadata_from_tfw_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.create_rays"><code class="docutils literal notranslate"><span class="pre">OrthoNode.create_rays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.pixel_to_world_coordinates"><code class="docutils literal notranslate"><span class="pre">OrthoNode.pixel_to_world_coordinates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.world_to_pixel_coordinates"><code class="docutils literal notranslate"><span class="pre">OrthoNode.world_to_pixel_coordinates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.project_lineset_on_image"><code class="docutils literal notranslate"><span class="pre">OrthoNode.project_lineset_on_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.orthonode.html#geomapi.nodes.orthonode.OrthoNode.show"><code class="docutils literal notranslate"><span class="pre">OrthoNode.show()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.panonode.html">geomapi.nodes.panonode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode"><code class="docutils literal notranslate"><span class="pre">PanoNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.__init__"><code class="docutils literal notranslate"><span class="pre">PanoNode.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.jsonPath"><code class="docutils literal notranslate"><span class="pre">PanoNode.jsonPath</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.imageWidth"><code class="docutils literal notranslate"><span class="pre">PanoNode.imageWidth</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.imageHeight"><code class="docutils literal notranslate"><span class="pre">PanoNode.imageHeight</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.depth"><code class="docutils literal notranslate"><span class="pre">PanoNode.depth</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.resource"><code class="docutils literal notranslate"><span class="pre">PanoNode.resource</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.load_resource"><code class="docutils literal notranslate"><span class="pre">PanoNode.load_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.save_resource"><code class="docutils literal notranslate"><span class="pre">PanoNode.save_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.get_metadata_from_exif_data"><code class="docutils literal notranslate"><span class="pre">PanoNode.get_metadata_from_exif_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.get_metadata_from_json_path"><code class="docutils literal notranslate"><span class="pre">PanoNode.get_metadata_from_json_path()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.create_rays"><code class="docutils literal notranslate"><span class="pre">PanoNode.create_rays()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.world_to_pixel_coordinates"><code class="docutils literal notranslate"><span class="pre">PanoNode.world_to_pixel_coordinates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.pixel_to_world_coordinates"><code class="docutils literal notranslate"><span class="pre">PanoNode.pixel_to_world_coordinates()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.project_lineset_on_image"><code class="docutils literal notranslate"><span class="pre">PanoNode.project_lineset_on_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.panonode.html#geomapi.nodes.panonode.PanoNode.show"><code class="docutils literal notranslate"><span class="pre">PanoNode.show()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html">geomapi.nodes.pointcloudnode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html#geomapi.nodes.pointcloudnode.PointCloudNode"><code class="docutils literal notranslate"><span class="pre">PointCloudNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html#geomapi.nodes.pointcloudnode.PointCloudNode.__init__"><code class="docutils literal notranslate"><span class="pre">PointCloudNode.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html#geomapi.nodes.pointcloudnode.PointCloudNode.pointCount"><code class="docutils literal notranslate"><span class="pre">PointCloudNode.pointCount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html#geomapi.nodes.pointcloudnode.PointCloudNode.e57Index"><code class="docutils literal notranslate"><span class="pre">PointCloudNode.e57Index</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html#geomapi.nodes.pointcloudnode.PointCloudNode.resource"><code class="docutils literal notranslate"><span class="pre">PointCloudNode.resource</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html#geomapi.nodes.pointcloudnode.PointCloudNode.load_resource"><code class="docutils literal notranslate"><span class="pre">PointCloudNode.load_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html#geomapi.nodes.pointcloudnode.PointCloudNode.save_resource"><code class="docutils literal notranslate"><span class="pre">PointCloudNode.save_resource()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html#geomapi.nodes.pointcloudnode.PointCloudNode.show"><code class="docutils literal notranslate"><span class="pre">PointCloudNode.show()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.setnode.html">geomapi.nodes.setnode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode"><code class="docutils literal notranslate"><span class="pre">SetNode</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode.__init__"><code class="docutils literal notranslate"><span class="pre">SetNode.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode.linkedNodes"><code class="docutils literal notranslate"><span class="pre">SetNode.linkedNodes</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode.linkedSubjects"><code class="docutils literal notranslate"><span class="pre">SetNode.linkedSubjects</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode.get_graph"><code class="docutils literal notranslate"><span class="pre">SetNode.get_graph()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode.save_linked_resources"><code class="docutils literal notranslate"><span class="pre">SetNode.save_linked_resources()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode.transform"><code class="docutils literal notranslate"><span class="pre">SetNode.transform()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode.show"><code class="docutils literal notranslate"><span class="pre">SetNode.show()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+<p id="module-geomapi.nodes">A package to Manage and Work with RDF based Geomatic data</p>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../testcases/volume_calculation.html" class="btn btn-neutral float-left" title="Volume calculation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.nodes.bimnode.html" class="btn btn-neutral float-right" title="geomapi.nodes.bimnode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -1,0 +1,310 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.utils.geospatialutils &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.utils.imageutils" href="geomapi.utils.imageutils.html" />
+    <link rel="prev" title="geomapi.utils.geometryutils" href="geomapi.utils.geometryutils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html">geomapi.utils.cadutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html">geomapi.utils.geometryutils</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.utils.geospatialutils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.geospatialutils.belgian_datum_to_wgs84"><code class="docutils literal notranslate"><span class="pre">belgian_datum_to_wgs84()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.geospatialutils.wgs84_to_belgian_datum"><code class="docutils literal notranslate"><span class="pre">wgs84_to_belgian_datum()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.geospatialutils.parse_exif_gps_data"><code class="docutils literal notranslate"><span class="pre">parse_exif_gps_data()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.geospatialutils.dms_to_dd"><code class="docutils literal notranslate"><span class="pre">dms_to_dd()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.geospatialutils.dd_to_dms"><code class="docutils literal notranslate"><span class="pre">dd_to_dms()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.geospatialutils.parse_dms"><code class="docutils literal notranslate"><span class="pre">parse_dms()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.geospatialutils.get_exif_data"><code class="docutils literal notranslate"><span class="pre">get_exif_data()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html">geomapi.utils.imageutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.time_function"><code class="docutils literal notranslate"><span class="pre">time_function()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_timestamp"><code class="docutils literal notranslate"><span class="pre">get_timestamp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_random_color"><code class="docutils literal notranslate"><span class="pre">get_random_color()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.map_to_2d_array"><code class="docutils literal notranslate"><span class="pre">map_to_2d_array()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.item_to_list"><code class="docutils literal notranslate"><span class="pre">item_to_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.split_list"><code class="docutils literal notranslate"><span class="pre">split_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.replace_str_index"><code class="docutils literal notranslate"><span class="pre">replace_str_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_list_of_files"><code class="docutils literal notranslate"><span class="pre">get_list_of_files()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_geomapi_classes"><code class="docutils literal notranslate"><span class="pre">get_geomapi_classes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_method_for_datatype"><code class="docutils literal notranslate"><span class="pre">get_method_for_datatype()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.apply_method_to_object"><code class="docutils literal notranslate"><span class="pre">apply_method_to_object()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_subject_name"><code class="docutils literal notranslate"><span class="pre">get_subject_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_subject_graph"><code class="docutils literal notranslate"><span class="pre">get_subject_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_attribute_from_predicate"><code class="docutils literal notranslate"><span class="pre">get_attribute_from_predicate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_number"><code class="docutils literal notranslate"><span class="pre">literal_to_number()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_string"><code class="docutils literal notranslate"><span class="pre">literal_to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_int"><code class="docutils literal notranslate"><span class="pre">literal_to_int()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_float"><code class="docutils literal notranslate"><span class="pre">literal_to_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_list"><code class="docutils literal notranslate"><span class="pre">literal_to_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_matrix"><code class="docutils literal notranslate"><span class="pre">literal_to_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_datetime"><code class="docutils literal notranslate"><span class="pre">literal_to_datetime()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xml_to_float"><code class="docutils literal notranslate"><span class="pre">xml_to_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_lat"><code class="docutils literal notranslate"><span class="pre">xcr_to_lat()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_long"><code class="docutils literal notranslate"><span class="pre">xcr_to_long()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_alt"><code class="docutils literal notranslate"><span class="pre">xcr_to_alt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_string"><code class="docutils literal notranslate"><span class="pre">validate_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_uri"><code class="docutils literal notranslate"><span class="pre">validate_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_path"><code class="docutils literal notranslate"><span class="pre">validate_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.check_if_subject_is_in_graph"><code class="docutils literal notranslate"><span class="pre">check_if_subject_is_in_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_graph_intersection"><code class="docutils literal notranslate"><span class="pre">get_graph_intersection()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.bind_ontologies"><code class="docutils literal notranslate"><span class="pre">bind_ontologies()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_node_resource_extensions"><code class="docutils literal notranslate"><span class="pre">get_node_resource_extensions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_node_type"><code class="docutils literal notranslate"><span class="pre">get_node_type()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_data_type"><code class="docutils literal notranslate"><span class="pre">get_data_type()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_geomapi_data_types"><code class="docutils literal notranslate"><span class="pre">get_geomapi_data_types()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_ifcowl_uri"><code class="docutils literal notranslate"><span class="pre">get_ifcowl_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_ifcopenshell_class_name"><code class="docutils literal notranslate"><span class="pre">get_ifcopenshell_class_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_predicate_and_datatype"><code class="docutils literal notranslate"><span class="pre">get_predicate_and_datatype()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_relative_path"><code class="docutils literal notranslate"><span class="pre">get_relative_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.rdf_property"><code class="docutils literal notranslate"><span class="pre">rdf_property()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.utils.html">geomapi.utils</a></li>
+      <li class="breadcrumb-item active">geomapi.utils.geospatialutils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.utils.geospatialutils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.utils.geospatialutils">
+<span id="geomapi-utils-geospatialutils"></span><h1>geomapi.utils.geospatialutils<a class="headerlink" href="#module-geomapi.utils.geospatialutils" title="Link to this heading"></a></h1>
+<p>Geospatialutils - a Python library for processing coordinate system data.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.geospatialutils.belgian_datum_to_wgs84">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.geospatialutils.</span></span><span class="sig-name descname"><span class="pre">belgian_datum_to_wgs84</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.geospatialutils.belgian_datum_to_wgs84" title="Link to this definition"></a></dt>
+<dd><p>Converts Belgian Datum 72 (EPSG:31370) coordinates to WGS84 (EPSG:4326).</p>
+<p>Parameters:
+x (float): The x-coordinate (Easting in meters).
+y (float): The y-coordinate (Northing in meters).</p>
+<p>Returns:
+tuple: (latitude, longitude) in WGS84 format.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.geospatialutils.wgs84_to_belgian_datum">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.geospatialutils.</span></span><span class="sig-name descname"><span class="pre">wgs84_to_belgian_datum</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">lat</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lon</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.geospatialutils.wgs84_to_belgian_datum" title="Link to this definition"></a></dt>
+<dd><p>Converts WGS84 (EPSG:4326) coordinates to Belgian Datum 72 (EPSG:31370).</p>
+<p>Parameters:
+lat (float): Latitude in WGS84.
+lon (float): Longitude in WGS84.</p>
+<p>Returns:
+tuple: (x, y) in Belgian Datum 72 (Lambert 1972) coordinate system.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.geospatialutils.parse_exif_gps_data">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.geospatialutils.</span></span><span class="sig-name descname"><span class="pre">parse_exif_gps_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#geomapi.utils.geospatialutils.parse_exif_gps_data" title="Link to this definition"></a></dt>
+<dd><p>Returns decimal degrees from world angles in exif data.</p>
+<dl>
+<dt>Args:</dt><dd><p>data (float or tuple): decimal degrees or (degrees, minutes, seconds) notation of world angles</p>
+<p>reference (str): direction character i.e. ‘S’,’W’,’s’ or ‘w’.</p>
+</dd>
+<dt>Returns:</dt><dd><p>decimal degrees (float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.geospatialutils.dms_to_dd">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.geospatialutils.</span></span><span class="sig-name descname"><span class="pre">dms_to_dd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">degrees</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">minutes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">seconds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#geomapi.utils.geospatialutils.dms_to_dd" title="Link to this definition"></a></dt>
+<dd><p>Convert world angles (degrees, minutes, seconds, direction) to decimal degrees.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>degrees (float)</p></li>
+<li><p>minutes (float)</p></li>
+<li><p>seconds (float)</p></li>
+<li><p>direction (str): ‘N’ and ‘E’ are positive, ‘W’ and ‘S’ are negative</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>decimal degrees (float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.geospatialutils.dd_to_dms">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.geospatialutils.</span></span><span class="sig-name descname"><span class="pre">dd_to_dms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">deg</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.utils.geospatialutils.dd_to_dms" title="Link to this definition"></a></dt>
+<dd><p>Convert decimal degrees to List[degrees, minutes, seconds] notation.</p>
+<p><strong>NOTE</strong>: Direction is not determined (should be easy based on sign).</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>decimal degrees (float)</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[degrees(float),minutes(float),seconds(float)]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.geospatialutils.parse_dms">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.geospatialutils.</span></span><span class="sig-name descname"><span class="pre">parse_dms</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dms</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.geospatialutils.parse_dms" title="Link to this definition"></a></dt>
+<dd><p>Returns decimal degrees (float) notation of geospatial coordinates from various (degrees, minutes, seconds, direction) notations.</p>
+<dl class="simple">
+<dt>Args (degrees, minutes, seconds,direction):</dt><dd><ol class="arabic simple">
+<li><p>dms (np.array):</p></li>
+<li><p>dms (tuple[float,float,float,float])</p></li>
+<li><p>dms (str): stringed list with values</p></li>
+</ol>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: ‘dms.size!=4’</p>
+</dd>
+<dt>Returns:</dt><dd><p>decimal degrees (float)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.geospatialutils.get_exif_data">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.geospatialutils.</span></span><span class="sig-name descname"><span class="pre">get_exif_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img:</span> <span class="pre">&lt;module</span> <span class="pre">'PIL.Image'</span> <span class="pre">from</span> <span class="pre">'/home/runner/.local/lib/python3.12/site-packages/PIL/Image.py'&gt;</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#geomapi.utils.geospatialutils.get_exif_data" title="Link to this definition"></a></dt>
+<dd><p>Returns a dictionary from the exif data of an Image (PIL) item. Also
+converts the GPS Tags.</p>
+<p><a class="reference external" href="https://pillow.readthedocs.io/en/stable/reference/Image.html">https://pillow.readthedocs.io/en/stable/reference/Image.html</a></p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Img (PIL.image)</p>
+</dd>
+<dt>Returns:</dt><dd><p>exifData (dict): dictionary containing all meta data of the PIL Image.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.utils.geometryutils.html" class="btn btn-neutral float-left" title="geomapi.utils.geometryutils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.utils.imageutils.html" class="btn btn-neutral float-right" title="geomapi.utils.imageutils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

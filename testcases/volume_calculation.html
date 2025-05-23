@@ -1,0 +1,1566 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Volume calculation &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.nodes" href="../geomapi/geomapi.nodes.html" />
+    <link rel="prev" title="Validation Tools" href="validationtools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Volume calculation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#bim-model">BIM Model</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#preprocessing-the-bim-model">Preprocessing the BIM Model</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#reloading-from-graph">Reloading from graph</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#flight-data">Flight data</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#flight-101-0366">Flight 101_0366</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#preprocess-measurements-flight-101-0366">Preprocess measurements flight 101_0366</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#sessionnode">SessionNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id1">Reloading from graph</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#flight-101-0367">Flight 101_0367</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#preprocess-measurements-flight-101-0367">Preprocess measurements flight 101_0367</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">SessionNode</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">Reloading from graph</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#volume-calculation-between-two-epochs">Volume calculation between two epochs</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#calculate-the-volume-change-between-the-two-epochs">Calculate the volume change between the two epochs</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#calculate-the-volume-change-between-the-an-epoch-and-the-as-design-bim">Calculate the volume change between the an epoch and the as-design bim</a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Volume calculation</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/testcases/volume_calculation.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="volume-calculation">
+<h1>Volume calculation<a class="headerlink" href="#volume-calculation" title="Link to this heading"></a></h1>
+<p>Progress monitoring of construction sites is becoming increasingly popular in the construction industry. Especially with the integration of 4D BIM, the progression and quality of the construction process can be better quantified. A key aspect is the detection of the changes between consecutive epochs of measurements on the site. However, the development of automated procedures is challenging due to noise, occlusions and the associativity between different objects. The focus here will be on volume calculations between two epochs. In extension the volume between an epoch and a as-deign model will be calculated. This is the first step to progress monitoring the site for quantity take-offs.</p>
+<p>In this testcase, we will discuss how to use GEOMAPI to assess progress on a typical BIM-driven construction site. Concretely, we will demonstrate the API’s functionality to:</p>
+<ol class="arabic simple">
+<li><p>Preprocess the BIM data from multiple IFC files</p></li>
+<li><p>Preprocess the various remote sensing data (images, meshes, point clouds) of two measurement epochs</p></li>
+<li><p>Make a subselection of observable objects</p></li>
+<li><p>Determine the volume of the observable objects</p></li>
+<li><p>Serialize the analysis results</p></li>
+<li><p>Use the resulting RDF Graph of epoch 1 to support the analysis of epoch 2.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span><span class="p">,</span> <span class="n">plugin</span>
+<span class="kn">import</span> <span class="nn">uuid</span>    
+<span class="kn">import</span> <span class="nn">importlib</span>
+<span class="kn">import</span> <span class="nn">PIL.Image</span> <span class="k">as</span> <span class="nn">PILimage</span>
+<span class="kn">import</span> <span class="nn">os.path</span>
+<span class="kn">import</span> <span class="nn">open3d</span>   <span class="k">as</span> <span class="nn">o3d</span>
+<span class="kn">import</span> <span class="nn">trimesh</span>
+<span class="kn">import</span> <span class="nn">cv2</span>
+<span class="kn">import</span> <span class="nn">xml.etree.ElementTree</span> <span class="k">as</span> <span class="nn">ET</span> 
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">URIRef</span>
+<span class="c1">#IMPORT MODULES</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span> 
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">geomapi.utils</span> <span class="k">as</span> <span class="nn">ut</span>
+<span class="kn">from</span> <span class="nn">geomapi.utils</span> <span class="kn">import</span> <span class="n">geometryutils</span> <span class="k">as</span> <span class="n">gmu</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools</span> <span class="k">as</span> <span class="nn">tl</span>
+<span class="kn">from</span> <span class="nn">geomapi.tools</span> <span class="kn">import</span> <span class="n">validationtools</span> <span class="k">as</span> <span class="n">vt</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools.progresstools</span> <span class="k">as</span> <span class="nn">pt</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jupyter environment detected. Enabling Open3D WebVisualizer.
+[Open3D INFO] WebRTC GUI backend enabled.
+[Open3D INFO] WebRTCWindowSystem: HTTP handshake server disabled.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">autoreload</span> 2
+</pre></div>
+</div>
+</div>
+</div>
+<p>We select the right projectpath for the rest of the rest of the testcase</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">projectPath</span><span class="o">=</span> <span class="s2">&quot;C:\RepoHeinder\geomapi\developmenttests\Sample4&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="bim-model">
+<h2>BIM Model<a class="headerlink" href="#bim-model" title="Link to this heading"></a></h2>
+<p>The dataset that will be used for this analysis is a road with some enviremantal accents such as trees and a ditch. Fig. 1 shows the ifc file of the road construction site. First we will create BIM Nodes from the entire IFC file. Following the GEOMAPI principles, we serialize all relevent objects in the BIM model to an RDF Graph.</p>
+<p><img alt="rendering" src="../_images/BIM1.PNG" />
+<strong>Fig.1</strong>: Road construction site: IFC file.</p>
+<section id="preprocessing-the-bim-model">
+<h3>Preprocessing the BIM Model<a class="headerlink" href="#preprocessing-the-bim-model" title="Link to this heading"></a></h3>
+<p>Following the GEOMAPI principles, we serialize all relevent objects in the BIM model to an RDF Graph.For this analysis, we parse the ifc files using all CPU’s.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ifcPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;Mariakerke_AWV_Conform_3D_BT_l72.ifc&#39;</span><span class="p">)</span> 
+<span class="nb">print</span><span class="p">(</span><span class="n">ifcPath</span><span class="p">)</span>
+<span class="n">bimNodes</span><span class="o">=</span><span class="n">tl</span><span class="o">.</span><span class="n">ifc_to_nodes_multiprocessing</span><span class="p">(</span><span class="n">ifcPath</span><span class="p">)</span>
+<span class="n">bimNodes</span><span class="o">=</span><span class="p">[</span><span class="n">n</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">bimNodes</span> <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">resource</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\RepoHeinder\geomapi\developmenttests\Sample4\Mariakerke_AWV_Conform_3D_BT_l72.ifc
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bimNodes</span><span class="p">:</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">name</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">subject</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>It is not uncommon for certain elements to not have geometry or have some invalid meshes. These will yield <strong>Geometry Production Errors</strong>.</p>
+<p>We visualize the ifc model with open 3d.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bimgeometries</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">bimNodes</span> <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">resource</span><span class="p">]</span>
+<span class="n">o3d</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">draw_geometries</span><span class="p">(</span><span class="n">bimgeometries</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>When looking at the instance variables of one of the BIMNodes, it is revealed that GEOMAPI has indeed gathered all the relevant metadata for geomatic analysis of the objects.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">bimNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>              
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_ifcPath&#39;: &#39;C:\\RepoHeinder\\geomapi\\developmenttests\\Sample4\\Mariakerke_AWV_Conform_3D_BT_l72.ifc&#39;,
+ &#39;_globalId&#39;: &#39;1o3B_qZ1zDJ8f$yWqBiQOZ&#39;,
+ &#39;_cartesianBounds&#39;: array([1.00576881e+05, 1.00579115e+05, 1.96310389e+05, 1.96312474e+05,
+        5.46586985e+00, 6.56586985e+00]),
+ &#39;_orientedBounds&#39;: array([[1.00577661e+05, 1.96309979e+05, 5.56611876e+00],
+        [1.00579485e+05, 1.96311006e+05, 5.75898376e+00],
+        [1.00576874e+05, 1.96311527e+05, 4.77447267e+00],
+        [1.00577311e+05, 1.96310386e+05, 6.71038408e+00],
+        [1.00578348e+05, 1.96312961e+05, 6.11160300e+00],
+        [1.00576524e+05, 1.96311934e+05, 5.91873799e+00],
+        [1.00579135e+05, 1.96311414e+05, 6.90324908e+00],
+        [1.00578698e+05, 1.96312554e+05, 4.96733768e+00]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (100578, 196311, 5.83886), extent: 2.10216, 1.90812, 1.26405),
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///BT3_Waterbouwkundige_Constructie_KNW2_1o3B_qZ1zDJ8f_yWqBiQOZ&#39;),
+ &#39;_graph&#39;: None,
+ &#39;_graphPath&#39;: None,
+ &#39;_path&#39;: None,
+ &#39;_name&#39;: &#39;file:///BT3_Waterbouwkundige_Constructie_KNW2_1o3B_qZ1zDJ8f_yWqBiQOZ&#39;,
+ &#39;_timestamp&#39;: &#39;2022-11-17T09:43:28&#39;,
+ &#39;_resource&#39;: TriangleMesh with 149 points and 302 triangles.,
+ &#39;_cartesianTransform&#39;: array([[1.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00577790e+05],
+        [0.00000000e+00, 1.00000000e+00, 0.00000000e+00, 1.96311741e+05],
+        [0.00000000e+00, 0.00000000e+00, 1.00000000e+00, 5.91418604e+00],
+        [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00]]),
+ &#39;className&#39;: &#39;IfcSite&#39;,
+ &#39;pointCount&#39;: 149,
+ &#39;faceCount&#39;: 302}
+</pre></div>
+</div>
+</div>
+</div>
+<p>We can buffer these geometries on drive so we only have to parse the ifc file once. We can then reload these geometries to assess the other flight data.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">folder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bimNodes</span><span class="p">:</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">save_resource</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">folder</span><span class="p">,</span><span class="s1">&#39;BIM&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>This also sets the path of each node</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">bimNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:/RepoHeinder/geomapi/developmenttests/Sample4/myAnalysisFolder/BIM/BT3_Waterbouwkundige_Constructie_KNW2_1o3B_qZ1zDJ8f_yWqBiQOZ.ply
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now it is good practice to already serialize these nodes in a RDF graph so we can rapidly load the nodes from the graphs in a next code run. In this testcase, we will store the generated graph in the same location as the buffered mesh geometries.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;BIM&#39;</span><span class="p">,</span><span class="s1">&#39;bimGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">tl</span><span class="o">.</span><span class="n">nodes_to_graph</span><span class="p">(</span><span class="n">nodelist</span><span class="o">=</span><span class="n">bimNodes</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Graph identifier=N2c91d99111954fff81bf35371c4d2f0f (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>This sets each BIMNodes’ graphpath and graph. The graph of BIMNodes[0] then looks as follows.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">bimNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">graphPath</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">bimNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:/RepoHeinder/geomapi/developmenttests/Sample4/myAnalysisFolder/BIM/bimGraph.ttl
+@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix ifc: &lt;http://ifcowl.openbimstandards.org/IFC2X3_Final#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+@prefix xsd: &lt;http://www.w3.org/2001/XMLSchema#&gt; .
+
+&lt;file:///BT3_Waterbouwkundige_Constructie_KNW2_1o3B_qZ1zDJ8f_yWqBiQOZ&gt; a v4d:BIMNode ;
+    ifc:className &quot;IfcSite&quot; ;
+    ifc:globalId &quot;1o3B_qZ1zDJ8f$yWqBiQOZ&quot; ;
+    ifc:ifcPath &quot;..\\..\\Mariakerke_AWV_Conform_3D_BT_l72.ifc&quot; ;
+    e57:cartesianBounds &quot;&quot;&quot;[1.00576881e+05 1.00579115e+05 1.96310389e+05 1.96312474e+05
+ 5.46586985e+00 6.56586985e+00]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[1.00000000e+00 0.00000000e+00 0.00000000e+00 1.00577790e+05]
+ [0.00000000e+00 1.00000000e+00 0.00000000e+00 1.96311741e+05]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00 5.91418604e+00]
+ [0.00000000e+00 0.00000000e+00 0.00000000e+00 1.00000000e+00]]&quot;&quot;&quot; ;
+    e57:pointCount 149 ;
+    v4d:faceCount 302 ;
+    v4d:name &quot;file:///BT3_Waterbouwkundige_Constructie_KNW2_1o3B_qZ1zDJ8f_yWqBiQOZ&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[1.00577661e+05 1.96309979e+05 5.56611876e+00]
+ [1.00579485e+05 1.96311006e+05 5.75898376e+00]
+ [1.00576874e+05 1.96311527e+05 4.77447267e+00]
+ [1.00577311e+05 1.96310386e+05 6.71038408e+00]
+ [1.00578348e+05 1.96312961e+05 6.11160300e+00]
+ [1.00576524e+05 1.96311934e+05 5.91873799e+00]
+ [1.00579135e+05 1.96311414e+05 6.90324908e+00]
+ [1.00578698e+05 1.96312554e+05 4.96733768e+00]]&quot;&quot;&quot; ;
+    v4d:path &quot;BT3_Waterbouwkundige_Constructie_KNW2_1o3B_qZ1zDJ8f_yWqBiQOZ.ply&quot; ;
+    openlabel:timestamp &quot;2022-11-17T09:43:28&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Note</strong> that all path triples in graph are serialized relative to the graphPath so to make it easier to move the entire folderstructure.</p>
+</section>
+<section id="reloading-from-graph">
+<h3>Reloading from graph<a class="headerlink" href="#reloading-from-graph" title="Link to this heading"></a></h3>
+<p>The above steps only have to be performed once. On reruns of the code or future analysis, we can initialize the same nodes from their serialized triples in the bimGraph. This is significantly faster for smaller graphs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;BIM&#39;</span><span class="p">,</span><span class="s1">&#39;bimGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">bimNodes</span><span class="o">=</span><span class="n">tl</span><span class="o">.</span><span class="n">graph_path_to_nodes</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">bimNodes</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>64
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="flight-data">
+<h2>Flight data<a class="headerlink" href="#flight-data" title="Link to this heading"></a></h2>
+<p>We will evaluate two flights captured in two exacutive weeks on the site. 101_0365 is captured the last week of may, 101_0366 is captured the first week of June. This data is captured with the RTK-Drone (DJI Phantom 4, RTK)</p>
+<section id="flight-101-0366">
+<h3>Flight 101_0366<a class="headerlink" href="#flight-101-0366" title="Link to this heading"></a></h3>
+<section id="preprocess-measurements-flight-101-0366">
+<h4>Preprocess measurements flight 101_0366<a class="headerlink" href="#preprocess-measurements-flight-101-0366" title="Link to this heading"></a></h4>
+<p>Data of flight 101_0366 will be imported as part of a SessionNode. This sessionNode contains the individual Nodes of each of the resources and also some general metadata.</p>
+<p>First, we parse each set of resources (1 point cloud, 56 Images and the photogrammetric mesh).</p>
+<p><strong>NOTE</strong>: This is alot of data, some of which we potentially don’t need as observable objects might not be located within the sensors Field-of-View. GEOMAPI plans for this, and allows Node metadata initialisation from other sources but the actual data such as image metadata files, e57 headers, etc. The actual resources that are needed can be imported at a later stage through get_resource() methods.</p>
+<p><strong>Fig.2</strong>: Road construction site: mesh of flight 101_0366 .
+<img alt="rendering" src="../_images/Mesh101_0366_meshlab.PNG" /></p>
+<ol class="arabic simple">
+<li><p><strong>E57 POINT CLOUDS</strong>: These nodes from the e57 header instead of actually importing the data so a first spatial analysis can be conducted effeciently</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">e57Path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;Pointclouds&#39;</span><span class="p">,</span><span class="s1">&#39;101_0366&#39;</span><span class="p">,</span><span class="s1">&#39;PCDLAMBERT72_TAW.e57&#39;</span><span class="p">)</span>
+<span class="n">pcdNodes</span><span class="o">=</span><span class="n">tl</span><span class="o">.</span><span class="n">e57header_to_nodes</span><span class="p">(</span><span class="n">e57Path</span><span class="p">)</span>
+<span class="c1">#serialize nodes</span>
+<span class="n">folder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+<span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;pcdGraph101_0366.ttl&#39;</span><span class="p">)</span>
+<span class="n">tl</span><span class="o">.</span><span class="n">nodes_to_graph</span><span class="p">(</span><span class="n">nodelist</span><span class="o">=</span><span class="n">pcdNodes</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">pcdNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_e57Index&#39;: 0,
+ &#39;pointCount&#39;: 6784867,
+ &#39;e57XmlPath&#39;: None,
+ &#39;_cartesianBounds&#39;: array([1.00552700e+05, 1.00634825e+05, 1.96220530e+05, 1.96326367e+05,
+        5.05700000e+00, 8.25700000e+00]),
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///PCDLAMBERT72_TAW&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=N4ea4c35b86e740c4a7dbea4275c5f9fc (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;O:\\Code\\geomapi\\developmenttests\\Sample4\\myAnalysisFolder\\PCD\\pcdGraph101_0366.ttl&#39;,
+ &#39;_path&#39;: &#39;O:\\Code\\geomapi\\developmenttests\\Sample4\\Pointclouds\\101_0366\\PCDLAMBERT72_TAW.e57&#39;,
+ &#39;_name&#39;: &#39;PCDLAMBERT72_TAW&#39;,
+ &#39;_timestamp&#39;: &#39;2022-07-19T15:51:08&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None}
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>Geolocated Images</strong>: Analogue to the point cloud data, the ImageNodes are initialised from a  Metashape .xml file.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">folder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Photos&#39;</span><span class="p">)</span> 
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+<span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Photos&#39;</span><span class="p">,</span><span class="s1">&#39;imageGraph101_0366.ttl&#39;</span><span class="p">)</span> 
+<span class="n">photoPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;Photos&#39;</span><span class="p">,</span><span class="s1">&#39;101_0366&#39;</span><span class="p">)</span>
+<span class="n">allSessionFilePaths</span><span class="o">=</span><span class="n">ut</span><span class="o">.</span><span class="n">get_list_of_files</span><span class="p">(</span><span class="n">photoPath</span><span class="p">)</span> 
+<span class="n">nodelist</span><span class="o">=</span><span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">allSessionFilePaths</span><span class="p">:</span>        
+    
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.JPG&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.PNG&quot;</span><span class="p">):</span> 
+        <span class="n">testXmpPath</span><span class="o">=</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;JPG&#39;</span><span class="p">,</span><span class="s1">&#39;xmp&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">testXmpPath</span> <span class="ow">in</span> <span class="n">allSessionFilePaths</span><span class="p">:</span>
+            <span class="n">nodelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span><span class="n">xmpPath</span><span class="o">=</span><span class="n">testXmpPath</span><span class="p">,</span><span class="n">sessionPath</span><span class="o">=</span><span class="n">photoPath</span><span class="p">))</span>
+            <span class="c1"># tl.nodes_to_graph(nodelist=imageNode,graphPath=graphPath,save=True)</span>
+            <span class="c1"># {key:value for key, value in pcdNodes[0].__dict__.items() if not key.startswith(&#39;__&#39;) and not callable(key)} </span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nodelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">ImageNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span><span class="n">sessionPath</span><span class="o">=</span><span class="n">photoPath</span><span class="p">))</span>
+            <span class="c1"># tl.nodes_to_graph(nodelist=imageNode,graphPath=graphPath,save=True)</span>
+            <span class="c1"># {key:value for key, value in pcdNodes[0].__dict__.items() if not key.startswith(&#39;__&#39;) and not callable(key)} </span>
+
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.xml&quot;</span><span class="p">):</span>
+        <span class="n">nodelist</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tl</span><span class="o">.</span><span class="n">img_xml_to_nodes</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">))</span>
+
+<span class="n">imageNode</span><span class="o">=</span><span class="n">tl</span><span class="o">.</span><span class="n">img_xml_to_nodes</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="n">tl</span><span class="o">.</span><span class="n">nodes_to_graph</span><span class="p">(</span><span class="n">nodelist</span><span class="o">=</span><span class="n">imageNode</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">imageNode</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>         
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_xmlPath&#39;: &#39;O:/Code/geomapi/developmenttests/Sample4/Photos/101_0366/ReferenceLAMBERT72_TAW.xml&#39;,
+ &#39;_xmpPath&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;imageWidth&#39;: 5472,
+ &#39;imageHeight&#39;: 3648,
+ &#39;focalLength35mm&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///101_0366_0001&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=N0156f2eeacd44625a61e417f246e9ef6 (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;O:\\Code\\geomapi\\developmenttests\\Sample4\\myAnalysisFolder\\Photos\\imageGraph101_0366.ttl&#39;,
+ &#39;_path&#39;: &#39;O:/Code/geomapi/developmenttests/Sample4/Photos/101_0366/101_0366_0001.jpg&#39;,
+ &#39;_name&#39;: &#39;101_0366_0001&#39;,
+ &#39;_timestamp&#39;: &#39;2021-06-07T16:46:33&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: array([[-7.62667168e-01, -6.46788794e-01,  1.74532837e-03,
+          1.00574925e+05],
+        [ 6.46789780e-01, -7.62668330e-01,  0.00000000e+00,
+          1.96307775e+05],
+        [ 1.33110667e-03,  1.12886055e-03,  9.99998477e-01,
+          3.14713656e+01],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+          1.00000000e+00]]),
+ &#39;sxy&#39;: 0.02,
+ &#39;sz&#39;: 0.05,
+ &#39;resolutionUnit&#39;: 2,
+ &#39;geospatialTransform&#39;: [51.07479236114782,
+  3.6635201667228112,
+  74.20500001762274],
+ &#39;coordinateSystem&#39;: &#39;geospatial-wgs84&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><strong>Photogrammetric mesh</strong>: Mesh files have no metadata headers so the data has to be loaded by GEOMAPI. However, to save memory (and to illustrate the non-data functionality), we will discard the data as soon as the relevant metadata is extracted.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">meshPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">,</span><span class="s1">&#39;101_0366&#39;</span><span class="p">,</span><span class="s1">&#39;MeshLAMBERT72_TAW.ply&#39;</span><span class="p">)</span>
+<span class="n">texturepath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">,</span><span class="s1">&#39;101_0366&#39;</span><span class="p">,</span><span class="s1">&#39;MeshLAMBERT72_TAW.jpg&#39;</span><span class="p">)</span>
+<span class="n">meshNode</span><span class="o">=</span> <span class="n">MeshNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="mi">101_0366</span><span class="p">,</span><span class="n">path</span><span class="o">=</span><span class="n">meshPath</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1">#serialize nodes</span>
+<span class="n">folder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+<span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">,</span><span class="s1">&#39;meshGraph101_0366.ttl&#39;</span><span class="p">)</span>
+<span class="n">meshNode</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">meshNode</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>     
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pointCount&#39;: 274850,
+ &#39;faceCount&#39;: 545530,
+ &#39;_cartesianBounds&#39;: array([1.00551838e+05, 1.00635544e+05, 1.96219581e+05, 1.96327133e+05,
+        5.13973500e+00, 8.25403600e+00]),
+ &#39;_orientedBounds&#39;: array([[1.00601668e+05, 1.96334413e+05, 8.26347399e+00],
+        [1.00643307e+05, 1.96235497e+05, 8.51657553e+00],
+        [1.00543892e+05, 1.96310092e+05, 8.09708756e+00],
+        [1.00601679e+05, 1.96334410e+05, 5.14167178e+00],
+        [1.00585541e+05, 1.96211172e+05, 5.22838689e+00],
+        [1.00543903e+05, 1.96310089e+05, 4.97528536e+00],
+        [1.00643317e+05, 1.96235493e+05, 5.39477332e+00],
+        [1.00585530e+05, 1.96211176e+05, 8.35018910e+00]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (100594, 196273, 6.74593), extent: 107.323, 62.6867, 3.12182),
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///1010366&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=N5130223137f84d42818ecbe04dba602b (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;O:\\Code\\geomapi\\developmenttests\\Sample4\\myAnalysisFolder\\Meshes\\meshGraph101_0366.ttl&#39;,
+ &#39;_path&#39;: &#39;O:\\Code\\geomapi\\developmenttests\\Sample4\\Meshes\\101_0366\\MeshLAMBERT72_TAW.ply&#39;,
+ &#39;_name&#39;: &#39;MeshLAMBERT72_TAW&#39;,
+ &#39;_timestamp&#39;: &#39;2022-09-16T17:35:08&#39;,
+ &#39;_resource&#39;: TriangleMesh with 274850 points and 545530 triangles.,
+ &#39;_cartesianTransform&#39;: array([[1.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00593782e+05],
+        [0.00000000e+00, 1.00000000e+00, 0.00000000e+00, 1.96271358e+05],
+        [0.00000000e+00, 0.00000000e+00, 1.00000000e+00, 6.37094559e+00],
+        [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="sessionnode">
+<h3>SessionNode<a class="headerlink" href="#sessionnode" title="Link to this heading"></a></h3>
+<p>From the above nodes, a overarching session can be created. As such, 2 sessions are created, one for each meaurement epoch.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">linkedNodes</span><span class="o">=</span><span class="n">pcdNodes</span> <span class="o">+</span> <span class="n">imageNode</span> <span class="o">+</span> <span class="p">[</span><span class="n">meshNode</span><span class="p">]</span>
+<span class="n">sess101_0366</span><span class="o">=</span><span class="n">SessionNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;101_0366&#39;</span><span class="p">,</span> <span class="n">linkedNodes</span><span class="o">=</span><span class="n">linkedNodes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sess101_0366</span><span class="o">.</span><span class="n">linkedNodes</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sess101_0366</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>58
+file:///101_0366
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sess101_0366</span><span class="o">.</span><span class="n">save_resource</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Fig.3</strong>: (red) orientedBoundingBoxes of the pcdNodes and the meshNode, (red cones) scaled img field-of-views and (green) convex hull of the sessionNode.
+<img alt="rendering" src="../_images/101_0365_overview.JPG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pcdboxes</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">get_oriented_bounding_box</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">pcdNodes</span> <span class="p">]</span>
+<span class="k">for</span> <span class="n">box</span> <span class="ow">in</span> <span class="n">pcdboxes</span><span class="p">:</span>
+    <span class="n">box</span><span class="o">.</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># print(len(pcdboxes))</span>
+
+<span class="n">imggeometries</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">get_mesh_geometry</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">imageNode</span> <span class="p">]</span>
+<span class="p">[</span><span class="n">img</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">imggeometries</span><span class="p">]</span>
+<span class="c1"># print(len(imggeometries))</span>
+
+<span class="n">meshbox</span><span class="o">=</span><span class="n">meshNode</span><span class="o">.</span><span class="n">get_oriented_bounding_box</span><span class="p">()</span>
+<span class="n">meshbox</span><span class="o">.</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># print(len([meshbox]))</span>
+
+<span class="n">lineset1</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">LineSet</span><span class="o">.</span><span class="n">create_from_triangle_mesh</span><span class="p">(</span><span class="n">sess101_0366</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+<span class="n">lineset1</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1"># print(len([lineset1]))</span>
+
+
+<span class="n">mesh</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_triangle_mesh</span><span class="p">(</span><span class="n">meshPath</span><span class="p">)</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.706</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">compute_vertex_normals</span><span class="p">()</span>
+
+
+<span class="n">o3d</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">draw_geometries</span><span class="p">(</span> <span class="n">imggeometries</span> <span class="o">+</span> <span class="p">[</span><span class="n">meshbox</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">lineset1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">mesh</span><span class="p">]</span> <span class="o">+</span> <span class="n">bimgeometries</span> <span class="p">)</span> <span class="c1">#,lineset1,meshbox,imggeometries</span>
+
+
+<span class="c1"># print(len(geometries))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now it is good practice to already serialize these nodes in a RDF graph so we can rapidly load the nodes from the graphs in a next run. The facilitate the datastructure, we will store the generated graph in the same location.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;sessionGraph101_0366.ttl&#39;</span><span class="p">)</span>
+<span class="n">sess101_0366</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sess101_0366</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+
+&lt;file:///101_0366&gt; a v4d:SessionNode ;
+    e57:cartesianBounds &quot;&quot;&quot;[1.00543892e+05 1.00643317e+05 1.96211172e+05 1.96334413e+05
+ 4.97528536e+00 3.14892832e+01]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[1.00000000e+00 0.00000000e+00 0.00000000e+00 1.00593672e+05]
+ [0.00000000e+00 1.00000000e+00 0.00000000e+00 1.96269668e+05]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00 2.57391447e+01]
+ [0.00000000e+00 0.00000000e+00 0.00000000e+00 1.00000000e+00]]&quot;&quot;&quot; ;
+    v4d:linkedSubjects &quot;[&#39;file:///PCDLAMBERT72_TAW&#39;, &#39;file:///101_0366_0001&#39;, &#39;file:///101_0366_0002&#39;, &#39;file:///101_0366_0003&#39;, &#39;file:///101_0366_0004&#39;, &#39;file:///101_0366_0005&#39;, &#39;file:///101_0366_0006&#39;, &#39;file:///101_0366_0007&#39;, &#39;file:///101_0366_0008&#39;, &#39;file:///101_0366_0009&#39;, &#39;file:///101_0366_0010&#39;, &#39;file:///101_0366_0011&#39;, &#39;file:///101_0366_0012&#39;, &#39;file:///101_0366_0013&#39;, &#39;file:///101_0366_0014&#39;, &#39;file:///101_0366_0015&#39;, &#39;file:///101_0366_0016&#39;, &#39;file:///101_0366_0017&#39;, &#39;file:///101_0366_0018&#39;, &#39;file:///101_0366_0019&#39;, &#39;file:///101_0366_0020&#39;, &#39;file:///101_0366_0021&#39;, &#39;file:///101_0366_0022&#39;, &#39;file:///101_0366_0023&#39;, &#39;file:///101_0366_0024&#39;, &#39;file:///101_0366_0025&#39;, &#39;file:///101_0366_0026&#39;, &#39;file:///101_0366_0027&#39;, &#39;file:///101_0366_0028&#39;, &#39;file:///101_0366_0029&#39;, &#39;file:///101_0366_0030&#39;, &#39;file:///101_0366_0031&#39;, &#39;file:///101_0366_0032&#39;, &#39;file:///101_0366_0033&#39;, &#39;file:///101_0366_0034&#39;, &#39;file:///101_0366_0035&#39;, &#39;file:///101_0366_0036&#39;, &#39;file:///101_0366_0037&#39;, &#39;file:///101_0366_0038&#39;, &#39;file:///101_0366_0039&#39;, &#39;file:///101_0366_0040&#39;, &#39;file:///101_0366_0041&#39;, &#39;file:///101_0366_0042&#39;, &#39;file:///101_0366_0043&#39;, &#39;file:///101_0366_0044&#39;, &#39;file:///101_0366_0045&#39;, &#39;file:///101_0366_0046&#39;, &#39;file:///101_0366_0047&#39;, &#39;file:///101_0366_0048&#39;, &#39;file:///101_0366_0049&#39;, &#39;file:///101_0366_0050&#39;, &#39;file:///101_0366_0051&#39;, &#39;file:///101_0366_0052&#39;, &#39;file:///101_0366_0053&#39;, &#39;file:///101_0366_0054&#39;, &#39;file:///101_0366_0055&#39;, &#39;file:///101_0366_0056&#39;, &#39;file:///1010366&#39;]&quot; ;
+    v4d:name &quot;101_0366&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[1.00622442e+05 1.96356505e+05 3.02635884e+01]
+ [1.00673157e+05 1.96237288e+05 3.24867973e+01]
+ [1.00514762e+05 1.96310732e+05 3.20948960e+01]
+ [1.00622222e+05 1.96355876e+05 1.55571535e+00]
+ [1.00565256e+05 1.96190886e+05 5.61023180e+00]
+ [1.00514541e+05 1.96310103e+05 3.38702292e+00]
+ [1.00672937e+05 1.96236659e+05 3.77892423e+00]
+ [1.00565477e+05 1.96191515e+05 3.43181049e+01]]&quot;&quot;&quot; ;
+    v4d:path &quot;101_0366.ply&quot; ;
+    openlabel:timestamp &quot;2022-07-19T15:51:08&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id1">
+<h3>Reloading from graph<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<p>Similar to the BIM preprocessing, the above steps only have to be performed once. On reruns of the code or future analysis, we can initialize the same nodes from their serialized triples. This is significantly faster for smaller graphs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sessionGraphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;sessionGraph101_0366.ttl&#39;</span><span class="p">)</span>
+<span class="n">week22</span><span class="o">=</span><span class="n">SessionNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">sessionGraphPath</span><span class="p">)</span>
+
+<span class="c1">#get resourceGraphs</span>
+<span class="n">resourceGraph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Photos&#39;</span><span class="p">,</span><span class="s1">&#39;imageGraph101_0366.ttl&#39;</span><span class="p">)</span> <span class="p">)</span>
+<span class="n">resourceGraph</span><span class="o">+=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">,</span><span class="s1">&#39;meshGraph101_0366.ttl&#39;</span><span class="p">))</span>
+<span class="n">resourceGraph</span><span class="o">+=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;pcdGraph101_0366.ttl&#39;</span><span class="p">))</span>
+
+<span class="n">sess101_0366</span><span class="o">.</span><span class="n">get_linked_nodes</span><span class="p">(</span><span class="n">resourceGraph</span><span class="o">=</span><span class="n">resourceGraph</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">linkedNodes</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>58
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="flight-101-0367">
+<h3>Flight 101_0367<a class="headerlink" href="#flight-101-0367" title="Link to this heading"></a></h3>
+<section id="preprocess-measurements-flight-101-0367">
+<h4>Preprocess measurements flight 101_0367<a class="headerlink" href="#preprocess-measurements-flight-101-0367" title="Link to this heading"></a></h4>
+<p>Data of flight 101_0367 will be imported as part of a SessionNode. This sessionNode contains the individual Nodes of each of the resources and also some general metadata.</p>
+<p>First, we parse each set of resources (1 point cloud, 56 Images and the photogrammetric mesh).</p>
+<p><strong>NOTE</strong>: This is alot of data, some of which we potentially don’t need as observable objects might not be located within the sensors Field-of-View. GEOMAPI plans for this, and allows Node metadata initialisation from other sources but the actual data such as image metadata files, e57 headers, etc. The actual resources that are needed can be imported at a later stage through get_resource() methods.</p>
+<p><strong>Fig.4</strong>: Road construction site: Flight 101_0367.
+<img alt="rendering" src="../_images/Mesh101_0367_meshlab.PNG" /></p>
+<ol class="arabic simple">
+<li><p><strong>E57 POINT CLOUDS</strong>: These nodes from the e57 header instead of actually importing the data so a first spatial analysis can be conducted effeciently</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">e57Path</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;Pointclouds&#39;</span><span class="p">,</span><span class="s1">&#39;101_0367&#39;</span><span class="p">,</span><span class="s1">&#39;PCDLAMBERT72_TAW.e57&#39;</span><span class="p">)</span>
+<span class="n">pcdNodes</span><span class="o">=</span><span class="n">tl</span><span class="o">.</span><span class="n">e57header_to_nodes</span><span class="p">(</span><span class="n">e57Path</span><span class="p">)</span>
+<span class="c1">#serialize nodes</span>
+<span class="n">folder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+<span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;pcdGraph101_0367.ttl&#39;</span><span class="p">)</span>
+<span class="n">tl</span><span class="o">.</span><span class="n">nodes_to_graph</span><span class="p">(</span><span class="n">nodelist</span><span class="o">=</span><span class="n">pcdNodes</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">pcdNodes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span> 
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_e57Index&#39;: 0,
+ &#39;pointCount&#39;: 7062921,
+ &#39;e57XmlPath&#39;: None,
+ &#39;_cartesianBounds&#39;: array([1.00552835e+05, 1.00648663e+05, 1.96219459e+05, 1.96324429e+05,
+        4.85900000e+00, 8.29300000e+00]),
+ &#39;_orientedBounds&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///PCDLAMBERT72_TAW&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=Nd663af1f21504515a3634f0ad82440a8 (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;O:\\Code\\geomapi\\developmenttests\\Sample4\\myAnalysisFolder\\PCD\\pcdGraph101_0367.ttl&#39;,
+ &#39;_path&#39;: &#39;O:\\Code\\geomapi\\developmenttests\\Sample4\\Pointclouds\\101_0367\\PCDLAMBERT72_TAW.e57&#39;,
+ &#39;_name&#39;: &#39;PCDLAMBERT72_TAW&#39;,
+ &#39;_timestamp&#39;: &#39;2022-07-19T16:21:08&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: None}
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="2">
+<li><p><strong>Geolocated Images</strong>: Analogue to the point cloud data, the ImageNodes are initialised from a  Metashape .xml file.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">folder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Photos&#39;</span><span class="p">)</span> 
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+<span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Photos&#39;</span><span class="p">,</span><span class="s1">&#39;imageGraph101_0367.ttl&#39;</span><span class="p">)</span> 
+<span class="n">photoPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;Photos&#39;</span><span class="p">,</span><span class="s1">&#39;101_0367&#39;</span><span class="p">)</span>
+<span class="n">allSessionFilePaths</span><span class="o">=</span><span class="n">ut</span><span class="o">.</span><span class="n">get_list_of_files</span><span class="p">(</span><span class="n">photoPath</span><span class="p">)</span> 
+<span class="n">nodelist</span><span class="o">=</span><span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">allSessionFilePaths</span><span class="p">:</span>        
+    
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.JPG&quot;</span><span class="p">)</span> <span class="ow">or</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.PNG&quot;</span><span class="p">):</span> 
+        <span class="n">testXmpPath</span><span class="o">=</span><span class="n">path</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;JPG&#39;</span><span class="p">,</span><span class="s1">&#39;xmp&#39;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">testXmpPath</span> <span class="ow">in</span> <span class="n">allSessionFilePaths</span><span class="p">:</span>
+            <span class="n">nodelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">imageNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span><span class="n">xmpPath</span><span class="o">=</span><span class="n">testXmpPath</span><span class="p">,</span><span class="n">sessionPath</span><span class="o">=</span><span class="n">photoPath</span><span class="p">))</span>
+            <span class="c1"># tl.nodes_to_graph(nodelist=imageNode,graphPath=graphPath,save=True)</span>
+            <span class="c1"># {key:value for key, value in pcdNodes[0].__dict__.items() if not key.startswith(&#39;__&#39;) and not callable(key)} </span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">nodelist</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">imageNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="n">path</span><span class="p">,</span><span class="n">sessionPath</span><span class="o">=</span><span class="n">photoPath</span><span class="p">))</span>
+            <span class="c1"># tl.nodes_to_graph(nodelist=imageNode,graphPath=graphPath,save=True)</span>
+            <span class="c1"># {key:value for key, value in pcdNodes[0].__dict__.items() if not key.startswith(&#39;__&#39;) and not callable(key)} </span>
+
+    <span class="k">if</span> <span class="n">path</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s2">&quot;.xml&quot;</span><span class="p">):</span>
+        <span class="n">nodelist</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tl</span><span class="o">.</span><span class="n">img_xml_to_nodes</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">))</span>
+
+<span class="n">imageNode</span><span class="o">=</span><span class="n">tl</span><span class="o">.</span><span class="n">img_xml_to_nodes</span><span class="p">(</span><span class="n">path</span><span class="p">)</span>
+<span class="n">tl</span><span class="o">.</span><span class="n">nodes_to_graph</span><span class="p">(</span><span class="n">nodelist</span><span class="o">=</span><span class="n">imageNode</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">imageNode</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>         
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;_xmlPath&#39;: &#39;O:/Code/geomapi/developmenttests/Sample4/Photos/101_0367/ReferenceLAMBERT72_TAW.xml&#39;,
+ &#39;_xmpPath&#39;: None,
+ &#39;_orientedBoundingBox&#39;: None,
+ &#39;imageWidth&#39;: 5472,
+ &#39;imageHeight&#39;: 3648,
+ &#39;focalLength35mm&#39;: None,
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///101_0367_0001&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=N0bc778a97fbc46aa8e80c1422821d5c8 (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;O:\\Code\\geomapi\\developmenttests\\Sample4\\myAnalysisFolder\\Photos\\imageGraph101_0367.ttl&#39;,
+ &#39;_path&#39;: &#39;O:/Code/geomapi/developmenttests/Sample4/Photos/101_0367/101_0367_0001.jpg&#39;,
+ &#39;_name&#39;: &#39;101_0367_0001&#39;,
+ &#39;_timestamp&#39;: &#39;2021-06-11T10:12:18&#39;,
+ &#39;_resource&#39;: None,
+ &#39;_cartesianTransform&#39;: array([[-8.03856861e-01, -5.94822787e-01,  0.00000000e+00,
+          1.00574782e+05],
+        [ 5.94822787e-01, -8.03856861e-01,  0.00000000e+00,
+          1.96307758e+05],
+        [ 0.00000000e+00,  0.00000000e+00,  1.00000000e+00,
+          3.13793641e+01],
+        [ 0.00000000e+00,  0.00000000e+00,  0.00000000e+00,
+          1.00000000e+00]]),
+ &#39;sxy&#39;: 0.02,
+ &#39;sz&#39;: 0.05,
+ &#39;resolutionUnit&#39;: 2,
+ &#39;geospatialTransform&#39;: [51.07479219445777,
+  3.6635181388946036,
+  74.11300116904444],
+ &#39;coordinateSystem&#39;: &#39;geospatial-wgs84&#39;}
+</pre></div>
+</div>
+</div>
+</div>
+<ol class="arabic simple" start="3">
+<li><p><strong>Photogrammetric mesh</strong>: Mesh files have no metadata headers so the data has to be loaded by GEOMAPI. However, to save memory (and to illustrate the non-data functionality), we will discard the data as soon as the relevant metadata is extracted.</p></li>
+</ol>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">meshPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">,</span><span class="s1">&#39;101_0367&#39;</span><span class="p">,</span><span class="s1">&#39;MeshLAMBERT72_TAW.ply&#39;</span><span class="p">)</span>
+<span class="n">texturepath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">,</span><span class="s1">&#39;101_0367&#39;</span><span class="p">,</span><span class="s1">&#39;MeshLAMBERT72_TAW.jpg&#39;</span><span class="p">)</span>
+<span class="n">meshNode</span><span class="o">=</span> <span class="n">MeshNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="mi">101_0367</span><span class="p">,</span><span class="n">path</span><span class="o">=</span><span class="n">meshPath</span><span class="p">,</span><span class="n">getResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="c1">#serialize nodes</span>
+<span class="n">folder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">folder</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">folder</span><span class="p">)</span>
+<span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">,</span><span class="s1">&#39;meshGraph101_0367.ttl&#39;</span><span class="p">)</span>
+<span class="n">meshNode</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="p">{</span><span class="n">key</span><span class="p">:</span><span class="n">value</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">meshNode</span><span class="o">.</span><span class="vm">__dict__</span><span class="o">.</span><span class="n">items</span><span class="p">()</span> <span class="k">if</span> <span class="ow">not</span> <span class="n">key</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s1">&#39;__&#39;</span><span class="p">)</span> <span class="ow">and</span> <span class="ow">not</span> <span class="nb">callable</span><span class="p">(</span><span class="n">key</span><span class="p">)}</span>     
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>{&#39;pointCount&#39;: 301203,
+ &#39;faceCount&#39;: 597197,
+ &#39;_cartesianBounds&#39;: array([1.00552016e+05, 1.00648914e+05, 1.96218781e+05, 1.96325156e+05,
+        5.12620401e+00, 8.28773785e+00]),
+ &#39;_orientedBounds&#39;: array([[1.00608922e+05, 1.96336024e+05, 8.63864855e+00],
+        [1.00650676e+05, 1.96238313e+05, 8.91333762e+00],
+        [1.00536941e+05, 1.96305263e+05, 8.02514903e+00],
+        [1.00608950e+05, 1.96336026e+05, 5.27847026e+00],
+        [1.00578722e+05, 1.96207554e+05, 4.93965981e+00],
+        [1.00536968e+05, 1.96305265e+05, 4.66497074e+00],
+        [1.00650704e+05, 1.96238315e+05, 5.55315933e+00],
+        [1.00578694e+05, 1.96207552e+05, 8.29983810e+00]]),
+ &#39;_orientedBoundingBox&#39;: OrientedBoundingBox: center: (100594, 196272, 6.78915), extent: 106.258, 78.2815, 3.36029),
+ &#39;_subject&#39;: rdflib.term.URIRef(&#39;file:///1010367&#39;),
+ &#39;_graph&#39;: &lt;Graph identifier=Nc8a3445d7044432bb456ab8ca856d2a3 (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;,
+ &#39;_graphPath&#39;: &#39;O:\\Code\\geomapi\\developmenttests\\Sample4\\myAnalysisFolder\\Meshes\\meshGraph101_0367.ttl&#39;,
+ &#39;_path&#39;: &#39;O:\\Code\\geomapi\\developmenttests\\Sample4\\Meshes\\101_0367\\MeshLAMBERT72_TAW.ply&#39;,
+ &#39;_name&#39;: &#39;MeshLAMBERT72_TAW&#39;,
+ &#39;_timestamp&#39;: &#39;2022-09-16T17:35:08&#39;,
+ &#39;_resource&#39;: TriangleMesh with 301203 points and 597197 triangles.,
+ &#39;_cartesianTransform&#39;: array([[1.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00594174e+05],
+        [0.00000000e+00, 1.00000000e+00, 0.00000000e+00, 1.96268940e+05],
+        [0.00000000e+00, 0.00000000e+00, 1.00000000e+00, 6.45470017e+00],
+        [0.00000000e+00, 0.00000000e+00, 0.00000000e+00, 1.00000000e+00]])}
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="id2">
+<h3>SessionNode<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<p>From the above nodes, a overarching session can be created. As such, 2 sessions are created, one for each meaurement epoch</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">linkedNodes</span><span class="o">=</span><span class="n">pcdNodes</span> <span class="o">+</span> <span class="n">imageNode</span> <span class="o">+</span> <span class="p">[</span><span class="n">meshNode</span><span class="p">]</span>
+<span class="n">sess101_0367</span><span class="o">=</span><span class="n">SessionNode</span><span class="p">(</span><span class="n">subject</span><span class="o">=</span><span class="s1">&#39;101_0367&#39;</span><span class="p">,</span> <span class="n">linkedNodes</span><span class="o">=</span><span class="n">linkedNodes</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sess101_0367</span><span class="o">.</span><span class="n">linkedNodes</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sess101_0367</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>80
+file:///101_0367
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sess101_0367</span><span class="o">.</span><span class="n">save_resource</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Fig.4</strong>: (red) orientedBoundingBoxes of the pcdNodes and the meshNode, (red cones) scaled img field-of-views and (green) convex hull of the sessionNode.
+<img alt="rendering" src="../_images/Session101_0367.JPG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pcdboxes</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">get_oriented_bounding_box</span><span class="p">()</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">pcdNodes</span> <span class="p">]</span>
+<span class="k">for</span> <span class="n">box</span> <span class="ow">in</span> <span class="n">pcdboxes</span><span class="p">:</span>
+    <span class="n">box</span><span class="o">.</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># print(len(pcdboxes))</span>
+
+<span class="n">imggeometries</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">get_mesh_geometry</span><span class="p">(</span><span class="n">depth</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">imageNode</span> <span class="p">]</span>
+<span class="p">[</span><span class="n">img</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="k">for</span> <span class="n">img</span> <span class="ow">in</span> <span class="n">imggeometries</span><span class="p">]</span>
+<span class="c1"># print(len(imggeometries))</span>
+
+<span class="n">meshbox</span><span class="o">=</span><span class="n">meshNode</span><span class="o">.</span><span class="n">get_oriented_bounding_box</span><span class="p">()</span>
+<span class="n">meshbox</span><span class="o">.</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># print(len([meshbox]))</span>
+
+<span class="n">lineset1</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">LineSet</span><span class="o">.</span><span class="n">create_from_triangle_mesh</span><span class="p">(</span><span class="n">sess101_0366</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+<span class="n">lineset1</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1"># print(len([lineset1]))</span>
+
+
+<span class="n">mesh</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">read_triangle_mesh</span><span class="p">(</span><span class="n">meshPath</span><span class="p">)</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.706</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+<span class="n">mesh</span><span class="o">.</span><span class="n">compute_vertex_normals</span><span class="p">()</span>
+
+
+<span class="n">o3d</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">draw_geometries</span><span class="p">(</span> <span class="n">imggeometries</span> <span class="o">+</span> <span class="p">[</span><span class="n">meshbox</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">lineset1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">mesh</span><span class="p">]</span> <span class="o">+</span> <span class="n">bimgeometries</span><span class="p">)</span> <span class="c1">#,lineset1,meshbox,imggeometries</span>
+
+
+<span class="c1"># print(len(geometries))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Now it is good practice to already serialize these nodes in a RDF graph so we can rapidly load the nodes from the graphs in a next run. The facilitate the datastructure, we will store the generated graph in the same location.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;sessionGraph101_0367.ttl&#39;</span><span class="p">)</span>
+<span class="n">sess101_0367</span><span class="o">.</span><span class="n">to_graph</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">sess101_0367</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">serialize</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>@prefix e57: &lt;http://libe57.org#&gt; .
+@prefix openlabel: &lt;https://www.asam.net/index.php?eID=dumpFile&amp;t=f&amp;f=3876&amp;token=413e8c85031ae64cc35cf42d0768627514868b2f#&gt; .
+@prefix v4d: &lt;https://w3id.org/v4d/core#&gt; .
+
+&lt;file:///101_0367&gt; a v4d:SessionNode ;
+    e57:cartesianBounds &quot;&quot;&quot;[1.00536941e+05 1.00650704e+05 1.96207552e+05 1.96336026e+05
+ 4.66497074e+00 3.87876819e+01]&quot;&quot;&quot; ;
+    e57:cartesianTransform &quot;&quot;&quot;[[1.00000000e+00 0.00000000e+00 0.00000000e+00 1.00591584e+05]
+ [0.00000000e+00 1.00000000e+00 0.00000000e+00 1.96265479e+05]
+ [0.00000000e+00 0.00000000e+00 1.00000000e+00 2.60218133e+01]
+ [0.00000000e+00 0.00000000e+00 0.00000000e+00 1.00000000e+00]]&quot;&quot;&quot; ;
+    v4d:linkedSubjects &quot;[&#39;file:///PCDLAMBERT72_TAW&#39;, &#39;file:///101_0367_0001&#39;, &#39;file:///101_0367_0002&#39;, &#39;file:///101_0367_0003&#39;, &#39;file:///101_0367_0004&#39;, &#39;file:///101_0367_0005&#39;, &#39;file:///101_0367_0006&#39;, &#39;file:///101_0367_0007&#39;, &#39;file:///101_0367_0008&#39;, &#39;file:///101_0367_0009&#39;, &#39;file:///101_0367_0010&#39;, &#39;file:///101_0367_0011&#39;, &#39;file:///101_0367_0012&#39;, &#39;file:///101_0367_0013&#39;, &#39;file:///101_0367_0014&#39;, &#39;file:///101_0367_0015&#39;, &#39;file:///101_0367_0016&#39;, &#39;file:///101_0367_0017&#39;, &#39;file:///101_0367_0018&#39;, &#39;file:///101_0367_0019&#39;, &#39;file:///101_0367_0020&#39;, &#39;file:///101_0367_0021&#39;, &#39;file:///101_0367_0022&#39;, &#39;file:///101_0367_0023&#39;, &#39;file:///101_0367_0024&#39;, &#39;file:///101_0367_0025&#39;, &#39;file:///101_0367_0026&#39;, &#39;file:///101_0367_0027&#39;, &#39;file:///101_0367_0028&#39;, &#39;file:///101_0367_0029&#39;, &#39;file:///101_0367_0030&#39;, &#39;file:///101_0367_0031&#39;, &#39;file:///101_0367_0032&#39;, &#39;file:///101_0367_0033&#39;, &#39;file:///101_0367_0034&#39;, &#39;file:///101_0367_0035&#39;, &#39;file:///101_0367_0036&#39;, &#39;file:///101_0367_0037&#39;, &#39;file:///101_0367_0038&#39;, &#39;file:///101_0367_0039&#39;, &#39;file:///101_0367_0040&#39;, &#39;file:///101_0367_0041&#39;, &#39;file:///101_0367_0042&#39;, &#39;file:///101_0367_0043&#39;, &#39;file:///101_0367_0044&#39;, &#39;file:///101_0367_0045&#39;, &#39;file:///101_0367_0046&#39;, &#39;file:///101_0367_0047&#39;, &#39;file:///101_0367_0048&#39;, &#39;file:///101_0367_0049&#39;, &#39;file:///101_0367_0050&#39;, &#39;file:///101_0367_0051&#39;, &#39;file:///101_0367_0052&#39;, &#39;file:///101_0367_0053&#39;, &#39;file:///101_0367_0054&#39;, &#39;file:///101_0367_0055&#39;, &#39;file:///101_0367_0056&#39;, &#39;file:///101_0367_0057&#39;, &#39;file:///101_0367_0058&#39;, &#39;file:///101_0367_0059&#39;, &#39;file:///101_0367_0060&#39;, &#39;file:///101_0367_0061&#39;, &#39;file:///101_0367_0062&#39;, &#39;file:///101_0367_0063&#39;, &#39;file:///101_0367_0064&#39;, &#39;file:///101_0367_0065&#39;, &#39;file:///101_0367_0066&#39;, &#39;file:///101_0367_0067&#39;, &#39;file:///101_0367_0068&#39;, &#39;file:///101_0367_0069&#39;, &#39;file:///101_0367_0070&#39;, &#39;file:///101_0367_0071&#39;, &#39;file:///101_0367_0072&#39;, &#39;file:///101_0367_0073&#39;, &#39;file:///101_0367_0074&#39;, &#39;file:///101_0367_0075&#39;, &#39;file:///101_0367_0076&#39;, &#39;file:///101_0367_0077&#39;, &#39;file:///101_0367_0078&#39;, &#39;file:///1010367&#39;]&quot; ;
+    v4d:name &quot;101_0367&quot; ;
+    v4d:orientedBounds &quot;&quot;&quot;[[ 1.00634191e+05  1.96360505e+05  3.39444727e+01]
+ [ 1.00688201e+05  1.96237195e+05  3.58175669e+01]
+ [ 1.00515284e+05  1.96308505e+05  3.92783745e+01]
+ [ 1.00633045e+05  1.96359459e+05 -1.80670225e+00]
+ [ 1.00568147e+05  1.96184149e+05  5.40029379e+00]
+ [ 1.00514137e+05  1.96307459e+05  3.52719954e+00]
+ [ 1.00687054e+05  1.96236149e+05  6.63919985e-02]
+ [ 1.00569293e+05  1.96185194e+05  4.11514687e+01]]&quot;&quot;&quot; ;
+    v4d:path &quot;101_0367.ply&quot; ;
+    openlabel:timestamp &quot;2022-07-19T16:21:08&quot; .
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h3>Reloading from graph<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<p>Similar to the BIM preprocessing, the above steps only have to be performed once. On reruns of the code or future analysis, we can initialize the same nodes from their serialized triples. This is significantly faster for smaller graphs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">sessionGraphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;sessionGraph101_0367.ttl&#39;</span><span class="p">)</span>
+<span class="n">week22</span><span class="o">=</span><span class="n">SessionNode</span><span class="p">(</span><span class="n">graphPath</span><span class="o">=</span><span class="n">sessionGraphPath</span><span class="p">)</span>
+
+<span class="c1">#get resourceGraphs</span>
+<span class="n">resourceGraph</span><span class="o">=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Photos&#39;</span><span class="p">,</span><span class="s1">&#39;imageGraph101_0367.ttl&#39;</span><span class="p">)</span> <span class="p">)</span>
+<span class="n">resourceGraph</span><span class="o">+=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">,</span><span class="s1">&#39;meshGraph101_0367.ttl&#39;</span><span class="p">))</span>
+<span class="n">resourceGraph</span><span class="o">+=</span><span class="n">Graph</span><span class="p">()</span><span class="o">.</span><span class="n">parse</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span><span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;pcdGraph101_0367.ttl&#39;</span><span class="p">))</span>
+
+<span class="n">sess101_0367</span><span class="o">.</span><span class="n">get_linked_nodes</span><span class="p">(</span><span class="n">resourceGraph</span><span class="o">=</span><span class="n">resourceGraph</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">linkedNodes</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>80
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="volume-calculation-between-two-epochs">
+<h2>Volume calculation between two epochs<a class="headerlink" href="#volume-calculation-between-two-epochs" title="Link to this heading"></a></h2>
+<p>Visualize the both meshes one in yellow and one in grey.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">mesh1</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sess101_0366</span><span class="o">.</span><span class="n">linkedNodes</span> <span class="k">if</span> <span class="s1">&#39;TriangleMesh&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">resource</span><span class="p">))]</span>
+<span class="n">mesh1</span><span class="o">=</span><span class="n">mesh1</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="c1"># print(mesh1)</span>
+<span class="n">mesh1</span><span class="o">.</span><span class="n">compute_vertex_normals</span><span class="p">()</span>
+<span class="n">mesh2</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">sess101_0367</span><span class="o">.</span><span class="n">linkedNodes</span> <span class="k">if</span> <span class="s1">&#39;TriangleMesh&#39;</span> <span class="ow">in</span> <span class="nb">str</span><span class="p">(</span><span class="nb">type</span><span class="p">(</span><span class="n">n</span><span class="o">.</span><span class="n">resource</span><span class="p">))]</span>
+<span class="n">mesh2</span><span class="o">=</span><span class="n">mesh2</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+<span class="n">mesh2</span><span class="o">.</span><span class="n">compute_vertex_normals</span><span class="p">()</span>
+<span class="n">mesh2</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span> <span class="mf">0.706</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+
+<span class="n">o3d</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">draw_geometries</span><span class="p">([</span><span class="n">mesh1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">mesh2</span><span class="p">]</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Two grids of rays are created one above and one beneath the meshes and bim, the height difference can be changed. Here the boundingbox of mesh 1, mesh of session 101_0366 is used to create a grid. The resolution, so distances between each point of the gris is 0.1m. The offset where the grid max is situated above the top of the bounding box and the grid max is siuated beneath the bottom of the bounding box is here 10m. The diection is the orientation of the grid rays where down is faced down and up is faced up.</p>
+<p>The bottom grid is only needed for the second method, calculation of volumes between bim and mesh.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">resolution</span><span class="o">=</span><span class="mf">0.1</span> <span class="c1">#m</span>
+
+<span class="n">gridFlightMax</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">create_xy_grid</span><span class="p">(</span><span class="n">mesh1</span><span class="p">,</span><span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span><span class="n">direction</span><span class="o">=</span><span class="s1">&#39;Down&#39;</span><span class="p">,</span><span class="n">offset</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span> <span class="c1">#offset in m</span>
+<span class="n">gridFlightMin</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">create_xy_grid</span><span class="p">(</span><span class="n">mesh1</span><span class="p">,</span><span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span><span class="n">direction</span><span class="o">=</span><span class="s1">&#39;Up&#39;</span><span class="p">,</span><span class="n">offset</span><span class="o">=</span><span class="mi">10</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Grids of these rays are transformed in to grids of points to visualize these.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">xyzFlightMax</span><span class="o">=</span><span class="n">gridFlightMax</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>  
+<span class="n">pcdFlightMax</span> <span class="o">=</span> <span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">PointCloud</span><span class="p">()</span>
+<span class="n">pcdFlightMax</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">o3d</span><span class="o">.</span><span class="n">utility</span><span class="o">.</span><span class="n">Vector3dVector</span><span class="p">(</span><span class="n">xyzFlightMax</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+
+<span class="n">xyzFlightMin</span><span class="o">=</span><span class="n">gridFlightMin</span><span class="p">[:,</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">]</span>  
+<span class="n">pcdFlightMin</span> <span class="o">=</span> <span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">PointCloud</span><span class="p">()</span>
+<span class="n">pcdFlightMin</span><span class="o">.</span><span class="n">points</span> <span class="o">=</span> <span class="n">o3d</span><span class="o">.</span><span class="n">utility</span><span class="o">.</span><span class="n">Vector3dVector</span><span class="p">(</span><span class="n">xyzFlightMin</span><span class="o">.</span><span class="n">numpy</span><span class="p">())</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Fig.5</strong>: Creation of the grids with the both meshes for the calculation between two epochs.
+<img alt="rendering" src="../_images/Creation_grids.PNG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># mesh=o3d.io.read_triangle_mesh(meshPath)</span>
+<span class="c1"># mesh.compute_vertex_normals()</span>
+<span class="n">o3d</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">draw_geometries</span><span class="p">([</span><span class="n">mesh1</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">pcdFlightMax</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">pcdFlightMin</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">mesh2</span><span class="p">]</span> <span class="o">+</span> <span class="n">bimgeometries</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="calculate-the-volume-change-between-the-two-epochs">
+<h3>Calculate the volume change between the two epochs<a class="headerlink" href="#calculate-the-volume-change-between-the-two-epochs" title="Link to this heading"></a></h3>
+<p>Create depthmaps of the gridMax with both meshes, where every point has a value with the distance of the point to the mesh. If the ray doesn’t intersect with the mesh the value is “-Inf”.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">depthmapF1</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">get_mesh_intersections</span><span class="p">(</span><span class="n">mesh1</span><span class="p">,</span><span class="n">gridFlightMax</span><span class="p">)</span>
+<span class="n">depthmapF2</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">get_mesh_intersections</span><span class="p">(</span><span class="n">mesh2</span><span class="p">,</span><span class="n">gridFlightMax</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Calculate the difference between both depthmaps, this gives a value with the distancee between the two meshes where a positive value is where mesh 1, session 101_0366, is beneath mesh 2, session 101_0367.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">depthmapDifference</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">depthmapF1</span><span class="o">-</span><span class="n">depthmapF2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stderr highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>C:\Users\beheerder\AppData\Local\Temp\ipykernel_10188\3747729355.py:1: RuntimeWarning: invalid value encountered in subtract
+  depthmapDifference = np.asarray(depthmapF1-depthmapF2)
+</pre></div>
+</div>
+</div>
+</div>
+<p>Delete the depthmap at the edges because of a bad photogrammetric reconstruction, you can change the distance to the edges in the function, default 1m.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">depthmapDifference</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">remove_edges_volume_calculation</span><span class="p">(</span><span class="n">depthmapDifference</span><span class="p">,</span><span class="n">distance</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Fig.6</strong>: Coloured pointcloud where everything that is coloured green is a fill and everything that is coloured red is cut, the grey points are a buffer where the volume changes are within the 3cm.
+<img alt="rendering" src="../_images/removed_edges.PNG" /></p>
+<p><strong>Fig.7</strong>: Coloured pointcloud where the edges are still visible which gives dark colors.
+<img alt="rendering" src="../_images/Colored_pointcloud_two_epochs.JPG" /></p>
+<p>Colour the pointcloud gradually everything that is coloured green is a fill and everything that is coloured red is a cut, the grey points are a buffer where the volume changes are within the 3cm, this value can be changed in the function.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coloredpcd</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">color_pointcloud_by_height</span><span class="p">(</span><span class="n">pcdFlightMax</span><span class="p">,</span> <span class="n">depthmapDifference</span><span class="p">,</span> <span class="n">buckets</span><span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">hmax</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mf">0.03</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>PointCloud with 901688 points.
+</pre></div>
+</div>
+</div>
+</div>
+<p>Visualise the coloured pointcloud.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">o3d</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">draw_geometries</span><span class="p">(</span> <span class="p">[</span><span class="n">coloredpcd</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Create a volume depthmap : the difference depthmap multiplied with the resolution squared, this gives a differnce volume per point of the grid. Where a positive value is a fill and a negative value is a cut.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">volumeDepthmap</span><span class="o">=</span><span class="n">depthmapDifference</span><span class="o">*</span><span class="n">resolution</span><span class="o">*</span><span class="n">resolution</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Split the volumeDepthmap in fill and cut additionally they can be substracted to give a overall view of the volume calculation (there is a limit of 100m because when there is no intersection the algorithm gives inf)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">fill</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">cut</span><span class="o">=</span><span class="mi">0</span>
+
+<span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">volumeDepthmap</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x</span><span class="o">&gt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">x</span><span class="o">&lt;</span><span class="mi">100</span><span class="p">:</span>
+        <span class="n">fill</span><span class="o">=</span><span class="n">fill</span> <span class="o">+</span> <span class="n">x</span>
+    <span class="k">elif</span> <span class="n">x</span><span class="o">&lt;</span><span class="mi">0</span> <span class="ow">and</span> <span class="n">x</span> <span class="o">&gt;</span> <span class="o">-</span><span class="mi">100</span><span class="p">:</span>
+        <span class="n">cut</span><span class="o">=</span> <span class="n">cut</span> <span class="o">+</span> <span class="n">x</span>
+
+<span class="n">totalVolume</span><span class="o">=</span><span class="n">fill</span><span class="o">+</span><span class="n">cut</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The paths are changed to strings in order to print the volumechanges to create a numeric output too.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">meshPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">,</span><span class="s1">&#39;101_0366&#39;</span><span class="p">,</span><span class="s1">&#39;MeshLAMBERT72_TAW.ply&#39;</span><span class="p">)</span>
+<span class="n">mesh2Path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;Meshes&#39;</span><span class="p">,</span><span class="s1">&#39;101_0367&#39;</span><span class="p">,</span><span class="s1">&#39;MeshLAMBERT72_TAW.ply&#39;</span><span class="p">)</span>
+
+<span class="n">string1</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">meshPath</span><span class="p">)</span>
+<span class="n">string2</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="n">mesh2Path</span><span class="p">)</span>
+
+<span class="n">flightname1</span><span class="o">=</span><span class="n">string1</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">flightname1</span><span class="o">=</span><span class="n">flightname1</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+<span class="n">flightname2</span><span class="o">=</span><span class="n">string2</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\\</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">flightname2</span><span class="o">=</span><span class="n">flightname2</span><span class="p">[</span><span class="o">-</span><span class="mi">2</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The cut fill and total volume are printed with the two epochs.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The soil that is filled in this project between flight &quot;</span> <span class="o">+</span> <span class="n">flightname1</span> <span class="o">+</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span>  <span class="n">flightname2</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">fill</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; m³&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The soil that is cut in this project between flight &quot;</span> <span class="o">+</span> <span class="n">flightname1</span> <span class="o">+</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span>  <span class="n">flightname2</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">cut</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; m³&quot;</span><span class="p">)</span> <span class="c1">#str(round(cut[0],2)) when not zero</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The absolute volume change between flight &quot;</span> <span class="o">+</span> <span class="n">flightname1</span> <span class="o">+</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span>  <span class="n">flightname2</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span>  <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">totalVolume</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; m³.&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The soil that is filled in this project between flight 101_0366 and 101_0367 is 294.87 m³
+The soil that is cut in this project between flight 101_0366 and 101_0367 is -35.3 m³
+The absolute volume change between flight 101_0366 and 101_0367 is 259.57 m³.
+</pre></div>
+</div>
+</div>
+</div>
+<p>Save a textfile in the folder</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Mesh_vs_mesh.txt&#39;</span><span class="p">),</span><span class="s2">&quot;w+&quot;</span><span class="p">)</span>
+<span class="n">l1</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;The soil that is filled in this project between flight &quot;</span> <span class="o">+</span> <span class="n">flightname1</span> <span class="o">+</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span>  <span class="n">flightname2</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">fill</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; m³. </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">l2</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;The soil that is cut in this project between flight &quot;</span> <span class="o">+</span> <span class="n">flightname1</span> <span class="o">+</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span>  <span class="n">flightname2</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">cut</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; m³. </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">l3</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;The absolute volume change between flight &quot;</span> <span class="o">+</span> <span class="n">flightname1</span> <span class="o">+</span> <span class="s2">&quot; and &quot;</span> <span class="o">+</span>  <span class="n">flightname2</span> <span class="o">+</span> <span class="s2">&quot; is &quot;</span>  <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">totalVolume</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; m³. </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">l</span><span class="o">=</span><span class="p">[</span><span class="n">l1</span> <span class="p">,</span> <span class="n">l2</span><span class="p">,</span> <span class="n">l3</span><span class="p">]</span>
+<span class="n">file</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+<span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Export the pointcloud in the folder.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pointcloudPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="sa">r</span><span class="s2">&quot;myAnalysisFolder\colouredPCD.pcd&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write_point_cloud</span><span class="p">(</span><span class="n">pointcloudPath</span><span class="p">,</span> <span class="n">coloredpcd</span><span class="p">,</span> <span class="n">write_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compressed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="calculate-the-volume-change-between-the-an-epoch-and-the-as-design-bim">
+<h2>Calculate the volume change between the an epoch and the as-design bim<a class="headerlink" href="#calculate-the-volume-change-between-the-an-epoch-and-the-as-design-bim" title="Link to this heading"></a></h2>
+<p>Split the grid per object of the bim</p>
+<p>Assign distances to parameters to expand the bounding boxes of the bim elements to crop the grid.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">u</span><span class="o">=</span><span class="mi">0</span><span class="c1"># (float) search distance in X given the boundingbox</span>
+<span class="n">v</span><span class="o">=</span><span class="mi">0</span> <span class="c1"># (float) search distance in Y given the boundingbox</span>
+<span class="n">z</span><span class="o">=</span><span class="mi">40</span> <span class="c1"># (float) search distance in Z given the boundingbox</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Create bounding boxes</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bimNodes</span><span class="p">:</span>
+    <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">node</span><span class="p">,</span><span class="s1">&#39;orientedBounds&#39;</span><span class="p">,</span><span class="kc">None</span><span class="p">)</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">bb</span><span class="o">=</span><span class="n">node</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">get_axis_aligned_bounding_box</span><span class="p">()</span>
+        <span class="n">a</span><span class="o">=</span><span class="n">bb</span><span class="o">.</span><span class="n">get_oriented_bounding_box</span><span class="p">()</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">box</span><span class="o">=</span><span class="n">a</span>   
+        <span class="n">node</span><span class="o">.</span><span class="n">box</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">expand_box</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">box</span><span class="p">,</span><span class="n">u</span><span class="o">=</span><span class="n">u</span><span class="p">,</span><span class="n">v</span><span class="o">=</span><span class="n">v</span><span class="p">,</span><span class="n">w</span><span class="o">=</span><span class="n">z</span><span class="p">)</span>
+        <span class="n">node</span><span class="o">.</span><span class="n">box</span><span class="o">.</span><span class="n">color</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">]</span>   
+</pre></div>
+</div>
+</div>
+</div>
+<p>Crop the grids per bim object to grid max and a grid min using the expanded bounding boxes of the bim elements.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bimboxes</span><span class="o">=</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">box</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bimNodes</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">box</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">bimnode</span> <span class="ow">in</span> <span class="n">bimNodes</span><span class="p">:</span>
+    <span class="n">bimnode</span><span class="o">.</span><span class="n">croppedPcdMax</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">PointCloud</span><span class="p">()</span>
+    <span class="n">bimnode</span><span class="o">.</span><span class="n">croppedPcdMax</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">crop_geometry_by_box</span><span class="p">(</span><span class="n">pcdFlightMax</span><span class="p">,</span> <span class="n">bimnode</span><span class="o">.</span><span class="n">box</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">bimnode</span> <span class="ow">in</span> <span class="n">bimNodes</span><span class="p">:</span>
+    <span class="n">bimnode</span><span class="o">.</span><span class="n">croppedPcdMin</span><span class="o">=</span><span class="n">o3d</span><span class="o">.</span><span class="n">geometry</span><span class="o">.</span><span class="n">PointCloud</span><span class="p">()</span>
+    <span class="n">bimnode</span><span class="o">.</span><span class="n">croppedPcdMin</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">crop_geometry_by_box</span><span class="p">(</span><span class="n">pcdFlightMin</span><span class="p">,</span> <span class="n">bimnode</span><span class="o">.</span><span class="n">box</span> <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>color the min grid red and the plus grid blue.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pcdFlightMax</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">pcdFlightMin</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span>
+<span class="n">boxes</span><span class="o">=</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">box</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bimNodes</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">box</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">croppedPcdsMax</span><span class="o">=</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">croppedPcdMax</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bimNodes</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">croppedPcdMax</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">]</span>
+<span class="n">croppedPcdsMin</span><span class="o">=</span><span class="p">[</span><span class="n">node</span><span class="o">.</span><span class="n">croppedPcdMin</span> <span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bimNodes</span> <span class="k">if</span> <span class="n">node</span><span class="o">.</span><span class="n">croppedPcdMin</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Create a grid of rays using the grid of points per element that was just created.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">bimgeometries</span><span class="o">=</span><span class="p">[</span><span class="n">n</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">bimNodes</span> <span class="k">if</span> <span class="n">n</span><span class="o">.</span><span class="n">resource</span><span class="p">]</span>
+<span class="n">raysDown</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">get_rays_raycast</span><span class="p">(</span><span class="n">bimNodes</span><span class="p">,</span><span class="s2">&quot;Down&quot;</span><span class="p">)</span>
+<span class="n">raysUp</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">get_rays_raycast</span><span class="p">(</span><span class="n">bimNodes</span><span class="p">,</span><span class="s2">&quot;up&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Use the created grid of rays to create two depthmaps of the bim elements, a plus grid and a min grid.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">depthmapBimMax</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">get_bim_intersections</span><span class="p">(</span><span class="n">bimgeometries</span><span class="p">,</span><span class="n">raysDown</span><span class="p">)</span>
+<span class="n">depthmapBimMinTemp</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">get_bim_intersections</span><span class="p">(</span><span class="n">bimgeometries</span><span class="p">,</span><span class="n">raysUp</span><span class="p">)</span>
+<span class="n">griddifference</span><span class="o">=</span><span class="n">xyzFlightMax</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span><span class="o">-</span><span class="n">xyzFlightMin</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">2</span><span class="p">]</span> <span class="c1">#calculate the difference in z, is the same for every point of the gris</span>
+<span class="n">depthmapBimMin</span> <span class="o">=</span> <span class="p">[</span><span class="n">griddifference</span> <span class="o">-</span> <span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">depthmapBimMinTemp</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Fig.8</strong>: Creation of the grids with the both meshes for the calculation between an epoch and the bim.
+<img alt="rendering" src="../_images/Calculation_volume_mesh_vs_BIM_grid.PNG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">o3d</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">draw_geometries</span><span class="p">(</span>  <span class="p">[</span><span class="n">mesh2</span><span class="p">]</span><span class="o">+</span> <span class="n">bimgeometries</span> <span class="o">+</span><span class="p">[</span><span class="n">pcdFlightMin</span><span class="p">]</span><span class="o">+</span> <span class="p">[</span><span class="n">pcdFlightMax</span><span class="p">]</span>  <span class="p">)</span> <span class="c1">#+[pcdFlightMin]+ [pcdFlightMax] + boxes</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Create a depthmap of the flight but in this case one per object.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">depthmapFBIM</span><span class="o">=</span><span class="n">pt</span><span class="o">.</span><span class="n">get_mesh_intersectionsBIM</span><span class="p">(</span><span class="n">mesh</span><span class="p">,</span><span class="n">raysDown</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>calculate the volume between the mesh and the bim
+$<span class="math notranslate nohighlight">\( d(x,y)=
+\begin{cases}
+\  0 &amp; ,  d_{f}\geq (d_{b,max}-d_{b,min}) \\
+\  (d_{b,max}-d_{b,min}) &amp; ,  d_{f}\leq d_{b,max} \\
+\  (d_{f}-d_{b,min}) &amp;,  else\\
+\end{cases} \)</span>$</p>
+<div class="math notranslate nohighlight">
+\[ \begin{split}
+% flight vs BIM
+&amp; V= \iint_{X_{b_n},Y_{b_n}}^{} \delta r^2 d(x,y) \,dx\,dy
+\end{split} \]</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">volumeMeshBIM</span><span class="o">=</span><span class="n">pt</span><span class="o">.</span><span class="n">volume_mesh_BIM</span><span class="p">(</span><span class="n">depthmapFBIM</span><span class="p">,</span><span class="n">depthmapBimMin</span><span class="p">,</span><span class="n">depthmapBimMax</span><span class="p">,</span><span class="n">resolution</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Calculate the theoretical volume of the bim itself, when the objects are not watertight this function will still work.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">volumeBIM</span><span class="o">=</span><span class="n">pt</span><span class="o">.</span><span class="n">volume_theoretical_BIM</span><span class="p">(</span><span class="n">depthmapBimMin</span><span class="p">,</span><span class="n">depthmapBimMax</span><span class="p">,</span><span class="n">resolution</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># print(volumeBIM)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Calculate the completion per element, by deviding the volume by the theoretical volume</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">completion</span><span class="o">=</span><span class="n">pt</span><span class="o">.</span><span class="n">calculate_completion</span><span class="p">(</span><span class="n">volumeMeshBIM</span><span class="p">,</span><span class="n">volumeBIM</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Color the bim model by comlpletion. 95% completion or more is green, between 50% and 95% it’s coloured yellow, between 25% and 50% its coloured orange and less than 25% its coloured red.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pt</span><span class="o">.</span><span class="n">color_BIMNode</span><span class="p">(</span><span class="n">completion</span><span class="p">,</span> <span class="n">bimNodes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Visualise the bim model with the colours of the completion.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">geometries</span><span class="o">=</span><span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">bimNodes</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><strong>Fig.9</strong>: Colored ifc model by the completion of each model.
+<img alt="rendering" src="../_images/Colered_bim_by_completion.PNG" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">o3d</span><span class="o">.</span><span class="n">visualization</span><span class="o">.</span><span class="n">draw_geometries</span><span class="p">(</span><span class="n">geometries</span><span class="p">)</span> 
+</pre></div>
+</div>
+</div>
+</div>
+<p>Calculate the total completion and total volume of the mesh compared to the BIM</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">totalVolumeMeshBIM</span><span class="o">=</span><span class="mi">0</span>
+<span class="n">totalVolumeBIM</span><span class="o">=</span><span class="mi">0</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">volumeMeshBIM</span><span class="p">):</span>
+    <span class="n">totalVolumeMeshBIM</span> <span class="o">=</span> <span class="n">totalVolumeMeshBIM</span> <span class="o">+</span> <span class="n">volumeMeshBIM</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">volumeBIM</span><span class="p">):</span>
+    <span class="n">totalVolumeBIM</span> <span class="o">=</span> <span class="n">totalVolumeBIM</span> <span class="o">+</span> <span class="n">volumeBIM</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+
+<span class="n">totalCompletion</span><span class="o">=</span><span class="p">(</span><span class="n">totalVolumeMeshBIM</span><span class="o">/</span><span class="n">totalVolumeBIM</span><span class="p">)</span><span class="o">*</span><span class="mi">100</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Print for each element the completion and the volume of that element.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">volumeMeshBIM</span><span class="p">):</span> 
+    <span class="k">if</span> <span class="n">completion</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">!=</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The completion of bim element (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span><span class="s2">&quot;) is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">((</span><span class="n">completion</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; %&quot;</span> <span class="o">+</span> <span class="s2">&quot; with a volume of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">volumeMeshBIM</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;m³&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The completion of bim element (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span><span class="s2">&quot;) is None&quot;</span> <span class="o">+</span> <span class="s2">&quot; with a volume of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">volumeMeshBIM</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;m³&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;The total completion of the site is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">((</span><span class="n">totalCompletion</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; % with a volume of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">totalVolumeMeshBIM</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;m³&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>The completion of bim element (0) is 5.92 % with a volume of 1.76m³
+The completion of bim element (1) is 1.69 % with a volume of 0.02m³
+The completion of bim element (2) is 0.62 % with a volume of 0.01m³
+The completion of bim element (3) is 2.19 % with a volume of 0.76m³
+The completion of bim element (4) is 28.13 % with a volume of 6.03m³
+The completion of bim element (5) is 0.01 % with a volume of 0.0m³
+The completion of bim element (6) is 7.13 % with a volume of 0.72m³
+The completion of bim element (7) is 81.09 % with a volume of 8.08m³
+The completion of bim element (8) is 0.0 % with a volume of 0.0m³
+The completion of bim element (9) is 6.36 % with a volume of 1.76m³
+The completion of bim element (10) is 1.12 % with a volume of 0.12m³
+The completion of bim element (11) is 0.0 % with a volume of 0.0m³
+The completion of bim element (12) is 4.11 % with a volume of 1.14m³
+The completion of bim element (13) is 64.4 % with a volume of 0.06m³
+The completion of bim element (14) is 56.85 % with a volume of 0.07m³
+The completion of bim element (15) is 62.62 % with a volume of 0.06m³
+The completion of bim element (16) is 62.68 % with a volume of 0.08m³
+The completion of bim element (17) is 47.77 % with a volume of 0.08m³
+The completion of bim element (18) is 81.47 % with a volume of 31.19m³
+The completion of bim element (19) is 64.61 % with a volume of 0.08m³
+The completion of bim element (20) is 60.65 % with a volume of 0.07m³
+The completion of bim element (21) is 46.77 % with a volume of 0.08m³
+The completion of bim element (22) is 79.43 % with a volume of 26.02m³
+The completion of bim element (23) is 100.0 % with a volume of 8.14m³
+The completion of bim element (24) is 92.45 % with a volume of 0.96m³
+The completion of bim element (25) is 7.76 % with a volume of 0.01m³
+The completion of bim element (26) is 22.04 % with a volume of 0.03m³
+The completion of bim element (27) is 16.17 % with a volume of 0.02m³
+The completion of bim element (28) is 0.0 % with a volume of 0.0m³
+The completion of bim element (29) is 0.0 % with a volume of 0.0m³
+The completion of bim element (30) is 0.0 % with a volume of 0.0m³
+The completion of bim element (31) is 29.1 % with a volume of 0.04m³
+The completion of bim element (32) is 8.59 % with a volume of 0.0m³
+The completion of bim element (33) is 2.28 % with a volume of 0.0m³
+The completion of bim element (34) is 12.6 % with a volume of 0.02m³
+The completion of bim element (35) is 0.0 % with a volume of 0.0m³
+The completion of bim element (36) is 23.59 % with a volume of 0.03m³
+The completion of bim element (37) is 49.08 % with a volume of 1.2m³
+The completion of bim element (38) is 0.0 % with a volume of 0.0m³
+The completion of bim element (39) is 0.0 % with a volume of 0.0m³
+The completion of bim element (40) is 0.0 % with a volume of 0.0m³
+The completion of bim element (41) is 0.0 % with a volume of 0.0m³
+The completion of bim element (42) is 0.0 % with a volume of 0.0m³
+The completion of bim element (43) is 0.0 % with a volume of 0.0m³
+The completion of bim element (44) is 0.0 % with a volume of 0.0m³
+The completion of bim element (45) is 0.0 % with a volume of 0.0m³
+The completion of bim element (46) is 0.0 % with a volume of 0.0m³
+The completion of bim element (47) is 0.0 % with a volume of 0.0m³
+The completion of bim element (48) is 0.0 % with a volume of 0.0m³
+The completion of bim element (49) is 19.37 % with a volume of 0.05m³
+The completion of bim element (50) is 0.0 % with a volume of 0.0m³
+The completion of bim element (51) is 0.0 % with a volume of 0.0m³
+The completion of bim element (52) is 1.52 % with a volume of 0.0m³
+The completion of bim element (53) is 2.31 % with a volume of 0.01m³
+The completion of bim element (54) is 0.0 % with a volume of 0.0m³
+The completion of bim element (55) is 0.0 % with a volume of 0.0m³
+The completion of bim element (56) is 0.0 % with a volume of 0.0m³
+The completion of bim element (57) is 0.0 % with a volume of 0.0m³
+The completion of bim element (58) is 0.0 % with a volume of 0.0m³
+The completion of bim element (59) is 0.0 % with a volume of 0.0m³
+The completion of bim element (60) is 0.0 % with a volume of 0.0m³
+The completion of bim element (61) is 38.34 % with a volume of 0.4m³
+The completion of bim element (62) is 34.41 % with a volume of 0.25m³
+The completion of bim element (63) is 98.41 % with a volume of 1.17m³
+The total completion of the site is 24.28 % with a volume of 90.52m³
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">l</span><span class="o">=</span><span class="p">[]</span>
+<span class="n">li</span><span class="o">=</span><span class="s1">&#39;&#39;</span>
+<span class="k">for</span> <span class="n">i</span><span class="p">,</span><span class="n">element</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">volumeMeshBIM</span><span class="p">):</span> 
+    <span class="n">li</span><span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="s2">&quot;The completion of bim element (&quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">)</span> <span class="o">+</span><span class="s2">&quot;) is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">((</span><span class="n">completion</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; %&quot;</span> <span class="o">+</span> <span class="s2">&quot; with a volume of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">volumeMeshBIM</span><span class="p">[</span><span class="n">i</span><span class="p">],</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;m³. </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">li</span><span class="p">)</span>
+
+<span class="n">t</span><span class="o">=</span><span class="nb">str</span><span class="p">(</span><span class="s2">&quot;The total completion of the site is &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">((</span><span class="n">totalCompletion</span><span class="p">),</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot; % with a volume of &quot;</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="n">totalVolumeMeshBIM</span><span class="p">,</span><span class="mi">2</span><span class="p">))</span> <span class="o">+</span> <span class="s2">&quot;m³. </span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="n">l</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">t</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">file</span> <span class="o">=</span> <span class="nb">open</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="s1">&#39;myAnalysisFolder&#39;</span><span class="p">,</span><span class="s1">&#39;Mesh_vs_BIM.txt&#39;</span><span class="p">),</span><span class="s2">&quot;w+&quot;</span><span class="p">)</span>
+<span class="n">file</span><span class="o">.</span><span class="n">writelines</span><span class="p">(</span><span class="n">l</span><span class="p">)</span>
+<span class="n">file</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Create  a new path to save the bim model one by one and a full model.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">colouredMeshPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="sa">r</span><span class="s2">&quot;myAnalysisFolder\couleredIFC&quot;</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">colouredMeshPath</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">colouredMeshPath</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Save each bim object itself in colour.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">bimNodes</span><span class="p">:</span>
+    <span class="n">node</span><span class="o">.</span><span class="n">save_subjectresource</span><span class="p">(</span><span class="n">colouredMeshPath</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Join the geometries and save them</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">joinedGeometries</span><span class="o">=</span><span class="n">gmu</span><span class="o">.</span><span class="n">join_geometries</span><span class="p">(</span><span class="n">geometries</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">colouredMeshPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">projectPath</span> <span class="p">,</span><span class="sa">r</span><span class="s2">&quot;myAnalysisFolder\couleredIFC\colouredIFC.ply&quot;</span><span class="p">)</span>
+<span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write_triangle_mesh</span><span class="p">(</span><span class="n">colouredMeshPath</span><span class="p">,</span> <span class="n">joinedGeometries</span><span class="p">,</span> <span class="n">write_ascii</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">compressed</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">write_vertex_normals</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">write_vertex_colors</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">write_triangle_uvs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">print_progress</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="validationtools.html" class="btn btn-neutral float-left" title="Validation Tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="../geomapi/geomapi.nodes.html" class="btn btn-neutral float-right" title="geomapi.nodes" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

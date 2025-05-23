@@ -1,0 +1,520 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Validation Tools &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Volume calculation" href="volume_calculation.html" />
+    <link rel="prev" title="Construction site progress" href="site_progress.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Validation Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#preprocessing-the-bim-model">Preprocessing the BIM Model</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pointcloud-processing">Pointcloud processing</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#loa-comparison">LOA comparison</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#result-visualization">Result visualization</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#histograms-per-element">Histograms per element</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#pointclouds">Pointclouds</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#data-files">Data files</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#meshes">Meshes</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Validation Tools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/testcases/validationtools.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="validation-tools">
+<h1>Validation Tools<a class="headerlink" href="#validation-tools" title="Link to this heading"></a></h1>
+<p>Tools for validating BIM objects</p>
+<p>Currently the validation of BIM models before they are delivered to the client takes a significant amount of time. Using different sections an experienced modeler tries to validate each BIM element with the point cloud as background. To speed up this process this tools provides a per BIM element analysis between the BIM geometry and the point cloud data.</p>
+<p>First the geomapi and external packages are imported</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">open3d</span> <span class="k">as</span> <span class="nn">o3d</span>
+<span class="kn">import</span> <span class="nn">time</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jupyter environment detected. Enabling Open3D WebVisualizer.
+[Open3D INFO] WebRTC GUI backend enabled.
+[Open3D INFO] WebRTCWindowSystem: HTTP handshake server disabled.
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#IMPORT MODULES</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span>
+<span class="kn">import</span> <span class="nn">geomapi.utils</span> <span class="k">as</span> <span class="nn">ut</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools</span> <span class="k">as</span> <span class="nn">tl</span>
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools.validationtools</span> <span class="k">as</span> <span class="nn">vt</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">load_ext</span> autoreload
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="o">%</span><span class="k">autoreload</span> 2
+</pre></div>
+</div>
+</div>
+</div>
+<section id="preprocessing-the-bim-model">
+<h2>Preprocessing the BIM Model<a class="headerlink" href="#preprocessing-the-bim-model" title="Link to this heading"></a></h2>
+<p>Following the GEOMAPI principles, we serialize all relevent objects in the BIM model to an RDF Graph.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">ifcPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;IFC&#39;</span><span class="p">,</span><span class="s1">&#39;steel_structure.ifc&#39;</span><span class="p">)</span>
+<span class="n">BIMNodes</span> <span class="o">=</span> <span class="p">[]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For this analysis, we parse the ifc files using all CPU’s.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">BIMNodes</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span><span class="n">tl</span><span class="o">.</span><span class="n">ifc_to_nodes_multiprocessing</span><span class="p">(</span><span class="n">ifcPath</span> <span class="o">=</span> <span class="n">ifcPath</span><span class="p">,</span> <span class="n">getResource</span> <span class="o">=</span> <span class="kc">True</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Next code block visualizes all elements within the BIM Model that were succesfully converted into GEOMAPI BIMNodes containing a geometry.
+It is not uncommon for certain elements to not have geometry or have some invalid meshes. These will yield <strong>Geometry Production Errors</strong> and are not stored in a GEOMAPI BIMNode because we only retrieve those elments containing a geometry.</p>
+<p><img alt="image" src="../_images/BIM.PNG" /></p>
+<p><em><strong>figure 1:</strong></em> BIM model</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#Now we can visualize the BIM data</span>
+<span class="c1"># o3d.visualization.draw_geometries([BIMNode.resource for BIMNode in BIMNodes])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>For this analysis we zere only interested in the structural elemens such as beams and columns (But the provided code will work accordingly for other classes like walls). The model looks very clean on first sigth but when we color the elements corresponding to the classes we want, it can be seen that also other elements are present in the model. Those elements, colored in red are not needed for the analysis because after inspection there can be concluded that those elments exisit of connection between steel elements, anckers for the concrete, bolts and screws,…</p>
+<p><img alt="image" src="../_images/BIMclasses.PNG" /></p>
+<p><em><strong>figure 2:</strong></em> BIM model classified as IfcBeams (green), IfcColumns (orange) and clutter (red)</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">BIMNode</span> <span class="ow">in</span> <span class="n">BIMNodes</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">BIMNode</span><span class="o">.</span><span class="n">className</span> <span class="o">==</span> <span class="s1">&#39;IfcBeam&#39;</span><span class="p">:</span>
+        <span class="n">BIMNode</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mf">0.788</span><span class="p">,</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="k">elif</span> <span class="n">BIMNode</span><span class="o">.</span><span class="n">className</span> <span class="o">==</span> <span class="s1">&#39;IfcColumn&#39;</span><span class="p">:</span>
+        <span class="n">BIMNode</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0.753</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">BIMNode</span><span class="o">.</span><span class="n">resource</span><span class="o">.</span><span class="n">paint_uniform_color</span><span class="p">([</span><span class="mf">1.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">,</span><span class="mf">0.0</span><span class="p">])</span>
+
+<span class="c1"># o3d.visualization.draw_geometries([BIMNode.resource for BIMNode in BIMNodes])</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Those elements are mostly very small or are not visible in the scanning data. Therfore these elements will be removed from the BIMNodes list and ignored for further analysis. This reduces the number of BIMNodes to be processed from 301 to 173</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Before class filtering: </span><span class="si">%s</span><span class="s2"> BIMNodes&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">BIMNodes</span><span class="p">))</span>
+<span class="n">i</span><span class="o">=</span><span class="mi">0</span>
+<span class="k">while</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">BIMNodes</span><span class="p">):</span>
+    <span class="n">BIMNode</span> <span class="o">=</span> <span class="n">BIMNodes</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+    <span class="n">BIMNode</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">BIMNode</span><span class="o">.</span><span class="n">className</span> <span class="o">+</span> <span class="n">BIMNode</span><span class="o">.</span><span class="n">globalId</span>
+    <span class="k">if</span> <span class="n">BIMNode</span><span class="o">.</span><span class="n">className</span> <span class="o">==</span> <span class="s1">&#39;IfcBeam&#39;</span> <span class="ow">or</span> <span class="n">BIMNode</span><span class="o">.</span><span class="n">className</span> <span class="o">==</span> <span class="s1">&#39;IfcColumn&#39;</span><span class="p">:</span>
+        <span class="n">i</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">BIMNodes</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;After class filtering: </span><span class="si">%s</span><span class="s2"> BIMNodes&quot;</span> <span class="o">%</span> <span class="nb">len</span><span class="p">(</span><span class="n">BIMNodes</span><span class="p">))</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Before class filtering: 301 BIMNodes
+After class filtering: 173 BIMNodes
+</pre></div>
+</div>
+</div>
+</div>
+<p>To be able to make computations between the BIM geometry and the captured point cloud all BIM geometries are sampled to a point cloud. To this end the GEOMAPI theoretical visibility functions are used. This allows us to achieve better results where unvisible point mostly influnce the analysisi results by matching with clutter objects.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#First the resolution of the sampling is determined</span>
+<span class="n">resolution</span> <span class="o">=</span> <span class="mf">0.01</span>
+
+<span class="c1">#Then the visibility pointCloud is created for every BIMNode and stored in meshPCD variable that is added to the BIMNode</span>
+<span class="n">referencepcds</span> <span class="o">=</span><span class="p">[]</span>
+<span class="n">referenceids</span> <span class="o">=</span> <span class="p">[]</span>
+<span class="n">visibility</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">BIMpcdNodes</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="k">for</span> <span class="n">BIMNode</span> <span class="ow">in</span> <span class="n">BIMNodes</span><span class="p">:</span>
+    <span class="n">BIMNode</span><span class="o">.</span><span class="n">linkedNodes</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">meshPCD</span><span class="p">,</span> <span class="n">theoreticalVisibility</span> <span class="o">=</span> <span class="n">geomapi</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">geometryutils</span><span class="o">.</span><span class="n">create_visible_point_cloud_from_meshes</span><span class="p">(</span>
+                                                            <span class="n">geometries</span><span class="o">=</span><span class="n">BIMNode</span><span class="o">.</span><span class="n">resource</span><span class="p">,</span>
+                                                            <span class="n">references</span><span class="o">=</span><span class="p">[</span><span class="n">bm</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">bm</span> <span class="ow">in</span> <span class="n">BIMNodes</span> <span class="k">if</span> <span class="n">bm</span> <span class="ow">is</span> <span class="ow">not</span> <span class="n">BIMNode</span><span class="p">],</span>
+                                                            <span class="n">resolution</span><span class="o">=</span><span class="n">resolution</span><span class="p">,</span>
+                                                            <span class="n">getNormals</span><span class="o">=</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">BIMNode</span><span class="o">.</span><span class="n">theoreticalVisibility</span> <span class="o">=</span> <span class="n">theoreticalVisibility</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    
+    <span class="k">if</span> <span class="n">theoreticalVisibility</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">&gt;</span> <span class="mf">0.1</span><span class="p">:</span>
+        <span class="n">referencepcds</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">meshPCD</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">referenceids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BIMNode</span><span class="o">.</span><span class="n">subject</span><span class="p">)</span>
+        <span class="n">visibility</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">BIMNode</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">theoreticalVisibility</span><span class="p">[</span><span class="mi">0</span><span class="p">]))</span>
+        <span class="n">BIMpcdNode</span> <span class="o">=</span> <span class="n">geomapi</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">PointCloudNode</span><span class="p">(</span><span class="n">subject</span> <span class="o">=</span> <span class="n">BIMNode</span><span class="o">.</span><span class="n">subject</span><span class="p">,</span> <span class="n">name</span> <span class="o">=</span> <span class="n">BIMNode</span><span class="o">.</span><span class="n">name</span><span class="p">,</span> <span class="n">resource</span> <span class="o">=</span> <span class="n">meshPCD</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+        <span class="n">BIMpcdNodes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">BIMpcdNode</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">referenceSession</span> <span class="o">=</span> <span class="n">geomapi</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">SessionNode</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;reference_session&quot;</span><span class="p">,</span><span class="n">linkedNodes</span><span class="o">=</span> <span class="n">BIMNodes</span><span class="p">)</span>
+<span class="c1">#Why not?? Session moet een convex hull hebben als resource kan geen folder zijn</span>
+<span class="c1"># referenceSession.path = os.path.join(Path(os.getcwd()).parents[2],&#39;tests&#39;,&#39;Samples14&#39;,&#39;myAnalysisFolder&#39;,referenceSession.name)</span>
+
+<span class="n">referenceSession_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;SESSION&#39;</span><span class="p">,</span><span class="n">referenceSession</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">referenceSession_path</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">referenceSession_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">BIMNode</span> <span class="ow">in</span> <span class="n">BIMNodes</span><span class="p">:</span>
+    <span class="c1"># Make sure the BIM elemnts have a unique name before saving them</span>
+    <span class="n">BIMNode</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">BIMNode</span><span class="o">.</span><span class="n">className</span> <span class="o">+</span> <span class="n">BIMNode</span><span class="o">.</span><span class="n">globalId</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">())</span>
+    <span class="c1"># Save all BIMNode resources (meshes) to disk to save memory.</span>
+    <span class="n">BIMNode</span><span class="o">.</span><span class="n">save_resource</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">referenceSession_path</span><span class="p">,</span><span class="s1">&#39;MESHES&#39;</span><span class="p">))</span>
+    <span class="k">del</span> <span class="n">BIMNode</span><span class="o">.</span><span class="n">resource</span>
+<span class="n">BIMgraphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">referenceSession_path</span><span class="p">,</span><span class="s1">&#39;bimGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">geomapi</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">nodes_to_graph</span><span class="p">(</span><span class="n">nodelist</span><span class="o">=</span><span class="n">BIMNodes</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">BIMgraphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">for</span> <span class="n">BIMpcdNode</span> <span class="ow">in</span> <span class="n">BIMpcdNodes</span><span class="p">:</span>
+    <span class="c1">#Make sure the BIM elemnts have a unique name before saving them</span>
+    <span class="n">BIMpcdNode</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="n">BIMpcdNode</span><span class="o">.</span><span class="n">name</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">time</span><span class="o">.</span><span class="n">time_ns</span><span class="p">())</span>
+    <span class="c1">#Save all BIMNode resources (meshes) to disk to save memory.</span>
+    <span class="n">BIMpcdNode</span><span class="o">.</span><span class="n">save_resource</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">referenceSession_path</span><span class="p">,</span><span class="s1">&#39;PCDS&#39;</span><span class="p">))</span>
+<span class="n">BIMpcdgraphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">referenceSession_path</span><span class="p">,</span><span class="s1">&#39;bimPcdGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">geomapi</span><span class="o">.</span><span class="n">tl</span><span class="o">.</span><span class="n">nodes_to_graph</span><span class="p">(</span><span class="n">nodelist</span><span class="o">=</span><span class="n">BIMpcdNodes</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">BIMpcdgraphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Graph identifier=N781e70a9757f4d67aa4361bdcda60114 (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="pointcloud-processing">
+<h2>Pointcloud processing<a class="headerlink" href="#pointcloud-processing" title="Link to this heading"></a></h2>
+<p>Now the reference object are processed and the captured data will be processed. This data is not reference data and can change, for example during the construction phase where sequential measurement campaigns are organised. Therefore, the reults of these analysis are stored separetly in a SessionNode containing all BIMnodes from above.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">pcdPath</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;PCD&#39;</span><span class="p">,</span><span class="s1">&#39;pointcloud2sub.e57&#39;</span><span class="p">)</span>
+<span class="n">pcdNodes</span><span class="o">=</span><span class="n">tl</span><span class="o">.</span><span class="n">e57header_to_nodes</span><span class="p">(</span><span class="n">pcdPath</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>Create a session conteining all the data that can change, such as the captured data and the analysis</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">session</span> <span class="o">=</span> <span class="n">geomapi</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">SessionNode</span><span class="p">(</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;session_&quot;</span> <span class="o">+</span> <span class="n">time</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y%m</span><span class="si">%d</span><span class="s2">-%H%M%S&quot;</span><span class="p">),</span> <span class="n">linkedNodes</span> <span class="o">=</span> <span class="n">pcdNodes</span> <span class="o">+</span> <span class="n">BIMNodes</span> <span class="o">+</span> <span class="n">BIMpcdNodes</span><span class="p">)</span>
+
+<span class="n">sessionFolder</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span><span class="o">.</span><span class="n">parents</span><span class="p">[</span><span class="mi">2</span><span class="p">],</span><span class="s1">&#39;test&#39;</span><span class="p">,</span><span class="s1">&#39;testfiles&#39;</span><span class="p">,</span><span class="s1">&#39;SESSION&#39;</span><span class="p">,</span><span class="n">session</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">sessionFolder</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">sessionFolder</span><span class="p">)</span>
+
+<span class="n">graphPath</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sessionFolder</span><span class="p">,</span><span class="s1">&#39;SessionGraph.ttl&#39;</span><span class="p">)</span>
+<span class="n">tl</span><span class="o">.</span><span class="n">nodes_to_graph</span><span class="p">(</span><span class="n">nodelist</span><span class="o">=</span><span class="n">pcdNodes</span><span class="p">,</span><span class="n">graphPath</span><span class="o">=</span><span class="n">graphPath</span><span class="p">,</span><span class="n">save</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>&lt;Graph identifier=N6cd6364d43d34bf68d90e597ff453f08 (&lt;class &#39;rdflib.graph.Graph&#39;&gt;)&gt;
+</pre></div>
+</div>
+</div>
+</div>
+<p>Because we don’t have any information about the pointclouds such as their boundingboxes, the pointclouds must be loaded to determine these parameters</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="k">for</span> <span class="n">pcdNode</span> <span class="ow">in</span> <span class="n">pcdNodes</span><span class="p">:</span>
+    <span class="n">pcdNode</span><span class="o">.</span><span class="n">get_resource</span><span class="p">()</span> 
+<span class="n">pcd</span> <span class="o">=</span> <span class="p">[</span><span class="n">pcdNode</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">pcdNode</span> <span class="ow">in</span> <span class="n">pcdNodes</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="loa-comparison">
+<h2>LOA comparison<a class="headerlink" href="#loa-comparison" title="Link to this heading"></a></h2>
+<p>The next function will determines yo which element each point of the point cloud belongs + the distance between these points. By doing this matching the LOA percentages will be more accurate, ignore more clutter.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">joinedPCD</span><span class="p">,</span> <span class="n">identityArray</span><span class="p">,</span> <span class="n">distances</span> <span class="o">=</span> <span class="n">vt</span><span class="o">.</span><span class="n">match_BIM_points</span><span class="p">(</span><span class="n">sources</span> <span class="o">=</span> <span class="n">pcd</span><span class="p">,</span> <span class="n">references</span> <span class="o">=</span> <span class="n">referencepcds</span><span class="p">,</span> <span class="n">referenceIds</span><span class="o">=</span> <span class="n">referenceids</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p>The next function determines the percentage of inliers per LOA bracket</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">LOA</span> <span class="o">=</span> <span class="n">vt</span><span class="o">.</span><span class="n">compute_LOA</span><span class="p">(</span><span class="n">identityArray</span><span class="p">,</span> <span class="n">distances</span><span class="p">,</span> <span class="n">byElement</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="result-visualization">
+<h2>Result visualization<a class="headerlink" href="#result-visualization" title="Link to this heading"></a></h2>
+<p>Next we will demonstrate the different options to visualize the analysis results. This can be done by element or for the entire project at once</p>
+</section>
+<section id="histograms-per-element">
+<h2>Histograms per element<a class="headerlink" href="#histograms-per-element" title="Link to this heading"></a></h2>
+<p><img alt="image" src="../_images/perelementhist.PNG" /></p>
+<p><em><strong>figure 3:</strong></em> Histogram illustrating the cistances between the source point and the matched reference point</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vt</span><span class="o">.</span><span class="n">plot_histogram</span><span class="p">(</span><span class="n">identityArray</span><span class="p">,</span> <span class="n">distances</span><span class="p">,</span> <span class="n">directory</span> <span class="o">=</span> <span class="n">sessionFolder</span><span class="p">,</span> <span class="n">byElement</span><span class="o">=</span> <span class="kc">True</span><span class="p">,</span> <span class="n">show</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<span class="n">vt</span><span class="o">.</span><span class="n">plot_histogram</span><span class="p">(</span><span class="n">identityArray</span><span class="p">,</span> <span class="n">distances</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/bce33b9e896b91d9f9209a75782ee2bb8ce219aebff3c564755e3c228031ca89.png" src="../_images/bce33b9e896b91d9f9209a75782ee2bb8ce219aebff3c564755e3c228031ca89.png" />
+</div>
+</div>
+</section>
+<section id="pointclouds">
+<h2>Pointclouds<a class="headerlink" href="#pointclouds" title="Link to this heading"></a></h2>
+<p><img alt="image" src="../_images/ColoredPCD.PNG" /></p>
+<p><em><strong>figure 4:</strong></em> Pointcloud where the points are colored by LOA</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">coloredPCD</span> <span class="o">=</span> <span class="n">vt</span><span class="o">.</span><span class="n">color_point_cloud_by_LOA</span><span class="p">(</span><span class="n">joinedPCD</span><span class="p">,</span> <span class="n">identityArray</span><span class="p">,</span> <span class="n">distances</span><span class="p">)</span>
+<span class="c1"># o3d.visualization.draw_geometries(coloredPCD)</span>
+<span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write_point_cloud</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sessionFolder</span><span class="p">,</span> <span class="s1">&#39;CompleteColoredresult&#39;</span> <span class="o">+</span> <span class="s1">&#39;.pcd&#39;</span><span class="p">),</span> <span class="n">coloredPCD</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/GradientPCD.PNG" /></p>
+<p><em><strong>figure 4:</strong></em> Pointcloud where the points are colored by their distance</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">gradientPCD</span> <span class="o">=</span> <span class="n">vt</span><span class="o">.</span><span class="n">color_point_cloud_by_distance</span><span class="p">(</span><span class="n">joinedPCD</span><span class="p">,</span> <span class="n">identityArray</span><span class="p">,</span> <span class="n">distances</span><span class="p">)</span>
+<span class="c1"># o3d.visualization.draw_geometries(coloredPCD)</span>
+<span class="n">o3d</span><span class="o">.</span><span class="n">io</span><span class="o">.</span><span class="n">write_point_cloud</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sessionFolder</span><span class="p">,</span> <span class="s1">&#39;CompleteGradientresult&#39;</span> <span class="o">+</span> <span class="s1">&#39;.pcd&#39;</span><span class="p">),</span> <span class="n">gradientPCD</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="data-files">
+<h2>Data files<a class="headerlink" href="#data-files" title="Link to this heading"></a></h2>
+<p><img alt="image" src="../_images/csv.PNG" /></p>
+<p><em><strong>figure 5:</strong></em> A csv file with the analysis results</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vt</span><span class="o">.</span><span class="n">csv_by_LOA</span><span class="p">(</span><span class="n">sessionFolder</span><span class="p">,</span> <span class="n">LOA</span><span class="p">,</span> <span class="n">visibility</span><span class="o">=</span><span class="n">visibility</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/excel.PNG" /></p>
+<p><em><strong>figure 6:</strong></em> Excel file with the analysis results</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vt</span><span class="o">.</span><span class="n">excel_by_LOA</span><span class="p">(</span><span class="n">sessionFolder</span><span class="p">,</span> <span class="n">LOA</span><span class="p">,</span> <span class="n">visibility</span><span class="o">=</span><span class="n">visibility</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="meshes">
+<h2>Meshes<a class="headerlink" href="#meshes" title="Link to this heading"></a></h2>
+<p><img alt="image" src="../_images/ColoredMesh.PNG" /></p>
+<p><em><strong>figure 7:</strong></em> Mesh colored according to the LOA level of the element</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">vt</span><span class="o">.</span><span class="n">color_BIMNode</span><span class="p">(</span><span class="n">LOA</span><span class="p">,</span> <span class="n">BIMNodes</span><span class="p">)</span>
+<span class="n">geometries</span> <span class="o">=</span> <span class="p">[</span><span class="n">BIMNode</span><span class="o">.</span><span class="n">resource</span> <span class="k">for</span> <span class="n">BIMNode</span> <span class="ow">in</span> <span class="n">BIMNodes</span><span class="p">]</span>
+<span class="k">for</span> <span class="n">BIMNode</span> <span class="ow">in</span> <span class="n">BIMNodes</span><span class="p">:</span>
+    <span class="n">BIMNode</span><span class="o">.</span><span class="n">save_resource</span><span class="p">(</span><span class="n">directory</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">sessionFolder</span><span class="p">,</span> <span class="s2">&quot;meshes&quot;</span><span class="p">))</span>
+<span class="c1"># o3d.visualization.draw_geometries(geometries)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="site_progress.html" class="btn btn-neutral float-left" title="Construction site progress" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="volume_calculation.html" class="btn btn-neutral float-right" title="Volume calculation" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

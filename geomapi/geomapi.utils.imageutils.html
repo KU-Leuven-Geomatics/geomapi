@@ -1,0 +1,359 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.utils.imageutils &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.tools" href="geomapi.tools.html" />
+    <link rel="prev" title="geomapi.utils.geospatialutils" href="geomapi.utils.geospatialutils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.cadutils.html">geomapi.utils.cadutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html">geomapi.utils.geometryutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geospatialutils.html">geomapi.utils.geospatialutils</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.utils.imageutils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.imageutils.fill_black_pixels"><code class="docutils literal notranslate"><span class="pre">fill_black_pixels()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.imageutils.subdivide_image"><code class="docutils literal notranslate"><span class="pre">subdivide_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.imageutils.get_features"><code class="docutils literal notranslate"><span class="pre">get_features()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.imageutils.draw_keypoints_on_image"><code class="docutils literal notranslate"><span class="pre">draw_keypoints_on_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.imageutils.match_features"><code class="docutils literal notranslate"><span class="pre">match_features()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.imageutils.match_images"><code class="docutils literal notranslate"><span class="pre">match_images()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.imageutils.load_navvis_depth_map"><code class="docutils literal notranslate"><span class="pre">load_navvis_depth_map()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.imageutils.get_pcd_from_depth_map"><code class="docutils literal notranslate"><span class="pre">get_pcd_from_depth_map()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.time_function"><code class="docutils literal notranslate"><span class="pre">time_function()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_timestamp"><code class="docutils literal notranslate"><span class="pre">get_timestamp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_random_color"><code class="docutils literal notranslate"><span class="pre">get_random_color()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.map_to_2d_array"><code class="docutils literal notranslate"><span class="pre">map_to_2d_array()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.item_to_list"><code class="docutils literal notranslate"><span class="pre">item_to_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.split_list"><code class="docutils literal notranslate"><span class="pre">split_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.replace_str_index"><code class="docutils literal notranslate"><span class="pre">replace_str_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_list_of_files"><code class="docutils literal notranslate"><span class="pre">get_list_of_files()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_geomapi_classes"><code class="docutils literal notranslate"><span class="pre">get_geomapi_classes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_method_for_datatype"><code class="docutils literal notranslate"><span class="pre">get_method_for_datatype()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.apply_method_to_object"><code class="docutils literal notranslate"><span class="pre">apply_method_to_object()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_subject_name"><code class="docutils literal notranslate"><span class="pre">get_subject_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_subject_graph"><code class="docutils literal notranslate"><span class="pre">get_subject_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_attribute_from_predicate"><code class="docutils literal notranslate"><span class="pre">get_attribute_from_predicate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_number"><code class="docutils literal notranslate"><span class="pre">literal_to_number()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_string"><code class="docutils literal notranslate"><span class="pre">literal_to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_int"><code class="docutils literal notranslate"><span class="pre">literal_to_int()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_float"><code class="docutils literal notranslate"><span class="pre">literal_to_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_list"><code class="docutils literal notranslate"><span class="pre">literal_to_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_matrix"><code class="docutils literal notranslate"><span class="pre">literal_to_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_datetime"><code class="docutils literal notranslate"><span class="pre">literal_to_datetime()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xml_to_float"><code class="docutils literal notranslate"><span class="pre">xml_to_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_lat"><code class="docutils literal notranslate"><span class="pre">xcr_to_lat()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_long"><code class="docutils literal notranslate"><span class="pre">xcr_to_long()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_alt"><code class="docutils literal notranslate"><span class="pre">xcr_to_alt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_string"><code class="docutils literal notranslate"><span class="pre">validate_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_uri"><code class="docutils literal notranslate"><span class="pre">validate_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_path"><code class="docutils literal notranslate"><span class="pre">validate_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.check_if_subject_is_in_graph"><code class="docutils literal notranslate"><span class="pre">check_if_subject_is_in_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_graph_intersection"><code class="docutils literal notranslate"><span class="pre">get_graph_intersection()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.bind_ontologies"><code class="docutils literal notranslate"><span class="pre">bind_ontologies()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_node_resource_extensions"><code class="docutils literal notranslate"><span class="pre">get_node_resource_extensions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_node_type"><code class="docutils literal notranslate"><span class="pre">get_node_type()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_data_type"><code class="docutils literal notranslate"><span class="pre">get_data_type()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_geomapi_data_types"><code class="docutils literal notranslate"><span class="pre">get_geomapi_data_types()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_ifcowl_uri"><code class="docutils literal notranslate"><span class="pre">get_ifcowl_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_ifcopenshell_class_name"><code class="docutils literal notranslate"><span class="pre">get_ifcopenshell_class_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_predicate_and_datatype"><code class="docutils literal notranslate"><span class="pre">get_predicate_and_datatype()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_relative_path"><code class="docutils literal notranslate"><span class="pre">get_relative_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.rdf_property"><code class="docutils literal notranslate"><span class="pre">rdf_property()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.utils.html">geomapi.utils</a></li>
+      <li class="breadcrumb-item active">geomapi.utils.imageutils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.utils.imageutils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.utils.imageutils">
+<span id="geomapi-utils-imageutils"></span><h1>geomapi.utils.imageutils<a class="headerlink" href="#module-geomapi.utils.imageutils" title="Link to this heading"></a></h1>
+<p>Image Utils - functions for handling images.</p>
+<p>Orientation is given as a quaternion in scalar-last format [x, y, z, w]. For an
+equirectangular pano format this is the orientation of the center of the pano.
+The coordinate system is right-handed with z as the vertical direction.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.imageutils.fill_black_pixels">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.imageutils.</span></span><span class="sig-name descname"><span class="pre">fill_black_pixels</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">region</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.utils.imageutils.fill_black_pixels" title="Link to this definition"></a></dt>
+<dd><p>Fill in the black pixels in an RGB image given a search distance.</p>
+<dl>
+<dt>Args:</dt><dd><p>image (np.array)</p>
+<p>region (int, optional): search distance. Defaults to 5.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: image</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.imageutils.subdivide_image">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.imageutils.</span></span><span class="sig-name descname"><span class="pre">subdivide_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">width</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">height</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">includeLast</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.utils.imageutils.subdivide_image" title="Link to this definition"></a></dt>
+<dd><p>Subdivide image into [mxn] parts.</p>
+<p>Args:</p>
+<blockquote>
+<div><p>1.image (np.array): OpenCV image</p>
+<p>2.m (int,optional): number of rows (evenly spaced)</p>
+<p>3.n (int,optional): number of columns (evenly spaced)</p>
+<p>4.width (int,optional): length of each column (last member may deviate if included)</p>
+<p>5.height (int,optional): length of each row (last member may deviate if included)</p>
+<p>6.includeLast (bool): True= include last column and row. This is a potential risk as these images typically have a different shape.</p>
+</div></blockquote>
+<dl>
+<dt>Returns:</dt><dd><p>roiList(List[np.array]) : List per row of subdivided images.</p>
+<p>roiBounds (List[tuple(int,int,int,int)])): Boundaries of each roi (nMin,nMax,mMin,mMax)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.imageutils.get_features">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.imageutils.</span></span><span class="sig-name descname"><span class="pre">get_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featureType</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'orb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.imageutils.get_features" title="Link to this definition"></a></dt>
+<dd><p>Compute the image features and descriptors</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>img (np.array): The source image</p></li>
+<li><p>method (str, optional): The type of features to detect, choose between: orb, sift or fast. Defaults to “Orb”.</p></li>
+<li><p>max (int, optional): The destection treshold. Defaults to 1000.</p></li>
+</ul>
+</dd>
+<dt>Raises:</dt><dd><ul class="simple">
+<li><p>ValueError: If the provided method is incorrect</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>Keypoints, descriptors: The detected keypoints and descritors of the source image</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.imageutils.draw_keypoints_on_image">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.imageutils.</span></span><span class="sig-name descname"><span class="pre">draw_keypoints_on_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featureType</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'orb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_features</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keypoint_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.imageutils.draw_keypoints_on_image" title="Link to this definition"></a></dt>
+<dd><p>Detect and show keypoints on the image.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>img (np.array): The input image.
+featureType (str): The type of features to detect (‘orb’, ‘sift’, ‘fast’).
+max_features (int): The maximum number of features to detect.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: The image with keypoints drawn.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.imageutils.match_features">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.imageutils.</span></span><span class="sig-name descname"><span class="pre">match_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">des1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">des2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matchMethod</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bfm_orb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">k</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">goodPercent</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.75</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">checks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">100</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">table_number</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">12</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">key_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">20</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">multi_probe_level</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.imageutils.match_features" title="Link to this definition"></a></dt>
+<dd><p>Matches 2 sets of features using different methods</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>des1 (np.array): The descriptors of the first image
+des2 (np.array): The descriptors of the first image
+method (str, optional): Use one of the following: bfm_orb, bfm_sift, flann_orb, flann_sift. Defaults to “bfm”.
+k (int, optional): The nr of best matches per descriptor. Defaults to 2.
+goodPercent (float, optional): The filter value for the ratio test. Defaults to 0.75.
+checks (int, optional): the number of times the trees in the index should be recursively traversed. Higher values gives better precision, but also takes more time. Defaults to 100.
+table_number (int, optional): Flann orb parameter. Defaults to 12.
+key_size (int, optional): Flann orb parameter. Defaults to 20.
+multi_probe_level (int, optional): Flann orb parameter. Defaults to 2.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: If the provided method is incorrect</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: The matches</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.imageutils.match_images">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.imageutils.</span></span><span class="sig-name descname"><span class="pre">match_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">img2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featureType</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'orb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">matchMethod</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'bfm'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.imageutils.match_images" title="Link to this definition"></a></dt>
+<dd><p>Matches 2 images using different methods</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>img1 (np.array): The first image
+img2 (np.array): The second image
+featureType (str, optional): The type of feature to detect, use: orb, sift. Defaults to “orb”.
+matchMethod (str, optional): The matching method to use, use: bfm, flann. Defaults to “bfm”.</p>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: if an incorrect feature or method name is provided</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: The matches of the 2 images</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.imageutils.load_navvis_depth_map">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.imageutils.</span></span><span class="sig-name descname"><span class="pre">load_navvis_depth_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.imageutils.load_navvis_depth_map" title="Link to this definition"></a></dt>
+<dd><p>Returns the full path of the depthMap from this Node. If no path is present, it is gathered from the following inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>self._depthPath</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>np.array: depthMap</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.imageutils.get_pcd_from_depth_map">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.imageutils.</span></span><span class="sig-name descname"><span class="pre">get_pcd_from_depth_map</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.PointCloud</span></span></span><a class="headerlink" href="#geomapi.utils.imageutils.get_pcd_from_depth_map" title="Link to this definition"></a></dt>
+<dd><p>Convert a depth map and resource colors to a 3D point cloud.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>self._depthMap: 2D numpy array containing depth values</p></li>
+<li><p>self._resource: 2D numpy array containing color values</p></li>
+<li><p>self._intrinsic_matrix: 3x3 numpy array containing camera intrinsics</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>An Open3D point cloud object</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.utils.geospatialutils.html" class="btn btn-neutral float-left" title="geomapi.utils.geospatialutils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.tools.html" class="btn btn-neutral float-right" title="geomapi.tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

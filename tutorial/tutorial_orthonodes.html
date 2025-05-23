@@ -1,0 +1,471 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>OrthoNode &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="PanoNode" href="tutorial_panonodes.html" />
+    <link rel="prev" title="ImageNode" href="tutorial_imagenodes.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">OrthoNode</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#orthonode-creation">OrthoNode Creation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#ontology-link">Ontology link</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creation-from-tfw-file">Creation From tfw file</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#creation-from-dxf-file">Creation From dxf file</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#orthonode-resource">OrthoNode Resource</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#loading-the-resource">Loading The Resource</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#saving-the-resource">Saving The Resource</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#orthonode-transformation">OrthoNode Transformation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#orthonode-visualisation">OrthoNode Visualisation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#further-reading">Further reading</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">OrthoNode</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tutorial/tutorial_orthonodes.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="orthonode">
+<h1>OrthoNode<a class="headerlink" href="#orthonode" title="Link to this heading"></a></h1>
+<p>The OrthoNode class in Geomapi represents the data and metadata of Orthogonal Photos, often derived from photogrammetric reconstructions. The metadata builds upon the RDFlib framework:</p>
+<p><a class="reference external" href="https://rdflib.readthedocs.io/">https://rdflib.readthedocs.io/</a></p>
+<p>The code below shows how to create a OrthoNode from various inputs.</p>
+<p>First the geomapi and external packages are imported</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="c1">#IMPORT PACKAGES</span>
+<span class="kn">from</span> <span class="nn">rdflib</span> <span class="kn">import</span> <span class="n">Graph</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="c1">#IMPORT MODULES</span>
+<span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span> <span class="c1">#context import for documentation only</span>
+<span class="kn">from</span> <span class="nn">geomapi.nodes</span> <span class="kn">import</span> <span class="n">OrthoNode</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Jupyter environment detected. Enabling Open3D WebVisualizer.
+[Open3D INFO] WebRTC GUI backend enabled.
+[Open3D INFO] WebRTCWindowSystem: HTTP handshake server disabled.
+</pre></div>
+</div>
+</div>
+</div>
+<section id="orthonode-creation">
+<h2>OrthoNode Creation<a class="headerlink" href="#orthonode-creation" title="Link to this heading"></a></h2>
+<p>A OrthoNode is constructed using the same parameters as the base Node. Please refer to <a class="reference internal" href="tutorial_nodes.html"><span class="std std-doc">Node Tutorial</span></a> For more info about Node Creation</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">OrthoNode</span><span class="p">(</span> <span class="n">subject</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>             <span class="c1"># (URIRef, optional) : A subject to use as identifier for the Node.</span>
+          <span class="n">graph</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>               <span class="c1"># (Graph, optional) : An RDF Graph to parse.</span>
+          <span class="n">graphPath</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>           <span class="c1"># (Path, optional) : The path of an RDF Graph to parse.</span>
+          <span class="n">name</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>                <span class="c1"># (str, optional) : A name of the Node.</span>
+          <span class="n">path</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>                <span class="c1"># (Path, optional) : A filepath to a resource.</span>
+          <span class="n">timestamp</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>           <span class="c1"># (str, optional) : Timestamp for the node.</span>
+          <span class="n">resource</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>            <span class="c1"># (optional) : Resource associated with the node.</span>
+          <span class="n">cartesianTransform</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  <span class="c1"># (np.ndarray, optional) : The (4x4) transformation matrix.</span>
+          <span class="n">orientedBoundingBox</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> <span class="c1"># (o3d.geometry.OrientedBoundingBox, optional) : The oriented bounding box of the node.</span>
+          <span class="n">convexHull</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>          <span class="c1"># (o3d.geometry.TriangleMesh, optional) : The convex hull of the node.</span>
+          <span class="n">loadResource</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>       <span class="c1"># Load the resource at initialization?</span>
+          <span class="n">dxfPath</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>             <span class="c1"># (Path, Optional) : Path to the dxf file with the orthometadata from MetaShape.</span>
+          <span class="n">tfwPath</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>             <span class="c1"># (Path, Optional) : Path to the tfw file with the orthometadata from MetaShape.</span>
+          <span class="n">imageWidth</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>          <span class="c1"># (int, Optional) : width of the image in pixels (u). Defaults to 2000pix</span>
+          <span class="n">imageHeight</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>         <span class="c1"># (int, Optional) : height of the image in pixels (v). Defaults to 1000pix</span>
+          <span class="n">gsd</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>                 <span class="c1"># (float, Optional) : Ground Sampling Distance in meters. Defaults to 0.01m</span>
+          <span class="n">depth</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>               <span class="c1"># (float, Optional) : Average depth of the image in meters. Defaults to 10m</span>
+          <span class="n">height</span> <span class="o">=</span> <span class="kc">None</span>               <span class="c1"># (float, Optional) : Average height of the cameras that generated the image in meters.</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="ontology-link">
+<h3>Ontology link<a class="headerlink" href="#ontology-link" title="Link to this heading"></a></h3>
+<p>The OrthoNode has 7 new standard properties that are serialized to the graph:</p>
+<table class="docutils align-default">
+<thead>
+<tr class="row-odd"><th class="head"><p>python name</p></th>
+<th class="head"><p>predicate</p></th>
+</tr>
+</thead>
+<tbody>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">dxfPath</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geomapi:dxfPath</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">tfwPath</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geomapi:tfwPath</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">imageWidth</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exif:imageWidth</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">imageHeight</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">exif:imageLength</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">gsd</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geomapi:gsd</span></code></p></td>
+</tr>
+<tr class="row-odd"><td><p><code class="docutils literal notranslate"><span class="pre">depth</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geomapi:depth</span></code></p></td>
+</tr>
+<tr class="row-even"><td><p><code class="docutils literal notranslate"><span class="pre">height</span></code></p></td>
+<td><p><code class="docutils literal notranslate"><span class="pre">geomapi:height</span></code></p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="creation-from-tfw-file">
+<h3>Creation From tfw file<a class="headerlink" href="#creation-from-tfw-file" title="Link to this heading"></a></h3>
+<p>OrthoNodes can be created from accompanying tfw files, these provide extra metadata like the <code class="docutils literal notranslate"><span class="pre">gsd</span></code> and <code class="docutils literal notranslate"><span class="pre">cartesianTransform</span></code>.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span> <span class="o">=</span> <span class="n">OrthoNode</span><span class="p">(</span><span class="n">tfwPath</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;../../../tests\testfiles\ortho\railway-0-0.tfw&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">gsd</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">cartesianTransform</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>0.01560589037
+[[ 1.00000000e+00  0.00000000e+00  0.00000000e+00  2.63379145e+05]
+ [ 0.00000000e+00 -1.00000000e+00  0.00000000e+00  1.51097344e+05]
+ [ 0.00000000e+00  0.00000000e+00 -1.00000000e+00  0.00000000e+00]
+ [ 0.00000000e+00  0.00000000e+00  0.00000000e+00  1.00000000e+00]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="creation-from-dxf-file">
+<h3>Creation From dxf file<a class="headerlink" href="#creation-from-dxf-file" title="Link to this heading"></a></h3>
+<p>OrthoNodes can be created from autocad dfx files.
+Since dxf files contain a large amount of elements, they cannot be loaded directly into a OrthoNodes.
+Use the <a class="reference internal" href="#../geomapi/geomapi.tools.html#geomapi.tools.dxf_to_ortho_nodes"><span class="xref myst"><code class="docutils literal notranslate"><span class="pre">geomapi.tools.dxf_to_ortho_nodes</span></code></span></a> function to load all elements into a list of OrthoNode.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">geomapi.tools</span> <span class="k">as</span> <span class="nn">tl</span>
+
+<span class="n">linesetnodes</span> <span class="o">=</span> <span class="n">tl</span><span class="o">.</span><span class="n">dxf_to_ortho_nodes</span><span class="p">(</span><span class="n">dxfPath</span> <span class="o">=</span> <span class="sa">r</span><span class="s2">&quot;../../..\tests\testfiles\ortho\railway-scheme.dxf&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Reading DXF file from ..\..\..\tests\testfiles\ortho\railway-scheme.dxf...
+Loaded 1 OrthoNodes from DXF.
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="orthonode-resource">
+<h2>OrthoNode Resource<a class="headerlink" href="#orthonode-resource" title="Link to this heading"></a></h2>
+<p>When creating a Node with a resource, it can be done either directly with the resource, or with the path to the resource.</p>
+<p>A resource can be a big piece of data, this is why it is not always wanted to load the whole resource at initialization. This is why the <code class="docutils literal notranslate"><span class="pre">loadResource</span></code> parameter is default to <code class="docutils literal notranslate"><span class="pre">False</span></code></p>
+<p>For more info on specific resources, see the corresponding Node type</p>
+<section id="loading-the-resource">
+<h3>Loading The Resource<a class="headerlink" href="#loading-the-resource" title="Link to this heading"></a></h3>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span> <span class="o">=</span> <span class="n">OrthoNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;../../../tests\testfiles\ortho\railway-0-0.tif&quot;</span><span class="p">,</span> <span class="n">loadResource</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;resource before loading:&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">load_resource</span><span class="p">()</span> <span class="c1"># Use specialized node fo each type of resource.</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;resource after loading:&quot;</span><span class="p">,</span><span class="n">node</span><span class="o">.</span><span class="n">resource</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>Resource not loaded, but path is defined, call `load_resource()` to access it.
+Resource not loaded, but path is defined, call `load_resource()` to access it.
+Resource not loaded, but path is defined, call `load_resource()` to access it.
+resource before loading: None
+resource after loading: [[[255 255 255]
+  [255 255 255]
+  [255 255 255]
+  ...
+  [255 255 255]
+  [255 255 255]
+  [255 255 255]]
+
+ [[255 255 255]
+  [255 255 255]
+  [255 255 255]
+  ...
+  [255 255 255]
+  [255 255 255]
+  [255 255 255]]
+
+ [[255 255 255]
+  [255 255 255]
+  [255 255 255]
+  ...
+  [255 255 255]
+  [255 255 255]
+  [255 255 255]]
+
+ ...
+
+ [[255 255 255]
+  [255 255 255]
+  [255 255 255]
+  ...
+  [ 90  87  80]
+  [100  93  92]
+  [ 88  80  79]]
+
+ [[255 255 255]
+  [255 255 255]
+  [255 255 255]
+  ...
+  [ 97  90  85]
+  [ 97  94  92]
+  [ 92  90  83]]
+
+ [[255 255 255]
+  [255 255 255]
+  [255 255 255]
+  ...
+  [ 89  83  81]
+  [106 103 106]
+  [ 92  86  83]]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="saving-the-resource">
+<h3>Saving The Resource<a class="headerlink" href="#saving-the-resource" title="Link to this heading"></a></h3>
+<p>A Ortho resource can be saved to disk using the <code class="docutils literal notranslate"><span class="pre">save_resource()</span></code> function.
+Currently supports: .ply, .obj</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span> <span class="o">=</span> <span class="n">OrthoNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;../../../tests\testfiles\ortho\railway-0-0.tif&quot;</span><span class="p">,</span> <span class="n">loadResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">save_resource</span><span class="p">(</span><span class="n">directory</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;../../../tests/testfiles/resources&quot;</span><span class="p">,</span> <span class="n">extension</span><span class="o">=</span><span class="s2">&quot;.tif&quot;</span><span class="p">)</span> <span class="c1"># Save the resource to the resourcePath</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output text_plain highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>True
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+<section id="orthonode-transformation">
+<h2>OrthoNode Transformation<a class="headerlink" href="#orthonode-transformation" title="Link to this heading"></a></h2>
+<p>Since every nod has a cartesian transform, it can be transformed using the <code class="docutils literal notranslate"><span class="pre">node.transform()</span></code> function.</p>
+<p>The transformation also updates the <code class="docutils literal notranslate"><span class="pre">convexHull</span></code> and <code class="docutils literal notranslate"><span class="pre">orientedBoundingBox</span></code>.</p>
+<p>Furthermore, if the OrthoNode has a resource, that resource is also transformed.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span> <span class="o">=</span> <span class="n">OrthoNode</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">cartesianTransform</span><span class="p">)</span>
+<span class="n">transformation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">1</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">],[</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">1</span><span class="p">]])</span>
+<span class="n">node</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">transformation</span><span class="o">=</span><span class="n">transformation</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;applying transformation: (-1)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">cartesianTransform</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">node</span> <span class="o">=</span> <span class="n">OrthoNode</span><span class="p">()</span>
+<span class="n">rotation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">90</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="mi">0</span><span class="p">])</span> <span class="c1">#eulers in degrees</span>
+<span class="n">node</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="n">rotation</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;applying rotation: (90,0,0)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">cartesianTransform</span><span class="p">,</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+<span class="n">node</span> <span class="o">=</span> <span class="n">OrthoNode</span><span class="p">()</span>
+<span class="n">translation</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">,</span><span class="mi">3</span><span class="p">])</span>
+<span class="n">node</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">translation</span><span class="o">=</span><span class="n">translation</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;applying translation: (1,2,3)&quot;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">cartesianTransform</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<div class="output stream highlight-myst-ansi notranslate"><div class="highlight"><pre><span></span>[[1. 0. 0. 0.]
+ [0. 1. 0. 0.]
+ [0. 0. 1. 0.]
+ [0. 0. 0. 1.]]
+applying transformation: (-1)
+[[0. 0. 1. 0.]
+ [0. 1. 0. 0.]
+ [1. 0. 0. 0.]
+ [0. 0. 0. 1.]] 
+
+applying rotation: (90,0,0)
+[[ 1.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00]
+ [ 0.000000e+00  6.123234e-17 -1.000000e+00  0.000000e+00]
+ [ 0.000000e+00  1.000000e+00  6.123234e-17  0.000000e+00]
+ [ 0.000000e+00  0.000000e+00  0.000000e+00  1.000000e+00]] 
+
+applying translation: (1,2,3)
+[[1. 0. 0. 1.]
+ [0. 1. 0. 2.]
+ [0. 0. 1. 3.]
+ [0. 0. 0. 1.]]
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="orthonode-visualisation">
+<h2>OrthoNode Visualisation<a class="headerlink" href="#orthonode-visualisation" title="Link to this heading"></a></h2>
+<p>When a OrthoNode has a resource, the <code class="docutils literal notranslate"><span class="pre">show()</span></code> function displays the Orthophoto using PIL</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">node</span> <span class="o">=</span> <span class="n">OrthoNode</span><span class="p">(</span><span class="n">path</span><span class="o">=</span><span class="sa">r</span><span class="s2">&quot;../../../tests\testfiles\ortho\railway-0-0.tif&quot;</span><span class="p">,</span> <span class="n">loadResource</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">node</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="cell_output docutils container">
+<img alt="../_images/a5c3d25fde5e21df0be58165e800c4763d6469aedb852bca2e3ce7cded84f67f.png" src="../_images/a5c3d25fde5e21df0be58165e800c4763d6469aedb852bca2e3ce7cded84f67f.png" />
+</div>
+</div>
+</section>
+<section id="further-reading">
+<h2>Further reading<a class="headerlink" href="#further-reading" title="Link to this heading"></a></h2>
+<p>Please refer to the full <a class="reference internal" href="#../geomapi/geomapi.nodes.Orthonode.rst"><span class="xref myst">API documentation</span></a> of the OrthoNode class for more details about the functionality</p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="tutorial_imagenodes.html" class="btn btn-neutral float-left" title="ImageNode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorial_panonodes.html" class="btn btn-neutral float-right" title="PanoNode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

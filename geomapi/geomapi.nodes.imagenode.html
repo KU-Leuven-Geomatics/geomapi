@@ -1,0 +1,479 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.nodes.imagenode &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.nodes.linesetnode" href="geomapi.nodes.linesetnode.html" />
+    <link rel="prev" title="geomapi.nodes.bimnode" href="geomapi.nodes.bimnode.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.bimnode.html">geomapi.nodes.bimnode</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.nodes.imagenode</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode"><code class="docutils literal notranslate"><span class="pre">ImageNode</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.__init__"><code class="docutils literal notranslate"><span class="pre">ImageNode.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.xmpPath"><code class="docutils literal notranslate"><span class="pre">ImageNode.xmpPath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.xmlPath"><code class="docutils literal notranslate"><span class="pre">ImageNode.xmlPath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.imageWidth"><code class="docutils literal notranslate"><span class="pre">ImageNode.imageWidth</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.imageHeight"><code class="docutils literal notranslate"><span class="pre">ImageNode.imageHeight</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.principalPointU"><code class="docutils literal notranslate"><span class="pre">ImageNode.principalPointU</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.principalPointV"><code class="docutils literal notranslate"><span class="pre">ImageNode.principalPointV</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.focalLength35mm"><code class="docutils literal notranslate"><span class="pre">ImageNode.focalLength35mm</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.keypoints"><code class="docutils literal notranslate"><span class="pre">ImageNode.keypoints</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.descriptors"><code class="docutils literal notranslate"><span class="pre">ImageNode.descriptors</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.intrinsicMatrix"><code class="docutils literal notranslate"><span class="pre">ImageNode.intrinsicMatrix</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.depth"><code class="docutils literal notranslate"><span class="pre">ImageNode.depth</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.resource"><code class="docutils literal notranslate"><span class="pre">ImageNode.resource</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_exif_data"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_metadata_from_exif_data()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_xmp_path"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_metadata_from_xmp_path()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.load_resource"><code class="docutils literal notranslate"><span class="pre">ImageNode.load_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.save_resource"><code class="docutils literal notranslate"><span class="pre">ImageNode.save_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.get_image_features"><code class="docutils literal notranslate"><span class="pre">ImageNode.get_image_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.draw_keypoints_on_image"><code class="docutils literal notranslate"><span class="pre">ImageNode.draw_keypoints_on_image()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.create_rays"><code class="docutils literal notranslate"><span class="pre">ImageNode.create_rays()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.world_to_pixel_coordinates"><code class="docutils literal notranslate"><span class="pre">ImageNode.world_to_pixel_coordinates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.pixel_to_world_coordinates"><code class="docutils literal notranslate"><span class="pre">ImageNode.pixel_to_world_coordinates()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.imagenode.ImageNode.show"><code class="docutils literal notranslate"><span class="pre">ImageNode.show()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.linesetnode.html">geomapi.nodes.linesetnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.meshnode.html">geomapi.nodes.meshnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.node.html">geomapi.nodes.node</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.orthonode.html">geomapi.nodes.orthonode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.panonode.html">geomapi.nodes.panonode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html">geomapi.nodes.pointcloudnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.setnode.html">geomapi.nodes.setnode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.nodes.html">geomapi.nodes</a></li>
+      <li class="breadcrumb-item active">geomapi.nodes.imagenode</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.nodes.imagenode.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.nodes.imagenode">
+<span id="geomapi-nodes-imagenode"></span><h1>geomapi.nodes.imagenode<a class="headerlink" href="#module-geomapi.nodes.imagenode" title="Link to this heading"></a></h1>
+<p><strong>ImageNode</strong> is a Python Class to govern the data and metadata of pinhole camera data i.e. normal cameras.</p>
+<p>This node builds upon the [OpenCV](<a class="reference external" href="https://opencv.org/">https://opencv.org/</a>), [Open3D](<a class="reference external" href="https://www.open3d.org/">https://www.open3d.org/</a>) and [PIL](<a class="reference external" href="https://pillow.readthedocs.io/en/stable/">https://pillow.readthedocs.io/en/stable/</a>) API for the image definitions.
+Be sure to check the properties defined in those abstract classes to initialise the Node.</p>
+<img alt="../_images/graph_img_1.png" src="../_images/graph_img_1.png" />
+<p><strong>IMPORTANT</strong>: This Node class is designed to manage geolocated imagery. It works best when the camera interior and exterior parameters are known. The class can be used to generate virtual images, raycasting, and other geometric operations.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geomapi.nodes.imagenode.</span></span><span class="sig-name descname"><span class="pre">ImageNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">URIRef</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Graph</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesianTransform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientedBoundingBox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.OrientedBoundingBox</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convexHull</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.TriangleMesh</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loadResource</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmpPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmlPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageWidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageHeight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">principalPointU</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">principalPointV</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">focalLength35mm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intrinsicMatrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keypoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode" title="Link to this definition"></a></dt>
+<dd><p>Bases: <a class="reference internal" href="geomapi.nodes.node.html#geomapi.nodes.node.Node" title="geomapi.nodes.node.Node"><code class="xref py py-class docutils literal notranslate"><span class="pre">Node</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">URIRef</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Graph</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesianTransform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientedBoundingBox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.OrientedBoundingBox</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convexHull</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.TriangleMesh</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loadResource</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmpPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xmlPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageWidth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageHeight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">principalPointU</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">principalPointV</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">focalLength35mm</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">intrinsicMatrix</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keypoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">descriptors</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.__init__" title="Link to this definition"></a></dt>
+<dd><p>Creates an ImageNode. Overloaded function.</p>
+<p>This Node can be initialised from one or more of the inputs below.
+By default, no data is imported in the Node to speed up processing.
+If you also want the data, call node.get_resource() or set getResource() to</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>subject (RDFlib URIRef) : subject to be used as the main identifier in the RDF Graph</p></li>
+<li><p>graph (RDFlib Graph) : Graph with a single subject (if multiple subjects are present, only the first will be used to initialise the Node)</p></li>
+<li><p>graphPath (Path) :  Graph file path with a single subject (if multiple subjects are present, only the first will be used to initialise the Node)</p></li>
+<li><p>path (Path) : Path to an image .jpg, jpeg, .png file (data is not automatically loaded)</p></li>
+<li><p>resource (ndarray, PIL, Open3D) : Image data from [Open3D](<a class="reference external" href="https://www.open3d.org/">https://www.open3d.org/</a>), [OpenCV](<a class="reference external" href="https://opencv.org/">https://opencv.org/</a>) or [PIL](<a class="reference external" href="https://pillow.readthedocs.io/en/stable/">https://pillow.readthedocs.io/en/stable/</a>).</p></li>
+<li><p>xmlPath (Path) : Xml file path from Agisoft Metashape</p></li>
+<li><p>xmpPath (Path) :  xmp file path from RealityCapture</p></li>
+<li><p>getResource (bool, optional= False) : If True, the node will search for its physical resource on drive</p></li>
+<li><p>imageWidth (int, optional) : width of the image in pixels (u). Defaults to 640p</p></li>
+<li><p>imageHeight (int, optional) : height of the image in pixels (v). Defaults to 480p</p></li>
+<li><p>intrinsicMatrix (np.array, optional) : intrinsic camera matrix (3x3) k=[[fx 0 cx] [0 fy cy][0 0  1]]</p></li>
+<li><p>focalLength35mm (float, optional) : focal length with a standardized Field-of-View in mm.</p></li>
+<li><p>keypoints (np.array, optional) : a set of image keypoints, generated through sift or orb.</p></li>
+<li><p>descriptors (np.array, optional) : a set of image descriptors, generated through sift or orb.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>ImageNode : An ImageNode with metadata</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.xmpPath">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xmpPath</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.xmpPath" title="Link to this definition"></a></dt>
+<dd><p>Get the xmpPath (str) of the node. This is the RealityCapture xmp file path.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.xmlPath">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">xmlPath</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.xmlPath" title="Link to this definition"></a></dt>
+<dd><p>Get the xmlPath (str) of the node. This is the RealityCapture xml file path.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.imageWidth">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">imageWidth</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.imageWidth" title="Link to this definition"></a></dt>
+<dd><p>Get the imageWidth (int) or number of columns of the resource of the node.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.imageHeight">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">imageHeight</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.imageHeight" title="Link to this definition"></a></dt>
+<dd><p>Get the imageHeight (int) or number of rows of the resource of the node.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.principalPointU">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">principalPointU</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.principalPointU" title="Link to this definition"></a></dt>
+<dd><p>Get the principalPointU (float) of the node. Note that this is the deviation, not the actual value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.principalPointV">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">principalPointV</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.principalPointV" title="Link to this definition"></a></dt>
+<dd><p>Get the principalPointV (float) of the node. Note that this is the deviation, not the actual value.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.focalLength35mm">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">focalLength35mm</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.focalLength35mm" title="Link to this definition"></a></dt>
+<dd><p>Get the focalLength35mm (float) of the node.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.keypoints">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">keypoints</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.keypoints" title="Link to this definition"></a></dt>
+<dd><p>Get the keypoints (np.array) of the node. These are the distinct pixels in the image.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.descriptors">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">descriptors</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.descriptors" title="Link to this definition"></a></dt>
+<dd><p>Get the descriptors (np.array) of the node. These are the unique features of the image.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.intrinsicMatrix">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">intrinsicMatrix</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.intrinsicMatrix" title="Link to this definition"></a></dt>
+<dd><p>Get the intrinsic camera matrix (np.array) of the node.
+k=
+[fx 0 cx]
+[0 fy cy]
+[0 0  1]</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.depth">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">depth</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.depth" title="Link to this definition"></a></dt>
+<dd><p>Get the maximum depth of the image, defaults to one</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.resource">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.resource" title="Link to this definition"></a></dt>
+<dd><p>The resource (mesh, image, etc.) of the node. If no resource is present, you can use <cite>get_resource()</cite>, to load the resource from a path or search it through the name and graphpath.</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>self.path</p></li>
+<li><p>self.name</p></li>
+<li><p>self.graphPath</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_metadata_from_exif_data">
+<span class="sig-name descname"><span class="pre">get_metadata_from_exif_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">path</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_exif_data" title="Link to this definition"></a></dt>
+<dd><p>Returns the metadata from a resource.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>GPSInfo (geospatialTransform (np.array(3,1))</p></li>
+<li><p>coordinateSystem (str)</p></li>
+<li><p>DateTime (‘%Y-%m-%dT%H:%M:%S’)</p></li>
+<li><p>XResolution (int)</p></li>
+<li><p>YResolution (int)</p></li>
+<li><p>ResolutionUnit (int)</p></li>
+<li><p>ExifImageWidth (int)</p></li>
+<li><p>ExifImageHeight (int)</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>bool: True if meta data is successfully parsed</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_metadata_from_xmp_path">
+<span class="sig-name descname"><span class="pre">get_metadata_from_xmp_path</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_metadata_from_xmp_path" title="Link to this definition"></a></dt>
+<dd><p>Read Metadata from .xmp file generated by <a class="reference external" href="https://www.capturingreality.com/">https://www.capturingreality.com/</a>.</p>
+<dl>
+<dt>Smple Data:</dt><dd><p>&lt;x:xmpmeta xmlns:x=”adobe:ns:meta/”&gt;
+&lt;rdf:RDF xmlns:rdf=”http://www.w3.org/1999/02/22-rdf-syntax-ns#”&gt;</p>
+<blockquote>
+<div><p>&lt;rdf:Description xcr:Version=”3” xcr:PosePrior=”locked” xcr:Coordinates=”absolute”
+xcr:DistortionModel=”brown3” xcr:FocalLength35mm=”24.3765359225552”
+xcr:Skew=”0” xcr:AspectRatio=”1” xcr:PrincipalPointU=”-0.000464752782510192”
+xcr:PrincipalPointV=”-0.000823593392050301” xcr:CalibrationPrior=”exact”
+xmlns:xcr=”http://www.capturingreality.com/ns/xcr/1.1#”&gt;
+&lt;xcr:Rotation&gt;0.412555151152903 0.910841439690343 0.0128887159933671 0.0412058430083455 -0.00452553581407911 -0.999140429583083 -0.910000178988533 0.412731621357468 -0.0393990224812024&lt;/xcr:Rotation&gt;
+&lt;xcr:Position&gt;66.8850552499877 45.2551194778559 5.45377092514118&lt;/xcr:Position&gt;
+&lt;xcr:DistortionCoeficients&gt;-0.124217384759894 0.107339706650415 -0.0104748224573926 0 0 0&lt;/xcr:DistortionCoeficients&gt;
+&lt;/rdf:Description&gt;</p>
+</div></blockquote>
+<p>&lt;/rdf:RDF&gt;
+&lt;/x:xmpmeta&gt;</p>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>bool: True if metadata is sucesfully parsed</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.load_resource">
+<span class="sig-name descname"><span class="pre">load_resource</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.load_resource" title="Link to this definition"></a></dt>
+<dd><p>Returns the data in the node. If none is present, it will search for the data on using the attributes below.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>self.path</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>np.ndarray or None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.save_resource">
+<span class="sig-name descname"><span class="pre">save_resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.jpg'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.save_resource" title="Link to this definition"></a></dt>
+<dd><p>Export the resource of the Node.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>directory (str, optional) : directory folder to store the data.</p></li>
+<li><p>extension (str, optional) : file extension. Defaults to ‘.jpg’.</p></li>
+</ul>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: Unsuitable extension. Please check permitted extension types in utils._init_.</p>
+</dd>
+<dt>Returns:</dt><dd><p>bool: return True if export was succesfull</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.get_image_features">
+<span class="sig-name descname"><span class="pre">get_image_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">featureType</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'orb'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.get_image_features" title="Link to this definition"></a></dt>
+<dd><p>Get the keypoints and the descriptors of this Nodes Image resource</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>keypoints (cv2.keyPoints) : The featuretype to detect, use: orb, sift. Defaults to “orb”.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>img_with_keypoints : Tuple[np.array, np.array] with the keypoints and the descriptors</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.draw_keypoints_on_image">
+<span class="sig-name descname"><span class="pre">draw_keypoints_on_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">keypoint_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">200</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.draw_keypoints_on_image" title="Link to this definition"></a></dt>
+<dd><p>Detect and show keypoints on the image.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>img (np.array): The input image.
+featureType (str): The type of features to detect (‘orb’, ‘sift’, ‘fast’).
+max_features (int): The maximum number of features to detect.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: The image with keypoints drawn.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.create_rays">
+<span class="sig-name descname"><span class="pre">create_rays</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">imagePoints</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.create_rays" title="Link to this definition"></a></dt>
+<dd><p>Generate rays from the camera center through given image points.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>imagePoints (np.ndarray): (n, 2) Pixel coordinates (row, column).
+depths (np.ndarray, optional): If None, rays are cast at unit distance along camera direction.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.ndarray: (n, 6) where [:, 0:3] is origin, [:, 3:6] is unit direction.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.world_to_pixel_coordinates">
+<span class="sig-name descname"><span class="pre">world_to_pixel_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">worldCoordinates</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_z_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.world_to_pixel_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Projects 3D world points to 2D image coordinates.
+Optionally returns z-depths instead of Euclidean distances.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>worldCoordinates: (N, 3) array of world coordinates [X, Y, Z]
+use_z_depth: if True, return z-axis depth instead of Euclidean distance</p>
+</dd>
+<dt>Returns:</dt><dd><p>image_points: (N, 2) pixel coordinates
+depths: (N,) z-depths or Euclidean distances</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.pixel_to_world_coordinates">
+<span class="sig-name descname"><span class="pre">pixel_to_world_coordinates</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pixels</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depths</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">use_z_depth</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.pixel_to_world_coordinates" title="Link to this definition"></a></dt>
+<dd><p>Back-projects image points to 3D world coordinates using either z-depth or Euclidean distance.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>pixels: (N, 2) array of pixel coordinates
+depths: (N,) array of z-depths or Euclidean distances
+use_z_depth: if True, interpret depths as z-axis depth</p>
+</dd>
+<dt>Returns:</dt><dd><p>world_points: (N, 3) array of world coordinates</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.imagenode.ImageNode.show">
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">convertColorspace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">show3d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.imagenode.ImageNode.show" title="Link to this definition"></a></dt>
+<dd><p>Creates a visualization of the resource (if loaded)</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.nodes.bimnode.html" class="btn btn-neutral float-left" title="geomapi.nodes.bimnode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.nodes.linesetnode.html" class="btn btn-neutral float-right" title="geomapi.nodes.linesetnode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

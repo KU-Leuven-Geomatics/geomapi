@@ -1,0 +1,602 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.tools.progresstools &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>window.MathJax = {"options": {"processHtmlClass": "tex2jax_process|mathjax_process|math|output_area"}}</script>
+      <script defer="defer" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.tools.validationtools" href="geomapi.tools.validationtools.html" />
+    <link rel="prev" title="geomapi.tools.machinelearningtools" href="geomapi.tools.machinelearningtools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.html">geomapi.tools.alignmenttools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.combinationtools.html">geomapi.tools.combinationtools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.inspectiontools.html">geomapi.tools.inspectiontools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.machinelearningtools.html">geomapi.tools.machinelearningtools</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.tools.progresstools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.create_voxel_block_grid_and_raytrace"><code class="docutils literal notranslate"><span class="pre">create_voxel_block_grid_and_raytrace()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.subdivide_pcd_per_box"><code class="docutils literal notranslate"><span class="pre">subdivide_pcd_per_box()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.subdivide_pcd_per_octree"><code class="docutils literal notranslate"><span class="pre">subdivide_pcd_per_octree()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.pcd_to_octree"><code class="docutils literal notranslate"><span class="pre">pcd_to_octree()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.capture_image_and_depth_viewer"><code class="docutils literal notranslate"><span class="pre">capture_image_and_depth_viewer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.assign_point_cloud_information"><code class="docutils literal notranslate"><span class="pre">assign_point_cloud_information()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.filter_img_classifcation_by_neighbors"><code class="docutils literal notranslate"><span class="pre">filter_img_classifcation_by_neighbors()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.remap_color_images_to_masks"><code class="docutils literal notranslate"><span class="pre">remap_color_images_to_masks()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.project_meshes_to_rgbd_images"><code class="docutils literal notranslate"><span class="pre">project_meshes_to_rgbd_images()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.project_pcd_to_rgbd_images"><code class="docutils literal notranslate"><span class="pre">project_pcd_to_rgbd_images()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.get_average_cartesian_transform_ortho"><code class="docutils literal notranslate"><span class="pre">get_average_cartesian_transform_ortho()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.create_xy_grids"><code class="docutils literal notranslate"><span class="pre">create_xy_grids()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.volume_mesh_BIM"><code class="docutils literal notranslate"><span class="pre">volume_mesh_BIM()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.volume_theoretical_BIM"><code class="docutils literal notranslate"><span class="pre">volume_theoretical_BIM()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.calculate_completion"><code class="docutils literal notranslate"><span class="pre">calculate_completion()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.color_BIMNode"><code class="docutils literal notranslate"><span class="pre">color_BIMNode()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.remove_edges_volume_calculation"><code class="docutils literal notranslate"><span class="pre">remove_edges_volume_calculation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.color_pointcloud_by_height"><code class="docutils literal notranslate"><span class="pre">color_pointcloud_by_height()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.create_xy_grid"><code class="docutils literal notranslate"><span class="pre">create_xy_grid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.get_mesh_intersections"><code class="docutils literal notranslate"><span class="pre">get_mesh_intersections()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.get_bim_intersections"><code class="docutils literal notranslate"><span class="pre">get_bim_intersections()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.get_mesh_intersectionsBIM"><code class="docutils literal notranslate"><span class="pre">get_mesh_intersectionsBIM()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.get_scene_intersections"><code class="docutils literal notranslate"><span class="pre">get_scene_intersections()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.get_rays_raycast"><code class="docutils literal notranslate"><span class="pre">get_rays_raycast()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.get_mesh_intersection_with_grid"><code class="docutils literal notranslate"><span class="pre">get_mesh_intersection_with_grid()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.get_top_lineset_from_meshes"><code class="docutils literal notranslate"><span class="pre">get_top_lineset_from_meshes()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.progresstools.determine_percentage_of_coverage"><code class="docutils literal notranslate"><span class="pre">determine_percentage_of_coverage()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.validationtools.html">geomapi.tools.validationtools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.graph_to_nodes"><code class="docutils literal notranslate"><span class="pre">graph_to_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.e57xml_to_pointcloud_nodes"><code class="docutils literal notranslate"><span class="pre">e57xml_to_pointcloud_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.xml_to_image_nodes"><code class="docutils literal notranslate"><span class="pre">xml_to_image_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.e57_to_pointcloud_nodes"><code class="docutils literal notranslate"><span class="pre">e57_to_pointcloud_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.dxf_to_lineset_nodes"><code class="docutils literal notranslate"><span class="pre">dxf_to_lineset_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.dxf_to_ortho_nodes"><code class="docutils literal notranslate"><span class="pre">dxf_to_ortho_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.ifc_to_bim_nodes"><code class="docutils literal notranslate"><span class="pre">ifc_to_bim_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.ifc_to_nodes_multiprocessing"><code class="docutils literal notranslate"><span class="pre">ifc_to_nodes_multiprocessing()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.navvis_csv_to_pano_nodes"><code class="docutils literal notranslate"><span class="pre">navvis_csv_to_pano_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_k_nearest_neighbors"><code class="docutils literal notranslate"><span class="pre">select_nodes_k_nearest_neighbors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_radius"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_radius()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_bounding_box"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_bounding_box()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_convex_hull"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_convex_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_intersecting_bounding_box"><code class="docutils literal notranslate"><span class="pre">select_nodes_intersecting_bounding_box()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_intersecting_convex_hull"><code class="docutils literal notranslate"><span class="pre">select_nodes_intersecting_convex_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.nodes_to_graph"><code class="docutils literal notranslate"><span class="pre">nodes_to_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.navvis_decode_depthmap"><code class="docutils literal notranslate"><span class="pre">navvis_decode_depthmap()</span></code></a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.tools.html">geomapi.tools</a></li>
+      <li class="breadcrumb-item active">geomapi.tools.progresstools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.tools.progresstools.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.tools.progresstools">
+<span id="geomapi-tools-progresstools"></span><h1>geomapi.tools.progresstools<a class="headerlink" href="#module-geomapi.tools.progresstools" title="Link to this heading"></a></h1>
+<p>Tools to asses the progress on (road) construction sites.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.create_voxel_block_grid_and_raytrace">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">create_voxel_block_grid_and_raytrace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imageNode</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.progresstools.create_voxel_block_grid_and_raytrace" title="Link to this definition"></a></dt>
+<dd><p>THIS CURRENTLY DOESN’T WORK BUT IS A PLACEHOLDER.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>pcd (_type_): _description_
+imageNode (_type_): _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.subdivide_pcd_per_box">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">subdivide_pcd_per_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">parts</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.subdivide_pcd_per_box" title="Link to this definition"></a></dt>
+<dd><p>Subdivide a point cloud according to a set of boxes (either by size of number of parts).</p>
+<img alt="../_images/subselection1.PNG" src="../_images/subselection1.PNG" />
+<dl class="simple">
+<dt>Args:</dt><dd><p>pcd (las,dataframe or open3d): Point Cloud (only points are used)
+size (list[float], optional): X, Y and Z size of the subdivided boxes in meter e.g. [10,10,5].
+parts (list[int], optional): X, Y and Z number of parts to divide the box in e.g. [7,7,1].</p>
+</dd>
+<dt>Returns:</dt><dd><p>Tuple[List[int],List[int]]: pathLists with names formatted as ‘pcd_{a}_{b}_{c}_{d}’ that correspond to xyz order, idxLists with indices per box.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.subdivide_pcd_per_octree">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">subdivide_pcd_per_octree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcd</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maxDepth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">4</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lowEnd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">highEnd</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2000000</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.subdivide_pcd_per_octree" title="Link to this definition"></a></dt>
+<dd><p>Create an octree of various point clouds and subdivide it according to a voxel octree. For each depth level, the data is divided 8-fold.
+This function returns the indices per voxel if that node has a number of points between lowEnd and highEnd.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>pcd (las,dataframe or open3d): Point Cloud (only points are used)
+maxDepth (int, optional): depth of the octree. Defaults to 4 (this is also the maxDepth).
+lowEnd (int, optional): minimum number of points in a node for it to be added to the export. Defaults to 0.
+highEnd (int, optional): maximum number of points in a node for it to be added to the export. If this is surpassed, its children will be assessed. Defaults to 2000000.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Tuple[List[int],List[int]]: pathLists with names formatted as ‘pcd_{a}_{b}_{c}_{d}’ that correspond to the depth ,idxLists with indices per valid node</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.pcd_to_octree">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">pcd_to_octree</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.PointCloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">maDepth</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">7</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorUse</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.Octree</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.pcd_to_octree" title="Link to this definition"></a></dt>
+<dd><p>Create octree of point cloud and optionally color it consistently.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>pcd (o3d.geometry.PointCloud):
+colorUse (int, optional): If 0, the colors per leafNode will be averaged. If 1, the dominant color per LeafNode will be retained (this is quite slow). Defaults to 0.</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.Octree:</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.capture_image_and_depth_viewer">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">capture_image_and_depth_viewer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pcdNode</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imgNodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imagePath</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depthPath</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.progresstools.capture_image_and_depth_viewer" title="Link to this definition"></a></dt>
+<dd><p>Visualizer currently is bugged in Open3D and doesn’t allow custom sizes.</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.assign_point_cloud_information">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">assign_point_cloud_information</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_cloud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.PointCloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_clouds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.PointCloud</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">class_names</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.assign_point_cloud_information" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.filter_img_classifcation_by_neighbors">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">filter_img_classifcation_by_neighbors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">predictions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">shape</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">weight</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.filter_img_classifcation_by_neighbors" title="Link to this definition"></a></dt>
+<dd><p>Filters an initial raster prediction based on the classification of surrounding values.</p>
+<p>Every value is replaced by the most occuring value in the 9 surrounding raster values weighted by the initial value</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>predictions (np.array): _description_
+shape (Tuple[int,int]): shape of the raster
+weight (float, optional): influence of the initial value compared to neighboring values. Defaults to 3.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.remap_color_images_to_masks">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">remap_color_images_to_masks</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">colorList</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.remap_color_images_to_masks" title="Link to this definition"></a></dt>
+<dd><p>Remap the values of an image (RGB or grayscale) to indices given a colorList.</p>
+<p><strong>NOTE</strong>: this is slow and error prone</p>
+<dl>
+<dt>Args:</dt><dd><p>1.images (List[np.array]): RGB or grayscale imagery.</p>
+<p>2.colorList (np.array, optional): list with RGB or grayscale colors used for the remapping. If no colors are provided, the unique colors of the first image will be taken. Defaults to None.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: image [m,n,1] with indices as mask</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.project_meshes_to_rgbd_images">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">project_meshes_to_rgbd_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">meshes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.TriangleMesh</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imgNodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode" title="geomapi.nodes.imagenode.ImageNode"><span class="pre">ImageNode</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">scale</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_black</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.project_meshes_to_rgbd_images" title="Link to this definition"></a></dt>
+<dd><p>Project a set of meshes given camera parameters.</p>
+<img alt="../_images/Raycasting_6.PNG" src="../_images/Raycasting_6.PNG" />
+<dl>
+<dt>Args:</dt><dd><p>1.meshes (List[o3d.geometry.TriangleMesh]): set of TriangleMeshes.</p>
+<p>2.imgNodes (List[ImageNode]): should contain imageWidth,imageHeight,cartesianTransform and focalLength35mm</p>
+<p>3.scale (float, optional): scale to apply to imagery (typically for downscaling). Defaults to 1.</p>
+<p>4.fill_black (int, optional): Region to fill in black pixels. 5 is a good value.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Tuple[List[np.array],List[np.array]]: colorImages,depthImages</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.project_pcd_to_rgbd_images">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">project_pcd_to_rgbd_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pointClouds</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.Geometry</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imgNodes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="geomapi.nodes.imagenode.html#geomapi.nodes.imagenode.ImageNode" title="geomapi.nodes.imagenode.ImageNode"><span class="pre">ImageNode</span></a><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depth_max</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">15</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fill_black</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">array</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.project_pcd_to_rgbd_images" title="Link to this definition"></a></dt>
+<dd><p>Project a set of point cloud geometries given camera parameters. The given</p>
+<img alt="../_images/rgbd.png" src="../_images/rgbd.png" />
+<dl>
+<dt>Args:</dt><dd><p>1.pointClouds (List[o3d.geometry.PointCloud]): set of o3d point clouds.</p>
+<p>2.imgNodes (List[ImageNode]): should contain imageWidth,imageHeight,cartesianTransform and focalLength35mm</p>
+<p>3.depth_max (float, optional): cut off distance. Defaults to 15m.</p>
+<p>4.fill_black (int, optional): Region to fill in black pixels. 5 is a good value.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Tuple[List[np.array],List[np.array]]: colorImages,depthImages</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.get_average_cartesian_transform_ortho">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">get_average_cartesian_transform_ortho</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">list</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.progresstools.get_average_cartesian_transform_ortho" title="Link to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.create_xy_grids">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">create_xy_grids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.TriangleMesh</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Down'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.create_xy_grids" title="Link to this definition"></a></dt>
+<dd><p>Generates a grid of rays (x,y,z,nx,ny,nz) with a spatial resolution from a set of input meshes.</p>
+<dl>
+<dt>Args:</dt><dd><p>1.geometries (List[o3d.geometry.TriangleMesh]): geometries to generate the grid from. grid will be placed at the highest of the lowest point.</p>
+<p>2.resolution (float, optional): XY resolution of the grid. Default stepsize is 0.1m.</p>
+<p>3.direction (str, optional): ‘Up’ or ‘Down’. Position and direction of the grid. If ‘Down’, the grid is placed at the highest point with the orientation looking downards (0,0,-1). Defaults to ‘Down’.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array[x*y,6]: grid of arrays (x,y,z,nx,ny,nz)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.volume_mesh_BIM">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">volume_mesh_BIM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depthmapFBIM</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depthmapBimMin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depthmapBimMax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">asarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.volume_mesh_BIM" title="Link to this definition"></a></dt>
+<dd><dl class="simple">
+<dt>Calculate the volume per element , three different options where:</dt><dd><ol class="arabic simple">
+<li><p>mesh is beneath the bim</p></li>
+<li><p>mesh is above the bim</p></li>
+<li><p>mesh is between the top and bottom of the bim</p></li>
+</ol>
+</dd>
+</dl>
+<p><strong>NOTE</strong>: heinder, move this to tools</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>depthmapFBIM (np.array[:,1]): The distances between the grid per object and the top of the mesh.</p></li>
+<li><p>depthmapBimMin (np.array[:,1]): The distances between the grid per object and the bottom of the bim.</p></li>
+<li><p>depthmapBimMax (np.array[:,1]): The distances between the grid per object and the top of the bim.</p></li>
+<li><p>resolution (np.array[:,1], optional): Resolution of the grid.Defaults to 0.1m.</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>array of volumes per bim object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.volume_theoretical_BIM">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">volume_theoretical_BIM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depthmapBimMin</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">depthmapBimMax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">asarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.volume_theoretical_BIM" title="Link to this definition"></a></dt>
+<dd><p>Calculate the theoretical volume per element (m³).</p>
+<p><strong>NOTE</strong>: heinder, move this to tools</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>depthmapFBIM (np.array[:,1]): The distances between the grid per object and the top of the mesh.</p></li>
+<li><p>depthmapBimMin (np.array[:,1]): The distances between the grid per object and the bottom of the bim.</p></li>
+<li><p>resolution (np.array[:,1], optional): Resolution of the grid.Defaults to 0.1m.</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>array of theoretcial volumes per bim object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.calculate_completion">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">calculate_completion</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">volumeMeshBIM</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">volumeBIM</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.calculate_completion" title="Link to this definition"></a></dt>
+<dd><p>Calculate the percentual completion (%) using the theoretical and practical volumes of the bim objects.</p>
+<p><strong>NOTE</strong>: heinder, move this to tools</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>volumeMeshBIM (np.array[:,1]): The volume between mesh and BIM.</p></li>
+<li><p>volumeBIM (np.array[:,1]): The theoretical BIM.</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>array of completness [0-1]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.color_BIMNode">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">color_BIMNode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">completion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">BIMNodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.progresstools.color_BIMNode" title="Link to this definition"></a></dt>
+<dd><p>Colors the BIM mesh geometries in the computed LOA color</p>
+<p><strong>NOTE</strong>: heinder, move this to tools</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>LOAs (_type_): results of the LOA analysis</p></li>
+<li><p>BIMNodes (List[BIMNode]): List of the BIMNodes in the project</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>None</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.remove_edges_volume_calculation">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">remove_edges_volume_calculation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">depthmapDifference</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pcdFlightMax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">distance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.progresstools.remove_edges_volume_calculation" title="Link to this definition"></a></dt>
+<dd><p><strong>NOTE</strong>: heinder, move this to tools</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.color_pointcloud_by_height">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">color_pointcloud_by_height</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pointcloud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.PointCloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">heights</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buckets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">hmax</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">buffer</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.03</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.progresstools.color_pointcloud_by_height" title="Link to this definition"></a></dt>
+<dd><p>Colors the resulting point cloud of the LOA analysis in a gradient by distance between the matched points from the reference and the source (very slow)</p>
+<p><strong>NOTE</strong>: heinder, move this to tools. this is a really crappy function</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>pointcloud (o3d.geometry.PointCloud): Point cloud from the LOA determination or pointcloud matching its the returned indeces
+heights (nx1 array): Array containing the distances between two matched points
+buckets (int, optional): Number of intervals to be colored in. Defaults to 5.
+dmax (float, optional): Distances higher then this distance will be ignored. Defaults to 10.
+byElement (bool, optional): If the LOA must be computed per element of for the enitre cloud. Defaults to False.</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.PointCloud()</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.create_xy_grid">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">create_xy_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Down'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">offset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.create_xy_grid" title="Link to this definition"></a></dt>
+<dd><p>Generates a grid of rays (x,y,z,nx,ny,nz) with a spatial resolution from a set of input meshes.</p>
+<p><strong>NOTE</strong>: MB, this is ugly code</p>
+<dl>
+<dt>Args:</dt><dd><p>1.geometries (List[o3d.geometry.TriangleMesh]): geometries to generate the grid from. grid will be placed at the highest of the lowest point.</p>
+<p>2.resolution (float, optional): XY resolution of the grid. Default stepsize is 0.1m.</p>
+<p>3.direction (str, optional): ‘Up’ or ‘Down’. Position and direction of the grid. If ‘Down’, the grid is placed at the highest point with the orientation looking downards (0,0,-1). Defaults to ‘Down’.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array[x*y,6]: grid of arrays (x,y,z,nx,ny,nz)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.get_mesh_intersections">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">get_mesh_intersections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.Geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.get_mesh_intersections" title="Link to this definition"></a></dt>
+<dd><p>Returns [N , X * Y] matrix of distances between a grid and a set of input geometries.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>geometries (List[o3d.geometry.TriangleMesh]): N geometries to compute the distance to.</p></li>
+<li><p>grid(o3d.core.Tensor): Tensor</p></li>
+</ol>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: 2D distance array [N , X * Y]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.get_bim_intersections">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">get_bim_intersections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.TriangleMesh</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rays</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.get_bim_intersections" title="Link to this definition"></a></dt>
+<dd><p>Returns [N , X * Y] matrix of distances between a grid and a set of input geometries.</p>
+<p><strong>NOTE</strong>: don’t call this BIM when its just meshes. not enough tensor information. this function appears twice</p>
+<dl>
+<dt>Args:</dt><dd><p>1.geometries (List[o3d.geometry.TriangleMesh]): N geometries to compute the distance to.</p>
+<p>2.grid(o3d.core.Tensor): Tensor</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: 2D distance array [N , X * Y]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.get_mesh_intersectionsBIM">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">get_mesh_intersectionsBIM</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.get_mesh_intersectionsBIM" title="Link to this definition"></a></dt>
+<dd><p>Returns [N , X * Y] matrix of distances between a grid and a set of input geometries.</p>
+<p><strong>NOTE</strong>: don’t call this BIM when its just meshes. not enough tensor information. this function appears twice</p>
+<dl>
+<dt>Args:</dt><dd><p>1.geometries (List[o3d.geometry.TriangleMesh]): N geometries to compute the distance to.</p>
+<p>2.grid(o3d.core.Tensor): Tensor</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: 2D distance array [N , X * Y]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.get_scene_intersections">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">get_scene_intersections</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.TriangleMesh</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.TriangleMesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mesh2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.TriangleMesh</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resolution</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Down'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.get_scene_intersections" title="Link to this definition"></a></dt>
+<dd><p>Returns [N , d] matrix of distances between a grid and a set of input geometries.</p>
+<p><strong>NOTE</strong>: don’t call this BIM when its just meshes. not enough tensor information. this function appears twice</p>
+<dl>
+<dt>Args:</dt><dd><p>1.geometries (List[o3d.geometry.TriangleMesh]): N geometries to compute the distance to.</p>
+<p>2.grid(o3d.core.Tensor): Tensor</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: 2D distance array [N , d]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.get_rays_raycast">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">get_rays_raycast</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometries</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">direction</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'Down'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.progresstools.get_rays_raycast" title="Link to this definition"></a></dt>
+<dd><p>Generates a grid of rays (x,y,z,nx,ny,nz) with a spatial resolution from a set of input meshes.</p>
+<p><strong>NOTE</strong>: move this to tools</p>
+<dl>
+<dt>Args:</dt><dd><p>1.geometries (List[o3d.geometry.TriangleMesh]): geometries to generate the grid from. grid will be placed at the highest of the lowest point.</p>
+<p>2.resolution (float, optional): XY resolution of the grid. Default stepsize is 0.1m.
+3.direction (str, optional): ‘Up’ or ‘Down’. Position and direction of the grid. If ‘Down’, the grid is placed at the highest point with the orientation looking downards (0,0,-1). Defaults to ‘Down’.</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array[x*y,6]: grid of arrays (x,y,z,nx,ny,nz)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.get_mesh_intersection_with_grid">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">get_mesh_intersection_with_grid</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">geometry</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.Geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">grid</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.get_mesh_intersection_with_grid" title="Link to this definition"></a></dt>
+<dd><p>Finds the intersection of a mesh and a grid of rays.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>geometry (o3d.geometry.Geometry): The mesh to intersect with the rays.</p></li>
+<li><p>grid (np.array): A 2D numpy array representing the rays to cast. Each row should contain the origin and direction of a ray.</p></li>
+</ol>
+</dd>
+</dl>
+<img alt="../_images/2dGrid.JPG" src="../_images/2dGrid.JPG" />
+<dl class="simple">
+<dt>Returns:</dt><dd><p>np.array: A 1D numpy array containing the intersection point along the ray for each ray in the grid.</p>
+</dd>
+<dt>Example:</dt><dd><p>mesh = o3d.io.read_triangle_mesh(“mesh.ply”)
+grid = np.array([[0,0,0, 0,0,1], [1,0,0, 0,0,1], [2,0,0, 0,0,1]])
+intersections = get_mesh_intersection(mesh, grid)
+print(intersections)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.get_top_lineset_from_meshes">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">get_top_lineset_from_meshes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bimNodes</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.progresstools.get_top_lineset_from_meshes" title="Link to this definition"></a></dt>
+<dd><p>Computes the visible boundary edges from the top of a set of BIMNodes.</p>
+<p>This function creates grids above the meshes and computes the intersections with the 3D meshes. The computed edges are returned as Open3D.LineSet objects.</p>
+<img alt="../_images/get_top_lineset.PNG" src="../_images/get_top_lineset.PNG" />
+<dl class="simple">
+<dt>Args:</dt><dd><p>bimNodes (list): A list of BIMNodes.</p>
+</dd>
+<dt>Returns:</dt><dd><p>list [Open3D.Lineset]: A list of LineSet objects representing the computed visible edges.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.progresstools.determine_percentage_of_coverage">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.progresstools.</span></span><span class="sig-name descname"><span class="pre">determine_percentage_of_coverage</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sources</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.TriangleMesh</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reference</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.PointCloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.progresstools.determine_percentage_of_coverage" title="Link to this definition"></a></dt>
+<dd><p>Returns the Percentage-of-Coverage (PoC) of every source geometry when compared to a reference geometry. The PoC is defined as the ratio of points on the boundary surface of the source that lie within a Euclidean distance threshold hold of the reference geometry. sampled point cloud on the boundary surface of the sources with a resolution of e.g. 0.1m.</p>
+<div class="math notranslate nohighlight">
+\[ \begin{align}\begin{aligned}p_{i'} = \{ p \mid ∀ p \in p_i : p_i \cap n_i \}\\c_i = \frac{{|P_{i'}|}}{{|P_i|}}\end{aligned}\end{align} \]</div>
+<p>E.g. a mesh of a beam of which half the surface lies within 0.1m of a point cloud will have a PoC of 0.5.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ol class="arabic simple">
+<li><p>sources (o3d.geometry.TriangleMesh/PointCloud): geometries to determine the PoC for.</p></li>
+<li><p>reference (o3d.geometry.PointCloud): reference geometry for the Euclidean distance calculations.</p></li>
+<li><p>threshold (float, optional): sampling resolution of the boundary surface of the source geometries. Defaults to 0.1m.</p></li>
+</ol>
+</dd>
+<dt>Raises:</dt><dd><p>ValueError: Sources must be o3d.geometry (PointCloud or TriangleMesh)</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[percentages[0-1.0]] per source</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.tools.machinelearningtools.html" class="btn btn-neutral float-left" title="geomapi.tools.machinelearningtools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.tools.validationtools.html" class="btn btn-neutral float-right" title="geomapi.tools.validationtools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

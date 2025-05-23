@@ -1,0 +1,260 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.tools.inspectiontools &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.tools.machinelearningtools" href="geomapi.tools.machinelearningtools.html" />
+    <link rel="prev" title="geomapi.tools.combinationtools" href="geomapi.tools.combinationtools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.html">geomapi.tools.alignmenttools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.combinationtools.html">geomapi.tools.combinationtools</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.tools.inspectiontools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.inspectiontools.calculate_distance_between_images"><code class="docutils literal notranslate"><span class="pre">calculate_distance_between_images()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.inspectiontools.filter_images_by_overlap"><code class="docutils literal notranslate"><span class="pre">filter_images_by_overlap()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.inspectiontools.project_lineset_on_image"><code class="docutils literal notranslate"><span class="pre">project_lineset_on_image()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.inspectiontools.crop_image_within_lineset"><code class="docutils literal notranslate"><span class="pre">crop_image_within_lineset()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.machinelearningtools.html">geomapi.tools.machinelearningtools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.progresstools.html">geomapi.tools.progresstools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.validationtools.html">geomapi.tools.validationtools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.graph_to_nodes"><code class="docutils literal notranslate"><span class="pre">graph_to_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.e57xml_to_pointcloud_nodes"><code class="docutils literal notranslate"><span class="pre">e57xml_to_pointcloud_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.xml_to_image_nodes"><code class="docutils literal notranslate"><span class="pre">xml_to_image_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.e57_to_pointcloud_nodes"><code class="docutils literal notranslate"><span class="pre">e57_to_pointcloud_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.dxf_to_lineset_nodes"><code class="docutils literal notranslate"><span class="pre">dxf_to_lineset_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.dxf_to_ortho_nodes"><code class="docutils literal notranslate"><span class="pre">dxf_to_ortho_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.ifc_to_bim_nodes"><code class="docutils literal notranslate"><span class="pre">ifc_to_bim_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.ifc_to_nodes_multiprocessing"><code class="docutils literal notranslate"><span class="pre">ifc_to_nodes_multiprocessing()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.navvis_csv_to_pano_nodes"><code class="docutils literal notranslate"><span class="pre">navvis_csv_to_pano_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_k_nearest_neighbors"><code class="docutils literal notranslate"><span class="pre">select_nodes_k_nearest_neighbors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_radius"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_radius()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_bounding_box"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_bounding_box()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_convex_hull"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_convex_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_intersecting_bounding_box"><code class="docutils literal notranslate"><span class="pre">select_nodes_intersecting_bounding_box()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_intersecting_convex_hull"><code class="docutils literal notranslate"><span class="pre">select_nodes_intersecting_convex_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.nodes_to_graph"><code class="docutils literal notranslate"><span class="pre">nodes_to_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.navvis_decode_depthmap"><code class="docutils literal notranslate"><span class="pre">navvis_decode_depthmap()</span></code></a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.tools.html">geomapi.tools</a></li>
+      <li class="breadcrumb-item active">geomapi.tools.inspectiontools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.tools.inspectiontools.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.tools.inspectiontools">
+<span id="geomapi-tools-inspectiontools"></span><h1>geomapi.tools.inspectiontools<a class="headerlink" href="#module-geomapi.tools.inspectiontools" title="Link to this heading"></a></h1>
+<p>Tools to inspect construction assets.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.inspectiontools.calculate_distance_between_images">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.inspectiontools.</span></span><span class="sig-name descname"><span class="pre">calculate_distance_between_images</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">image1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">image2</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.inspectiontools.calculate_distance_between_images" title="Link to this definition"></a></dt>
+<dd><p>Calculate the Euclidean distance between the Cartesian transformation origins of two images.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>image1: An object representing the first image with a ‘cartesianTransform’ attribute.
+image2: An object representing the second image with a ‘cartesianTransform’ attribute.</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: The Euclidean distance between the origins of the Cartesian transformations of the two images.</p>
+</dd>
+<dt>Example:</dt><dd><p>image1 = ImageNode(cartesianTransform=np.array([[1, 0, 0, 10], [0, 1, 0, 20], [0, 0, 1, 0]]))
+image2 = ImageNode(cartesianTransform=np.array([[1, 0, 0, 30], [0, 1, 0, 40], [0, 0, 1, 0]]))
+distance = calculate_distance(image1, image2)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.inspectiontools.filter_images_by_overlap">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.inspectiontools.</span></span><span class="sig-name descname"><span class="pre">filter_images_by_overlap</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bimNodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">imgNodes</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overlap</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.inspectiontools.filter_images_by_overlap" title="Link to this definition"></a></dt>
+<dd><p>Filter a list of images based on specified overlap criteria.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>bimNodes (list or BIMNode): A list of BIM nodes or a single BIM node.
+imgNodes (list): A list of image nodes to be filtered.
+overlap (float): The desired overlap percentage (in percentage, e.g., 20 for 20%).</p>
+</dd>
+<dt>Returns:</dt><dd><p>list: A filtered list of image nodes based on the overlap criteria.</p>
+</dd>
+<dt>Example:</dt><dd><p>bim_nodes = [BIMNode(cartesianBounds=[…]), …]
+img_nodes = [ImageNode(cartesianTransform=[…]), …]
+filtered_images = filteronoverlap(bim_nodes, img_nodes, overlap=20)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.inspectiontools.project_lineset_on_image">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.inspectiontools.</span></span><span class="sig-name descname"><span class="pre">project_lineset_on_image</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">linesets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.LineSet</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">thickness</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.tools.inspectiontools.project_lineset_on_image" title="Link to this definition"></a></dt>
+<dd><p>Project Opend3D linesets onto the resource of the node.</p>
+<p><strong>NOTE</strong>: this affects the original image if overwrite is True.</p>
+<img alt="../_images/image_projection_1.png" src="../_images/image_projection_1.png" />
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>linesets (List[o3d.LineSet]): List of linesets. Note that the color of the lines is stored in the lineset.</p></li>
+<li><p>thickness (int) : Thickness of the projected lines</p></li>
+<li><p>overwrite (bool) : If True, the original image is overwritten. If False, a new image is created.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>resource : The resource of the ImageNode with the projected lines.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.inspectiontools.crop_image_within_lineset">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.inspectiontools.</span></span><span class="sig-name descname"><span class="pre">crop_image_within_lineset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">self</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">lineset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.LineSet</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bufferDistance</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.tools.inspectiontools.crop_image_within_lineset" title="Link to this definition"></a></dt>
+<dd><p>Crop an image within a 3D polygon (open3d LineSet). If the lineset is not an enclosed space,
+use a buffer distance to cut out the image up to this distance from the lineset.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>image (np.ndarray) : The input image to be cropped.</p></li>
+<li><p>lineset (o3d.geometry.LineSet) : The open3d LineSet representing the 3D polygon.</p></li>
+<li><p>buffer_distance (float) : The buffer distance to cut out the image if the lineset is not enclosed.</p></li>
+<li><p>overwrite (bool) : If True, the original image is overwritten. If False, a new image is created.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>image : The cropped image</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.tools.combinationtools.html" class="btn btn-neutral float-left" title="geomapi.tools.combinationtools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.tools.machinelearningtools.html" class="btn btn-neutral float-right" title="geomapi.tools.machinelearningtools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

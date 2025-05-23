@@ -1,0 +1,352 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.tools.alignmenttools &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.tools.alignmenttools.match" href="geomapi.tools.alignmenttools.match.html" />
+    <link rel="prev" title="geomapi.tools" href="geomapi.tools.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.tools.alignmenttools</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html">geomapi.tools.alignmenttools.match</a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.params.html">geomapi.tools.alignmenttools.params</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.alignmenttools.find_close_sessions"><code class="docutils literal notranslate"><span class="pre">find_close_sessions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.alignmenttools.get_weighted_pose"><code class="docutils literal notranslate"><span class="pre">get_weighted_pose()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.alignmenttools.estimate_session_position"><code class="docutils literal notranslate"><span class="pre">estimate_session_position()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.alignmenttools.execute_fast_global_registration"><code class="docutils literal notranslate"><span class="pre">execute_fast_global_registration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.alignmenttools.execute_global_registration"><code class="docutils literal notranslate"><span class="pre">execute_global_registration()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.alignmenttools.weighted_average_quaternions"><code class="docutils literal notranslate"><span class="pre">weighted_average_quaternions()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.tools.alignmenttools.calibrate_camera"><code class="docutils literal notranslate"><span class="pre">calibrate_camera()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.combinationtools.html">geomapi.tools.combinationtools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.inspectiontools.html">geomapi.tools.inspectiontools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.machinelearningtools.html">geomapi.tools.machinelearningtools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.progresstools.html">geomapi.tools.progresstools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.validationtools.html">geomapi.tools.validationtools</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.graph_to_nodes"><code class="docutils literal notranslate"><span class="pre">graph_to_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.e57xml_to_pointcloud_nodes"><code class="docutils literal notranslate"><span class="pre">e57xml_to_pointcloud_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.xml_to_image_nodes"><code class="docutils literal notranslate"><span class="pre">xml_to_image_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.e57_to_pointcloud_nodes"><code class="docutils literal notranslate"><span class="pre">e57_to_pointcloud_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.dxf_to_lineset_nodes"><code class="docutils literal notranslate"><span class="pre">dxf_to_lineset_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.dxf_to_ortho_nodes"><code class="docutils literal notranslate"><span class="pre">dxf_to_ortho_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.ifc_to_bim_nodes"><code class="docutils literal notranslate"><span class="pre">ifc_to_bim_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.ifc_to_nodes_multiprocessing"><code class="docutils literal notranslate"><span class="pre">ifc_to_nodes_multiprocessing()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.navvis_csv_to_pano_nodes"><code class="docutils literal notranslate"><span class="pre">navvis_csv_to_pano_nodes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_k_nearest_neighbors"><code class="docutils literal notranslate"><span class="pre">select_nodes_k_nearest_neighbors()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_radius"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_radius()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_bounding_box"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_bounding_box()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_within_convex_hull"><code class="docutils literal notranslate"><span class="pre">select_nodes_within_convex_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_intersecting_bounding_box"><code class="docutils literal notranslate"><span class="pre">select_nodes_intersecting_bounding_box()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.select_nodes_intersecting_convex_hull"><code class="docutils literal notranslate"><span class="pre">select_nodes_intersecting_convex_hull()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.nodes_to_graph"><code class="docutils literal notranslate"><span class="pre">nodes_to_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.html#geomapi.tools.navvis_decode_depthmap"><code class="docutils literal notranslate"><span class="pre">navvis_decode_depthmap()</span></code></a></li>
+</ul>
+</li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.tools.html">geomapi.tools</a></li>
+      <li class="breadcrumb-item active">geomapi.tools.alignmenttools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.tools.alignmenttools.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="geomapi-tools-alignmenttools">
+<h1>geomapi.tools.alignmenttools<a class="headerlink" href="#geomapi-tools-alignmenttools" title="Link to this heading"></a></h1>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html">geomapi.tools.alignmenttools.match</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match"><code class="docutils literal notranslate"><span class="pre">Match</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match.__init__"><code class="docutils literal notranslate"><span class="pre">Match.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match.node1"><code class="docutils literal notranslate"><span class="pre">Match.node1</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match.node2"><code class="docutils literal notranslate"><span class="pre">Match.node2</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match.matchError"><code class="docutils literal notranslate"><span class="pre">Match.matchError</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match.matchAmount"><code class="docutils literal notranslate"><span class="pre">Match.matchAmount</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match.transformation"><code class="docutils literal notranslate"><span class="pre">Match.transformation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match.get_matches"><code class="docutils literal notranslate"><span class="pre">Match.get_matches()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match.get_transformation"><code class="docutils literal notranslate"><span class="pre">Match.get_transformation()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match2d"><code class="docutils literal notranslate"><span class="pre">Match2d</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match2d.__init__"><code class="docutils literal notranslate"><span class="pre">Match2d.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match2d.get_matches"><code class="docutils literal notranslate"><span class="pre">Match2d.get_matches()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match2d.get_transformation"><code class="docutils literal notranslate"><span class="pre">Match2d.get_transformation()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match2d.get_pnp_pose"><code class="docutils literal notranslate"><span class="pre">Match2d.get_pnp_pose()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match2d.get_reference_scaling_factor"><code class="docutils literal notranslate"><span class="pre">Match2d.get_reference_scaling_factor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match2d.set_scaling_factor"><code class="docutils literal notranslate"><span class="pre">Match2d.set_scaling_factor()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match2d.get_image2_pos"><code class="docutils literal notranslate"><span class="pre">Match2d.get_image2_pos()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match3d"><code class="docutils literal notranslate"><span class="pre">Match3d</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match3d.__init__"><code class="docutils literal notranslate"><span class="pre">Match3d.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.Match3d.get_matches"><code class="docutils literal notranslate"><span class="pre">Match3d.get_matches()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.PoseEstimation"><code class="docutils literal notranslate"><span class="pre">PoseEstimation</span></code></a><ul>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.PoseEstimation.referenceSessionId"><code class="docutils literal notranslate"><span class="pre">PoseEstimation.referenceSessionId</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.PoseEstimation.__init__"><code class="docutils literal notranslate"><span class="pre">PoseEstimation.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.PoseEstimation.transformation"><code class="docutils literal notranslate"><span class="pre">PoseEstimation.transformation</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.PoseEstimation.matches"><code class="docutils literal notranslate"><span class="pre">PoseEstimation.matches</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.PoseEstimation.method"><code class="docutils literal notranslate"><span class="pre">PoseEstimation.method</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.PoseEstimation.get_confidence"><code class="docutils literal notranslate"><span class="pre">PoseEstimation.get_confidence()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.match_session"><code class="docutils literal notranslate"><span class="pre">match_session()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.match_incremental"><code class="docutils literal notranslate"><span class="pre">match_incremental()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.match_crossref"><code class="docutils literal notranslate"><span class="pre">match_crossref()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.match_raycast"><code class="docutils literal notranslate"><span class="pre">match_raycast()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.match_fgr"><code class="docutils literal notranslate"><span class="pre">match_fgr()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.match_super4pcs"><code class="docutils literal notranslate"><span class="pre">match_super4pcs()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.get_best_session_match"><code class="docutils literal notranslate"><span class="pre">get_best_session_match()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.get_best_matches"><code class="docutils literal notranslate"><span class="pre">get_best_matches()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.alignmenttools.params.html">geomapi.tools.alignmenttools.params</a></li>
+</ul>
+</div>
+<p id="module-geomapi.tools.alignmenttools">Tools to align different datasets using both images and 3d meshes</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.alignmenttools.find_close_sessions">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.alignmenttools.</span></span><span class="sig-name descname"><span class="pre">find_close_sessions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">boundingVolume</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">referenceSessions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode" title="geomapi.nodes.setnode.SetNode"><span class="pre">SetNode</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode" title="geomapi.nodes.setnode.SetNode"><span class="pre">SetNode</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.tools.alignmenttools.find_close_sessions" title="Link to this definition"></a></dt>
+<dd><p>Determines the close ennoug sessions based on bounding volumes</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>boundingVolume (np.array 6x1): The test bounding volume
+referenceSessions (list[SetNode]): All the SetNodes to check</p>
+</dd>
+<dt>Returns:</dt><dd><p>list[SetNode]: All the close enough session nodes</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.alignmenttools.get_weighted_pose">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.alignmenttools.</span></span><span class="sig-name descname"><span class="pre">get_weighted_pose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">poses</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="geomapi.tools.alignmenttools.match.html#geomapi.tools.alignmenttools.match.PoseEstimation" title="geomapi.tools.alignmenttools.match.PoseEstimation"><span class="pre">PoseEstimation</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.alignmenttools.get_weighted_pose" title="Link to this definition"></a></dt>
+<dd><p>Calculates the weighted average of a list of PoseEstimations</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>poses (PoseEstimation): The list of Pose Estimations</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array 4x4: The Average transformation matrix</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.alignmenttools.estimate_session_position">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.alignmenttools.</span></span><span class="sig-name descname"><span class="pre">estimate_session_position</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">testSession</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode" title="geomapi.nodes.setnode.SetNode"><span class="pre">SetNode</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">refSessions</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="geomapi.nodes.setnode.html#geomapi.nodes.setnode.SetNode" title="geomapi.nodes.setnode.SetNode"><span class="pre">SetNode</span></a><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">array</span></span></span><a class="headerlink" href="#geomapi.tools.alignmenttools.estimate_session_position" title="Link to this definition"></a></dt>
+<dd><p>Estimates the global position of a session in relation to a list of reference sessions</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>testSession (SetNode): The Test Session where the positions needs to be determined from
+refSessions (list[SetNode]): The Reference sessions to help calculate the new position</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: The estimated transformation</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.alignmenttools.execute_fast_global_registration">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.alignmenttools.</span></span><span class="sig-name descname"><span class="pre">execute_fast_global_registration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_pcd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.Geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_pcd</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.Geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_fpfh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_fpfh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">radius</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.alignmenttools.execute_fast_global_registration" title="Link to this definition"></a></dt>
+<dd><p>Performs a RANSAC based Fpfh feature matching of 2 pointclouds using a faster algorithm</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>source_down (o3d.geometry.Geometry): the source PCD
+target_down (o3d.geometry.Geometry): the Target PCD
+source_fpfh (np.array): The sourse features
+target_fpfh (np.array): The target features
+radius (float): The correspondance radius</p>
+</dd>
+<dt>Returns:</dt><dd><p>RegistrationResult: The resulting registration</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.alignmenttools.execute_global_registration">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.alignmenttools.</span></span><span class="sig-name descname"><span class="pre">execute_global_registration</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">source_down</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.Geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_down</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.Geometry</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">source_fpfh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_fpfh</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">voxel_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.alignmenttools.execute_global_registration" title="Link to this definition"></a></dt>
+<dd><p>Performs a RANSAC based Fpfh feature matching of 2 pointclouds</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>source_down (o3d.geometry.Geometry): the source PCD
+target_down (o3d.geometry.Geometry): the Target PCD
+source_fpfh (np.array): The sourse features
+target_fpfh (np.array): The target features
+voxel_size (np.array): The size to downsample to for the feature matching</p>
+</dd>
+<dt>Returns:</dt><dd><p>RegistrationResult: The resulting registration</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.alignmenttools.weighted_average_quaternions">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.alignmenttools.</span></span><span class="sig-name descname"><span class="pre">weighted_average_quaternions</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">w</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">array</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.alignmenttools.weighted_average_quaternions" title="Link to this definition"></a></dt>
+<dd><p>Calculates a weighted average of a list of quaternions
+The weight vector w must be of the same length as the number of rows in the quaternion maxtrix Q</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>Q (List[np.array]): a list of quaternions
+w (List[float]): a lost of weights</p>
+</dd>
+<dt>Returns:</dt><dd><p>np.array: the weighted 4x1 quaternion</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.tools.alignmenttools.calibrate_camera">
+<span class="sig-prename descclassname"><span class="pre">geomapi.tools.alignmenttools.</span></span><span class="sig-name descname"><span class="pre">calibrate_camera</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">images</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">CheckerBoardPattern</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">(7,</span> <span class="pre">7)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">squareSize</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">drawImages</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.tools.alignmenttools.calibrate_camera" title="Link to this definition"></a></dt>
+<dd><p>Calibrate a camera using a list of chessboard images.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>images (list[np.array]): A list of cv2 images.</p></li>
+<li><p>CheckerBoardPattern (tuple, optional): Number of internal corners (rows, columns). Defaults to (7,7).</p></li>
+<li><p>squareSize (float, optional): Size of one square in real-world units. Defaults to 1.</p></li>
+<li><p>drawImages (bool, optional): If True, shows images with detected corners. Defaults to False.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>bool: Success of the calibration.</p></li>
+<li><p>np.array: Intrinsic matrix (camera matrix).</p></li>
+<li><p>np.array: Distortion coefficients.</p></li>
+<li><p>list[np.array]: Rotation vectors.</p></li>
+<li><p>list[np.array]: Translation vectors.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.tools.html" class="btn btn-neutral float-left" title="geomapi.tools" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.tools.alignmenttools.match.html" class="btn btn-neutral float-right" title="geomapi.tools.alignmenttools.match" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

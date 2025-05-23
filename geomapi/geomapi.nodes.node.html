@@ -1,0 +1,490 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.nodes.node &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.nodes.orthonode" href="geomapi.nodes.orthonode.html" />
+    <link rel="prev" title="geomapi.nodes.meshnode" href="geomapi.nodes.meshnode.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.bimnode.html">geomapi.nodes.bimnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.imagenode.html">geomapi.nodes.imagenode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.linesetnode.html">geomapi.nodes.linesetnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.meshnode.html">geomapi.nodes.meshnode</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.nodes.node</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.nodes.node.Node"><code class="docutils literal notranslate"><span class="pre">Node</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.__init__"><code class="docutils literal notranslate"><span class="pre">Node.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.path"><code class="docutils literal notranslate"><span class="pre">Node.path</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.name"><code class="docutils literal notranslate"><span class="pre">Node.name</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.timestamp"><code class="docutils literal notranslate"><span class="pre">Node.timestamp</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.graphPath"><code class="docutils literal notranslate"><span class="pre">Node.graphPath</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.graph"><code class="docutils literal notranslate"><span class="pre">Node.graph</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.subject"><code class="docutils literal notranslate"><span class="pre">Node.subject</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.resource"><code class="docutils literal notranslate"><span class="pre">Node.resource</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.cartesianTransform"><code class="docutils literal notranslate"><span class="pre">Node.cartesianTransform</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.orientedBoundingBox"><code class="docutils literal notranslate"><span class="pre">Node.orientedBoundingBox</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.convexHull"><code class="docutils literal notranslate"><span class="pre">Node.convexHull</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.get_center"><code class="docutils literal notranslate"><span class="pre">Node.get_center()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.load_resource"><code class="docutils literal notranslate"><span class="pre">Node.load_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.save_resource"><code class="docutils literal notranslate"><span class="pre">Node.save_resource()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.get_graph"><code class="docutils literal notranslate"><span class="pre">Node.get_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.save_graph"><code class="docutils literal notranslate"><span class="pre">Node.save_graph()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.transform"><code class="docutils literal notranslate"><span class="pre">Node.transform()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#geomapi.nodes.node.Node.show"><code class="docutils literal notranslate"><span class="pre">Node.show()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.orthonode.html">geomapi.nodes.orthonode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.panonode.html">geomapi.nodes.panonode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.pointcloudnode.html">geomapi.nodes.pointcloudnode</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.nodes.setnode.html">geomapi.nodes.setnode</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.nodes.html">geomapi.nodes</a></li>
+      <li class="breadcrumb-item active">geomapi.nodes.node</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.nodes.node.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.nodes.node">
+<span id="geomapi-nodes-node"></span><h1>geomapi.nodes.node<a class="headerlink" href="#module-geomapi.nodes.node" title="Link to this heading"></a></h1>
+<p><strong>Node</strong> is an abstract Python Class to govern the data and metadata of remote sensing data (pcd, images, meshes, orthomosaics). It is the base class for all other node classes. It contains the base RDF graph functionality and I/O from and to RDF files.</p>
+<img alt="../_images/ontology_node.png" src="../_images/ontology_node.png" />
+<p><strong>IMPORTANT</strong>: The Node class is an archetype class from which specific data classes (e.g., PointCloudNode) inherit. Do not use this class directly if you can use a child class with more functionality.</p>
+<p><strong>Example</strong>: Use create_node() with a resource or a graph and it will automatically create the correct node type.</p>
+<dl class="simple">
+<dt>Goals:</dt><dd><ul class="simple">
+<li><p>Govern the metadata and geospatial information of big data files in an accessible and lightweight format.</p></li>
+<li><p>Serialize the metadata of remote sensing and geospatial files (BIM, Point clouds, meshes, etc.) as RDF Graphs.</p></li>
+<li><p>Attach spatial and temporal analyses through RDF Graph navigation.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py class">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">geomapi.nodes.node.</span></span><span class="sig-name descname"><span class="pre">Node</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">URIRef</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Graph</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesianTransform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientedBoundingBox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.OrientedBoundingBox</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convexHull</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.TriangleMesh</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loadResource</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">subject</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">URIRef</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graph</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Graph</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">path</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamp</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">resource</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">cartesianTransform</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">orientedBoundingBox</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.OrientedBoundingBox</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">convexHull</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.TriangleMesh</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loadResource</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.__init__" title="Link to this definition"></a></dt>
+<dd><p>Creates a Node from one or more of the following inputs.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>subject (URIRef, optional) : A subject to use as identifier for the Node. If a graph is also present, the subject should be part of the graph.</p></li>
+<li><p>graph (Graph, optional) : An RDF Graph to parse.</p></li>
+<li><p>graphPath (Path, optional) : The path of an RDF Graph to parse. If no subject is provided, the first subject of the graph is retained.</p></li>
+<li><p>name (str, optional) : A name of the Node. This is not a unique identifier but serves as non-functional description.</p></li>
+<li><p>path (Path, optional) : A filepath to a resource.</p></li>
+<li><p>timestamp (str, optional) : Timestamp for the node.</p></li>
+<li><p>resource (optional) : Resource associated with the node.</p></li>
+<li><p>cartesianTransform (np.ndarray, optional) : The (4x4) transformation matrix.</p></li>
+<li><p>orientedBoundingBox (o3d.geometry.OrientedBoundingBox, optional) : The oriented bounding box of the node.</p></li>
+<li><p>convexHull (o3d.geometry.TriangleMesh, optional) : The convex hull of the node.</p></li>
+<li><p>loadResource (bool, False) : Load the resource at initialization?</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>Node: An instance of the Node class.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.path">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">path</span></span><a class="headerlink" href="#geomapi.nodes.node.Node.path" title="Link to this definition"></a></dt>
+<dd><p>Path (Path) of the resource of the node.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>value (str or Path): The new path for the node.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.name">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">name</span></span><a class="headerlink" href="#geomapi.nodes.node.Node.name" title="Link to this definition"></a></dt>
+<dd><p>The name (str) of the node. This can include characters that the operating
+system does not allow.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>self.path</p></li>
+<li><p>self.subject</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.timestamp">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">timestamp</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#geomapi.nodes.node.Node.timestamp" title="Link to this definition"></a></dt>
+<dd><p>mm:ss)) of the node.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ul class="simple">
+<li><p>self.path</p></li>
+<li><p>self.graphPath</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>The timestamp (str(yyyy-MM-ddTHH</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.graphPath">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graphPath</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">str</span></em><a class="headerlink" href="#geomapi.nodes.node.Node.graphPath" title="Link to this definition"></a></dt>
+<dd><p>The path (Path) of graph of the node. This can be both a local file or a remote URL.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.graph">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">graph</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Graph</span></em><a class="headerlink" href="#geomapi.nodes.node.Node.graph" title="Link to this definition"></a></dt>
+<dd><p>The Graph (RDFLib.Graph) of the node. If no graph is present, you can use <cite>get_graph()</cite> to parse the graph from a graphPath. Alternatively, you can use <cite>to_graph()</cite> to serialize the Nodes attributes to RDF.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.subject">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">subject</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">URIRef</span></em><a class="headerlink" href="#geomapi.nodes.node.Node.subject" title="Link to this definition"></a></dt>
+<dd><p>The subject (RDFLib.URIRef) of the node. If no subject is present, you can use <cite>get_subject()</cite> to construct it from a graph, name or path. Otherwise, a random guid is generated.</p>
+<dl class="simple">
+<dt>Features:</dt><dd><ul class="simple">
+<li><p>self.name</p></li>
+<li><p>self.graph</p></li>
+<li><p>self.path</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.resource">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">resource</span></span><a class="headerlink" href="#geomapi.nodes.node.Node.resource" title="Link to this definition"></a></dt>
+<dd><p>The resource (mesh, image, etc.) of the node. If no resource is present, you can use <cite>get_resource()</cite>, to load the resource from a path or search it through the name and graphpath.</p>
+<dl class="simple">
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>self.path</p></li>
+<li><p>self.name</p></li>
+<li><p>self.graphPath</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.cartesianTransform">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">cartesianTransform</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">ndarray</span></em><a class="headerlink" href="#geomapi.nodes.node.Node.cartesianTransform" title="Link to this definition"></a></dt>
+<dd><p>The (4x4) transformation matrix of the node containing the translation &amp; rotation. If no matrix is present, you can use <cite>get_cartesian_transform()</cite>, to gather it from the resource, orientedBoundingBox, or convexHull.</p>
+<p><strong>NOTE</strong>: The cartesianTransform is specific for every nodeType. For geometry Nodes, it is located at the center of the geometry and the axes are with the world coordinate system. For the image-based Nodes, it is located at the center of the image and the axes are aligned with the image coordinate system (see Figure). The default cartesianTransform is the identity matrix.</p>
+<img alt="../_images/imagenode.png" src="../_images/imagenode.png" />
+<p><strong>ROTATIONS</strong>: rotations are (+) counterclockwise and are applied in the following order: z,y,x if no rotation matrix is present.</p>
+<dl class="simple">
+<dt>Examples:</dt><dd><ul class="simple">
+<li><p>The pose of a mesh is determined by the average of its bounding vertices.</p></li>
+<li><p>The pose of an image is at the center of the lens complex.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>numpy.ndarray: The (4x4) transformation matrix.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.orientedBoundingBox">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">orientedBoundingBox</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">open3d.geometry.OrientedBoundingBox</span></em><a class="headerlink" href="#geomapi.nodes.node.Node.orientedBoundingBox" title="Link to this definition"></a></dt>
+<dd><p>The o3d.orientedBoundingBox of the Node containing the bounding box of the geometry. If no box is present, you can use <cite>get_oriented_bounding_box()</cite>, to gather it from the resource, cartesianTransform or convexHull.</p>
+<img alt="../_images/GEOMAPI_metadata3.png" src="../_images/GEOMAPI_metadata3.png" />
+<dl class="simple">
+<dt><strong>POINTORDER</strong>:    [[xmin ymin zmin]</dt><dd><p>[xmax ymin zmin]
+[xmin ymax zmin]
+[xmin ymin zmax]
+[xmax ymax zmax]
+[xmin ymax zmax]
+[xmax ymin zmax]
+[xmax ymax zmin]]</p>
+</dd>
+</dl>
+<p><strong>NOTE</strong>: The orientedBoundingBox is a 3D box that is aligned with the geometry’s principal axes. It is used to determine the geometry’s position, orientation, and scale.</p>
+<dl class="simple">
+<dt><strong>Parameters</strong>:</dt><dd><ul class="simple">
+<li><p>center (np.array(3)): The center of the box.</p></li>
+<li><p>extent (np.array(3)): The length, width, and height of the box.</p></li>
+<li><p>R (np.array(3x3)): The rotation matrix of the box.</p></li>
+</ul>
+</dd>
+<dt><strong>Features</strong>:</dt><dd><ul class="simple">
+<li><p>LineSetNode, MeshNode, BIMNode, PointCloudNode: The orientedBoundingBox encloses the geometry according to the resource’s principal axes.</p></li>
+<li><p>ImageNode: The orientedBoundingBox encloses the image centerpoint and it’s 4 corner points projected up to a default distance (20m) from the centerpoint.</p></li>
+<li><p>OrthomosaicNode: The orientedBoundingBox encloses the 4 corner points of the mosaic projected up and down up to a default distance of (20m)</p></li>
+<li><p>PanoNode: The orientedBoundingBox the ellipsoide of the panorama projected up to a default distance of (20m) from the centerpoint.</p></li>
+</ul>
+</dd>
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>Open3D.geometry.OrientedBoundingBox</p></li>
+<li><p>Open3D geometry</p></li>
+<li><p>set of points (np.array(nx3)) or Vector3dVector</p></li>
+<li><p>9 parameters $[x,y,z,e_x,e_y,e_z, R_x,R_y,R_z]$</p></li>
+<li><p>custom parameters are gathered for the ImageNode, OrthomosaicNode, and PanoNode.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.OrientedBoundingBox: The oriented bounding box of the node.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.convexHull">
+<em class="property"><span class="k"><span class="pre">property</span></span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">convexHull</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">open3d.geometry.TriangleMesh</span></em><a class="headerlink" href="#geomapi.nodes.node.Node.convexHull" title="Link to this definition"></a></dt>
+<dd><p>The convex hull of the Node containing the bounding hull of the geometry. If no convex hull is present, you can use <cite>get_convex_hull()</cite>, to gather it from the resource, cartesianTransform or orientedBoundingBox.</p>
+<img alt="../_images/GEOMAPI_metadata3.png" src="../_images/GEOMAPI_metadata3.png" />
+<p><strong>NOTE</strong>: The convex hull is a 3D mesh that encloses the geometry. It is used to determine the geometry’s outer shape and volume.</p>
+<dl class="simple">
+<dt><strong>Parameters</strong>:</dt><dd><ul class="simple">
+<li><p>vertices (np.array): The vertices of the mesh.</p></li>
+<li><p>triangles (np.array): The triangles of the mesh.</p></li>
+</ul>
+</dd>
+<dt><strong>Features</strong>:</dt><dd><ul class="simple">
+<li><p>LineSetNode, MeshNode, BIMNode, PointCloudNode: The convexHull encloses the geometry according to the resource’s vertices or points.</p></li>
+<li><p>ImageNode: The convexHull encloses the image centerpoint and it’s 4 corner points projected up to a default distance (20m) from the centerpoint. As such, it has a pyramid shape.</p></li>
+<li><p>OrthomosaicNode: The convexHull encloses the 4 corner points of the mosaic projected up and down up to a default distance of (20m). As such, it has a boxlike shape.</p></li>
+<li><p>PanoNode: The convexHull the ellipsoide of the panorama projected up to a default distance of (20m) from the centerpoint. As such, it has a ellipsoid shape.</p></li>
+</ul>
+</dd>
+<dt>Inputs:</dt><dd><ul class="simple">
+<li><p>Open3D.geometry.TriangleMesh</p></li>
+<li><p>Open3D geometry</p></li>
+<li><p>set of points (np.array(nx3)) or Vector3dVector</p></li>
+<li><p>custom parameters are gathered for the ImageNode, OrthomosaicNode, and PanoNode.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.TriangleMesh: The convex hull of the node.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.get_center">
+<span class="sig-name descname"><span class="pre">get_center</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.nodes.node.Node.get_center" title="Link to this definition"></a></dt>
+<dd><p>Returns the center of the node.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.load_resource">
+<span class="sig-name descname"><span class="pre">load_resource</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.node.Node.load_resource" title="Link to this definition"></a></dt>
+<dd><p>Load the resource from the path. Overwrite this function for each node type to access more utilities.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.save_resource">
+<span class="sig-name descname"><span class="pre">save_resource</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">directory</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">extension</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">'.txt'</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.node.Node.save_resource" title="Link to this definition"></a></dt>
+<dd><p>Export the resource of the Node. this base function checks for the validity of the path.
+if no directory is given: checks for path and uses that, checks for</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.get_graph">
+<span class="sig-name descname"><span class="pre">get_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Path</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">overwrite</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">base</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">URIRef</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">serializeAttributes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Graph</span></span></span><a class="headerlink" href="#geomapi.nodes.node.Node.get_graph" title="Link to this definition"></a></dt>
+<dd><p>Serializes the object into an RDF graph using only its decorated properties.</p>
+<p><strong>NOTE</strong> that adding a base URI will change the graph’s subject to the base URI/subject. URIRef(’<a class="reference external" href="http://subject">http://subject</a>’) -&gt; URIRef(’<a class="reference external" href="http://node#subject">http://node#subject</a>’). This is useful for readability and graph navigation.
+<strong>NOTE</strong> that by default, only the pre-defined properties are serialized, if you want to serialize your own attributes use <cite>serializeAttributes</cite></p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>graphPath (Path) : The path of the graph to parse.</p></li>
+<li><p>overwrite (bool) : Overwrite the existing graph or not.</p></li>
+<li><p>base (str | URIRef) : BaseURI to match subjects to in the graph (improves readability) e.g. <a class="reference external" href="http:/">http:/</a>/node#. Also, the base URI is used to set the subject of the graph. RDF rules and customs apply so the string must be a valid URI (<a class="reference external" href="http://">http://</a> in front, and # at the end).</p></li>
+<li><p>save (bool) : Save the graph to the self.graphPath or graphPath.</p></li>
+<li><p>serializeAttributes (List(str)) : a list of attributes defined in the node that also need to be serialized</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>Graph: The RDF graph</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.save_graph">
+<span class="sig-name descname"><span class="pre">save_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">graphPath</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#geomapi.nodes.node.Node.save_graph" title="Link to this definition"></a></dt>
+<dd><p>Serialize the graph in an RDF file on drive. The RDF graph will be stored in self.graphPath or provided graphPath (str).</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>graphPath (str, optional)</p></li>
+</ul>
+</dd>
+<dt>Raises:</dt><dd><ul class="simple">
+<li><p>ValueError: No valid graphPath if file/folder location is not found</p></li>
+<li><p>ValueError: No valid extension if not in ut.RDF_EXTENSIONS</p></li>
+<li><p>ValueError: Save failed despite valid graphPath and extension (serialization error).</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>bool: True if file is successfully saved.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.transform">
+<span class="sig-name descname"><span class="pre">transform</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">float</span><span class="p"><span class="pre">]</span></span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">translation</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">None</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rotate_around_center</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.transform" title="Link to this definition"></a></dt>
+<dd><p>Apply a transformation to the Node’s cartesianTransform, orientedBoundingBox, and convexHull.
+Subclasses should override this method to transform their specific resource types.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>transformation (Optional[np.ndarray]): A 4x4 transformation matrix.</p></li>
+<li><p>rotation (Optional[Union[np.ndarray, np.array[float, float, float]]]): A 3x3 rotation matrix or Euler angles (Rz, Ry, Rx).</p></li>
+<li><p>translation (Optional[np.ndarray]): A 3-element translation vector.</p></li>
+<li><p>rotate_around_center (bool): If True, rotate around the object’s center (handled by subclass if needed).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="geomapi.nodes.node.Node.show">
+<span class="sig-name descname"><span class="pre">show</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.nodes.node.Node.show" title="Link to this definition"></a></dt>
+<dd><p>Creates a visualization of the resource (if loaded)</p>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.nodes.meshnode.html" class="btn btn-neutral float-left" title="geomapi.nodes.meshnode" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.nodes.orthonode.html" class="btn btn-neutral float-right" title="geomapi.nodes.orthonode" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

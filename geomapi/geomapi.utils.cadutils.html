@@ -1,0 +1,515 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>geomapi.utils.cadutils &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="geomapi.utils.geometryutils" href="geomapi.utils.geometryutils.html" />
+    <link rel="prev" title="geomapi.utils" href="geomapi.utils.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/alignmenttools.html">Alignment Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../testcases/volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="geomapi.utils.html">geomapi.utils</a><ul class="current">
+<li class="toctree-l2 current"><a class="current reference internal" href="#">geomapi.utils.cadutils</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.ezdxf_to_o3d"><code class="docutils literal notranslate"><span class="pre">ezdxf_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.ezdxf_entity_to_o3d"><code class="docutils literal notranslate"><span class="pre">ezdxf_entity_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.calculate_angle_between_lines"><code class="docutils literal notranslate"><span class="pre">calculate_angle_between_lines()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.calculate_perpendicular_distance"><code class="docutils literal notranslate"><span class="pre">calculate_perpendicular_distance()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.insert_to_o3d"><code class="docutils literal notranslate"><span class="pre">insert_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.circle_to_o3d"><code class="docutils literal notranslate"><span class="pre">circle_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.line_to_o3d"><code class="docutils literal notranslate"><span class="pre">line_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.arc_to_o3d"><code class="docutils literal notranslate"><span class="pre">arc_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.ellips_to_o3d"><code class="docutils literal notranslate"><span class="pre">ellips_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.point_to_o3d"><code class="docutils literal notranslate"><span class="pre">point_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.spline_to_o3d"><code class="docutils literal notranslate"><span class="pre">spline_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.solid_to_o3d"><code class="docutils literal notranslate"><span class="pre">solid_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.lwpolyline_to_o3d"><code class="docutils literal notranslate"><span class="pre">lwpolyline_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.polyline_to_o3d"><code class="docutils literal notranslate"><span class="pre">polyline_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.mesh_to_o3d"><code class="docutils literal notranslate"><span class="pre">mesh_to_o3d()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.sample_pcd_from_linesets"><code class="docutils literal notranslate"><span class="pre">sample_pcd_from_linesets()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.get_linesets_inliers_in_box"><code class="docutils literal notranslate"><span class="pre">get_linesets_inliers_in_box()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#geomapi.utils.cadutils.get_rgb_from_aci"><code class="docutils literal notranslate"><span class="pre">get_rgb_from_aci()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geometryutils.html">geomapi.utils.geometryutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.geospatialutils.html">geomapi.utils.geospatialutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.imageutils.html">geomapi.utils.imageutils</a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.time_function"><code class="docutils literal notranslate"><span class="pre">time_function()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_timestamp"><code class="docutils literal notranslate"><span class="pre">get_timestamp()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_random_color"><code class="docutils literal notranslate"><span class="pre">get_random_color()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.map_to_2d_array"><code class="docutils literal notranslate"><span class="pre">map_to_2d_array()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.item_to_list"><code class="docutils literal notranslate"><span class="pre">item_to_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.split_list"><code class="docutils literal notranslate"><span class="pre">split_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.replace_str_index"><code class="docutils literal notranslate"><span class="pre">replace_str_index()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_list_of_files"><code class="docutils literal notranslate"><span class="pre">get_list_of_files()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_geomapi_classes"><code class="docutils literal notranslate"><span class="pre">get_geomapi_classes()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_method_for_datatype"><code class="docutils literal notranslate"><span class="pre">get_method_for_datatype()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.apply_method_to_object"><code class="docutils literal notranslate"><span class="pre">apply_method_to_object()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_subject_name"><code class="docutils literal notranslate"><span class="pre">get_subject_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_subject_graph"><code class="docutils literal notranslate"><span class="pre">get_subject_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_attribute_from_predicate"><code class="docutils literal notranslate"><span class="pre">get_attribute_from_predicate()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_number"><code class="docutils literal notranslate"><span class="pre">literal_to_number()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_string"><code class="docutils literal notranslate"><span class="pre">literal_to_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_int"><code class="docutils literal notranslate"><span class="pre">literal_to_int()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_float"><code class="docutils literal notranslate"><span class="pre">literal_to_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_list"><code class="docutils literal notranslate"><span class="pre">literal_to_list()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_matrix"><code class="docutils literal notranslate"><span class="pre">literal_to_matrix()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.literal_to_datetime"><code class="docutils literal notranslate"><span class="pre">literal_to_datetime()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xml_to_float"><code class="docutils literal notranslate"><span class="pre">xml_to_float()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_lat"><code class="docutils literal notranslate"><span class="pre">xcr_to_lat()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_long"><code class="docutils literal notranslate"><span class="pre">xcr_to_long()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.xcr_to_alt"><code class="docutils literal notranslate"><span class="pre">xcr_to_alt()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_string"><code class="docutils literal notranslate"><span class="pre">validate_string()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_uri"><code class="docutils literal notranslate"><span class="pre">validate_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.validate_path"><code class="docutils literal notranslate"><span class="pre">validate_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.check_if_subject_is_in_graph"><code class="docutils literal notranslate"><span class="pre">check_if_subject_is_in_graph()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_graph_intersection"><code class="docutils literal notranslate"><span class="pre">get_graph_intersection()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.bind_ontologies"><code class="docutils literal notranslate"><span class="pre">bind_ontologies()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_node_resource_extensions"><code class="docutils literal notranslate"><span class="pre">get_node_resource_extensions()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_node_type"><code class="docutils literal notranslate"><span class="pre">get_node_type()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_data_type"><code class="docutils literal notranslate"><span class="pre">get_data_type()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_geomapi_data_types"><code class="docutils literal notranslate"><span class="pre">get_geomapi_data_types()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_ifcowl_uri"><code class="docutils literal notranslate"><span class="pre">get_ifcowl_uri()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_ifcopenshell_class_name"><code class="docutils literal notranslate"><span class="pre">get_ifcopenshell_class_name()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_predicate_and_datatype"><code class="docutils literal notranslate"><span class="pre">get_predicate_and_datatype()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.get_relative_path"><code class="docutils literal notranslate"><span class="pre">get_relative_path()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="geomapi.utils.html#geomapi.utils.rdf_property"><code class="docutils literal notranslate"><span class="pre">rdf_property()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="geomapi.utils.html">geomapi.utils</a></li>
+      <li class="breadcrumb-item active">geomapi.utils.cadutils</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/geomapi/geomapi.utils.cadutils.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-geomapi.utils.cadutils">
+<span id="geomapi-utils-cadutils"></span><h1>geomapi.utils.cadutils<a class="headerlink" href="#module-geomapi.utils.cadutils" title="Link to this heading"></a></h1>
+<p>cadutils - a Python library for validating CAD objects.</p>
+<p><strong>NOTE</strong>: these tools solely function properly on dxf files with meter units. Format your files appropriately to avoid errors.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.ezdxf_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">ezdxf_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dxf</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">str</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">Drawing</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dtypes</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">['LINE',</span> <span class="pre">'ARC',</span> <span class="pre">'CIRCLE',</span> <span class="pre">'POINT',</span> <span class="pre">'SPLINE',</span> <span class="pre">'POLYLINE',</span> <span class="pre">'LWPOLYLINE',</span> <span class="pre">'MESH',</span> <span class="pre">'ELLIPSE',</span> <span class="pre">'SOLID',</span> <span class="pre">'3DFACE']</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">layers</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">join_geometries</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">explode_blocks</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">bool</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.Geometry</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.ezdxf_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Convert a set of entities in a dxf file to a set of o3d.geometry.LineSet/TriangleMesh/PointCloud objects with their corresponding layers.</p>
+<p><strong>NOTE</strong>: be aware of the scale factor!</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>dxf (str or Drawing): directly provide the dxf path or pre-read the dxf using ezdxf.readfile().</p></li>
+<li><p>dtypes (List[str], optional): list of entity names to query. Defaults to the main types in a dxf file i.e. [‘LINE’,’ARC’,’CIRCLE’,’POINT’,’SPLINE’,’POLYLINE’,’LWPOLYLINE’,’MESH’,’ELLIPSE’,’SOLID’,’3DFACE’].</p></li>
+<li><p>layers (List[str], optional): list of layer names to query. If None, all layers are considered</p></li>
+<li><p>join_geometries (bool, optional): merge geometries of the same type. This optimizes their use. Defaults to True.</p></li>
+<li><p>group_per_layer (bool, optional): If true, create list of lists of geometries per layer. Defaults to True.</p></li>
+<li><p>explode_blocks (bool, optional): deconstruct blocks and add them to the geometries. Defaults to True.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>Tuple[List[o3d.geometry.Geometry],List[str]]: _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.ezdxf_entity_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">ezdxf_entity_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">DXFEntity</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.Geometry</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.ezdxf_entity_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Process a DXF entity and convert it to an Open3D object.</p>
+<dl class="simple">
+<dt>Parameters:</dt><dd><ul class="simple">
+<li><p>entity (ezdxf.entities.dxfentity.DXFEntity): The DXF entity to process.</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>the Open3D object</p></li>
+</ul>
+</dd>
+<dt>Supported DXF types and their corresponding functions:</dt><dd><ul class="simple">
+<li><p>LINE: line_to_o3d</p></li>
+<li><p>ARC: arc_to_o3d</p></li>
+<li><p>CIRCLE: circle_to_o3d</p></li>
+<li><p>POINT: point_to_o3d</p></li>
+<li><p>SPLINE: spline_to_o3d</p></li>
+<li><p>POLYLINE: polyline_to_o3d</p></li>
+<li><p>LWPOLYLINE: lwpolyline_to_o3d</p></li>
+<li><p>MESH: mesh_to_o3d</p></li>
+<li><p>ELLIPSE: ellips_to_o3d</p></li>
+<li><p>3DFACE: solid_to_o3d</p></li>
+</ul>
+</dd>
+<dt>Unsupported DXF types:</dt><dd><ul class="simple">
+<li><p>SOLID</p></li>
+<li><p>3DSOLID</p></li>
+<li><p>HATCH</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.calculate_angle_between_lines">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">calculate_angle_between_lines</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.calculate_angle_between_lines" title="Link to this definition"></a></dt>
+<dd><p>Calculate the angle between two lines.</p>
+<p>This function takes two lines defined by their endpoints and calculates the angle between them.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>line1 (tuple): A tuple containing the endpoints of the first line in the form ((x1, y1), (x2, y2)).
+line2 (tuple): A tuple containing the endpoints of the second line in the form ((x3, y3), (x4, y4)).</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: The angle in degrees between the two lines.</p>
+</dd>
+<dt>Example:</dt><dd><p>line1 = ((1, 1), (3, 3))
+line2 = ((1, 1), (2, 0))
+angle = calculate_angle_between_lines(line1, line2)
+print(angle)  # Output: 45.0 degrees</p>
+</dd>
+<dt>Note:</dt><dd><ul class="simple">
+<li><p>The function calculates the angle by finding the angles of the lines with respect to the x-axis and computing the absolute difference.</p></li>
+<li><p>The result is the acute angle between the two lines.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.calculate_perpendicular_distance">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">calculate_perpendicular_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">line1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">line2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">tuple</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">list</span><span class="w"> </span><span class="p"><span class="pre">|</span></span><span class="w"> </span><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">float</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.calculate_perpendicular_distance" title="Link to this definition"></a></dt>
+<dd><p>Calculate the perpendicular distance between two lines.</p>
+<p>This function takes two lines defined by their endpoints and calculates the minimum perpendicular distance between them.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>line1 (tuple): A tuple containing the endpoints of the first line in the form ((x1, y1), (x2, y2)).
+line2 (tuple): A tuple containing the endpoints of the second line in the form ((x3, y3), (x4, y4)).</p>
+</dd>
+<dt>Returns:</dt><dd><p>float: The minimum perpendicular distance between the two lines.</p>
+</dd>
+<dt>Note:</dt><dd><ul class="simple">
+<li><p>The function calculates the perpendicular distance by finding the shortest distance between the endpoints of the lines.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.insert_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">insert_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Insert</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.LineSet</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.insert_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Convert ezdxf entity to o3d.geometry.LineSet.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entity (ezdxf.entities.insert.Insert)</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.LineSet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.circle_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">circle_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Arc</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.LineSet</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.circle_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Convert ezdxf entity to o3d.geometry.LineSet.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entity (ezdxf.entities.arc.Arc)</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.LineSet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.line_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">line_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Line</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.LineSet</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.line_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Convert ezdxf entity to o3d.geometry.LineSet.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entity (ezdxf.entities.line.Line)</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.LineSet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.arc_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">arc_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Arc</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.LineSet</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.arc_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Convert ezdxf entity to o3d.geometry.LineSet.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entity (ezdxf.entities.arc.Arc)</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.LineSet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.ellips_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">ellips_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Arc</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.LineSet</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.ellips_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Convert ezdxf entity to o3d.geometry.LineSet.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>entity (ezdxf.entities.arc.Arc)</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.LineSet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.point_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">point_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Point</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.point_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Convert ezdxf entity to ndarray.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>entity (ezdxf.entities.point.Point)</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><p>ndarray: points</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.spline_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">spline_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Spline</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.LineSet</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.spline_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Convert ezdxf entity to o3d.geometry.LineSet.</p>
+<p><strong>NOTE</strong>: A spline is reconstructed as a lineset between the control points. It does NOT represent the actual curve.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>entity (ezdxf.entities.spline.Spline)</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>o3d.geometry.LineSet</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.solid_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">solid_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Solid</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.LineSet</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.solid_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Convert ezdxf entities to o3d.geometry.LineSet objects.</p>
+<p><strong>NOTE</strong>: A spline is reconstructed as a lineset between the control points. It does NOT represent the actual curve.</p>
+<p><strong>NOTE</strong>: only 3DFACE entities are supported (3p or 4p meshfaces)</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entities (ezdxf.entities.solid.Solid)</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.LineSet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.lwpolyline_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">lwpolyline_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">LWPolyline</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.LineSet</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.lwpolyline_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Convert ezdxf entity to o3d.geometry.LineSet.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><ul class="simple">
+<li><p>entity (ezdxf.entities.lwpolyline.LWPolyline)</p></li>
+</ul>
+</dd>
+<dt>Returns:</dt><dd><ul class="simple">
+<li><p>o3d.geometry.LineSet</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.polyline_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">polyline_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Polyline</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.LineSet</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.polyline_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>Convert ezdxf entity to o3d.geometry.LineSet
+AcDbPolyFaceMesh objects will also be returned as o3d.geometry.LineSet (later we will expand this to o3d.Geometry.TriangleMesh).</p>
+<p><strong>NOTE</strong>: Spline and ARC segments are abstracted as linesegments between the control points. It does NOT represent the actual curve.</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entity (ezdxf.entities.polyline.Polyline)</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.LineSet</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.mesh_to_o3d">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">mesh_to_o3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">entity</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Mesh</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">open3d.geometry.TriangleMesh</span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.mesh_to_o3d" title="Link to this definition"></a></dt>
+<dd><p>NOT IMPLEMENTED</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>entity (ezdxf.entities.mesh.Mesh)</p>
+</dd>
+<dt>Returns:</dt><dd><p>o3d.geometry.TriangleMesh</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.sample_pcd_from_linesets">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">sample_pcd_from_linesets</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linesets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.LineSet</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_size</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.PointCloud</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.sample_pcd_from_linesets" title="Link to this definition"></a></dt>
+<dd><p>Sample a point cloud from a set of o3d.geometry.LineSet elements (color is inherited)</p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>linesets (List[o3d.geometry.LineSet]): linesets to sample.
+step_size(float,optional):spacing between points. Defaults to 0.1m.</p>
+</dd>
+<dt>Returns:</dt><dd><p>Tuple[List[o3d.geometry.PointCloud],np.ndarray]: point_clouds, identityarray with integers of the origin of the points</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.get_linesets_inliers_in_box">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">get_linesets_inliers_in_box</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">linesets</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.LineSet</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">box</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.OrientedBoundingBox</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">point_cloud</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">open3d.geometry.PointCloud</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">identityArray</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">open3d.geometry.LineSet</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#geomapi.utils.cadutils.get_linesets_inliers_in_box" title="Link to this definition"></a></dt>
+<dd><p>Returns the segments of the linesets that have sampled pointcloud points falling within a certain bounding box.
+This function should be used together with:</p>
+<blockquote>
+<div><p>1. cu.sample_pcd_from_linesets(linesets,step_size=0.1)2.vt.create_selection_box_from_image_boundary_points(n,roi,meshNode.resource,z=5) </p>
+</div></blockquote>
+<dl class="simple">
+<dt>Args:</dt><dd><p>linesets (List[o3d.geometry.LineSet]): linesets from which the segments will be selected
+box (o3d.geometry.OrientedBoundingBox): bounding box that is used to filter the point cloud points
+point_cloud (o3d.geometry.PointCloud): sampled points on the linesets
+identityArray (np.ndarray): array with integers that reflect which point cloud point belongs to which lineset</p>
+</dd>
+<dt>Returns:</dt><dd><p>List[o3d.geometry.LineSet]: _description_</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="geomapi.utils.cadutils.get_rgb_from_aci">
+<span class="sig-prename descclassname"><span class="pre">geomapi.utils.cadutils.</span></span><span class="sig-name descname"><span class="pre">get_rgb_from_aci</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">aci</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span><span class="w"> </span><span class="o"><span class="pre">=</span></span><span class="w"> </span><span class="default_value"><span class="pre">7</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#geomapi.utils.cadutils.get_rgb_from_aci" title="Link to this definition"></a></dt>
+<dd><p>Return RGB from AutoCAD Color Index (ACI) RGB equivalents <a class="reference external" href="https://gohtx.com/acadcolors.php">https://gohtx.com/acadcolors.php</a></p>
+<dl class="simple">
+<dt>Args:</dt><dd><p>aci (int): AutoCAD Color Index (ACI)</p>
+</dd>
+<dt>Returns:</dt><dd><p>(int,int,int): RGB</p>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="geomapi.utils.html" class="btn btn-neutral float-left" title="geomapi.utils" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="geomapi.utils.geometryutils.html" class="btn btn-neutral float-right" title="geomapi.utils.geometryutils" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

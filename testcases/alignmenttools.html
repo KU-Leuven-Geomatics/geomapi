@@ -1,0 +1,458 @@
+
+
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Alignment Tools &mdash; Geomapi 1.0.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=80d5e7a1" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/mystnb.4510f1fc1dee50b3e5859aac5469c37c29e427902b24a333a5f9fcb2f0b3ac41.css" />
+      <link rel="stylesheet" href="../_static/style.css" type="text/css" />
+
+  
+    <link rel="shortcut icon" href="../_static/favicon.ico"/>
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=8d563738"></script>
+      <script src="../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="Combination Tools" href="combinationtools.html" />
+    <link rel="prev" title="Node selection" href="../tutorial/tutorial_node_selection.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html">
+            
+              <img src="../_static/geomapi_logo.png" class="logo" alt="Logo"/>
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Information:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../information/getting%20started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/nodes.html">Nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../information/ontology.html">Ontology</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Tutorial:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_nodes.html">Node</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_meshnodes.html">MeshNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_pointcloudnodes.html">PointCloudNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_bimnodes.html">BIMNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_linesetnodes.html">LineSetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_imagenodes.html">ImageNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_orthonodes.html">OrthoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_panonodes.html">PanoNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_setnodes.html">SetNode</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tutorial/tutorial_node_selection.html">Node selection</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Test Cases:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Alignment Tools</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#classes">classes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#functions">Functions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#setup">Setup</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#getting-the-sessions">Getting the Sessions</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#single-function">Single Function</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#step-by-step">Step-by-step</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#step-1-check-for-relevant-reference-data">Step 1: check for relevant Reference data</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2-2d-check">Step 2: 2D Check</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#incremental-reference-matching">Incremental reference Matching</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#cross-reference-matching">Cross reference Matching</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#raycast-matching">Raycast Matching</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-3d-check">Step 3: 3D Check</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#fast-global-registration">Fast Global Registration</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#super4pcs-matching">Super4PCS Matching</a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#step-4-weighting-final-position">Step 4: Weighting final Position</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="combinationtools.html">Combination Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="site_progress.html">Construction site progress</a></li>
+<li class="toctree-l1"><a class="reference internal" href="validationtools.html">Validation Tools</a></li>
+<li class="toctree-l1"><a class="reference internal" href="volume_calculation.html">Volume calculation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Reference</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.nodes.html">geomapi.nodes</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.utils.html">geomapi.utils</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../geomapi/geomapi.tools.html">geomapi.tools</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Development:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html">User environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/environment%20creation.html#developer-environment">Developer environment</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/packaging.html">Packaging</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/ontology%20creation.html">Ontology Creation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../development/testcase%20creation.html">Testcase Creation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Contribution</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../team/team.html">Team</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Geomapi</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Alignment Tools</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/testcases/alignmenttools.ipynb.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section class="tex2jax_ignore mathjax_ignore" id="alignment-tools">
+<h1>Alignment Tools<a class="headerlink" href="#alignment-tools" title="Link to this heading"></a></h1>
+<p>A sample file going over all the step to properly use the tools.</p>
+<p>The alignment process is aimed at aligning multiple sessions containing both 2D images and 3D geometries. We assume a single session contains locally aligned data. This means that if a small subset of the data is aligned all the rest is also aligned in that coordinate system.</p>
+<ul class="simple">
+<li><p><strong>Step 1: Gather the Test Inputs</strong></p>
+<ul>
+<li><p>The test session with all the pictures and coordinates as a <code class="docutils literal notranslate"><span class="pre">SessionNode()</span></code></p></li>
+<li><p>The global coordinates of the device</p></li>
+</ul>
+</li>
+<li><p><strong>Step 2: check for relevant Reference data</strong></p>
+<ul>
+<li><p>use the global coordinates to find all the reference data that is geo-referenced close enough (GPS precision)</p></li>
+</ul>
+</li>
+<li><p><strong>Step 3: 2D Check</strong></p>
+<ul>
+<li><p>Compare all the test images against all the reference images</p></li>
+<li><p>Find which session has the highest match rate</p></li>
+<li><p>Find which Image has the highest match rate</p></li>
+<li><p>Calculate the transformation between the two images</p></li>
+<li><p>calculate the inverse transformation to give the test data a Reference global position</p></li>
+</ul>
+</li>
+<li><p><strong>Step 4: 3D Check</strong></p>
+<ul>
+<li><p>Compare the test mesh against relevant point clouds</p></li>
+<li><p>Compare the test mesh against BIM models</p></li>
+<li><p>Perform a CCP for the final alignment</p></li>
+</ul>
+</li>
+<li><p><strong>Step 5: Choosing final Position</strong></p>
+<ul>
+<li><p>Use the different results from all the methods to come to a best position</p></li>
+<li><p>Send the Position and rotation back to the device</p></li>
+</ul>
+</li>
+</ul>
+<section id="overview">
+<h2>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h2>
+<section id="classes">
+<h3>classes<a class="headerlink" href="#classes" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">geomapi.nodes.SessionNode()</span></code> The starting point, containing the global position, boundingbox and all the resources.</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">geomapi.alignmenttools.Match()</span></code> The base class for 2 connected nodes, containing the match parameters and nodes.</p>
+<ul>
+<li><p>This has 2 child classes: <code class="docutils literal notranslate"><span class="pre">geomapi.alignmenttools.ImageMatch()</span></code> &amp; <code class="docutils literal notranslate"><span class="pre">geomapi.alignmenttools.GeometryMatch()</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">geomapi.alignmenttools.PoseEstimation()</span></code> an estimated pose based on a number of matches</p></li>
+</ul>
+</section>
+<section id="functions">
+<h3>Functions<a class="headerlink" href="#functions" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">find_close_sessions()</span></code></p>
+<ul>
+<li><p>Read all rdf files or sessions to get the global position and boundingbox and compare it to the given bounding volume</p></li>
+<li><p>we need to get all the graphs or RDF files and read their bounding box variable</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pos2d.get_transformation()</span></code></p>
+<ul>
+<li><p>Combines all the 2D transformation algorithms into one function</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pos2d.match_incremental()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pos2d.match_crossref()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pos2d.match_raycast()</span></code></p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pos3d.get_transformation()</span></code></p>
+<ul>
+<li><p>Combines the 3d transformation algorithms into one function</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pos3d.match_fgr()</span></code></p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">pos3d.match_super4pcs()</span></code></p></li>
+</ul>
+</li>
+</ul>
+</section>
+</section>
+<section id="setup">
+<h2>Setup<a class="headerlink" href="#setup" title="Link to this heading"></a></h2>
+<p>Importing the required packages and modules</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">context</span> <span class="kn">import</span> <span class="n">geomapi</span>
+<span class="kn">import</span> <span class="nn">geomapi.tools.alignmenttools</span> <span class="k">as</span> <span class="nn">at</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">testSessionPath</span> <span class="o">=</span> <span class="s2">&quot;test/testfiles/sessionGraph.ttl&quot;</span>
+<span class="n">refSessionsPath</span> <span class="o">=</span> <span class="s2">&quot;test/testfiles/graphs/&quot;</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="getting-the-sessions">
+<h3>Getting the Sessions<a class="headerlink" href="#getting-the-sessions" title="Link to this heading"></a></h3>
+<p>Most higher level functions revolve around <code class="docutils literal notranslate"><span class="pre">geomapi.nodes.SessionNode</span></code>
+It is also possible to work directly with the <code class="docutils literal notranslate"><span class="pre">geomapi.nodes.ImageNode</span></code> or <code class="docutils literal notranslate"><span class="pre">geomapi.nodes.GeometryNode</span></code></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">testSession</span> <span class="o">=</span> <span class="n">geomapi</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">SessionNode</span><span class="p">(</span><span class="n">testSessionPath</span><span class="p">)</span>
+<span class="n">refSessions</span> <span class="o">=</span> <span class="n">geomapi</span><span class="o">.</span><span class="n">nodes</span><span class="o">.</span><span class="n">SessionNode</span><span class="p">(</span><span class="n">refSessionsPath</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/LivingLab_Dataset.png" /><em><strong>figure 15:</strong> flgvliz</em></p>
+</section>
+</section>
+<section id="single-function">
+<h2>Single Function<a class="headerlink" href="#single-function" title="Link to this heading"></a></h2>
+<p><code class="docutils literal notranslate"><span class="pre">estimate_session_position()</span></code> Is a compound function that combines the above mentioned workflow into one.</p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">finalPos</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">estimate_session_position</span><span class="p">(</span><span class="n">testSession</span><span class="p">,</span> <span class="n">refSessions</span><span class="p">)</span>
+<span class="n">testSession</span><span class="o">.</span><span class="n">cartesianTransform</span> <span class="o">=</span> <span class="n">finalPos</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="step-by-step">
+<h2>Step-by-step<a class="headerlink" href="#step-by-step" title="Link to this heading"></a></h2>
+<p>The full alignment algorithm is performed in 4 steps: <strong>Subselection</strong>, <strong>2D Pose</strong>, <strong>3D Pose</strong>, <strong>Pose Weighting</strong></p>
+<ul class="simple">
+<li><p><strong>Step 1: check for relevant Reference data</strong></p>
+<ul>
+<li><p>use the global coordinates to find all the reference data that is geo-referenced close enough (GPS precision)</p></li>
+</ul>
+</li>
+<li><p><strong>Step 2: 2D Check</strong></p>
+<ul>
+<li><p>Compare all the test images against all the reference images</p></li>
+<li><p>Find which session has the highest match rate</p></li>
+<li><p>Find which Image has the highest match rate</p></li>
+<li><p>Calculate the transformation between the two images</p></li>
+<li><p>calculate the inverse transformation to give the test data a Reference global position</p></li>
+</ul>
+</li>
+<li><p><strong>Step 3: 3D Check</strong></p>
+<ul>
+<li><p>Compare the test mesh against relevant point clouds</p></li>
+<li><p>Compare the test mesh against BIM models</p></li>
+<li><p>Perform a CCP for the final alignment</p></li>
+</ul>
+</li>
+<li><p><strong>Step 4: Weighting final Position</strong></p>
+<ul>
+<li><p>Use the different results from all the methods to come to a best position</p></li>
+<li><p>Send the Position and rotation back to the device</p></li>
+</ul>
+</li>
+</ul>
+<section id="step-1-check-for-relevant-reference-data">
+<h3>Step 1: check for relevant Reference data<a class="headerlink" href="#step-1-check-for-relevant-reference-data" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>use the global coordinates to find all the reference data that is geo-referenced close enough (GPS precision)</p></li>
+</ul>
+<p><img alt="" src="../_images/global_Estimation_schema.png" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">closeSessions</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">find_close_sessions</span><span class="p">(</span><span class="n">testSession</span><span class="p">,</span> <span class="n">refSessions</span><span class="p">)</span> <span class="c1"># Returns a subselection of the given referenceSessions</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+<section id="step-2-2d-check">
+<h3>Step 2: 2D Check<a class="headerlink" href="#step-2-2d-check" title="Link to this heading"></a></h3>
+<p>The function <code class="docutils literal notranslate"><span class="pre">pose2d.get_transformation()</span></code> calculates estimations for every image in the test session, creating a large amount of poses, each with specific matching parameters.</p>
+<p>2D Checks can also be performed seperatly using the 3 different Algorithms:</p>
+<ul class="simple">
+<li><p>Incremental Matching</p></li>
+<li><p>Cross Reference Matching</p></li>
+<li><p>Raycast Matching</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimated2DPoses</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">pose2d</span><span class="o">.</span><span class="n">get_transformation</span><span class="p">(</span><span class="n">testSession</span><span class="p">,</span> <span class="n">closeSessions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="incremental-reference-matching">
+<h4>Incremental reference Matching<a class="headerlink" href="#incremental-reference-matching" title="Link to this heading"></a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">incrementalPoseEst</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">pose2d</span><span class="o">.</span><span class="n">match_incremental</span><span class="p">(</span><span class="n">testSession</span><span class="o">.</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">closeSessions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">images</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="" src="../_images/Incremental_Good_Match.png" /></p>
+</section>
+<section id="cross-reference-matching">
+<h4>Cross reference Matching<a class="headerlink" href="#cross-reference-matching" title="Link to this heading"></a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">crossrefPoseEst</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">pose2d</span><span class="o">.</span><span class="n">match_crossref</span><span class="p">(</span><span class="n">testSession</span><span class="o">.</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">closeSessions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">images</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="" src="../_images/overlapping_good_match.png" /></p>
+</section>
+<section id="raycast-matching">
+<h4>Raycast Matching<a class="headerlink" href="#raycast-matching" title="Link to this heading"></a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">raycastPoseEst</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">pose2d</span><span class="o">.</span><span class="n">match_raycast</span><span class="p">(</span><span class="n">testSession</span><span class="o">.</span><span class="n">images</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">closeSessions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">images</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="" src="../_images/Good_raycasting_match.png" /></p>
+</section>
+</section>
+<section id="step-3-3d-check">
+<h3>Step 3: 3D Check<a class="headerlink" href="#step-3-3d-check" title="Link to this heading"></a></h3>
+<p>The function <code class="docutils literal notranslate"><span class="pre">pose3d.get_transformation()</span></code> calculates estimations for every geometry in the test session, creating a large amount of poses, each with specific matching parameters.</p>
+<p>3D Checks can also be performed seperatly using the 2 different Algorithms:</p>
+<ul class="simple">
+<li><p>Fast global registration</p></li>
+<li><p>Super4PCS</p></li>
+</ul>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">estimated3DPoses</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">pose3d</span><span class="o">.</span><span class="n">get_transformation</span><span class="p">(</span><span class="n">testSession</span><span class="p">,</span> <span class="n">closeSessions</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<section id="fast-global-registration">
+<h4>Fast Global Registration<a class="headerlink" href="#fast-global-registration" title="Link to this heading"></a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">at</span><span class="o">.</span><span class="n">pose3d</span><span class="o">.</span><span class="n">match_fgr</span><span class="p">(</span><span class="n">testSession</span><span class="o">.</span><span class="n">geometries</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">closeSessions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">geometries</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="" src="../_images/good_fpfh.png" /></p>
+</section>
+<section id="super4pcs-matching">
+<h4>Super4PCS Matching<a class="headerlink" href="#super4pcs-matching" title="Link to this heading"></a></h4>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">at</span><span class="o">.</span><span class="n">pose3d</span><span class="o">.</span><span class="n">match_super4pcs</span><span class="p">(</span><span class="n">testSession</span><span class="o">.</span><span class="n">geometries</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">closeSessions</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">geometries</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+<p><img alt="image" src="../_images/good_4pcs.png" /></p>
+</section>
+</section>
+<section id="step-4-weighting-final-position">
+<h3>Step 4: Weighting final Position<a class="headerlink" href="#step-4-weighting-final-position" title="Link to this heading"></a></h3>
+<ul class="simple">
+<li><p>Each estimation is stored in a class <code class="docutils literal notranslate"><span class="pre">PoseEstimation()</span></code> which contains the pose and the matching parameters. These are used to weight all the poses to calculate the best one.</p></li>
+</ul>
+<p><img alt="" src="../_images/Succesful_alignment_Icon.png" /></p>
+<div class="cell docutils container">
+<div class="cell_input docutils container">
+<div class="highlight-ipython3 notranslate"><div class="highlight"><pre><span></span><span class="n">finalPose</span> <span class="o">=</span> <span class="n">at</span><span class="o">.</span><span class="n">get_weighted_pose</span><span class="p">(</span><span class="n">estimated2DPoses</span><span class="p">,</span> <span class="n">estimated3DPoses</span><span class="p">)</span>
+<span class="n">testSession</span><span class="o">.</span><span class="n">catresianTranform</span> <span class="o">=</span> <span class="n">finalPose</span>
+</pre></div>
+</div>
+</div>
+</div>
+</section>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../tutorial/tutorial_node_selection.html" class="btn btn-neutral float-left" title="Node selection" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="combinationtools.html" class="btn btn-neutral float-right" title="Combination Tools" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Bassier M., De Geyter S., De Winter H., Vermandere J. @ Geomatics KU Leuven.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
