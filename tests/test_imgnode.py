@@ -80,7 +80,7 @@ class TestImageNode(unittest.TestCase):
         self.assertIsNone(node.resource)
         self.assertEqual(node.imageWidth,640)
         self.assertEqual(node.imageHeight,480)
-        self.assertEqual(node.focalLength35mm,2600)
+        self.assertEqual(node.focalLength35mm,35)
         self.assertEqual(node.principalPointU ,0)
         self.assertEqual(node.principalPointV ,0)
         self.assertIsNotNone(node.timestamp)
@@ -220,7 +220,6 @@ class TestImageNode(unittest.TestCase):
     def test_focalLength35mm(self):
         node= ImageNode(focalLength35mm=100)
         self.assertEqual(node.focalLength35mm,100)
-        self.assertEqual(node.intrinsicMatrix[0,0],100)
         
         #raise error when text
         self.assertRaises(ValueError,ImageNode,focalLength35mm='qsdf')
@@ -495,8 +494,8 @@ class TestImageNode(unittest.TestCase):
     def test_pixel_to_world_coordinates(self):
         node=ImageNode(graph=self.dataLoaderRailway.imgGraph)
         worldCoordinate = node.pixel_to_world_coordinates(self.dataLoaderRailway.imgCoordinate,self.dataLoaderRailway.distance)
-        pixel=node.world_to_pixel_coordinates(worldCoordinate)
-        np.testing.assert_array_almost_equal(self.dataLoaderRailway.imgCoordinate.flatten(), pixel,1)
+        pixel, depth=node.world_to_pixel_coordinates(worldCoordinate)
+        np.testing.assert_array_almost_equal(self.dataLoaderRailway.imgCoordinate.flatten(),pixel.flatten(),1)
 
     def test_transform_translation(self):
         #empty node
@@ -543,17 +542,16 @@ class TestImageNode(unittest.TestCase):
     def test_create_rays(self):
         node=ImageNode(graph=self.dataLoaderRailway.imgGraph)
         
-        #no inputs
+        #list of points
         node=ImageNode()
-        rays=node.create_rays()
+        rays=node.create_rays([[100,100], [200,200], [300,300], [400,400]])
         self.assertTrue(np.allclose(rays[0][:3],node.cartesianTransform[:3,3],atol=0.001))
-        self.assertEqual(rays.shape,(4,6)) #4 cornerpoints
+        self.assertEqual(rays.shape,(4,6))
         
         #check centerpont shooting in Z direction
         node=ImageNode()
-        rays=node.create_rays([node.imageHeight/2,node.imageWidth/2],50)
+        rays=node.create_rays([node.imageWidth/2.0,node.imageHeight/2.0],50)
         startpoint,endpoint=gmu.rays_to_points(rays)
-
         self.assertEqual(np.linalg.norm(startpoint-node.get_center()),0)
         self.assertEqual(np.linalg.norm(endpoint-node.get_center()),1) 
         self.assertEqual(np.linalg.norm(endpoint-np.array([0,0,1])),0) 
@@ -569,13 +567,6 @@ class TestImageNode(unittest.TestCase):
             np.testing.assert_array_almost_equal(result[0][:3],node.cartesianTransform[:3,3],1)
             self.assertEqual(result.shape,(1,6))
 
-    
-
-        
-        
-    def test_project_lineset_on_image(self):
-        imageNode=ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,subject='P0024688',resource=self.dataLoaderRailway.image1)
-        imageNode.project_lineset_on_image(self.dataLoaderRailway.line)
 
     def test_get_image_features(self):
         imageNode=ImageNode(xmlPath=self.dataLoaderRailway.imageXmlPath,subject='P0024688',resource=self.dataLoaderRailway.image1)

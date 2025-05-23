@@ -221,19 +221,22 @@ def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFo
             image_width = int(resolution.attrib['width'])
             image_height = int(resolution.attrib['height'])
 
-            # Extract properties into a dictionary for easy access
-            properties = {prop.attrib['name']: float(prop.attrib['value']) for prop in sensor.findall('property')}
-            pixel_width_mm = properties['pixel_width']
-            pixel_height_mm = properties['pixel_height']
-            focal_length_mm = properties['focal_length']
+            # Extract sensor properties to get the focal length
+            properties = {prop.attrib['name']: prop.attrib['value'] for prop in sensor.findall('property')}
+            if('pixel_width' in properties and 'pixel_height' in properties and 'focal_length' in properties):
+                pixel_width_mm = float(properties['pixel_width'])
+                pixel_height_mm = float(properties['pixel_height'])
+                focal_length_mm = float(properties['focal_length'])
 
-            # Calculate sensor dimensions in mm
-            sensor_width_mm = image_width * pixel_width_mm
-            sensor_height_mm = image_height * pixel_height_mm
-            sensor_diagonal_mm = math.sqrt(sensor_width_mm**2 + sensor_height_mm**2)
-            full_frame_diagonal_mm = math.sqrt(36**2 + 24**2)
-            crop_factor = full_frame_diagonal_mm / sensor_diagonal_mm
-            focal_length_35mm = focal_length_mm / crop_factor
+                # Calculate sensor dimensions in mm
+                sensor_width_mm = image_width * pixel_width_mm
+                sensor_height_mm = image_height * pixel_height_mm
+                sensor_diagonal_mm = math.sqrt(sensor_width_mm**2 + sensor_height_mm**2)
+                full_frame_diagonal_mm = math.sqrt(36**2 + 24**2)
+                crop_factor = full_frame_diagonal_mm / sensor_diagonal_mm
+                focal_length_35mm = focal_length_mm / crop_factor
+            else:
+                focal_length_35mm = None
 
             # find the calibration
             calibration=sensor.find('calibration')
@@ -257,7 +260,7 @@ def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFo
                             'imageWidth': image_width,
                             'imageHeight': image_height,
                             'intrinsicMatrix': K,
-                            'focalLength35mm': float(focal_length_35mm)})     
+                            'focalLength35mm': focal_length_35mm})     
         except Exception as error:
             print("An error occurred:", error) # An error occurred: name 'x' is not defined
             sensors.append(None)
@@ -312,10 +315,10 @@ def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFo
             node=ImageNode(
                         name=name, 
                          cartesianTransform=transform,
-                        imageWidth =  int(sensorInformation['imageWidth']),
-                        imageHeight = int(sensorInformation['imageHeight'] ),
+                        imageWidth =  sensorInformation['imageWidth'],
+                        imageHeight = sensorInformation['imageHeight'],
                         intrinsicMatrix = sensorInformation['intrinsicMatrix'],
-                        focalLength35mm = float(sensorInformation['focalLength35mm']), 
+                        focalLength35mm = sensorInformation['focalLength35mm'], 
                         **kwargs)
             # node.xmlPath=xmlPath
             

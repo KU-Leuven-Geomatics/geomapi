@@ -303,7 +303,16 @@ class ImageNode(Node):
         
         """
         if self._intrinsicMatrix is None:
-            return None
+            # create a default matrix
+            fx = self.focalLength35mm * self.imageWidth / 36.0
+            fy = self.focalLength35mm * self.imageHeight / 24.0
+            cx = self.imageWidth / 2.0 + self.principalPointU
+            cy = self.imageHeight / 2.0 + self.principalPointV
+            self._intrinsicMatrix = np.array([
+                [fx,  0, cx],
+                [ 0, fy, cy],
+                [ 0,  0,  1]
+            ])
         return self._intrinsicMatrix
 
     @intrinsicMatrix.setter
@@ -629,7 +638,7 @@ class ImageNode(Node):
 
         # Compute 3D points in world space along each ray
         world_pts = self.pixel_to_world_coordinates(
-            image_points=points,
+            pixels=points,
             depths=depths,
             use_z_depth=False  # using Euclidean distance by default
         )
