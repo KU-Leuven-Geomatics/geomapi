@@ -113,7 +113,7 @@ def e57xml_to_pointcloud_nodes(xmlPath :str, **kwargs) -> List[PointCloudNode]:
     mytree = ET.parse(path)
     root = mytree.getroot()
     nodelist=[]
-    e57Path=path.with_suffix('.e57')
+    e57Path=xmlPath.with_suffix('.e57')
     # loop over every vectorchild
     for idx,e57xml in enumerate(root.iter('{http://www.astm.org/COMMIT/E57/2010-e57-v1.0}vectorChild')):
         # OrientedBoundingBox
@@ -315,10 +315,9 @@ def xml_to_image_nodes(path :str,subjects:List = None, skip:int=None, filterByFo
             node=ImageNode(
                         name=name, 
                          cartesianTransform=transform,
-                        imageWidth =  sensorInformation['imageWidth'],
-                        imageHeight = sensorInformation['imageHeight'],
-                        intrinsicMatrix = sensorInformation['intrinsicMatrix'],
-                        focalLength35mm = sensorInformation['focalLength35mm'], 
+                        imageWidth =  int(sensorInformation['imageWidth']),
+                        imageHeight = int(sensorInformation['imageHeight'] ),
+                        focalLength35mm = float(sensorInformation['focalLength35mm']), 
                         **kwargs)
             # node.xmlPath=xmlPath
             
