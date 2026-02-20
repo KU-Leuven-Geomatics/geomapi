@@ -33,6 +33,8 @@ RDFMAPPINGS = {}
 #geomapi_ontology_path=os.path.join(project_root, 'geomapi', 'ontology', 'geomapi_ontology.ttl')
 
 #GEOMAPI_GRAPH=Graph().parse(geomapi_ontology_path, format='turtle') if os.path.exists(geomapi_ontology_path) else Graph().parse('https://w3id.org/geomapi', format='turtle')
+# Create graph once
+GEOMAPI_GRAPH = Graph()
 current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, "..", ".."))
 dev_path = os.path.join(
