@@ -30,11 +30,11 @@ current_dir = os.path.dirname(os.path.abspath(__file__))
 project_root = os.path.abspath(os.path.join(current_dir, '..', '..'))
 geomapi_ontology_path=os.path.join(project_root, 'geomapi', 'ontology', 'geomapi_ontology.ttl')
 
-GEOMAPI_GRAPH=Graph().parse(geomapi_ontology_path) if os.path.exists(geomapi_ontology_path) else Graph().parse('https://w3id.org/geomapi')
+GEOMAPI_GRAPH=Graph().parse(geomapi_ontology_path, format='turtle') if os.path.exists(geomapi_ontology_path) else Graph().parse('https://w3id.org/geomapi', format='turtle')
 GEOMAPI_PREFIXES = {prefix: Namespace(namespace) for prefix, namespace in GEOMAPI_GRAPH.namespace_manager.namespaces()}
 GEOMAPI_NAMESPACE = Namespace('https://w3id.org/geomapi#')
 
-IFC_GRAPH=Graph().parse("https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL/ontology.ttl")
+IFC_GRAPH=Graph().parse("https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL/ontology.ttl", format='turtle')
 IFC_NAMESPACE = Namespace("https://standards.buildingsmart.org/IFC/DEV/IFC4/ADD2_TC1/OWL#")
 
 #### BASIC OPERATIONS ####
