@@ -20,7 +20,7 @@ Claude does **not** touch `examples/`, `tests/`, or `docs/` — those are owned 
 ### 1. Run tests
 Run the full test suite locally and confirm it passes before staging anything:
 ```
-pytest -v --cov-report term --cov=geomapi tests/
+conda run -n geomapi_dev pytest -v --cov-report term --cov=geomapi tests/
 ```
 Do not commit if any tests fail. Fix the failures first or explicitly ask the user how to proceed.
 
