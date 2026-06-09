@@ -1,0 +1,689 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Node\n",
+    "The Node class in Geomapi is the abstract metadata class from which all other classes inherit. While this node should not be frequently used (unless to govern unknown geospatial data), and has limited capabilities, it governs the basic properties and RDF Graph interaction.\n",
+    "\n",
+    "[https://rdflib.readthedocs.io/](https://rdflib.readthedocs.io/)\n",
+    "\n",
+    "As such, the Node class incorporates all functionalities to read and write metadata to RDF Graphs, and format it approprietly to be used in geomatics analyses.\n",
+    "\n",
+    "The code below shows how to create a abstract Node class works and how it interacts with RDF Graphs.\n",
+    "\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "First the geomapi and external packages are imported"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Jupyter environment detected. Enabling Open3D WebVisualizer.\n",
+      "[Open3D INFO] WebRTC GUI backend enabled.\n",
+      "[Open3D INFO] WebRTCWindowSystem: HTTP handshake server disabled.\n"
+     ]
+    }
+   ],
+   "source": [
+    "#IMPORT PACKAGES\n",
+    "from rdflib import Graph\n",
+    "import os\n",
+    "import numpy as np\n",
+    "\n",
+    "#IMPORT MODULES\n",
+    "from context import geomapi #context import for documentation only\n",
+    "from geomapi.nodes import Node"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Node Creation\n",
+    "\n",
+    "A Node can be created using any number of stated parameters. All these parameters correspond to a property which is input protected."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "Node( subject = None,             # (URIRef, optional) : A subject to use as identifier for the Node.\n",
+    "      graph = None,               # (Graph, optional) : An RDF Graph to parse.\n",
+    "      graphPath = None,           # (Path, optional) : The path of an RDF Graph to parse.\n",
+    "      name = None,                # (str, optional) : A name of the Node.\n",
+    "      path = None,                # (Path, optional) : A filepath to a resource.\n",
+    "      timestamp = None,           # (str, optional) : Timestamp for the node.\n",
+    "      resource = None,            # (optional) : Resource associated with the node.\n",
+    "      cartesianTransform = None,  # (np.ndarray, optional) : The (4x4) transformation matrix.\n",
+    "      orientedBoundingBox = None, # (o3d.geometry.OrientedBoundingBox, optional) : The oriented bounding box of the node.\n",
+    "      convexHull = None,          # (o3d.geometry.TriangleMesh, optional) : The convex hull of the node.\n",
+    "      loadResource = False,       # Load the resource at initialization?\n",
+    "    )"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Create empty Node\n",
+    "Node classes can be initialized without any inputs.\n",
+    "\n",
+    "In this case, most properties get a standard value based on the given parameters at initialization. These ensure every node has compatibility with our functions. This set of properties will always have a value, no matter what combination of parameters are given at initialization."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "subject: http://3cad1a0d-2f0c-11f0-8ee8-e8c8298c9966\n",
+      "name: 3cad1a0d-2f0c-11f0-8ee8-e8c8298c9966\n",
+      "timestamp: 2025-05-12T10:36:45\n",
+      "cartesianTransform: [[1. 0. 0. 0.]\n",
+      " [0. 1. 0. 0.]\n",
+      " [0. 0. 1. 0.]\n",
+      " [0. 0. 0. 1.]]\n",
+      "convexHull: TriangleMesh with 8 points and 12 triangles.\n",
+      "orientedBoundingBox: OrientedBoundingBox: center: (0, 0, 0), extent: 1, 1, 1)\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Create an empty node\n",
+    "node=Node()\n",
+    "\n",
+    "# Print the standard property values\n",
+    "print(\"subject:\",node.subject)\n",
+    "print(\"name:\",node.name)\n",
+    "print(\"timestamp:\",node.timestamp)\n",
+    "print(\"cartesianTransform:\",node.cartesianTransform)\n",
+    "print(\"convexHull:\",node.convexHull)\n",
+    "print(\"orientedBoundingBox:\",node.orientedBoundingBox)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Create with Subject\n",
+    "The [subject](https://rdflib.readthedocs.io/en/stable/rdf_terms.html) serves as the key identifier for the Node with [RDF Graphs](https://rdflib.readthedocs.io/en/stable/intro_to_graphs.html) and thus is restricted from using characters that can break its serialisation. \n",
+    "In contrast, the [name](https://geomatics.pages.gitlab.kuleuven.be/research-projects/geomapi/geomapi/geomapi.nodes.node.html) property is a string without any conditions. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "http://_this_has_to_change_\n",
+      "_this_has_to_change_\n"
+     ]
+    }
+   ],
+   "source": [
+    "node=Node(subject = '[this<has$to^change]')\n",
+    "print(node.subject)\n",
+    "print(node.name)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "But, it is important to note that the name is always derived from the subject if no name is given and vise versa."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[this<has$to^change]\n",
+      "http://_this_has_to_change_\n"
+     ]
+    }
+   ],
+   "source": [
+    "node=Node(name = '[this<has$to^change]')\n",
+    "print(node.name)\n",
+    "print(node.subject)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The type of these subjects is a [URIRef](https://rdflib.readthedocs.io/en/stable/rdf_terms.html#uriref) which is compatible with any standardised Graph Navigation. Notice that both online (http:///) and local (file:///) subjects can be used with Geomapi (although the focus is more in offline processing)."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Create with Resource\n",
+    "\n",
+    "When creating a Node with a resource, it can be done either directly with the resource, or with the path to the resource.\n",
+    "\n",
+    "A resource can be a big piece of data, this is why it is not always wanted to load the whole resource at initialization. This is why the `loadResource` parameter is default to `False`\n",
+    "\n",
+    "For more info on specific resources, see the corresponding Node type"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resource not loaded, but path is defined, call `load_resource()` to access it.\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 43,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "node = Node(path=r\"../../..\\tests\\testfiles\\mesh\\railway.obj\", loadResource=False)\n",
+    "node.load_resource() # Use specialized node fo each type of resource."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Create with graph(Path)\n",
+    "\n",
+    "Every node class can be initialized from a graph or the path to the graph. A graph is defined as an RDF file containing a list of subjects, predicates and values."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "@prefix dcterms: <http://purl.org/dc/terms/> .\n",
+      "@prefix geomapi: <https://w3id.org/geomapi#> .\n",
+      "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n",
+      "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n",
+      "\n",
+      "<http://newNode1> a geomapi:Node ;\n",
+      "    rdfs:label \"newNode1\"^^xsd:string ;\n",
+      "    dcterms:created \"2023-11-23T10:08:01\"^^xsd:dateTime ;\n",
+      "    geomapi:cartesianTransform \"\"\"[[-1 0 0 1]\n",
+      " [0 -1 0 1]\n",
+      " [0 0 -1 1]\n",
+      " [0 0 0 1]]\"\"\"^^geomapi:matrix ;\n",
+      "    geomapi:path \"../mesh/parking.obj\"^^xsd:string .\n",
+      "\n",
+      "<http://newNode2> a geomapi:Node ;\n",
+      "    rdfs:label \"newNode2\"^^xsd:string ;\n",
+      "    dcterms:created \"2023-11-23T10:08:02\"^^xsd:dateTime ;\n",
+      "    geomapi:cartesianTransform \"\"\"[[1 0 0 0]\n",
+      " [0 1 0 0]\n",
+      " [0 0 1 0]\n",
+      " [0 0 0 1]]\"\"\"^^geomapi:matrix ;\n",
+      "    geomapi:path \"../mesh/parking.obj\"^^xsd:string .\n",
+      "\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "# Example graph\n",
+    "graphPath = r\"../../../tests\\testfiles\\graphs\\baseNode.ttl\"\n",
+    "graph=Graph().parse(graphPath)\n",
+    "print(graph.serialize())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Ontology link\n",
+    "\n",
+    "You may notice that the predicates in the graph do not all match the properties of the Node.\n",
+    "All metadata properties have a link to the the ontology. Other properties like `resource` and `graph` are not present in the graph, since thy do not represent metadata, rather actual binary data and are to large and inefficient to store in a graph.\n",
+    "\n",
+    "Some properties have different names when they are defined in the graph:\n",
+    "| python name | predicate |\n",
+    "|-----------  |-----------|\n",
+    "| `subject` | `rdf:type` |\n",
+    "| `name` | `rdfs:label` |\n",
+    "| `path` | `geomapi:path` |\n",
+    "| `timestamp` | `dcterms:created` |\n",
+    "| `cartesianTransform` | `geomapi:cartesianTransform` |\n",
+    "| `orientedBoundingBox` | `geomapi:orientedBoundingBox` |\n",
+    "| `convexHull` | `geomapi:convexHull` |"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Graph(Path) with Subject\n",
+    "\n",
+    "Since the graph contains multiple subjects, it is advised to always add the subject to the parameters."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 39,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resource not loaded, but path is defined, call `load_resource()` to access it.\n",
+      "subject: http://newNode2\n",
+      "Resource not loaded, but path is defined, call `load_resource()` to access it.\n",
+      "subject: http://newNode2\n"
+     ]
+    }
+   ],
+   "source": [
+    "node = Node(graph=graph, subject=\"newNode2\")\n",
+    "print(\"subject:\", node.subject)\n",
+    "\n",
+    "node = Node(graphPath=graphPath, subject=\"newNode2\")\n",
+    "print(\"subject:\", node.subject)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Graph(Path) without subject\n",
+    "\n",
+    "When no subject is given, but multiple subjects are present in the graph, it picks the first one after serialization."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 38,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resource not loaded, but path is defined, call `load_resource()` to access it.\n",
+      "subject: http://newNode1\n",
+      "Resource not loaded, but path is defined, call `load_resource()` to access it.\n",
+      "subject: http://newNode2\n"
+     ]
+    }
+   ],
+   "source": [
+    "node = Node(graph=graph)\n",
+    "print(\"subject:\", node.subject)\n",
+    "\n",
+    "node = Node(graphPath=graphPath)\n",
+    "print(\"subject:\", node.subject)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Set the properties from the Graph\n",
+    "\n",
+    "Upon initialisation from a graph or graphPath, the graph's triples are assigned to the instance's properties. "
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resource not loaded, but path is defined, call `load_resource()` to access it.\n",
+      "subject: http://newNode1\n",
+      "name: newNode1\n",
+      "timestamp: 2023-11-23T10:08:01\n",
+      "cartesianTransform: [[-1.  0.  0.  1.]\n",
+      " [ 0. -1.  0.  1.]\n",
+      " [ 0.  0. -1.  1.]\n",
+      " [ 0.  0.  0.  1.]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "node=Node(graph=graph)\n",
+    "print(\"subject:\",node.subject)\n",
+    "print(\"name:\",node.name)\n",
+    "print(\"timestamp:\",node.timestamp)\n",
+    "print(\"cartesianTransform:\",node.cartesianTransform)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "**NOTE**: Paths are stored relative to the graphPath so graph files and files can be moved without breaking the serialization. Moreover, when a graphPath is present, it is used to reconstruct the absolute paths wihtin the node."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Resource not loaded, but path is defined, call `load_resource()` to access it.\n",
+      "C:\\Users\\jelle\\Documents\\DoctoraatLocal\\geomapi\\docs\\source\\mesh\\parking.obj\n",
+      "Resource not loaded, but path is defined, call `load_resource()` to access it.\n",
+      "C:\\Users\\jelle\\Documents\\DoctoraatLocal\\geomapi\\tests\\testfiles\\mesh\\parking.obj\n"
+     ]
+    }
+   ],
+   "source": [
+    "node=Node(graph=graph)\n",
+    "print(node.path) # -> absolute path can not be reconstructed, Uses cwd for location\n",
+    "\n",
+    "node=Node(graphPath=graphPath)\n",
+    "print(node.path)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Node Serialization\n",
+    "\n",
+    "When a Node is created in can be serialized back to an RDF graph."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Node to Graph\n",
+    "\n",
+    "When generating the graph from a Node, all the initial properties are re-serialized. When you define new variables to the class, you need to add them to the `serializeAttributes` parameter in the `get_graph()` function. \n",
+    "\n",
+    "**NOTE**: Actual data is not serialized incl. resources (point clouds, meshes, etc.), the graphPath, etc. These would not fit with semantic web technology concepts and can be hundreds of gigabytes in filesize.  <br> <br> \n",
+    "Instead, resources should be stored separately in their respective file formats while the graphs govern their metadata.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The euler angles are derived from the rotation matrix, please note that this representation has a number of disadvantages\n",
+      "@prefix dcterms: <http://purl.org/dc/terms/> .\n",
+      "@prefix geomapi: <https://w3id.org/geomapi#> .\n",
+      "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n",
+      "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n",
+      "\n",
+      "<http://myNode> a geomapi:Node ;\n",
+      "    rdfs:label \"myNode\"^^xsd:string ;\n",
+      "    dcterms:created \"2025-05-12T15:36:42\"^^xsd:dateTime ;\n",
+      "    geomapi:cartesianTransform \"\"\"[[1. 0. 0. 0.]\n",
+      " [0. 1. 0. 0.]\n",
+      " [0. 0. 1. 0.]\n",
+      " [0. 0. 0. 1.]]\"\"\"^^geomapi:matrix ;\n",
+      "    geomapi:convexHull \"\"\"[[-0.5 -0.5 -0.5]\n",
+      " [ 0.5 -0.5 -0.5]\n",
+      " [-0.5 -0.5  0.5]\n",
+      " [ 0.5 -0.5  0.5]\n",
+      " [-0.5  0.5 -0.5]\n",
+      " [ 0.5  0.5 -0.5]\n",
+      " [-0.5  0.5  0.5]\n",
+      " [ 0.5  0.5  0.5]]\"\"\"^^geomapi:matrix ;\n",
+      "    geomapi:myAttr 5e-01 ;\n",
+      "    geomapi:myAttr2 5 ;\n",
+      "    geomapi:orientedBoundingBox \"[0. 0. 0. 1. 1. 1. 0. 0. 0.]\"^^geomapi:matrix .\n",
+      "\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "node=Node('myNode',\n",
+    "            myAttr=0.5,\n",
+    "            myAttr2=5, \n",
+    "            myAttr3=np.array([1,2,3]))\n",
+    "print(node.get_graph(serializeAttributes=[\"myAttr\", \"myAttr2\"]).serialize()) # add the custom attributes to the list"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "[XSD](https://rdflib.readthedocs.io/en/stable/rdf_terms.html#common-xsd-datatypes) datatypes are used to serialize the data. **str** is used if no type is recognized."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Save to Graph\n",
+    "\n",
+    "Storing one or more nodes in a graph on drive is an extension of the to_graph() function.\n",
+    "<br>\n",
+    "\n",
+    "Just add a new graphPath or use the existing one, and set save==True\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 44,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "The euler angles are derived from the rotation matrix, please note that this representation has a number of disadvantages\n",
+      "@prefix dcterms: <http://purl.org/dc/terms/> .\n",
+      "@prefix geomapi: <https://w3id.org/geomapi#> .\n",
+      "@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .\n",
+      "@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .\n",
+      "\n",
+      "<http://myNode> a geomapi:Node ;\n",
+      "    rdfs:label \"myNode\"^^xsd:string ;\n",
+      "    dcterms:created \"2025-05-13T14:17:24\"^^xsd:dateTime ;\n",
+      "    geomapi:cartesianTransform \"\"\"[[1. 0. 0. 0.]\n",
+      " [0. 1. 0. 0.]\n",
+      " [0. 0. 1. 0.]\n",
+      " [0. 0. 0. 1.]]\"\"\"^^geomapi:matrix ;\n",
+      "    geomapi:convexHull \"\"\"[[-0.5 -0.5 -0.5]\n",
+      " [ 0.5 -0.5 -0.5]\n",
+      " [-0.5 -0.5  0.5]\n",
+      " [ 0.5 -0.5  0.5]\n",
+      " [-0.5  0.5 -0.5]\n",
+      " [ 0.5  0.5 -0.5]\n",
+      " [-0.5  0.5  0.5]\n",
+      " [ 0.5  0.5  0.5]]\"\"\"^^geomapi:matrix ;\n",
+      "    geomapi:myAttr 5e-01 ;\n",
+      "    geomapi:myAttr2 5 ;\n",
+      "    geomapi:myAttr3 \"[1 2 3]\" ;\n",
+      "    geomapi:orientedBoundingBox \"[0. 0. 0. 1. 1. 1. 0. 0. 0.]\"^^geomapi:matrix .\n",
+      "\n",
+      "\n"
+     ]
+    }
+   ],
+   "source": [
+    "node=Node('myNode',\n",
+    "            myAttr=0.5,\n",
+    "            myAttr2=5, \n",
+    "            myAttr3=np.array([1,2,3]))\n",
+    "\n",
+    "newGraphPath = os.path.join(r\"../../../tests/testfiles/resources\",'myGraph.ttl')\n",
+    "node.get_graph(graphPath = newGraphPath, serializeAttributes=[\"myAttr\", \"myAttr2\", \"myAttr3\"], save=True)\n",
+    "\n",
+    "newNode=Node(graphPath=newGraphPath)\n",
+    "print(node.graph.serialize())"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Node Transformation\n",
+    "\n",
+    "Since every nod has a cartesian transform, it can be transformed using the `node.transform()` function.\n",
+    "\n",
+    "The transformation also updates the `convexHull` and `orientedBoundingBox`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 37,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[[1. 0. 0. 0.]\n",
+      " [0. 1. 0. 0.]\n",
+      " [0. 0. 1. 0.]\n",
+      " [0. 0. 0. 1.]]\n",
+      "applying transformation: (-1)\n",
+      "[[0. 0. 1. 0.]\n",
+      " [0. 1. 0. 0.]\n",
+      " [1. 0. 0. 0.]\n",
+      " [0. 0. 0. 1.]] \n",
+      "\n",
+      "applying rotation: (90,0,0)\n",
+      "[[ 1.000000e+00  0.000000e+00  0.000000e+00  0.000000e+00]\n",
+      " [ 0.000000e+00  6.123234e-17 -1.000000e+00  0.000000e+00]\n",
+      " [ 0.000000e+00  1.000000e+00  6.123234e-17  0.000000e+00]\n",
+      " [ 0.000000e+00  0.000000e+00  0.000000e+00  1.000000e+00]] \n",
+      "\n",
+      "applying translation: (1,2,3)\n",
+      "[[1. 0. 0. 1.]\n",
+      " [0. 1. 0. 2.]\n",
+      " [0. 0. 1. 3.]\n",
+      " [0. 0. 0. 1.]]\n"
+     ]
+    }
+   ],
+   "source": [
+    "node = Node()\n",
+    "print(node.cartesianTransform)\n",
+    "transformation = np.array([[0,0,1,0],[0,1,0,0],[1,0,0,0],[0,0,0,1]])\n",
+    "node.transform(transformation=transformation)\n",
+    "print(\"applying transformation: (-1)\")\n",
+    "print(node.cartesianTransform,\"\\n\")\n",
+    "\n",
+    "node = Node()\n",
+    "rotation = np.array([90,0,0]) #eulers in degrees\n",
+    "node.transform(rotation=rotation)\n",
+    "print(\"applying rotation: (90,0,0)\")\n",
+    "print(node.cartesianTransform,\"\\n\")\n",
+    "\n",
+    "node = Node()\n",
+    "translation = np.array([1,2,3])\n",
+    "node.transform(translation=translation)\n",
+    "print(\"applying translation: (1,2,3)\")\n",
+    "print(node.cartesianTransform)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Node Visualisation\n",
+    "\n",
+    "When a Node has a resource, the `show()` function displays the resource using the relevant visualizer."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "node.show() # The standard node has no resource to display"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Further reading\n",
+    "\n",
+    "Please refer to the full [API documentation](../geomapi/geomapi.nodes.node.rst) of the Node class for more details about the functionality"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "env",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.11.7"
+  },
+  "orig_nbformat": 4
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

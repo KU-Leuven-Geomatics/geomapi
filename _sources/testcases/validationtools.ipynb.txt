@@ -1,0 +1,595 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Validation Tools\n",
+    "Tools for validating BIM objects\n",
+    "\n",
+    "Currently the validation of BIM models before they are delivered to the client takes a significant amount of time. Using different sections an experienced modeler tries to validate each BIM element with the point cloud as background. To speed up this process this tools provides a per BIM element analysis between the BIM geometry and the point cloud data.\n",
+    "\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "First the geomapi and external packages are imported"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Jupyter environment detected. Enabling Open3D WebVisualizer.\n",
+      "[Open3D INFO] WebRTC GUI backend enabled.\n",
+      "[Open3D INFO] WebRTCWindowSystem: HTTP handshake server disabled.\n"
+     ]
+    }
+   ],
+   "source": [
+    "import os\n",
+    "import open3d as o3d\n",
+    "import time\n",
+    "from pathlib import Path"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#IMPORT MODULES\n",
+    "from context import geomapi\n",
+    "import geomapi.utils as ut\n",
+    "import geomapi.tools as tl\n",
+    "from geomapi.nodes import *\n",
+    "import geomapi.tools.validationtools as vt"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%load_ext autoreload"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "%autoreload 2"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Preprocessing the BIM Model\n",
+    "\n",
+    "Following the GEOMAPI principles, we serialize all relevent objects in the BIM model to an RDF Graph."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "ifcPath = os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','IFC','steel_structure.ifc')\n",
+    "BIMNodes = []"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For this analysis, we parse the ifc files using all CPU's."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "BIMNodes.extend(tl.ifc_to_nodes_multiprocessing(ifcPath = ifcPath, getResource = True))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Next code block visualizes all elements within the BIM Model that were succesfully converted into GEOMAPI BIMNodes containing a geometry.\n",
+    "It is not uncommon for certain elements to not have geometry or have some invalid meshes. These will yield **Geometry Production Errors** and are not stored in a GEOMAPI BIMNode because we only retrieve those elments containing a geometry.\n",
+    "\n",
+    "![image](../../pics/BIM.PNG)\n",
+    "\n",
+    "***figure 1:*** BIM model"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "#Now we can visualize the BIM data\n",
+    "# o3d.visualization.draw_geometries([BIMNode.resource for BIMNode in BIMNodes])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "For this analysis we zere only interested in the structural elemens such as beams and columns (But the provided code will work accordingly for other classes like walls). The model looks very clean on first sigth but when we color the elements corresponding to the classes we want, it can be seen that also other elements are present in the model. Those elements, colored in red are not needed for the analysis because after inspection there can be concluded that those elments exisit of connection between steel elements, anckers for the concrete, bolts and screws,... \n",
+    "\n",
+    "![image](../../pics/BIMclasses.PNG)\n",
+    "\n",
+    "***figure 2:*** BIM model classified as IfcBeams (green), IfcColumns (orange) and clutter (red)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for BIMNode in BIMNodes:\n",
+    "    if BIMNode.className == 'IfcBeam':\n",
+    "        BIMNode.resource.paint_uniform_color([0.788,1.0,0.0])\n",
+    "    elif BIMNode.className == 'IfcColumn':\n",
+    "        BIMNode.resource.paint_uniform_color([1.0,0.753,0.0])\n",
+    "    else:\n",
+    "        BIMNode.resource.paint_uniform_color([1.0,0.0,0.0])\n",
+    "\n",
+    "# o3d.visualization.draw_geometries([BIMNode.resource for BIMNode in BIMNodes])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Those elements are mostly very small or are not visible in the scanning data. Therfore these elements will be removed from the BIMNodes list and ignored for further analysis. This reduces the number of BIMNodes to be processed from 301 to 173"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Before class filtering: 301 BIMNodes\n",
+      "After class filtering: 173 BIMNodes\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"Before class filtering: %s BIMNodes\" % len(BIMNodes))\n",
+    "i=0\n",
+    "while i < len(BIMNodes):\n",
+    "    BIMNode = BIMNodes[i]\n",
+    "    BIMNode.name = BIMNode.className + BIMNode.globalId\n",
+    "    if BIMNode.className == 'IfcBeam' or BIMNode.className == 'IfcColumn':\n",
+    "        i += 1\n",
+    "    else:\n",
+    "        BIMNodes.pop(i)\n",
+    "print(\"After class filtering: %s BIMNodes\" % len(BIMNodes))"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "To be able to make computations between the BIM geometry and the captured point cloud all BIM geometries are sampled to a point cloud. To this end the GEOMAPI theoretical visibility functions are used. This allows us to achieve better results where unvisible point mostly influnce the analysisi results by matching with clutter objects."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "#First the resolution of the sampling is determined\n",
+    "resolution = 0.01\n",
+    "\n",
+    "#Then the visibility pointCloud is created for every BIMNode and stored in meshPCD variable that is added to the BIMNode\n",
+    "referencepcds =[]\n",
+    "referenceids = []\n",
+    "visibility = []\n",
+    "\n",
+    "BIMpcdNodes = []\n",
+    "\n",
+    "for BIMNode in BIMNodes:\n",
+    "    BIMNode.linkedNodes = []\n",
+    "    meshPCD, theoreticalVisibility = geomapi.utils.geometryutils.create_visible_point_cloud_from_meshes(\n",
+    "                                                            geometries=BIMNode.resource,\n",
+    "                                                            references=[bm.resource for bm in BIMNodes if bm is not BIMNode],\n",
+    "                                                            resolution=resolution,\n",
+    "                                                            getNormals= True)\n",
+    "    BIMNode.theoreticalVisibility = theoreticalVisibility[0]\n",
+    "    \n",
+    "    if theoreticalVisibility[0] > 0.1:\n",
+    "        referencepcds.append(meshPCD[0])\n",
+    "        referenceids.append(BIMNode.subject)\n",
+    "        visibility.append((BIMNode.subject, theoreticalVisibility[0]))\n",
+    "        BIMpcdNode = geomapi.nodes.PointCloudNode(subject = BIMNode.subject, name = BIMNode.name, resource = meshPCD[0])\n",
+    "        BIMpcdNodes.append(BIMpcdNode)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "referenceSession = geomapi.nodes.SessionNode(name = \"reference_session\",linkedNodes= BIMNodes)\n",
+    "#Why not?? Session moet een convex hull hebben als resource kan geen folder zijn\n",
+    "# referenceSession.path = os.path.join(Path(os.getcwd()).parents[2],'tests','Samples14','myAnalysisFolder',referenceSession.name)\n",
+    "\n",
+    "referenceSession_path = os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','SESSION',referenceSession.name)\n",
+    "if not os.path.exists(referenceSession_path):\n",
+    "    os.mkdir(referenceSession_path)\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Graph identifier=N781e70a9757f4d67aa4361bdcda60114 (<class 'rdflib.graph.Graph'>)>"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "for BIMNode in BIMNodes:\n",
+    "    # Make sure the BIM elemnts have a unique name before saving them\n",
+    "    BIMNode.name = BIMNode.className + BIMNode.globalId + str(time.time_ns())\n",
+    "    # Save all BIMNode resources (meshes) to disk to save memory.\n",
+    "    BIMNode.save_resource(os.path.join(referenceSession_path,'MESHES'))\n",
+    "    del BIMNode.resource\n",
+    "BIMgraphPath=os.path.join(referenceSession_path,'bimGraph.ttl')\n",
+    "geomapi.tl.nodes_to_graph(nodelist=BIMNodes,graphPath=BIMgraphPath,save=True)\n",
+    "\n",
+    "for BIMpcdNode in BIMpcdNodes:\n",
+    "    #Make sure the BIM elemnts have a unique name before saving them\n",
+    "    BIMpcdNode.name = BIMpcdNode.name + str(time.time_ns())\n",
+    "    #Save all BIMNode resources (meshes) to disk to save memory.\n",
+    "    BIMpcdNode.save_resource(os.path.join(referenceSession_path,'PCDS'))\n",
+    "BIMpcdgraphPath=os.path.join(referenceSession_path,'bimPcdGraph.ttl')\n",
+    "geomapi.tl.nodes_to_graph(nodelist=BIMpcdNodes,graphPath=BIMpcdgraphPath,save=True)\n"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Pointcloud processing\n",
+    "Now the reference object are processed and the captured data will be processed. This data is not reference data and can change, for example during the construction phase where sequential measurement campaigns are organised. Therefore, the reults of these analysis are stored separetly in a SessionNode containing all BIMnodes from above."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "pcdPath = os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','PCD','pointcloud2sub.e57')\n",
+    "pcdNodes=tl.e57header_to_nodes(pcdPath)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Create a session conteining all the data that can change, such as the captured data and the analysis"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<Graph identifier=N6cd6364d43d34bf68d90e597ff453f08 (<class 'rdflib.graph.Graph'>)>"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "session = geomapi.nodes.SessionNode(name = \"session_\" + time.strftime(\"%Y%m%d-%H%M%S\"), linkedNodes = pcdNodes + BIMNodes + BIMpcdNodes)\n",
+    "\n",
+    "sessionFolder=os.path.join(Path(os.getcwd()).parents[2],'test','testfiles','SESSION',session.name)\n",
+    "if not os.path.exists(sessionFolder):\n",
+    "    os.mkdir(sessionFolder)\n",
+    "\n",
+    "graphPath=os.path.join(sessionFolder,'SessionGraph.ttl')\n",
+    "tl.nodes_to_graph(nodelist=pcdNodes,graphPath=graphPath,save=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "Because we don't have any information about the pointclouds such as their boundingboxes, the pointclouds must be loaded to determine these parameters"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "for pcdNode in pcdNodes:\n",
+    "    pcdNode.get_resource() \n",
+    "pcd = [pcdNode.resource for pcdNode in pcdNodes]"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## LOA comparison\n",
+    "The next function will determines yo which element each point of the point cloud belongs + the distance between these points. By doing this matching the LOA percentages will be more accurate, ignore more clutter."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "joinedPCD, identityArray, distances = vt.match_BIM_points(sources = pcd, references = referencepcds, referenceIds= referenceids)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "The next function determines the percentage of inliers per LOA bracket"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "LOA = vt.compute_LOA(identityArray, distances, byElement=True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Result visualization\n",
+    "Next we will demonstrate the different options to visualize the analysis results. This can be done by element or for the entire project at once\n",
+    "\n",
+    "## Histograms per element\n",
+    "![image](../../pics/perelementhist.PNG)\n",
+    "\n",
+    "***figure 3:*** Histogram illustrating the cistances between the source point and the matched reference point"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 19,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "image/png": "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vSWPx2PPDBo0SEeOHFF2dra8Xq969uyp/Pz8gBuoL7QWAABgtl/0OUJNHZ8jFDp8jhAA4FJdts8RAgAAaMwIIQAAYCxCCAAAGIsQAgAAxiKEAACAsQghAABgLEIIAAAYixACAADGIoQAAICxCCEAAGAsQggAABiLEAIAAMYihAAAgLEIIQAAYCxCCAAAGIsQAgAAxiKEAACAsQghAABgLEIIAAAYixACAADGIoQAAICxCCEAAGAsQggAABiLEAIAAMYihAAAgLEIIQAAYCxCCAAAGIsQAgAAxiKEAACAsQghAABgLEIIAAAYixACAADGIoQAAICxCCEAAGAsQggAABiLEAIAAMYihAAAgLEIIQAAYCxCCAAAGIsQAgAAxiKEAACAsQghAABgLEIIAAAYixACAADGIoQAAICxCCEAAGAsQggAABiLEAIAAMYihAAAgLEIIQAAYCxCCAAAGIsQAgAAxiKEAACAsQghAABgLEIIAAAYixACAADGIoQAAICxCCEAAGAsQggAABiLEAIAAMYihAAAgLEIIQAAYCxCCAAAGIsQAgAAxiKEAACAsQghAABgLEIIAAAYixACAADGqncIrV27Vvfee6/cbrfCwsKUm5sbsH3EiBEKCwsLePTv3z9g5tixYxo6dKicTqdiYmI0atQonThxImBm69atuu222xQdHa34+HjNnDnznLUsXbpUXbp0UXR0tLp3765PPvkkYLtlWcrOzla7du3UvHlzpaWlaffu3fU9ZAAA0ETVO4QqKyvVo0cPzZ0792dn+vfvr0OHDtmP9957L2D70KFDtWPHDhUUFGj58uVau3atxowZY2/3+Xzq16+fOnbsqOLiYr300kuaNm2a3nzzTXtm/fr1GjJkiEaNGqUvv/xSAwYM0IABA7R9+3Z7ZubMmZo9e7YWLFigjRs3qkWLFvJ4PDp16lR9DxsAADRBYZZlWZf84rAwffjhhxowYID93IgRI1ReXn7OlaJaO3fuVFJSkr744gvdfPPNkqT8/HzdfffdOnDggNxut+bPn6/nnntOXq9XDodDkjRp0iTl5uaqtLRUkjRo0CBVVlZq+fLl9r779Omjnj17asGCBbIsS263W08//bSeeeYZSVJFRYViY2OVk5OjwYMHX/D4fD6fXC6XKioq5HQ6L+UUhVTCpLxQL+GS7ZuRHuolAAAaqfr8/g7K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",
+      "text/plain": [
+       "<Figure size 640x480 with 1 Axes>"
+      ]
+     },
+     "metadata": {},
+     "output_type": "display_data"
+    }
+   ],
+   "source": [
+    "vt.plot_histogram(identityArray, distances, directory = sessionFolder, byElement= True, show = False)\n",
+    "vt.plot_histogram(identityArray, distances)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Pointclouds\n",
+    "![image](../../pics/ColoredPCD.PNG)\n",
+    "\n",
+    "***figure 4:*** Pointcloud where the points are colored by LOA"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 20,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 20,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "coloredPCD = vt.color_point_cloud_by_LOA(joinedPCD, identityArray, distances)\n",
+    "# o3d.visualization.draw_geometries(coloredPCD)\n",
+    "o3d.io.write_point_cloud(os.path.join(sessionFolder, 'CompleteColoredresult' + '.pcd'), coloredPCD)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/GradientPCD.PNG)\n",
+    "\n",
+    "***figure 4:*** Pointcloud where the points are colored by their distance"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 21,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 21,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "gradientPCD = vt.color_point_cloud_by_distance(joinedPCD, identityArray, distances)\n",
+    "# o3d.visualization.draw_geometries(coloredPCD)\n",
+    "o3d.io.write_point_cloud(os.path.join(sessionFolder, 'CompleteGradientresult' + '.pcd'), gradientPCD)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Data files\n",
+    "![image](../../pics/csv.PNG)\n",
+    "\n",
+    "***figure 5:*** A csv file with the analysis results"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 22,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 22,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "vt.csv_by_LOA(sessionFolder, LOA, visibility=visibility)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/excel.PNG)\n",
+    "\n",
+    "***figure 6:*** Excel file with the analysis results"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 23,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "True"
+      ]
+     },
+     "execution_count": 23,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "vt.excel_by_LOA(sessionFolder, LOA, visibility=visibility)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Meshes\n",
+    "![image](../../pics/ColoredMesh.PNG)\n",
+    "\n",
+    "***figure 7:*** Mesh colored according to the LOA level of the element"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "vt.color_BIMNode(LOA, BIMNodes)\n",
+    "geometries = [BIMNode.resource for BIMNode in BIMNodes]\n",
+    "for BIMNode in BIMNodes:\n",
+    "    BIMNode.save_resource(directory = os.path.join(sessionFolder, \"meshes\"))\n",
+    "# o3d.visualization.draw_geometries(geometries)"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "conda_environment3",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.8.13 | packaged by conda-forge | (default, Mar 25 2022, 05:59:00) [MSC v.1929 64 bit (AMD64)]"
+  },
+  "orig_nbformat": 4,
+  "vscode": {
+   "interpreter": {
+    "hash": "801b4083378541fd050d6c91abf6ec053c863905e8162e031d57b83e7cdb3051"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}

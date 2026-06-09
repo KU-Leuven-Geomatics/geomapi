@@ -1,0 +1,570 @@
+{
+ "cells": [
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "# Combination Tools\n",
+    "\n",
+    "The completion process is aimed at complementing existing large datasets with newer smaller datasets. \n",
+    "It also aims to leave as much of the original dataset in tact as possible, assuming it's more detailed and precise.\n",
+    "\n",
+    "This testcase will go over the functionalities of the completiontools using a real dataset to showcase the different functions and how they work together."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Set Up\n",
+    "Defining the correct imports and unique parameters for the combination process."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 24,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "from context import geomapi #Only needed for this example file\n",
+    "import geomapi.nodes as nodes\n",
+    "import geomapi.tools.combinationtools as ct\n",
+    "import geomapi.utils as ut\n",
+    "import geomapi.utils.geometryutils as gmu\n",
+    "import os\n",
+    "import numpy as np\n",
+    "import open3d as o3d"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "tresholdResolution = 0.05 # The max coverage distance in meters\n",
+    "ogGeometryPath = os.path.join(os.getcwd(),\"../../../test/testfiles/PCD/voxel_grond_pointcloud.ply\")\n",
+    "newGeometryPath =  os.path.join(os.getcwd(),\"../../../test/testfiles/MESH/GrondSampleMesh.obj\")"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Dataset\n",
+    "Is this testcase, two data sets are used:\n",
+    "- The original data set is a pointcloud captured by a NavVis VLX sensor downsampled to 743.618 points. \n",
+    "- The newer data set is a mesh capturde by a Microsoft Hololens containing 13.107 vertices and 23.112 triangles"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Importing Geometries\n",
+    "Geometries can be either directly imported from a file or retrieved from a `geomapi.GeometryNode`"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "[Open3D WARNING] geometry::TriangleMesh appears to be a geometry::PointCloud (only contains vertices, but no triangles).\n"
+     ]
+    }
+   ],
+   "source": [
+    "ogGeometry = gmu.get_geometry_from_path(ogGeometryPath)\n",
+    "newGeometry = gmu.get_geometry_from_path(newGeometryPath)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gmu.show_geometries([ogGeometry])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/OGGeometry.PNG)*Image of the original Dataset*"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gmu.show_geometries([newGeometry])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/NewGeometry.PNG) *Image of the new Dataset*"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gmu.show_geometries([ogGeometry, newGeometry])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/BothGeometry.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Single function\n",
+    "`combine_geometry()` is a compound function which performs the full algorithm and returns the combined geometry."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Covex hull created\n",
+      "Irrelevant points filtered\n",
+      "Covered poinys calculated\n",
+      "invisible points detected\n",
+      "new points filtered\n",
+      "geometries combined\n"
+     ]
+    }
+   ],
+   "source": [
+    "combinedGeometry = ct.combine_geometry(ogGeometry, newGeometry, tresholdResolution)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gmu.show_geometries([combinedGeometry])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/CombinedPointcloud.PNG)\n",
+    "\n",
+    "*Image of the combined Datasets*"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Step-by-step\n",
+    "\n",
+    "The combination algorithm is performed in 2 phases: the **removal** and the **addition** phase.\n",
+    "- **Removal phase:** All the out-of-date points in the original mesh are removed to make room for the new points.\n",
+    "- **Addition phase:** Only the new (uncovered) points from the new geometry are added, this is to ensure the existing original pointcould can keep as much relevant data as possible."
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Removal Phase"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Step 1: Create a convex hull of the newGeometry\n",
+    "In order to prevent false removal of the original geometry, we need to limit the evaluated points of the original geometry. This is why a convex hull is created to encapsulate all the relevant points.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "newGeoHull = gmu.get_convex_hull(newGeometry)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "\n",
+    "gmu.show_geometries([gmu.get_lineset(newGeoHull), newGeometry])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/MeshBoundingBox.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Step 2: Filter out the irrelevant points in the ogGeometry\n",
+    "A subselection of the original geometry is made with the convex hull as boundary volume.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "relevantOg, irrelevantOg = gmu.get_points_in_hull(ogGeometry, newGeoHull)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gmu.show_geometries([gmu.get_lineset(newGeoHull), relevantOg])"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/PointcloudBoundingBox.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Step 3: Isolate the not covered points of the ogGeometry compared to the newGeometry\n",
+    "To determine which points are still relevant and therefor, should not be removed we perform 2 Checks, the first one being the Coverage check. This checks If the original points are also captured on the new dataset. if they are not, they are either no longer up-to-date and should be removed, or they were not visible to the scanner and should remain in the scan. This is where the second check comes in."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "newGeometryPoints = gmu.mesh_to_pcd(newGeometry,tresholdResolution/2)\n",
+    "coveredPoints, unCoveredPoints = gmu.filter_pcd_by_distance(relevantOg, newGeometryPoints, tresholdResolution)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gmu.show_geometries([unCoveredPoints, newGeometry], True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/UncoveredPointcloudPoints.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Step 4: perform the visibility check\n",
+    "The uncovered points are chacked agains the new mesh. assuming the new scanner has caoptured everything it can see, Points that are hidden behind the geometry were not visible during the scanning process. This check is performed by finding the closest faces to the points and comparing the normal direction. Points facing the faces could have been seen by the scanner and vise versa."
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "insideList, outsideList = ct.check_point_inside_mesh(unCoveredPoints.points, newGeometry)\n",
+    "visiblePoints = o3d.geometry.PointCloud()\n",
+    "visiblePoints.points = o3d.utility.Vector3dVector(outsideList)\n",
+    "invisiblePoints = o3d.geometry.PointCloud()\n",
+    "invisiblePoints.points = o3d.utility.Vector3dVector(insideList)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gmu.show_geometries([visiblePoints, invisiblePoints, newGeometry], True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/InvisiblePointcloudPoints.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Addition Phase"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Step 5: Filter the newGeometryPoints to only keep the changed geometry\n",
+    "Because we assume The original geometry is of better quality, we will only add points that are changed. Therefor we apply an inverted distance query from the new points to the existing geometry.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "existingNewGeo, newNewGeo = gmu.filter_pcd_by_distance(newGeometryPoints, relevantOg, tresholdResolution)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gmu.show_geometries([newNewGeo, existingNewGeo], True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/NewMeshPoints.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "#### Step 6: Combine the irrelevant, unchanged and changed geometry\n",
+    "The final step is combining the original irrelevant data, the unganged original data and the changed new geometry. The resulting geometry is a combination of both, aimed at retaining as much of the original as possible.\n"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 16,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "newCombinedGeometry = coveredPoints + invisiblePoints + newNewGeo"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "gmu.show_geometries([coveredPoints, invisiblePoints, newNewGeo], True)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "![image](../../pics/CombinedPointcloud.PNG)"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "## Statistics"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Code performance"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 18,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Covex hull created\n",
+      "Irrelevant points filtered\n",
+      "Covered poinys calculated\n",
+      "invisible points detected\n",
+      "new points filtered\n",
+      "geometries combined\n",
+      "Completed function `combine_geometry()` in 1.473 seconds\n"
+     ]
+    },
+    {
+     "data": {
+      "text/plain": [
+       "PointCloud with 749482 points."
+      ]
+     },
+     "execution_count": 18,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "from geomapi.utils import time_funtion\n",
+    "time_funtion(ct.combine_geometry,*(ogGeometry, newGeometry, tresholdResolution))"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 50,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "Completed function `get_convex_hull()` in 0.002 seconds\n",
+      "Completed function `get_points_in_hull()` in 0.215 seconds\n",
+      "Completed function `mesh_to_pcd()` in 0.045 seconds\n",
+      "Completed function `filter_pcd_by_distance()` in 0.048 seconds\n",
+      "Completed function `get_invisible_points()` in 0.999 seconds\n",
+      "Completed function `filter_pcd_by_distance()` in 0.036 seconds\n"
+     ]
+    }
+   ],
+   "source": [
+    "from geomapi.utils import time_funtion\n",
+    "# Step 1: Create a convex hull of the newGeometry\n",
+    "newGeoHull = time_funtion(gmu.get_convex_hull,newGeometry)\n",
+    "# Step 2: Filter out the irrelevant points in the ogGeometry\n",
+    "relevantOg, irrelevantOg = time_funtion(gmu.get_points_in_hull,*(ogGeometry, newGeoHull))\n",
+    "# Step 3: Isolate the not covered points of the ogGeometry compared to the newGeometry\n",
+    "newGeometryPoints = time_funtion(gmu.mesh_to_pcd,*(newGeometry,tresholdResolution/2))\n",
+    "coveredPoints, unCoveredPoints = time_funtion(gmu.filter_pcd_by_distance,*(relevantOg, newGeometryPoints, tresholdResolution))\n",
+    "# Step 4: Perform the visibility check of the not covered points\n",
+    "invisibleUncoveredPoints = time_funtion(ct.get_invisible_points,*(unCoveredPoints, newGeometry))\n",
+    "# Step 5: Filter the newGeometryPoints to only keep the changed geometry\n",
+    "existingNewGeo, newNewGeo = time_funtion(gmu.filter_pcd_by_distance,*(newGeometryPoints, relevantOg, tresholdResolution))\n",
+    "# Step 6: Combine the irrelevant, unchanged and changed geometry\n",
+    "newCombinedGeometry = irrelevantOg + coveredPoints + invisibleUncoveredPoints + newNewGeo"
+   ]
+  },
+  {
+   "cell_type": "markdown",
+   "metadata": {},
+   "source": [
+    "### Point stats"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 49,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "removal Phase\n",
+      "Reduced relevant points by 95.5%\n",
+      "Filtering the original geometry resulted in 36.2% of the points being uncovered\n",
+      "Performing a visibility check on the uncovered points resulted in 56.6% of the points being visible and should be deleted\n",
+      "this means 15.7% of relevant original points are removed from the dataset\n",
+      "Addition Phase\n",
+      "Coverage checking the new geometry resulted in 26.4% of the points being new\n",
+      "In summary\n",
+      "The new relevant part of the dataset consists of: \n",
+      "54.4% still relevant existing points\n",
+      "13.4% inconclusive occluded points\n",
+      "32.2% new updated points\n"
+     ]
+    }
+   ],
+   "source": [
+    "print(\"removal Phase\")\n",
+    "print(\"Reduced relevant points by\", str(np.round(len(irrelevantOg.points) / len(ogGeometry.points)*100,1)) + \"%\")\n",
+    "print(\"Filtering the original geometry resulted in\",str(np.round(len(unCoveredPoints.points) / len(relevantOg.points)*100,1)) + \"% of the points being uncovered\")\n",
+    "print(\"Performing a visibility check on the uncovered points resulted in\",str(np.round(100 - (len(invisibleUncoveredPoints.points) / len(unCoveredPoints.points))*100,1)) + \n",
+    "\"% of the points being visible and should be deleted\")\n",
+    "print(\"this means\",str(np.round(len(invisibleUncoveredPoints.points) / len(relevantOg.points),3)*100) + \"% of relevant original points are removed from the dataset\")\n",
+    "print(\"Addition Phase\")\n",
+    "print(\"Coverage checking the new geometry resulted in\",str(np.round(len(newNewGeo.points) / len(newGeometryPoints.points)*100,1)) + \"% of the points being new\")\n",
+    "print(\"In summary\")\n",
+    "totalNewPoints = len(coveredPoints.points) + len(invisibleUncoveredPoints.points) + len(newNewGeo.points)\n",
+    "print(\"The new relevant part of the dataset consists of: \")\n",
+    "print(str(np.round(len(coveredPoints.points) / totalNewPoints*100,1)) + \"% still relevant existing points\")\n",
+    "print(str(np.round(len(invisibleUncoveredPoints.points) / totalNewPoints*100,1)) + \"% inconclusive occluded points\")\n",
+    "print(str(np.round(len(newNewGeo.points) / totalNewPoints*100,1))+ \"% new updated points\")\n"
+   ]
+  }
+ ],
+ "metadata": {
+  "kernelspec": {
+   "display_name": "Python 3.9.13 ('env': venv)",
+   "language": "python",
+   "name": "python3"
+  },
+  "language_info": {
+   "codemirror_mode": {
+    "name": "ipython",
+    "version": 3
+   },
+   "file_extension": ".py",
+   "mimetype": "text/x-python",
+   "name": "python",
+   "nbconvert_exporter": "python",
+   "pygments_lexer": "ipython3",
+   "version": "3.9.13"
+  },
+  "orig_nbformat": 4,
+  "vscode": {
+   "interpreter": {
+    "hash": "b1ee4163d9a0d387d4692122acdc2368cb31f97e539c5d989aee9fda604d253d"
+   }
+  }
+ },
+ "nbformat": 4,
+ "nbformat_minor": 2
+}
