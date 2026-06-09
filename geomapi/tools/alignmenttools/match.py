@@ -7,8 +7,9 @@ import numpy as np
 from scipy import optimize
 
 import geomapi.tools.alignmenttools.params as params
-from geomapi.nodes import GeometryNode, ImageNode, Node, SessionNode
+from geomapi.nodes import MeshNode, ImageNode, Node, SetNode
 import geomapi.utils.imageutils as iu
+import geomapi.utils.geometryutils as gmu
 
 class Match:
     """The generic match object to determine the relation between 2 geomapi.Node objects"""
@@ -115,7 +116,7 @@ class Match2d (Match):
             cameraMatrix2= self.intrinsic2,
             distCoeffs2= None)
 
-        self.transformation = iu.create_transformation_matrix(self.R,self.t)
+        self.transformation = gmu.get_cartesian_transform(self.t, self.R) #iu.create_transformation_matrix(self.R,self.t)
         return self.transformation    
 
     def get_pnp_pose(self, OtherMatch):
@@ -151,12 +152,12 @@ class Match2d (Match):
                                         confidence=0.99, reprojectionError=8.0, flags=cv2.SOLVEPNP_DLS, useExtrinsicGuess=True)
         R, _ = cv2.Rodrigues(R)
         self.points3d = points_3D
-        return iu.create_transformation_matrix(R.T, -R.T @ t)
+        return gmu.get_cartesian_transform(-R.T @ t, R.T)# iu.create_transformation_matrix(R.T, -R.T @ t)
     
     def get_reference_scaling_factor(self):
         """Uses the real world distance to scale the translationvector"""
-        _, t1 = iu.split_transformation_matrix(self.image1.get_cartesian_transform())
-        _, t2 = iu.split_transformation_matrix(self.image2.get_cartesian_transform())
+        t1 = gmu.get_translation(self.image1.get_cartesian_transform()) #iu.split_transformation_matrix(self.image1.get_cartesian_transform())
+        t2 = gmu.get_translation(self.image2.get_cartesian_transform()) #iu.split_transformation_matrix(self.image2.get_cartesian_transform())
         scalingFactor = np.linalg.norm(t2 - t1)
         self.t = self.t * scalingFactor / np.linalg.norm(self.t)
         return scalingFactor
@@ -172,7 +173,8 @@ class Match2d (Match):
         if(local):
             return self.R, self.t
         else:
-            R_local, t_local = iu.split_transformation_matrix(self.image1.get_cartesian_transform())
+            R_local = gmu.get_rotation_matrix(self.image1.get_cartesian_transform()) 
+            t_local = gmu.get_translation(self.image1.get_cartesian_transform())   #iu.split_transformation_matrix(self.image1.get_cartesian_transform())
             R = R_local @ self.R.T
             t = t_local - np.reshape(R @ self.t,(3,1))
             return R,t
@@ -181,7 +183,7 @@ class Match3d (Match):
     
     _matchType = "3d"
 
-    def __init__(self, geometryNode1: GeometryNode, geometryNode2: GeometryNode) -> None:
+    def __init__(self, geometryNode1: MeshNode, geometryNode2: MeshNode) -> None:
         """The default constructor
 
         Args:
@@ -257,7 +259,7 @@ class PoseEstimation():
         matchErrorFactor = 1        # the error radius of the match
         matchAmountFactor = 1       # the amount of good matches/inliers
 
-        for match in self.matches: #type: Match
+        for match in self.matches:
             if(isinstance(match, Match2d)):
                 matchErrorFactor = 1 - (min(params.MAX_ERROR_2D, match.matchError)/params.MAX_ERROR_2D) #remap from 0-MaxError to 1-0
                 matchAmountFactor = match.matchAmount / params.MAX_2D_MATCHES
@@ -291,7 +293,7 @@ class PoseEstimation():
 
 
 # Match 2 sessions using the different matching methods
-def match_session(testSession : SessionNode, refSession : SessionNode):
+def match_session(testSession : SetNode, refSession : SetNode):
     estimations = []
     
     # loop over every test node in the session, and find compatible estimation methods
@@ -302,13 +304,13 @@ def match_session(testSession : SessionNode, refSession : SessionNode):
             if(sum(isinstance(e,ImageNode) for e in refSession.linkedNodes) > 1): # we need 2 ref images to match
                 estimations.append(match_crossref(testNode, refSession))
                 estimations.append(match_incremental(testNode, refSession))
-            if(sum(isinstance(e,GeometryNode) for e in refSession.linkedNodes) > 0
+            if(sum(isinstance(e,MeshNode) for e in refSession.linkedNodes) > 0
             and sum(isinstance(e,ImageNode) for e in refSession.linkedNodes) > 0): # we need a mesh to raycast against
                 estimations.append(match_raycast(testNode, refSession))
 
         # Perform the 3D check, only if it is a GeometryNode
-        if(type(testNode) is GeometryNode):
-            if(sum(isinstance(e,GeometryNode) for e in refSession.linkedNodes) > 0): # we at least one other geometry to match against
+        if(type(testNode) is MeshNode):
+            if(sum(isinstance(e,MeshNode) for e in refSession.linkedNodes) > 0): # we at least one other geometry to match against
                 estimations.append(match_fgr(testNode, refSession))
                 estimations.append(match_super4pcs(testNode, refSession))
 
@@ -355,7 +357,7 @@ def match_crossref(testImage: Node , refImages: List[Node]):
     t =(pos1 + pos2)/2 #return the average of the 2 positions
     R,_ = match1.get_image2_pos()
     # return a transformation matrix and the matches
-    return PoseEstimation(iu.create_transformation_matrix(R,t), bestMatches, "crossref")
+    return PoseEstimation(gmu.get_cartesian_transform(t,R), bestMatches, "crossref")# iu.create_transformation_matrix(R,t), bestMatches, "crossref")
 
 def match_raycast(testImage: Node , refImages: List[Node], geometry: Node) -> PoseEstimation:
     pass
@@ -363,18 +365,18 @@ def match_raycast(testImage: Node , refImages: List[Node], geometry: Node) -> Po
 
 # Different 3D matching methods
 
-def match_fgr(testGeometry: GeometryNode, refSession : SessionNode) -> PoseEstimation:
+def match_fgr(testGeometry: MeshNode, refSession : SetNode) -> PoseEstimation:
 
     estimations = []
 
     for node in refSession.linkedNodes:
-        if(type(node) is GeometryNode):
+        if(type(node) is MeshNode):
             #The node is a geometrynode
             newMatch = Match3d(testGeometry, node)
 
     pass
 
-def match_super4pcs(testGeometry: GeometryNode, refSession : SessionNode) -> PoseEstimation:
+def match_super4pcs(testGeometry: MeshNode, refSession : SetNode) -> PoseEstimation:
     return None
 
 

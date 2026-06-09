@@ -9,7 +9,7 @@ opencv-python-headless
 typing_extensions
 matplotlib
 scipy
-Pillow
+pillow
 XlsxWriter
 trimesh
 shapely
@@ -17,7 +17,10 @@ python-fcl
 trimesh
 ifcopenshell
 laspy
+lazrs
+laszip
 scikit-learn
 colour
 ezdxf
 pyvista
+pyproj

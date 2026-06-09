@@ -9,3 +9,6 @@ This package contains 3 submodules:
 - tools
 
 """
+import geomapi.utils
+import geomapi.nodes
+import geomapi.tools

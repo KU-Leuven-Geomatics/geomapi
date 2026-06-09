@@ -15,6 +15,6 @@ geomapi.tools
 
 .. automodule:: geomapi.tools
    :members:
-   :undoc-members:
    :show-inheritance:
+   :undoc-members:
 

@@ -1,0 +1,22 @@
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix geomapi: <https://w3id.org/geomapi#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://newNode1> a geomapi:Node ;
+    rdfs:label "newNode1"^^xsd:string ;
+    dcterms:created "2023-11-23T10:08:01"^^xsd:dateTime ;
+    geomapi:cartesianTransform """[[-1 0 0 1]
+ [0 -1 0 1]
+ [0 0 -1 1]
+ [0 0 0 1]]"""^^geomapi:matrix ;
+    geomapi:path "../mesh/parking.obj"^^xsd:string .
+
+<http://newNode2> a geomapi:Node ;
+    rdfs:label "newNode2"^^xsd:string ;
+    dcterms:created "2023-11-23T10:08:02"^^xsd:dateTime ;
+    geomapi:cartesianTransform """[[1 0 0 0]
+ [0 1 0 0]
+ [0 0 1 0]
+ [0 0 0 1]]"""^^geomapi:matrix ;
+    geomapi:path "../mesh/parking.obj"^^xsd:string .

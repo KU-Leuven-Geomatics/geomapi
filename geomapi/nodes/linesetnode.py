@@ -1,217 +1,301 @@
 """
-BIMNode - a Python Class to govern the data and metadata of BIM data (Open3D, RDF)
+**LineSetNode** is a Python Class to govern the data and metadata of DXF data. 
+This node builds upon the [Open3D](https://www.open3d.org/) and [EZDXF](https://ezdxf.readthedocs.io/en/stable/) API for the Geometry definitions.
+Be sure to check the properties defined in those abstract classes to initialise the Node.
+
+.. image:: ../../../docs/pics/graph_cad_1.png
+
+**IMPORTANT**: This Node class is designed to manage the geometry and metadata of a DXF file. Additional information can be linked through the RDF graph.
+
 """
 #IMPORT PACKAGES
-from ast import Raise
+import os
+from pathlib import Path
+from typing import Optional
 import open3d as o3d 
 import numpy as np 
-from rdflib import Graph, URIRef
-import os
-import ifcopenshell
-import ifcopenshell.geom as geom
-import ifcopenshell.util
+import ezdxf
+#from ezdxf.entities.dxfentity import DXFEntity
+
+from rdflib import XSD, Graph, URIRef
+from rdflib.namespace import RDF
+
 #IMPORT MODULES
-from geomapi.nodes import GeometryNode
+from geomapi.nodes import Node
 import geomapi.utils as ut
+from geomapi.utils import rdf_property, GEOMAPI_PREFIXES
 import geomapi.utils.geometryutils as gmu
+import geomapi.utils.cadutils as cadu
 
 
-class LinesetNode (GeometryNode):
-    """
-    This class stores a LinesetNode, including the metadata from an ifcElement (OpenShell) and the data from the mesh geometry (Open3D)
-    
-    Goals:
-    - Given a path, import all the linked resources including images, meshes, ect.
-    - Convert non-RDF metadata files (.ifc, .obj, ect..) to BIMNodes and export them to RDF
-    - use URIRef() to reference the node, ect...
-    """
-    # class attributes
-    # ifcPath = None # (string) path to an ifc file
-    # globalId=None # (string) ifc guid of the element e.g. 2DhaSlBmz2puIzqaWbJt0S
-    # className=None #(string) ifcElement class e.g. ifcWall
-    # mesh = None # (o3d.mesh) mesh geometry of the ifcElement (MB)
-    # ifcElement = None # (ifcopenshell.entity_instance)  Don't store an ifcElement in your node. it can't be properly passed around
-    # self.path = None # (string) path of the o3d.mesh geometry
-    # self.ifc = None # (string) path to an ifc file => you don't want to store the entire ifc file!
-    # self.ifcElement = None # (string) 
-    # self.pcds = None #(List[URIRef]) => link to other pcd. 
-    
-    #Classification
-    # self.label = None #(string) ??? (MB)
-    # self.meshes = None # (List[URIRef]) => link to other meshes. (MB)
-    
-    #Geometry
-    
-    # # Monitoring
-    # self.phase = None # (string) ??? this can't be really extracted from the IFC (MB)
-    # self.progress = None # (double [0.0;1.0]) percentage of completion
-    # self.quality = None # ([%LOA30,#LOA20,#LOA10]) inliers Level-of-Accuracy (LOA)
-    # self.deviation = None # (np.array(4,4)) cartesian transform 
-    # self.cracks = None # (bool) True if cracks are detected on the image texture
-
-    #Questions
-    # is phase and timestamp the same?
-    # monenclature
-    # where do we store the image masks?
-    # do we also need a CAD node?
-
-    def __init__(self,  graph : Graph = None, 
-                        graphPath: str= None,
-                        subject : URIRef = None,
-                        path : str= None, 
-                        lineset: o3d.geometry.LineSet = None,
-                        getResource : bool = False,
-                        **kwargs): 
-        """Overloaded function.
-
+class LineSetNode (Node):
+    def __init__(self, 
+                subject: Optional[URIRef] = None,
+                graph: Optional[Graph] = None,
+                graphPath: Optional[Path] = None,
+                name: Optional[str] = None,
+                path: Optional[Path] = None,
+                timestamp: Optional[str] = None,
+                resource = None,
+                cartesianTransform: Optional[np.ndarray] = None,
+                orientedBoundingBox: Optional[o3d.geometry.OrientedBoundingBox] = None,
+                convexHull: Optional[o3d.geometry.TriangleMesh] =None,
+                loadResource: Optional[bool] = False,
+                dxfPath : Optional[Path] = None,                        
+                handle : Optional[str] = None,
+                layer : Optional[str] = None,
+                dxfType : Optional[str] = None,
+                **kwargs):
+        """Creates a LineSetNode. Overloaded function.
+        
+        This Node can be initialised from one or more of the inputs below.
+        By default, no data is imported in the Node to speed up processing.
+        If you also want the data, call node.get_resource() or set getResource() to True.
+        
         Args:
-            0.graph (RDFlib Graph) : RDF Graph with a single subject. if no subject is present, the first subject in the Graph will be used to initialise the Node.
+            - subject (RDFlib URIRef) : subject to be used as the main identifier in the RDF Graph
             
-            1.graphPath (str)  + (optional) subject:  RDF Graph file path with a subject. if no subject is present, the first subject in the Graph will be used to initialise the Node.
-
-            2.path (str) : path to .obj or .ply file (Note that this node will also contain the data)
-
-            3.mesh (o3d.geometry.TriangleMesh) : Open3D TriangleMesh (Note that this node will also contain the data)
-
-            4.ifcPath (str) + globalId (str) + (optional) getResource: (Note that this node will also contain the data)
-
-            5.ifcElement (ifcopenshell.entity_instance) :  Warning, never attach an IfcElement to a node directly as this is very unstable!
-                
+            - graph (RDFlib Graph) : Graph with a single subject (if multiple subjects are present, only the first will be used to initialise the Node)
+            
+            - graphPath (Path) :  Graph file path with a single subject (if multiple subjects are present, only the first will be used to initialise the Node)
+            
+            - path (Path) : Path to a Lineset .ply file (data is not automatically loaded)
+            
+            - resource (o3d.geometry.Lineset, ezdxf.entities) : Open3D Lineset data from [Open3D](https://www.open3d.org/) or [EZDXF](https://ezdxf.readthedocs.io/en/stable/). 
+            
+            - dxfPath (str|Path) : path to DXF file
+            
+            - handle (str) : CAD handle
+            
+            - layer (str) : CAD layername e.g. IFC$1$BT8_Loofboom_Laag_WGI2, etc.
+                        
+            - getResource (bool, optional= False) : If True, the node will search for its physical resource on drive 
+                            
         Returns:
-            A BIMNode with metadata (if you also want the data, call node.get_resource() method)
-        """   
-        self.path=path
-        self.lineset=lineset        
-        super().__init__(   graph= graph,
-                            graphPath= graphPath,
-                            subject= subject,
-                            **kwargs)        
-
+            BIMNode : A BIMNode with metadata 
+        """
         
-        if self.lineset is not None: #data + metadata
-            if type(lineset) is o3d.geometry.LineSet and len(lineset.vertices) >=2:
-                self.get_metadata_from_lineset()
-            else:
-                raise ValueError('lineset must be o3d.geometry.Lineset and len(lineset.vertices) >=2')
+        #instance variables
+        self.dxfPath=dxfPath
+        self.handle=handle
+        self.layer=layer
+        self.dxfType=dxfType 
+
+        super().__init__( subject = subject,
+                        graph = graph,
+                        graphPath = graphPath,
+                        name = name,
+                        path = path,
+                        timestamp = timestamp,
+                        resource = resource,
+                        cartesianTransform = cartesianTransform,
+                        orientedBoundingBox = orientedBoundingBox,
+                        convexHull = convexHull,
+                        loadResource = loadResource,
+                        **kwargs)  
         
-        elif path is not None:
-            if path.endswith('.obj') or path.endswith('.ply'): #data + metadata
-                self.name=ut.get_filename(path)
-                self.timestamp=ut.get_timestamp(path)
-                self.lineset=o3d.io.read_triangle_mesh(self.path)                
-                self.get_metadata_from_lineset()
-            else:
-                raise ValueError('file must be .obj or .ply')
+#---------------------PROPERTIES----------------------------
 
-        if getResource:
-            self.get_resource()
+    #---------------------pointCount----------------------------
+    @property
+    @rdf_property(datatype=XSD.int)
+    def pointCount(self):
+        if self.resource:
+            return len(np.asarray(self.resource.points))
+        else: 
+            return self._pointCount
+    
+    @pointCount.setter
+    def pointCount(self, value):
+        if self.resource:
+            print("PointCount cannot be set directly when a resource is present")
+        self._pointCount = value
+        
+    #---------------------lineCount----------------------------
+    @property
+    @rdf_property(datatype=XSD.int)
+    def lineCount(self):
+        if self.resource:
+            return len(np.asarray(self.resource.lines))
+        else: 
+            return self._lineCount
 
-    def clear_geometry(self):
-        """Clear all geometries in the Node.
+    @lineCount.setter
+    def lineCount(self, value):
+        if self.resource:
+            print("LineCount cannot be set directly when a resource is present")
+        self._lineCount = value
+
+
+    #---------------------dxfPath----------------------------
+    @property
+    @rdf_property(datatype=XSD.string)
+    def dxfPath(self): 
+        """The path (Path) of the dxf file. Autocad and BrisCAD files currently have confirmed compatibility."""
+        return self._dxfPath
+
+    @dxfPath.setter
+    def dxfPath(self,value:Path):
+        if value is None:
+           self._dxfPath = None
+        elif Path(value).suffix.upper() == ".DXF":
+            self._dxfPath=Path(value)
+        else:
+            raise ValueError('dxfPath invalid extension.')
+        
+    #---------------------handle----------------------------
+    @property
+    @rdf_property(datatype=XSD.string)
+    def handle(self): 
+        """The handle (str) of the node that originates from a dxf file."""
+        return self._handle
+
+    @handle.setter
+    def handle(self,value:str):
+        if value is None:
+            self._handle = None
+        else:
+            self._handle=str(value)
+        
+    #---------------------layer----------------------------
+    @property
+    @rdf_property(datatype=XSD.string)
+    def layer(self): 
+        """The CAD layername (str) of the node that originates from a dxf file. 
+        
         """
-        if getattr(self,'mesh',None) is not None:
-            self.mesh=None
+        return self._layer
 
-    def get_mesh(self) -> o3d.geometry.TriangleMesh:
-        """Returns the mesh data in the node. If none is present, it will search for the data on drive.
+    @layer.setter
+    def layer(self,value:str):
+        if value is None:
+            self._layer = None
+        else:
+            self._layer=str(value)
+            
+    #---------------------dxfType----------------------------
+    @property
+    @rdf_property(datatype=XSD.string)
+    def dxfType(self): 
+        """The DXF dxfType (str) of the node that originates from an ifc file. 
+        
+        **Note**: This must be a RDF formatted class name.
+        """
+        return self._dxfType
 
-        Returns:
-            o3d.geometry.TriangleMesh or None
-        """
-        if getattr(self,'mesh',None) is not None and len(self.mesh.triangles)>1:
-            return self.mesh 
-        elif self.get_resource():
-            return self.mesh
-        return None  
+    @dxfType.setter
+    def dxfType(self,value:str):
+        if value is None:
+            self._dxfType = None
+        else:
+            self._dxfType=str(value)
 
-    def get_resource(self)->bool: 
-        """
-        get o3d.geometry.TriangleMesh from self.path or self.name
-        """
-        if getattr(self,'mesh',None) is None:
-            self.mesh = o3d.io.read_triangle_mesh(self.get_resource_path(fileFormat=ut.MESH_EXTENSIONS))
-                
-            if getattr(self,'ifcPath',None) is not None and getattr(self,'globalId',None) is not None :
-                try:
-                    ifc = ifcopenshell.open(self.ifcPath)   
-                    ifcElement= ifc.by_guid(self.globalId)
-                    self.mesh=gmu.ifc_to_mesh(ifcElement)
-                    return self.mesh
-                except:
-                    pass
-        elif getattr(self,'mesh',None) is not None:
-            if len(self.mesh.triangles)>1:
-                return self.mesh
-        return self.mesh
- 
-    def export_geometry (self, extension = '.ply') ->bool:
-        """_summary_
+
+#---------------------PROPERTY OVERRIDES----------------------------
+
+    @Node.resource.setter
+    def resource(self, value): 
+        """Set self.resource (o3d.geometry.Lineset) of the Node.
 
         Args:
-            extension (str, optional): file extension. Defaults to '.ply'.
+            - o3d.geometry.Lineset 
+            - ezdxf.entities
 
         Raises:
-            ValueError: only .ply or .obj are allowed
+            ValueError: Resource must be ao3d.geometry.Lineset or ezdxf.entities with geometry.
+        """
+        if(value is None):
+            self._resource = None
+        elif isinstance(value,o3d.geometry.LineSet) and len(value.lines) >=1:
+            self._resource = value
+        elif  'ezdxf.entities' in str(type(value)):
+            g=cadu.ezdxf_entity_to_o3d(value)
+            if g is not None and isinstance(g,o3d.geometry.LineSet):
+                # DXF specific properties
+                self._resource=g
+                self.layer=getattr(value.dxf,'layer',None)
+                self.handle=value.dxf.handle
+                self.dxfType=value.dxftype()
+
+                #colorize
+                if hasattr(value.dxf,'color'):
+                    self.color=np.array(cadu.get_rgb_from_aci(value.dxf.color))/255 
+                    self._resource.paint_uniform_color(np.repeat(value.dxf.color/256,3))
+
+                # Node properties
+                self.name=getattr(value.dxf,'name',None)    #maybe protect this with getattr
+                if self._name and self._handle:
+                    self.subject= self._name +'_'+self._handle 
+                else:
+                    self.subject= self._handle
+                
+            else:
+                raise ValueError('No geometry found in DXF entity')
+        else:
+            raise ValueError('Resource must be ao3d.geometry.Lineset or ezdxf.entities with geometry.')
+            
+#---------------------METHODS----------------------------
+
+    def _transform_resource(self, transformation: np.ndarray, rotate_around_center: bool):
+        """
+        Apply a transformation to the lineset resource.
+
+        If rotate_around_center is True, the transformation is applied about the mesh's center.
+        Otherwise, the transformation is applied as-is.
+
+        Args:
+            transformation (np.ndarray): A 4x4 transformation matrix.
+            rotate_around_center (bool): Whether to rotate around the mesh's center.
+        """
+        if rotate_around_center:
+            center = self.resource.get_center()
+            t1 = np.eye(4)
+            t1[:3, 3] = -center
+            t2 = np.eye(4)
+            t2[:3, 3] = center
+            transformation = t2 @ transformation @ t1
+        self.resource.transform(transformation)
+
+    def load_resource(self)->o3d.geometry.LineSet: 
+        """Load the resource from the path.
+            
+        Returns:
+            o3d.geometry.LineSet or None
+        """
+        # Perform path checks
+        if(not super().load_resource()):
+            return None
+
+        self.resource =  o3d.io.read_line_set(str(self.path))
+        return self._resource  
+    
+    def save_resource(self, directory:str=None,extension :str = '.ply') ->bool:
+        """Export the resource of the Node.
+
+        Args:
+            - directory (str, optional) : directory folder to store the data.
+            - extension (str, optional) : file extension. Defaults to '.ply'.
+
+        Raises:
+            ValueError: Unsuitable extension. Please check permitted extension types in utils._init_.
 
         Returns:
             bool: return True if export was succesful
-        """        
-        #check path
-        if getattr(self,'mesh',None) is not None:
-            if getattr(self,'path',None) is not None and os.path.exists(self.path):
-                pass
-            else:
-                #check name
-                if getattr(self,'name',None) is not None:
-                    self.name=ut.validate_string(self.name)
-                else:
-                    self.name=self.guid
-
-                #check session/graphPath and directory
-                if getattr(self,'sessionPath',None) is not None :
-                    if os.path.exists((self.sessionPath +'\\BIM') ):
-                        dir=self.sessionPath +'\\BIM'
-                    else:
-                        dir=os.mkdir((self.sessionPath+'\\BIM'))
-                elif getattr(self,'graphPath',None) is not None: 
-                    if os.path.exists(self.graphPath +'\\BIM' ):
-                        dir=self.graphPath +'\\BIM'
-                    else:
-                        dir=os.mkdir((self.graphPath+'\\BIM'))                    
-                else:
-                    if os.path.exists((os.getcwd()+'\\BIM' )):
-                        dir=os.getcwd()+'\\BIM'
-                    else:
-                        dir=os.mkdir((os.getcwd()+'\\BIM'))
-                                    
-                #check extension
-                if extension == '.ply' or extension == '.obj':
-                    self.path=dir+'\\'+self.name+extension
-                else:
-                    raise ValueError ('only .ply or .obj allowed') 
-            try:
-                o3d.io.write_triangle_mesh(self.path, self.mesh)
-                return True
-            except:
-                print("Export failed of " + self.name )
-        return False
-
-    def get_metadata_from_lineset(self) -> bool:
-        self.get_resource()
-        if getattr(self,'mesh',None) is not None and len(self.mesh.triangles) >1:
-            try:
-                center=self.mesh.get_center()  
-                self.cartesianTransform= np.array([[1,0,0,center[0]],
-                                                    [0,1,0,center[1]],
-                                                    [0,0,1,center[2]],
-                                                    [0,0,0,1]])
-                self.pointCount= len(self.mesh.vertices)
-                self.cartesianBounds=gmu.get_cartesian_bounds(self.mesh)
-            except:
-                pass
-            return True
-        else:
-            print('No proper geometries found to extract the metadata. len(self.mesh.triangles) >1')
+        """          
+        # perform the path check and create the directory
+        if not super().save_resource(directory, extension):
             return False
-    
+
+        #write files
+        if o3d.io.write_line_set(str(self.path), self.resource):
+            return True
+        return False
    
+    def show(self, inline = False):
+        super().show()
+        if(inline):
+            from IPython.display import display
+            display(gmu.mesh_to_trimesh(self.resource).show())
+        else:
+            gmu.show_geometries([self.resource])
+    
